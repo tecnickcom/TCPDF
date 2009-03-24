@@ -1,0 +1,651 @@
+<html>
+<head>
+<title>Docs For Class TCPDFBarcode</title>
+<link rel="stylesheet" type="text/css" href="../media/style.css">
+</head>
+<body>
+
+<table border="0" cellspacing="0" cellpadding="0" height="48" width="100%">
+  <tr>
+    <td class="header_top">com-tecnick-tcpdf</td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+  <tr>
+    <td class="header_menu">
+        
+                                    
+                              		  [ <a href="../classtrees_com-tecnick-tcpdf.html" class="menu">class tree: com-tecnick-tcpdf</a> ]
+		  [ <a href="../elementindex_com-tecnick-tcpdf.html" class="menu">index: com-tecnick-tcpdf</a> ]
+		  	    [ <a href="../elementindex.html" class="menu">all elements</a> ]
+    </td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+</table>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="200" class="menu">
+      <b>Packages:</b><br />
+              <a href="../li_com-tecnick-tcpdf.html">com-tecnick-tcpdf</a><br />
+            <br /><br />
+                        <b>Files:</b><br />
+      	  <div class="package">
+			<a href="../com-tecnick-tcpdf/_barcodes.php.html">		barcodes.php
+		</a><br>
+			<a href="../com-tecnick-tcpdf/_htmlcolors.php.html">		htmlcolors.php
+		</a><br>
+			<a href="../com-tecnick-tcpdf/_tcpdf.php.html">		tcpdf.php
+		</a><br>
+			<a href="../com-tecnick-tcpdf/_config---tcpdf_config.php.html">		tcpdf_config.php
+		</a><br>
+			<a href="../com-tecnick-tcpdf/_unicode_data.php.html">		unicode_data.php
+		</a><br>
+	  </div><br />
+      
+      
+            <b>Classes:</b><br />
+        <div class="package">
+		    		<a href="../com-tecnick-tcpdf/TCPDF.html">TCPDF</a><br />
+	    		<a href="../com-tecnick-tcpdf/TCPDFBarcode.html">TCPDFBarcode</a><br />
+	  </div>
+                </td>
+    <td>
+      <table cellpadding="10" cellspacing="0" width="100%" border="0"><tr><td valign="top">
+
+<h1>Class: TCPDFBarcode</h1>
+Source Location: /barcodes.php<br /><br />
+
+
+<table width="100%" border="0">
+<tr><td valign="top">
+
+<h3><a href="#class_details">Class Overview</a></h3>
+<pre></pre><br />
+<div class="description">PHP class to creates array representations for common 1D barcodes to be used with TCPDF (http://www.tcpdf.org).<br /></div><br /><br />
+<h4>Author(s):</h4>
+<ul>
+          <li>Nicola Asuni</li>
+                              </ul>
+
+
+
+
+        
+                
+<h4>Version:</h4>
+<ul>
+  <li>1.0.005</li>
+</ul>
+
+        
+</td>
+
+<td valign="top">
+<h3><a href="#class_vars">Variables</a></h3>
+<ul>
+    <li><a href="../com-tecnick-tcpdf/TCPDFBarcode.html#var$barcode_array">$barcode_array</a></li>
+  </ul>
+</td>
+
+
+<td valign="top">
+<h3><a href="#class_methods">Methods</a></h3>
+<ul>
+    <li><a href="../com-tecnick-tcpdf/TCPDFBarcode.html#method__construct">__construct</a></li>
+    <li><a href="../com-tecnick-tcpdf/TCPDFBarcode.html#methodbarcode_c128">barcode_c128</a></li>
+    <li><a href="../com-tecnick-tcpdf/TCPDFBarcode.html#methodbarcode_codabar">barcode_codabar</a></li>
+    <li><a href="../com-tecnick-tcpdf/TCPDFBarcode.html#methodbarcode_code39">barcode_code39</a></li>
+    <li><a href="../com-tecnick-tcpdf/TCPDFBarcode.html#methodbarcode_ean13">barcode_ean13</a></li>
+    <li><a href="../com-tecnick-tcpdf/TCPDFBarcode.html#methodbarcode_i25">barcode_i25</a></li>
+    <li><a href="../com-tecnick-tcpdf/TCPDFBarcode.html#methodbarcode_postnet">barcode_postnet</a></li>
+    <li><a href="../com-tecnick-tcpdf/TCPDFBarcode.html#methodchecksum_code39">checksum_code39</a></li>
+    <li><a href="../com-tecnick-tcpdf/TCPDFBarcode.html#methodencode_code39_ext">encode_code39_ext</a></li>
+    <li><a href="../com-tecnick-tcpdf/TCPDFBarcode.html#methodgetBarcodeArray">getBarcodeArray</a></li>
+    <li><a href="../com-tecnick-tcpdf/TCPDFBarcode.html#methodsetBarcode">setBarcode</a></li>
+  </ul>
+</td>
+
+</tr></table>
+<hr />
+
+<table width="100%" border="0"><tr>
+
+
+
+
+
+
+</tr></table>
+<hr />
+
+<a name="class_details"></a>
+<h3>Class Details</h3>
+<div class="tags">
+[line 62]<br />
+PHP class to creates array representations for common 1D barcodes to be used with TCPDF (http://www.tcpdf.org).<br /><br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>author:</b>&nbsp;&nbsp;</td><td>Nicola Asuni</td>
+  </tr>
+  <tr>
+    <td><b>version:</b>&nbsp;&nbsp;</td><td>1.0.005</td>
+  </tr>
+  <tr>
+    <td><b>link:</b>&nbsp;&nbsp;</td><td><a href="http://www.tcpdf.org">http://www.tcpdf.org</a></td>
+  </tr>
+  <tr>
+    <td><b>name:</b>&nbsp;&nbsp;</td><td>TCPDFBarcode</td>
+  </tr>
+  <tr>
+    <td><b>license:</b>&nbsp;&nbsp;</td><td><a href="http://www.gnu.org/copyleft/lesser.html">LGPL</a></td>
+  </tr>
+</table>
+</div>
+</div><br /><br />
+<div class="top">[ <a href="#top">Top</a> ]</div><br />
+
+<hr />
+<a name="class_vars"></a>
+<h3>Class Variables</h3>
+<div class="tags">
+	<a name="var$barcode_array"></a>
+	<p></p>
+	<h4>$barcode_array = <span class="value"></span></h4>
+	<p>[line 68]</p>
+  <br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>var:</b>&nbsp;&nbsp;</td><td>representation of barcode.</td>
+  </tr>
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>protected</td>
+  </tr>
+</table>
+</div>
+
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td>array</td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+</div><br />
+
+<hr />
+<a name="class_methods"></a>
+<h3>Class Methods</h3>
+<div class="tags">
+
+  <hr />
+	<a name="method__construct"></a>
+	<h3>constructor __construct <span class="smalllinenumber">[line 84]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>TCPDFBarcode __construct(
+string
+$code, string
+$type)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		This is the class constructor.<br /><br /><p>Return an array representations for common 1D barcodes:<ul><li>$arrcode['code'] code to be printed on text label</li><li>$arrcode['maxh'] max bar height</li><li>$arrcode['maxw'] max bar width</li><li>$arrcode['bcode'][$k] single bar or space in $k position</li><li>$arrcode['bcode'][$k]['t'] bar type: true = bar, false = space.</li><li>$arrcode['bcode'][$k]['w'] bar width in units.</li><li>$arrcode['bcode'][$k]['h'] bar height in units.</li><li>$arrcode['bcode'][$k]['p'] bar top position (0 = top, 1 = middle)</li></ul></p><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>public</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$code</b>&nbsp;&nbsp;</td>
+        <td>code to print</td>
+      </tr>
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$type</b>&nbsp;&nbsp;</td>
+        <td>type of barcode: <ul><li>C39 : CODE 39</li><li>C39+ : CODE 39 with checksum</li><li>C39E : CODE 39 EXTENDED</li><li>C39E+ : CODE 39 EXTENDED with checksum</li><li>I25 : Interleaved 2 of 5</li><li>C128A : CODE 128 A</li><li>C128B : CODE 128 B</li><li>C128C : CODE 128 C</li><li>EAN13 : EAN 13</li><li>UPCA : UPC-A</li><li>POSTNET : POSTNET</li><li>CODABAR : CODABAR</li></ul></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodbarcode_c128"></a>
+	<h3>method barcode_c128 <span class="smalllinenumber">[line 390]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array barcode_c128(
+string
+$code, [string
+$type = 'B'])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		C128 barcodes.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>barcode representation.</td>
+  </tr>
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>protected</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$code</b>&nbsp;&nbsp;</td>
+        <td>code to represent.</td>
+      </tr>
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$type</b>&nbsp;&nbsp;</td>
+        <td>barcode type: A, B or C</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodbarcode_codabar"></a>
+	<h3>method barcode_codabar <span class="smalllinenumber">[line 755]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array barcode_codabar(
+string
+$code)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		CODABAR barcodes.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>barcode representation.</td>
+  </tr>
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>protected</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$code</b>&nbsp;&nbsp;</td>
+        <td>code to represent.</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodbarcode_code39"></a>
+	<h3>method barcode_code39 <span class="smalllinenumber">[line 166]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array barcode_code39(
+string
+$code, [
+$extended = false], [boolean
+$checksum = false])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		CODE 39<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>barcode representation.</td>
+  </tr>
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>protected</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$code</b>&nbsp;&nbsp;</td>
+        <td>code to represent.</td>
+      </tr>
+          <tr>
+        <td class="type">boolean&nbsp;&nbsp;</td>
+        <td><b>$checksum</b>&nbsp;&nbsp;</td>
+        <td>if true add a checksum to the code</td>
+      </tr>
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$extended</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodbarcode_ean13"></a>
+	<h3>method barcode_ean13 <span class="smalllinenumber">[line 582]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array barcode_ean13(
+string
+$code, [string
+$len = 13])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		EAN13 and UPC-A barcodes.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>barcode representation.</td>
+  </tr>
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>protected</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$code</b>&nbsp;&nbsp;</td>
+        <td>code to represent.</td>
+      </tr>
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$len</b>&nbsp;&nbsp;</td>
+        <td>barcode type: 13 = EAN13, 12 = UPC-A</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodbarcode_i25"></a>
+	<h3>method barcode_i25 <span class="smalllinenumber">[line 332]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array barcode_i25(
+string
+$code, boolean
+$checksum)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Interleaved 2 of 5 barcodes.<br /><br /><p>Contains digits (0 to 9) and encodes the data in the width of both bars and spaces.</p><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>barcode representation.</td>
+  </tr>
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>protected</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$code</b>&nbsp;&nbsp;</td>
+        <td>code to represent.</td>
+      </tr>
+          <tr>
+        <td class="type">boolean&nbsp;&nbsp;</td>
+        <td><b>$checksum</b>&nbsp;&nbsp;</td>
+        <td>if true add a checksum to the code</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodbarcode_postnet"></a>
+	<h3>method barcode_postnet <span class="smalllinenumber">[line 700]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array barcode_postnet(
+string
+$code)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		POSTNET barcodes.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>barcode representation.</td>
+  </tr>
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>protected</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$code</b>&nbsp;&nbsp;</td>
+        <td>zip code to represent. Must be a string containing a zip code of the form DDDDD or DDDDD-DDDD.</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodchecksum_code39"></a>
+	<h3>method checksum_code39 <span class="smalllinenumber">[line 309]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>char checksum_code39(
+string
+$code)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Calculate CODE 39 checksum (modulo 43).<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>checksum.</td>
+  </tr>
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>protected</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$code</b>&nbsp;&nbsp;</td>
+        <td>code to represent.</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodencode_code39_ext"></a>
+	<h3>method encode_code39_ext <span class="smalllinenumber">[line 259]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>encoded encode_code39_ext(
+string
+$code)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Encode a string to be used for CODE 39 Extended mode.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>string.</td>
+  </tr>
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>protected</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$code</b>&nbsp;&nbsp;</td>
+        <td>code to represent.</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetBarcodeArray"></a>
+	<h3>method getBarcodeArray <span class="smalllinenumber">[line 92]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array getBarcodeArray(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Return an array representations of barcode.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>public</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodsetBarcode"></a>
+	<h3>method setBarcode <span class="smalllinenumber">[line 102]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array setBarcode(
+string
+$code, string
+$type)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Set the barcode.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>public</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$code</b>&nbsp;&nbsp;</td>
+        <td>code to print</td>
+      </tr>
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$type</b>&nbsp;&nbsp;</td>
+        <td>type of barcode: <ul><li>C39 : CODE 39</li><li>C39+ : CODE 39 with checksum</li><li>C39E : CODE 39 EXTENDED</li><li>C39E+ : CODE 39 EXTENDED with checksum</li><li>I25 : Interleaved 2 of 5</li><li>C128A : CODE 128 A</li><li>C128B : CODE 128 B</li><li>C128C : CODE 128 C</li><li>EAN13 : EAN 13</li><li>UPCA : UPC-A</li><li>POSTNET : POSTNET</li><li>CODABAR : CODABAR</li></ul></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+</div><br />
+
+
+        <div class="credit">
+		    <hr />
+		    Documentation generated on Mon, 23 Mar 2009 12:15:16 +0100 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.1</a>
+	      </div>
+      </td></tr></table>
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>
