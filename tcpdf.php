@@ -4,7 +4,7 @@
 // Begin       : 2002-08-03
 // Last Update : 2009-03-27
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.5.033
+// Version     : 4.5.034
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -122,7 +122,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.5.033
+ * @version 4.5.034
  */
 
 /**
@@ -146,14 +146,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.5.033 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.5.034 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.5.033
+	* @version 4.5.034
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -2393,7 +2393,7 @@ if (!class_exists('TCPDF', false)) {
 				} else {
 					$this->SetXY($this->original_lMargin, $footer_y);
 				}
-				$this->SetFont($this->footer_font[0], $this->footer_font[1] , $this->footer_font[2]);
+				$this->SetFont($this->footer_font[0], $this->footer_font[1], $this->footer_font[2]);
 				$this->Footer();
 				//restore position
 				if ($this->rtl) {
@@ -3275,18 +3275,19 @@ if (!class_exists('TCPDF', false)) {
 		* @param int $fill Indicates if the cell background must be painted (1) or transparent (0). Default value: 0.
 		* @param mixed $link URL or identifier returned by AddLink().
 		* @param int $stretch stretch carachter mode: <ul><li>0 = disabled</li><li>1 = horizontal scaling only if necessary</li><li>2 = forced horizontal scaling</li><li>3 = character spacing only if necessary</li><li>4 = forced character spacing</li></ul>
+		* @param boolean $ignore_min_height if true ignore automatic minimum height value.
 		* @access public
 		* @since 1.0
 		* @see SetFont(), SetDrawColor(), SetFillColor(), SetTextColor(), SetLineWidth(), AddLink(), Ln(), MultiCell(), Write(), SetAutoPageBreak()
 		*/
-		public function Cell($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=0, $link='', $stretch=0) {
+		public function Cell($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=0, $link='', $stretch=0, $ignore_min_height=false) {
 			//$min_cell_height = $this->FontAscent + $this->FontDescent;
 			$min_cell_height = $this->FontSize * $this->cell_height_ratio;
 			if ($h < $min_cell_height) {
 				$h = $min_cell_height;
 			}
 			$this->checkPageBreak($h);
-			$this->_out($this->getCellCode($w, $h, $txt, $border, $ln, $align, $fill, $link, $stretch));
+			$this->_out($this->getCellCode($w, $h, $txt, $border, $ln, $align, $fill, $link, $stretch, $ignore_min_height));
 		}
 
 		/**
@@ -3326,16 +3327,19 @@ if (!class_exists('TCPDF', false)) {
 		* @param int $fill Indicates if the cell background must be painted (1) or transparent (0). Default value: 0.
 		* @param mixed $link URL or identifier returned by AddLink().
 		* @param int $stretch stretch carachter mode: <ul><li>0 = disabled</li><li>1 = horizontal scaling only if necessary</li><li>2 = forced horizontal scaling</li><li>3 = character spacing only if necessary</li><li>4 = forced character spacing</li></ul>
+		* @param boolean $ignore_min_height if true ignore automatic minimum height value.
 		* @access protected
 		* @since 1.0
 		* @see Cell()
 		*/
-		protected function getCellCode($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=0, $link='', $stretch=0) {
+		protected function getCellCode($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=0, $link='', $stretch=0, $ignore_min_height=false) {
 			$txt = $this->removeSHY($txt);
 			$rs = ''; //string to be returned
-			$min_cell_height = $this->FontSize * $this->cell_height_ratio;
-			if ($h < $min_cell_height) {
-				$h = $min_cell_height;
+			if (!$ignore_min_height) {
+				$min_cell_height = $this->FontSize * $this->cell_height_ratio;
+				if ($h < $min_cell_height) {
+					$h = $min_cell_height;
+				}
 			}
 			$k = $this->k;
 			if (empty($w) OR ($w <= 0)) {
@@ -3661,7 +3665,7 @@ if (!class_exists('TCPDF', false)) {
 						}
 					}
 					$this->SetX($nx);
-					$ccode = $this->getCellCode($w, $h, '', $cborder, 1, '', $fill);
+					$ccode = $this->getCellCode($w, $h, '', $cborder, 1, '', $fill, '', 0, false);
 					if ($cborder OR $fill) {
 						$pstart = substr($this->getPageBuffer($this->page), 0, $this->intmrk[$this->page]);
 						$pend = substr($this->getPageBuffer($this->page), $this->intmrk[$this->page]);
@@ -3675,7 +3679,7 @@ if (!class_exists('TCPDF', false)) {
 				$this->SetY($y); 
 				$this->SetX($x);
 				// design a cell around the text
-				$ccode = $this->getCellCode($w, $h, '', $border, 1, '', $fill);
+				$ccode = $this->getCellCode($w, $h, '', $border, 1, '', $fill, '', 0, true);
 				if ($border OR $fill) {
 					if (end($this->transfmrk[$this->page]) !== false) {
 						$pagemarkkey = key($this->transfmrk[$this->page]);
@@ -6340,7 +6344,7 @@ if (!class_exists('TCPDF', false)) {
 					// puts data before page footer
 					$page = substr($this->getPageBuffer($this->page), 0, -$this->footerlen[$this->page]);
 					$footer = substr($this->getPageBuffer($this->page), -$this->footerlen[$this->page]);
-					$this->setPageBuffer($this->page, $page.' '.$s."\n".$footer);
+					$this->setPageBuffer($this->page, $page.$s."\n".$footer);
 				} else {
 					$this->setPageBuffer($this->page, $s."\n", true);
 				}
@@ -11318,7 +11322,7 @@ if (!class_exists('TCPDF', false)) {
 							if (isset($dom[$parentid]['bgcolor']) AND ($dom[$parentid]['bgcolor'] !== false)) {
 								$dom[$trid]['cellpos'][($cellid - 1)]['bgcolor'] = $dom[$parentid]['bgcolor'];
 							}
-							$prevLastH= $this->lasth;
+							$prevLastH = $this->lasth;
 							// ****** write the cell content ******
 							$this->MultiCell($cellw, $cellh, $cell_content, false, $lalign, false, 2, '', '', true, 0, true);
 							$this->lasth = $prevLastH;
@@ -11326,6 +11330,11 @@ if (!class_exists('TCPDF', false)) {
 							$dom[$trid]['cellpos'][($cellid - 1)]['endx'] = $this->x;
 							// update the end of row position
 							if ($rowspan <= 1) {
+								if (isset($dom[$trid]['endpage'])) {
+									$dom[$trid]['endpage'] = max($this->page, $dom[$trid]['endpage']);
+								} else {
+									$dom[$trid]['endpage'] = $this->page;
+								}
 								if (isset($dom[$trid]['endy'])) {
 									if ($this->page == $dom[$trid]['endpage']) {
 										$dom[$trid]['endy'] = max($this->y, $dom[$trid]['endy']);
@@ -11334,11 +11343,6 @@ if (!class_exists('TCPDF', false)) {
 									}
 								} else {
 									$dom[$trid]['endy'] = $this->y;
-								}
-								if (isset($dom[$trid]['endpage'])) {
-									$dom[$trid]['endpage'] = max($this->page, $dom[$trid]['endpage']);
-								} else {
-									$dom[$trid]['endpage'] = $this->page;
 								}
 							} else {
 								// account for row-spanned cells
@@ -12003,7 +12007,7 @@ if (!class_exists('TCPDF', false)) {
 										}
 									}
 									// design a cell around the text
-									$ccode = $this->FillColor."\n".$this->getCellCode($cw, $ch, '', $cborder, 1, '', $fill);
+									$ccode = $this->FillColor."\n".$this->getCellCode($cw, $ch, '', $cborder, 1, '', $fill, '', 0, true);
 									if ($cborder OR $fill) {
 										$pstart = substr($this->getPageBuffer($this->page), 0, $this->intmrk[$this->page]);
 										$pend = substr($this->getPageBuffer($this->page), $this->intmrk[$this->page]);
@@ -12013,18 +12017,18 @@ if (!class_exists('TCPDF', false)) {
 								}
 							} else {
 								$this->setPage($startpage);
-								$ch = $endy - $parent['starty'];
 								if (isset($cellpos['bgcolor']) AND ($cellpos['bgcolor']) !== false) {
 									$this->SetFillColorArray($cellpos['bgcolor']);
 									$fill = true;
 								} else {
 									$fill = false;
 								}
-								$cw = abs($cellpos['endx'] - $cellpos['startx']);
 								$this->x = $cellpos['startx'];
 								$this->y = $parent['starty'];
+								$cw = abs($cellpos['endx'] - $cellpos['startx']);
+								$ch = $endy - $parent['starty'];
 								// design a cell around the text
-								$ccode = $this->FillColor."\n".$this->getCellCode($cw, $ch, '', $border, 1, '', $fill);
+								$ccode = $this->FillColor."\n".$this->getCellCode($cw, $ch, '', $border, 1, '', $fill, '', 0, true);
 								if ($border OR $fill) {
 									if (end($this->transfmrk[$this->page]) !== false) {
 										$pagemarkkey = key($this->transfmrk[$this->page]);

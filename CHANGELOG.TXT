@@ -1,3 +1,8 @@
+4.5.034 (2009-03-27)
+	- Bug #2716914 "Bug writeHTML of a table in body and footer related with pb" was fixed.
+	- Bug #2717056 ] "writeHTML problem when setting tr style" was fixed.
+	- The signature of the Cell() method was changed.
+	
 4.5.033 (2009-03-27)
 	- The support for rowspan/colspan on HTML tables was improved (see example n. 48).
 	
