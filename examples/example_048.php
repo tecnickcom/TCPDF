@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_048.php
 // Begin       : 2009-03-20
-// Last Update : 2009-03-20
+// Last Update : 2009-03-27
 // 
 // Description : Example 048 for TCPDF class
 //               HTML tables and table headers
@@ -143,6 +143,41 @@ $pdf->writeHTML($tbl, true, false, false, false, '');
 
 // -----------------------------------------------------------------------------
 
+$tbl = <<<EOD
+<table border="1">
+<tr>
+<th rowspan="3">Left column</th>
+<th colspan="5">Heading Column Span 5</th>
+<th colspan="9">Heading Column Span 9</th>
+</tr>
+<tr>
+<th rowspan="2">Rowspan 2<br />This is some text that fills the table cell.</th>
+<th colspan="2">span 2</th>
+<th colspan="2">span 2</th>
+<th rowspan="2">2 rows</th>
+<th colspan="8">Colspan 8</th>
+</tr>
+<tr>
+<th>1a</th>
+<th>2a</th>
+<th>1b</th>
+<th>2b</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+</tr>
+</table>
+EOD;
+
+$pdf->writeHTML($tbl, true, false, false, false, '');
+
+// -----------------------------------------------------------------------------
+
 // Table with rowspans and THEAD
 $tbl = <<<EOD
 <table border="1" cellpadding="2" cellspacing="2">
@@ -205,7 +240,8 @@ $tbl = <<<EOD
 </table>
 EOD;
 
-$pdf->Ln(105);
+$pdf->writeHTML($tbl, true, false, false, false, '');
+
 $pdf->writeHTML($tbl, true, false, false, false, '');
 
 // -----------------------------------------------------------------------------
