@@ -11335,11 +11335,6 @@ if (!class_exists('TCPDF', false)) {
 							$dom[$trid]['cellpos'][($cellid - 1)]['endx'] = $this->x;
 							// update the end of row position
 							if ($rowspan <= 1) {
-								if (isset($dom[$trid]['endpage'])) {
-									$dom[$trid]['endpage'] = max($this->page, $dom[$trid]['endpage']);
-								} else {
-									$dom[$trid]['endpage'] = $this->page;
-								}
 								if (isset($dom[$trid]['endy'])) {
 									if ($this->page == $dom[$trid]['endpage']) {
 										$dom[$trid]['endy'] = max($this->y, $dom[$trid]['endy']);
@@ -11349,6 +11344,11 @@ if (!class_exists('TCPDF', false)) {
 								} else {
 									$dom[$trid]['endy'] = $this->y;
 								}
+								if (isset($dom[$trid]['endpage'])) {
+									$dom[$trid]['endpage'] = max($this->page, $dom[$trid]['endpage']);
+								} else {
+									$dom[$trid]['endpage'] = $this->page;
+								}								
 							} else {
 								// account for row-spanned cells
 								$dom[$table_el]['rowspans'][($trsid - 1)]['endx'] = $this->x;
@@ -11907,8 +11907,7 @@ if (!class_exists('TCPDF', false)) {
 						}
 					}
 					$this->setPage($dom[($dom[$key]['parent'])]['endpage']);
-					$this->y = $dom[($dom[$key]['parent'])]['endy'];
-					
+					$this->y = $dom[($dom[$key]['parent'])]['endy'];					
 					if (isset($dom[$table_el]['attribute']['cellspacing'])) {
 						$cellspacing = $this->getHTMLUnitToUnits($dom[$table_el]['attribute']['cellspacing'], 1, 'px');
 						$this->y += $cellspacing;

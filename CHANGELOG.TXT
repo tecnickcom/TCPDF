@@ -1,5 +1,6 @@
 4.5.035 (2009-03-28)
-	- Bug # "2717436 "writeHTML rowspan problem (continued)" was fixed.
+	- Bug #2717436 "writeHTML rowspan problem (continued)" was fixed.
+	- Bug #2719090 "writeHTML fix follow up" was fixed.
 	- The method _putuserrights() was changed to avoid Adobe Reader 9.1 crash. This broken the 'trick' used to display forms in Acrobat Reader.
 	
 4.5.034 (2009-03-27)
