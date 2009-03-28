@@ -1,3 +1,7 @@
+4.5.035 (2009-03-28)
+	- Bug # "2717436 "writeHTML rowspan problem (continued)" was fixed.
+	- The method _putuserrights() was changed to avoid Adobe Reader 9.1 crash. This broken the 'trick' used to display forms in Acrobat Reader.
+	
 4.5.034 (2009-03-27)
 	- Bug #2716914 "Bug writeHTML of a table in body and footer related with pb" was fixed.
 	- Bug #2717056 ] "writeHTML problem when setting tr style" was fixed.

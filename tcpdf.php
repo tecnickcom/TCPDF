@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-03-27
+// Last Update : 2009-03-28
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.5.034
+// Version     : 4.5.035
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -122,7 +122,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.5.034
+ * @version 4.5.035
  */
 
 /**
@@ -146,14 +146,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.5.034 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.5.035 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.5.034
+	* @version 4.5.035
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1351,7 +1351,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->ur_document = '/FullSave';
 			$this->ur_annots = '/Create/Delete/Modify/Copy/Import/Export';
 			$this->ur_form = '/Add/Delete/FillIn/Import/Export/SubmitStandalone/SpawnTemplate';
-			$this->ur_signature = '/Modify';
+			$this->ur_signature = '/Modify';			
 			// set default JPEG quality
 			$this->jpeg_quality = 75;
 			// initialize some settings
@@ -8944,6 +8944,8 @@ if (!class_exists('TCPDF', false)) {
 		
 		/*
 		* Enable Write permissions for PDF Reader.
+		* (EXPERIMENTAL - ONLY WORKS WITH SOME ACROBAT READER VERSIONS)
+		* TO BE COMPLETED
 		* @access protected
 		* @author Nicola Asuni
 		* @since 2.9.000 (2008-03-26)
@@ -8955,14 +8957,19 @@ if (!class_exists('TCPDF', false)) {
 			$this->_out('/Perms');
 			$this->_out('<<');
 			$this->_out('/UR3');
-			$this->_out('<<');
-			//$this->_out('/SubFilter/adbe.pkcs7.detached/Filter/Adobe.PPKLite/Contents');
-			//$this->_out('<0>');
-			//$this->_out('/ByteRange[0 3]');
-			$this->_out('/M '.$this->_datastring('D:'.date('YmdHis')));
+			$this->_out('<<');			
+			$this->_out('/Type/Sig');
+			$this->_out('/Filter/Adobe.PPKLite');
+			$this->_out('/SubFilter/adbe.pkcs7.sha1');
 			$this->_out('/Name(TCPDF)');
-			$this->_out('/Reference[');
+			$this->_out('/ByteRange[0 2 2 2]'); // %PDF SHA1: 39B6D73EFF36493BA0674E48255A9D81724B4521
+			$this->_out('/Contents<0>'); // This must be calculated
+			$this->_out('/M '.$this->_datastring('D:'.date('YmdHis')));
+			$this->_out('/Reference');
+			$this->_out('[');
 			$this->_out('<<');
+			$this->_out('/Type/SigRef');
+			$this->_out('/TransformMethod/UR3');
 			$this->_out('/TransformParams');
 			$this->_out('<<');
 			$this->_out('/Type/TransformParams');
@@ -8980,11 +8987,9 @@ if (!class_exists('TCPDF', false)) {
 				$this->_out('/Signature['.$this->ur_signature.']');
 			}			
 			$this->_out('>>');
-			$this->_out('/TransformMethod/UR3');
-			$this->_out('/Type/SigRef');
+			$this->_out('/DigestMethod/SHA1');
 			$this->_out('>>');
 			$this->_out(']');
-			$this->_out('/Type/Sig');
 			$this->_out('>>');
 			$this->_out('>>');
 		}
@@ -11901,8 +11906,9 @@ if (!class_exists('TCPDF', false)) {
 							}
 						}
 					}
-					$this->setPage($parent['endpage']);
-					$this->y = $parent['endy'];
+					$this->setPage($dom[($dom[$key]['parent'])]['endpage']);
+					$this->y = $dom[($dom[$key]['parent'])]['endy'];
+					
 					if (isset($dom[$table_el]['attribute']['cellspacing'])) {
 						$cellspacing = $this->getHTMLUnitToUnits($dom[$table_el]['attribute']['cellspacing'], 1, 'px');
 						$this->y += $cellspacing;
