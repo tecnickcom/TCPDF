@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-03-28
+// Last Update : 2009-04-03
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.5.035
+// Version     : 4.5.036
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -122,7 +122,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.5.035
+ * @version 4.5.036
  */
 
 /**
@@ -146,14 +146,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.5.035 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.5.036 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.5.035
+	* @version 4.5.036
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -8960,10 +8960,10 @@ if (!class_exists('TCPDF', false)) {
 			$this->_out('<<');			
 			$this->_out('/Type/Sig');
 			$this->_out('/Filter/Adobe.PPKLite');
-			$this->_out('/SubFilter/adbe.pkcs7.sha1');
+			$this->_out('/SubFilter/adbe.pkcs7.detached');
 			$this->_out('/Name(TCPDF)');
-			$this->_out('/ByteRange[0 2 2 2]'); // %PDF SHA1: 39B6D73EFF36493BA0674E48255A9D81724B4521
-			$this->_out('/Contents<0>'); // This must be calculated
+			$this->_out('/ByteRange[0 0 0 0]');
+			$this->_out('/Contents<>');
 			$this->_out('/M '.$this->_datastring('D:'.date('YmdHis')));
 			$this->_out('/Reference');
 			$this->_out('[');
@@ -8987,7 +8987,6 @@ if (!class_exists('TCPDF', false)) {
 				$this->_out('/Signature['.$this->ur_signature.']');
 			}			
 			$this->_out('>>');
-			$this->_out('/DigestMethod/SHA1');
 			$this->_out('>>');
 			$this->_out(']');
 			$this->_out('>>');
@@ -10343,7 +10342,7 @@ if (!class_exists('TCPDF', false)) {
 		 */
 		protected function getHtmlDomArray($html) {
 			// remove all unsupported tags (the line below lists all supported tags)
-			$html = strip_tags($html, '<marker/><a><b><blockquote><br><br/><dd><del><div><dl><dt><em><font><h1><h2><h3><h4><h5><h6><hr><i><img><li><ol><p><pre><small><span><strong><sub><sup><table><td><th><thead><tr><tt><u><ul>'); 
+			$html = strip_tags($html, '<marker/><a><b><blockquote><br><br/><dd><del><div><dl><dt><em><font><h1><h2><h3><h4><h5><h6><hr><i><img><li><ol><p><pre><small><span><strong><sub><sup><table><tcpdf><td><th><thead><tr><tt><u><ul>'); 
 			//replace some blank characters
 			$html = preg_replace('@(\r\n|\r)@', "\n", $html);
 			$repTable = array("\t" => ' ', "\0" => ' ', "\x0B" => ' ', "\\" => "\\\\");
@@ -10488,7 +10487,7 @@ if (!class_exists('TCPDF', false)) {
 							$dom[$key]['listtype'] = $dom[$parentkey]['listtype'];
 						}
 						// get attributes
-						preg_match_all('/([^=\s]*)=["\']?([^"\']*)["\']?/', $element, $attr_array, PREG_PATTERN_ORDER);
+						preg_match_all('/([^=\s]*)=["]?([^"]*)["]?/', $element, $attr_array, PREG_PATTERN_ORDER);
 						$dom[$key]['attribute'] = array(); // reset attribute array
 						while (list($id, $name) = each($attr_array[1])) {
 							$dom[$key]['attribute'][strtolower($name)] = $attr_array[2][$id];
@@ -11846,6 +11845,21 @@ if (!class_exists('TCPDF', false)) {
 				case 'h6': {
 					$this->addHTMLVertSpace(1, $cell, ($tag['fontsize'] * 1.5) / $this->k, $firstorlast, $tag['value'], false);
 					break;
+				}
+				case 'tcpdf': {
+					// NOT HTML: used to call TCPDF methods
+					if (isset($tag['attribute']['method'])) {
+						$tcpdf_method = $tag['attribute']['method'];
+						if (method_exists($this, $tcpdf_method)) {
+							if (isset($tag['attribute']['params']) AND (!empty($tag['attribute']['params']))) {
+								eval('$params = array('.$tag['attribute']['params'].');');
+								call_user_func_array(array($this, $tcpdf_method), $params);
+							} else {
+								$this->$tcpdf_method();
+							}
+							$this->newline = true;
+						}
+					}
 				}
 				default: {
 					break;
