@@ -147,6 +147,12 @@
 		<dl>
 							<dt><b>$cache_file_lenght</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$cache_file_lenght">TCPDF::$cache_file_lenght</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Array used to store the lenghts of cache files</dd>
+							<dt><b>$cache_maxsize_UTF8StringToArray</b></dt>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$cache_maxsize_UTF8StringToArray">TCPDF::$cache_maxsize_UTF8StringToArray</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Maximum size of cache array used for UTF8StringToArray() method.</dd>
+							<dt><b>$cache_size_UTF8StringToArray</b></dt>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$cache_size_UTF8StringToArray">TCPDF::$cache_size_UTF8StringToArray</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Current size of cache array used for UTF8StringToArray() method.</dd>
+							<dt><b>$cache_UTF8StringToArray</b></dt>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$cache_UTF8StringToArray">TCPDF::$cache_UTF8StringToArray</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Cache array for UTF8StringToArray() method.</dd>
 							<dt><b>$cell_height_ratio</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$cell_height_ratio">TCPDF::$cell_height_ratio</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Default cell height ratio.</dd>
 							<dt><b>$cMargin</b></dt>
@@ -1089,10 +1095,14 @@
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$Uvalue">TCPDF::$Uvalue</a><br>&nbsp;&nbsp;&nbsp;&nbsp;U entry in pdf document</dd>
 							<dt><b>unhtmlentities</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodunhtmlentities">TCPDF::unhtmlentities()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Reverse function for htmlentities.</dd>
+							<dt><b>UniArrSubString</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodUniArrSubString">TCPDF::UniArrSubString()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Extract a slice of the $uniarr array and return it as string.</dd>
 							<dt><b>unichr</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodunichr">TCPDF::unichr()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns the unicode caracter specified by UTF-8 code</dd>
 							<dt><b>unicode_data.php</b></dt>
 				<dd>procedural page <a href="com-tecnick-tcpdf/_unicode_data.php.html">unicode_data.php</a></dd>
+							<dt><b>UTF8ArrayToUniArray</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodUTF8ArrayToUniArray">TCPDF::UTF8ArrayToUniArray()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Convert an array of UTF8 values to array of unicode characters</dd>
 							<dt><b>UTF8ArrSubString</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodUTF8ArrSubString">TCPDF::UTF8ArrSubString()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Extract a slice of the $strarr array and return it as string.</dd>
 							<dt><b>utf8Bidi</b></dt>
@@ -1132,7 +1142,9 @@
 							<dt><b>Write</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodWrite">TCPDF::Write()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;This method prints text from the current position.<br /></dd>
 							<dt><b>write1DBarcode</b></dt>
-				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodwrite1DBarcode">TCPDF::write1DBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Print Barcode.</dd>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodwrite1DBarcode">TCPDF::write1DBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Print 1D Barcode.</dd>
+							<dt><b>write2DBarcode</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodwrite2DBarcode">TCPDF::write2DBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Print 2D Barcode.</dd>
 							<dt><b>writeBarcode</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodwriteBarcode">TCPDF::writeBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;This function is DEPRECATED, please use the new write1DBarcode() function.</dd>
 							<dt><b>writeDiskCache</b></dt>
@@ -1302,7 +1314,7 @@
 	<a href="elementindex.html#top">top</a><br>
         <div class="credit">
 		    <hr />
-		    Documentation generated on Fri, 03 Apr 2009 12:04:30 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.1</a>
+		    Documentation generated on Thu, 09 Apr 2009 19:28:56 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.1</a>
 	      </div>
       </td></tr></table>
     </td>

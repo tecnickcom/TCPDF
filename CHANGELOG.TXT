@@ -1,3 +1,9 @@
+4.5.037 (2009-04-09)
+	- General performances were improved.
+	- The signature of the method utf8Bidi() was changed.
+	- The method UniArrSubString() was added.
+	- Experimental support for 2D barcodes were added (see example n. 50 and 2dbarcodes.php class).
+
 4.5.036 (2009-04-03)
 	- TCPDF methods can be called inside the HTML code (see example n. 49).
 	- All tag attributes, such as <p align="center"> must be enclosed within double quotes.
