@@ -1,3 +1,6 @@
+4.5.038 (2009-04-10)
+	- Write() method was improved to support separators for Japanese, Korean, Chinese Traditional and Chinese Simplified.
+
 4.5.037 (2009-04-09)
 	- General performances were improved.
 	- The signature of the method utf8Bidi() was changed.

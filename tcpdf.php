@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-04-07
+// Last Update : 2009-04-10
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.5.037
+// Version     : 4.5.038
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -122,7 +122,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.5.037
+ * @version 4.5.038
  */
 
 /**
@@ -146,14 +146,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.5.037 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.5.038 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.5.037
+	* @version 4.5.038
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -3978,8 +3978,12 @@ if (!class_exists('TCPDF', false)) {
 					$w = $this->getRemainingWidth();
 					$wmax = $w - (2 * $this->cMargin);
 				} else {
-					// 160 is the non-breaking space, 173 is SHY (Soft Hypen)
-					if (($c != 160) AND (preg_match('/[\s]/', $this->unichr($c)) OR ($c == 173))) {
+					// 160 is the non-breaking space.
+					// 173 is SHY (Soft Hypen).
+					// \p{Z} or \p{Separator}: any kind of Unicode whitespace or invisible separator.
+					// \p{Lo} or \p{Other_Letter}: a Unicode letter or ideograph that does not have lowercase and uppercase variants.
+					// \p{Lo} is needed because Chinese characters are packed next to each other without spaces in between.
+					if (($c != 160) AND (($c == 173) OR preg_match('/[\s\p{Z}\p{Lo}]/', $this->unichr($c)))) {
 						// update last blank space position
 						$sep = $i;
 						// check if is a SHY
