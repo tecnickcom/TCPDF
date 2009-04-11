@@ -2,10 +2,10 @@
 //============================================================+
 // File name   : example_027.php
 // Begin       : 2008-03-04
-// Last Update : 2009-03-18
+// Last Update : 2009-04-11
 // 
 // Description : Example 027 for TCPDF class
-//               Barcodes
+//               1D Barcodes
 // 
 // Author: Nicola Asuni
 // 
@@ -22,7 +22,7 @@
 /**
  * Creates an example PDF TEST document using TCPDF
  * @package com.tecnick.tcpdf
- * @abstract TCPDF - Example: barcodes.
+ * @abstract TCPDF - Example: 1D Barcodes.
  * @author Nicola Asuni
  * @copyright 2004-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://tcpdf.org
@@ -90,7 +90,9 @@ $style = array(
 	'stretchtext' => 4
 );
 
-// CODE 39
+// PRINT VARIOUS 1D BARCODES
+
+// CODE 39 - ANSI MH10.8M-1983 - USD-3 - 3 of 9.
 $pdf->write1DBarcode('CODE 39', 'C39', '', '', 80, 30, 0.4, $style, 'N');
 
 $pdf->Ln();
@@ -105,13 +107,33 @@ $pdf->write1DBarcode('CODE 39 E', 'C39E', '', '', 80, 30, 0.4, $style, 'N');
 
 $pdf->Ln();
 
-// CODE 39 EXTENDED with checksum
+// CODE 39 EXTENDED + CHECKSUM
 $pdf->write1DBarcode('CODE 39 E+', 'C39E+', '', '', 80, 30, 0.4, $style, 'N');
 
 $pdf->Ln();
 
+// CODE 93 - USS-93
+$pdf->write1DBarcode('TEST93', 'C93', '', '', 80, 30, 0.4, $style, 'N');
+
+$pdf->Ln();
+
+// Standard 2 of 5
+$pdf->write1DBarcode('1234567', 'S25', '', '', 80, 30, 0.4, $style, 'N');
+
+$pdf->Ln();
+
+// Standard 2 of 5 + CHECKSUM
+$pdf->write1DBarcode('1234567', 'S25+', '', '', 80, 30, 0.4, $style, 'N');
+
+$pdf->Ln();
+
 // Interleaved 2 of 5
-$pdf->write1DBarcode('12345678', 'I25', '', '', 80, 30, 0.4, $style, 'N');
+$pdf->write1DBarcode('1234567', 'I25', '', '', 80, 30, 0.4, $style, 'N');
+
+$pdf->Ln();
+
+// Interleaved 2 of 5 + CHECKSUM
+$pdf->write1DBarcode('1234567', 'I25+', '', '', 80, 30, 0.4, $style, 'N');
 
 $pdf->Ln();
 
@@ -120,33 +142,93 @@ $pdf->write1DBarcode('CODE 128 A', 'C128A', '', '', 80, 30, 0.4, $style, 'N');
 
 $pdf->Ln();
 
-// CODE 128 A
+// CODE 128 B
 $pdf->write1DBarcode('CODE 128 B', 'C128B', '', '', 80, 30, 0.4, $style, 'N');
 
 $pdf->Ln();
 
-// CODE 128 A
+// CODE 128 C
 $pdf->write1DBarcode('0123456789', 'C128C', '', '', 80, 30, 0.4, $style, 'N');
 
 $pdf->Ln();
 
+// EAN 8
+$pdf->write1DBarcode('1234567', 'EAN8', '', '', 80, 30, 0.4, $style, 'N');
+
+$pdf->Ln();
+
 // EAN 13
-$pdf->write1DBarcode('123456789012', 'EAN13', '', '', 80, 30, 0.4, $style, 'N');
+$pdf->write1DBarcode('1234567890128', 'EAN13', '', '', 80, 30, 0.4, $style, 'N');
+
+$pdf->Ln();
+
+// 2-Digits UPC-Based Extention
+$pdf->write1DBarcode('34', 'EAN2', '', '', 20, 30, 0.4, $style, 'N');
+
+$pdf->Ln();
+
+// 5-Digits UPC-Based Extention
+$pdf->write1DBarcode('51234', 'EAN5', '', '', 40, 30, 0.4, $style, 'N');
 
 $pdf->Ln();
 
 // UPC-A
-$pdf->write1DBarcode('123456789012', 'UPCA', '', '', 80, 30, 0.4, $style, 'N');
+$pdf->write1DBarcode('12345678901', 'UPCA', '', '', 80, 30, 0.4, $style, 'N');
 
 $pdf->Ln();
 
-// UPC-A
-$pdf->write1DBarcode('48109-1109', 'POSTNET', '', '', 80, 20, 0.4, $style, 'N');
+// UPC-E
+$pdf->write1DBarcode('04210000526', 'UPCE', '', '', 80, 30, 0.4, $style, 'N');
+
+$pdf->Ln();
+
+// MSI
+$pdf->write1DBarcode('80523', 'MSI', '', '', 80, 30, 0.4, $style, 'N');
+
+$pdf->Ln();
+
+// MSI + CHECKSUM (module 11)
+$pdf->write1DBarcode('80523', 'MSI+', '', '', 80, 30, 0.4, $style, 'N');
+
+$pdf->Ln();
+
+// POSTNET
+$pdf->write1DBarcode('98000', 'POSTNET', '', '', 80, 20, 0.4, $style, 'N');
+
+$pdf->Ln();
+
+// PLANET
+$pdf->write1DBarcode('98000', 'PLANET', '', '', 80, 20, 0.4, $style, 'N');
+
+$pdf->Ln();
+
+// RMS4CC (Royal Mail 4-state Customer Code) - CBC (Customer Bar Code)
+$pdf->write1DBarcode('SN34RD1A', 'RMS4CC', '', '', 80, 20, 0.4, $style, 'N');
+
+$pdf->Ln();
+
+// KIX (Klant index - Customer index)
+$pdf->write1DBarcode('SN34RDX1A', 'KIX', '', '', 80, 20, 0.4, $style, 'N');
 
 $pdf->Ln();
 
 // CODABAR
 $pdf->write1DBarcode('123456789', 'CODABAR', '', '', 80, 30, 0.4, $style, 'N');
+
+$pdf->Ln();
+
+// CODE 11
+$pdf->write1DBarcode('123-456-789', 'CODE11', '', '', 80, 30, 0.4, $style, 'N');
+
+$pdf->Ln();
+
+// PHARMACODE
+$pdf->write1DBarcode('789', 'PHARMA', '', '', 30, 30, 0.4, $style, 'N');
+
+$pdf->Ln();
+
+// PHARMACODE TWO-TRACKS
+$pdf->write1DBarcode('105', 'PHARMA2T', '', '', 20, 30, 0.4, $style, 'N');
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // TEST BARCDE ALIGNMENTS

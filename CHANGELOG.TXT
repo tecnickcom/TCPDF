@@ -1,3 +1,6 @@
+4.5.039 (2009-04-11)
+	- Support for linear barcodes was extended (see example n. 27 and barcodes.php documentation).
+
 4.5.038 (2009-04-10)
 	- Write() method was improved to support separators for Japanese, Korean, Chinese Traditional and Chinese Simplified.
 
