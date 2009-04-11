@@ -927,7 +927,8 @@ class TCPDFBarcode {
 					$keys .= chr($i);
 				}
 				$new_code = '';
-				for ($i = 0; $i < (strlen($code) / 2); ++$i) {
+				$hclen = (strlen($code) / 2);
+				for ($i = 0; $i < $hclen; ++$i) {
 					$new_code .= chr(intval($code{(2 * $i)}.$code{(2 * $i + 1)}));
 				}
 				$code = $new_code;
