@@ -8,8 +8,8 @@ http://sourceforge.net/donate/index.php?group_id=128076
 ------------------------------------------------------------
 
 Name: TCPDF
-Version: 4.5.039
-Release date: 2009-04-11
+Version: 4.5.040
+Release date: 2009-04-14
 Author:	Nicola Asuni 
 	
 Copyright (c) 2001-2009:
@@ -38,7 +38,7 @@ Main Features:
 // 	* includes methods to publish some XHTML code;
 // 	* includes graphic (geometric) and transformation methods;
 // 	* includes Javascript and forms support;
-// 	* includes a method to print various barcode formats (CODE 39, CODE 39 EXTENDED, Interleaved 2 of 5, CODE 128 A/B/C, EAN 13, UPC-A, POSTNET, CODABAR);
+// 	* includes a method to print various barcode formats;
 // 	* includes methods to set Bookmarks and print a Table of Content;
 // 	* includes a method to move pages;
 // 	* includes methods for automatic page header and footer management;

@@ -1,3 +1,6 @@
+4.5.040 (2009-04-14)
+	- Method Write() was fixed to handle empty strings.
+
 4.5.039 (2009-04-11)
 	- Support for linear barcodes was extended (see example n. 27 and barcodes.php documentation).
 

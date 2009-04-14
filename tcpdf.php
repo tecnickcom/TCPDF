@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-04-11
+// Last Update : 2009-04-14
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.5.039
+// Version     : 4.5.040
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -122,7 +122,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.5.039
+ * @version 4.5.040
  */
 
 /**
@@ -146,14 +146,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.5.039 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.5.040 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.5.039
+	* @version 4.5.040
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -3657,7 +3657,7 @@ if (!class_exists('TCPDF', false)) {
 				}
 			}
 			// Get end-of-text Y position
-			$currentY = $this->GetY();
+			$currentY = $this->y;
 			// get latest page number
 			$endpage = $this->page;
 			// check if a new page has been created
@@ -3865,6 +3865,9 @@ if (!class_exists('TCPDF', false)) {
 		* @since 1.5
 		*/
 		public function Write($h, $txt, $link='', $fill=0, $align='', $ln=false, $stretch=0, $firstline=false, $firstblock=false, $maxh=0) {
+			if (empty($txt)) {
+				$txt = ' ';
+			}
 			// remove carriage returns
 			$s = str_replace("\r", '', $txt);
 			// check if string contains arabic text
@@ -3887,15 +3890,6 @@ if (!class_exists('TCPDF', false)) {
 			$uchars = $this->UTF8ArrayToUniArray($chars);
 			// get the number of characters
 			$nb = count($chars);
-			// handle single space character
-			if (($nb == 1) AND preg_match('/[\s]/', $s)) {
-				if ($this->rtl) {
-					$this->x -= $this->GetStringWidth($s);
-				} else {
-					$this->x += $this->GetStringWidth($s);
-				}
-				return;
-			}
 			// replacement for SHY character (minus symbol)
 			$shy_replacement = 45;
 			$shy_replacement_char = $this->unichr($shy_replacement);
