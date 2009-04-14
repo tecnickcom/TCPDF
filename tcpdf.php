@@ -4,7 +4,7 @@
 // Begin       : 2002-08-03
 // Last Update : 2009-04-14
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.5.040
+// Version     : 4.5.041
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -122,7 +122,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.5.040
+ * @version 4.5.041
  */
 
 /**
@@ -146,14 +146,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.5.040 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.5.041 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.5.040
+	* @version 4.5.041
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -10227,7 +10227,7 @@ if (!class_exists('TCPDF', false)) {
 					if ($v['t']) {
 						// draw a vertical bar
 						$ypos = $y + $style['padding'] + ($v['p'] * $barh / $arrcode['maxh']);
-						$this->Rect($xpos, $ypos, $bw, ($v['h'] * $barh  / $arrcode['maxh']), 'DF', array(), $style['fgcolor']);
+						$this->Rect($xpos, $ypos, $bw, ($v['h'] * $barh  / $arrcode['maxh']), 'F', array(), $style['fgcolor']);
 					}
 					$xpos += $bw;
 				}
@@ -10429,7 +10429,7 @@ if (!class_exists('TCPDF', false)) {
 					for ($c = 0; $c < $cols; ++$c) {
 						if ($arrcode['bcode'][$r][$c] == 1) {
 							// draw a single barcode cell
-							$this->Rect($xr, $ypos, $cw, $ch, 'DF', array(), $style['fgcolor']);
+							$this->Rect($xr, $ypos, $cw, $ch, 'F', array(), $style['fgcolor']);
 						}
 						$xr += $cw;
 					}
