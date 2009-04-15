@@ -286,6 +286,8 @@
 				<dd>in file barcodes.php, method <a href="com-tecnick-tcpdf/TCPDFBarcode.html#methodbarcode_eanupc">TCPDFBarcode::barcode_eanupc()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;EAN13 and UPC-A barcodes.</dd>
 							<dt><b>barcode_i25</b></dt>
 				<dd>in file barcodes.php, method <a href="com-tecnick-tcpdf/TCPDFBarcode.html#methodbarcode_i25">TCPDFBarcode::barcode_i25()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Interleaved 2 of 5 barcodes.</dd>
+							<dt><b>barcode_imb</b></dt>
+				<dd>in file barcodes.php, method <a href="com-tecnick-tcpdf/TCPDFBarcode.html#methodbarcode_imb">TCPDFBarcode::barcode_imb()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;IMB - Intelligent Mail Barcode - Onecode - USPS-B-3200  (requires PHP bcmath extension)  Intelligent Mail barcode is a 65-bar code for use on mail in the United States.</dd>
 							<dt><b>barcode_msi</b></dt>
 				<dd>in file barcodes.php, method <a href="com-tecnick-tcpdf/TCPDFBarcode.html#methodbarcode_msi">TCPDFBarcode::barcode_msi()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;MSI.</dd>
 							<dt><b>barcode_pharmacode</b></dt>
@@ -390,6 +392,8 @@
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$dpi">TCPDF::$dpi</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Dot Per Inch Document Resolution (do not change)</dd>
 							<dt><b>$DrawColor</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$DrawColor">TCPDF::$DrawColor</a></dd>
+							<dt><b>dec_to_hex</b></dt>
+				<dd>in file barcodes.php, method <a href="com-tecnick-tcpdf/TCPDFBarcode.html#methoddec_to_hex">TCPDFBarcode::dec_to_hex()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Convert large integer number to hexadecimal representation.</dd>
 					</dl>
 	</div>
 	<a href="elementindex_com-tecnick-tcpdf.html#top">top</a><br>
@@ -632,6 +636,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodHeader">TCPDF::Header()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;This method is used to render the page header.</dd>
 							<dt><b>HEAD_MAGNIFICATION</b></dt>
 				<dd>in file tcpdf_config.php, constant <a href="com-tecnick-tcpdf/_config---tcpdf_config.php.html#defineHEAD_MAGNIFICATION">HEAD_MAGNIFICATION</a><br>&nbsp;&nbsp;&nbsp;&nbsp;magnification factor for titles</dd>
+							<dt><b>hex_to_dec</b></dt>
+				<dd>in file barcodes.php, method <a href="com-tecnick-tcpdf/TCPDFBarcode.html#methodhex_to_dec">TCPDFBarcode::hex_to_dec()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Convert large hexadecimal number to decimal representation (string).</dd>
 							<dt><b>htmlcolors.php</b></dt>
 				<dd>procedural page <a href="com-tecnick-tcpdf/_htmlcolors.php.html">htmlcolors.php</a></dd>
 					</dl>
@@ -666,6 +672,12 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodImageEps">TCPDF::ImageEps()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Embed vector-based Adobe Illustrator (AI) or AI-compatible EPS files.</dd>
 							<dt><b>ImagePngAlpha</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodImagePngAlpha">TCPDF::ImagePngAlpha()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Extract info from a PNG image with alpha channel using the GD library.</dd>
+							<dt><b>imb_crc11fcs</b></dt>
+				<dd>in file barcodes.php, method <a href="com-tecnick-tcpdf/TCPDFBarcode.html#methodimb_crc11fcs">TCPDFBarcode::imb_crc11fcs()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Intelligent Mail Barcode calculation of Frame Check Sequence</dd>
+							<dt><b>imb_reverse_us</b></dt>
+				<dd>in file barcodes.php, method <a href="com-tecnick-tcpdf/TCPDFBarcode.html#methodimb_reverse_us">TCPDFBarcode::imb_reverse_us()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Reverse unsigned short value</dd>
+							<dt><b>imb_tables</b></dt>
+				<dd>in file barcodes.php, method <a href="com-tecnick-tcpdf/TCPDFBarcode.html#methodimb_tables">TCPDFBarcode::imb_tables()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;generate Nof13 tables used for Intelligent Mail Barcode</dd>
 							<dt><b>IncludeJS</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodIncludeJS">TCPDF::IncludeJS()</a></dd>
 							<dt><b>intToRoman</b></dt>
@@ -1359,7 +1371,7 @@
 	<a href="elementindex_com-tecnick-tcpdf.html#top">top</a><br>
         <div class="credit">
 		    <hr />
-		    Documentation generated on Wed, 15 Apr 2009 10:39:57 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.1</a>
+		    Documentation generated on Wed, 15 Apr 2009 19:08:24 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.1</a>
 	      </div>
       </td></tr></table>
     </td>

@@ -74,7 +74,7 @@ Source Location: /barcodes.php<br /><br />
                 
 <h4>Version:</h4>
 <ul>
-  <li>1.0.006</li>
+  <li>1.0.008</li>
 </ul>
 
         
@@ -100,6 +100,7 @@ Source Location: /barcodes.php<br /><br />
     <li><a href="../com-tecnick-tcpdf/TCPDFBarcode.html#methodbarcode_eanext">barcode_eanext</a></li>
     <li><a href="../com-tecnick-tcpdf/TCPDFBarcode.html#methodbarcode_eanupc">barcode_eanupc</a></li>
     <li><a href="../com-tecnick-tcpdf/TCPDFBarcode.html#methodbarcode_i25">barcode_i25</a></li>
+    <li><a href="../com-tecnick-tcpdf/TCPDFBarcode.html#methodbarcode_imb">barcode_imb</a></li>
     <li><a href="../com-tecnick-tcpdf/TCPDFBarcode.html#methodbarcode_msi">barcode_msi</a></li>
     <li><a href="../com-tecnick-tcpdf/TCPDFBarcode.html#methodbarcode_pharmacode">barcode_pharmacode</a></li>
     <li><a href="../com-tecnick-tcpdf/TCPDFBarcode.html#methodbarcode_pharmacode2t">barcode_pharmacode2t</a></li>
@@ -110,8 +111,13 @@ Source Location: /barcodes.php<br /><br />
     <li><a href="../com-tecnick-tcpdf/TCPDFBarcode.html#methodchecksum_code39">checksum_code39</a></li>
     <li><a href="../com-tecnick-tcpdf/TCPDFBarcode.html#methodchecksum_code93">checksum_code93</a></li>
     <li><a href="../com-tecnick-tcpdf/TCPDFBarcode.html#methodchecksum_s25">checksum_s25</a></li>
+    <li><a href="../com-tecnick-tcpdf/TCPDFBarcode.html#methoddec_to_hex">dec_to_hex</a></li>
     <li><a href="../com-tecnick-tcpdf/TCPDFBarcode.html#methodencode_code39_ext">encode_code39_ext</a></li>
     <li><a href="../com-tecnick-tcpdf/TCPDFBarcode.html#methodgetBarcodeArray">getBarcodeArray</a></li>
+    <li><a href="../com-tecnick-tcpdf/TCPDFBarcode.html#methodhex_to_dec">hex_to_dec</a></li>
+    <li><a href="../com-tecnick-tcpdf/TCPDFBarcode.html#methodimb_crc11fcs">imb_crc11fcs</a></li>
+    <li><a href="../com-tecnick-tcpdf/TCPDFBarcode.html#methodimb_reverse_us">imb_reverse_us</a></li>
+    <li><a href="../com-tecnick-tcpdf/TCPDFBarcode.html#methodimb_tables">imb_tables</a></li>
     <li><a href="../com-tecnick-tcpdf/TCPDFBarcode.html#methodsetBarcode">setBarcode</a></li>
   </ul>
 </td>
@@ -141,7 +147,7 @@ PHP class to creates array representations for common 1D barcodes to be used wit
     <td><b>author:</b>&nbsp;&nbsp;</td><td>Nicola Asuni</td>
   </tr>
   <tr>
-    <td><b>version:</b>&nbsp;&nbsp;</td><td>1.0.006</td>
+    <td><b>version:</b>&nbsp;&nbsp;</td><td>1.0.008</td>
   </tr>
   <tr>
     <td><b>link:</b>&nbsp;&nbsp;</td><td><a href="http://www.tcpdf.org">http://www.tcpdf.org</a></td>
@@ -231,7 +237,7 @@ $type)</code>
           <tr>
         <td class="type">string&nbsp;&nbsp;</td>
         <td><b>$type</b>&nbsp;&nbsp;</td>
-        <td>type of barcode: <ul><li>C39 : CODE 39 - ANSI MH10.8M-1983 - USD-3 - 3 of 9.</li><li>C39+ : CODE 39 with checksum</li><li>C39E : CODE 39 EXTENDED</li><li>C39E+ : CODE 39 EXTENDED + CHECKSUM</li><li>C93 : CODE 93 - USS-93</li><li>S25 : Standard 2 of 5</li><li>S25+ : Standard 2 of 5 + CHECKSUM</li><li>I25 : Interleaved 2 of 5</li><li>I25+ : Interleaved 2 of 5 + CHECKSUM</li><li>C128A : CODE 128 A</li><li>C128B : CODE 128 B</li><li>C128C : CODE 128 C</li><li>EAN2 : 2-Digits UPC-Based Extention</li><li>EAN5 : 5-Digits UPC-Based Extention</li><li>EAN8 : EAN 8</li><li>EAN13 : EAN 13</li><li>UPCA : UPC-A</li><li>UPCE : UPC-E</li><li>MSI : MSI (Variation of Plessey code)</li><li>MSI+ : MSI + CHECKSUM (modulo 11)</li><li>POSTNET : POSTNET</li><li>PLANET : PLANET</li><li>RMS4CC : RMS4CC (Royal Mail 4-state Customer Code) - CBC (Customer Bar Code)</li><li>KIX : KIX (Klant index - Customer index)</li><li>CODABAR : CODABAR</li><li>CODE11 : CODE 11</li><li>PHARMA : PHARMACODE</li><li>PHARMA2T : PHARMACODE TWO-TRACKS</li></ul></td>
+        <td>type of barcode: <ul><li>C39 : CODE 39 - ANSI MH10.8M-1983 - USD-3 - 3 of 9.</li><li>C39+ : CODE 39 with checksum</li><li>C39E : CODE 39 EXTENDED</li><li>C39E+ : CODE 39 EXTENDED + CHECKSUM</li><li>C93 : CODE 93 - USS-93</li><li>S25 : Standard 2 of 5</li><li>S25+ : Standard 2 of 5 + CHECKSUM</li><li>I25 : Interleaved 2 of 5</li><li>I25+ : Interleaved 2 of 5 + CHECKSUM</li><li>C128A : CODE 128 A</li><li>C128B : CODE 128 B</li><li>C128C : CODE 128 C</li><li>EAN2 : 2-Digits UPC-Based Extention</li><li>EAN5 : 5-Digits UPC-Based Extention</li><li>EAN8 : EAN 8</li><li>EAN13 : EAN 13</li><li>UPCA : UPC-A</li><li>UPCE : UPC-E</li><li>MSI : MSI (Variation of Plessey code)</li><li>MSI+ : MSI + CHECKSUM (modulo 11)</li><li>POSTNET : POSTNET</li><li>PLANET : PLANET</li><li>RMS4CC : RMS4CC (Royal Mail 4-state Customer Code) - CBC (Customer Bar Code)</li><li>KIX : KIX (Klant index - Customer index)</li><li>IMB: Intelligent Mail Barcode - Onecode - USPS-B-3200</li><li>CODABAR : CODABAR</li><li>CODE11 : CODE 11</li><li>PHARMA : PHARMACODE</li><li>PHARMA2T : PHARMACODE TWO-TRACKS</li></ul></td>
       </tr>
         </table>
     </div><br />
@@ -239,7 +245,7 @@ $type)</code>
   </div>
   <hr />
 	<a name="methodbarcode_c128"></a>
-	<h3>method barcode_c128 <span class="smalllinenumber">[line 793]</span></h3>
+	<h3>method barcode_c128 <span class="smalllinenumber">[line 797]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -284,7 +290,7 @@ $type = 'B'])</code>
   </div>
   <hr />
 	<a name="methodbarcode_codabar"></a>
-	<h3>method barcode_codabar <span class="smalllinenumber">[line 1481]</span></h3>
+	<h3>method barcode_codabar <span class="smalllinenumber">[line 1485]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -323,7 +329,7 @@ $code)</code>
   </div>
   <hr />
 	<a name="methodbarcode_code11"></a>
-	<h3>method barcode_code11 <span class="smalllinenumber">[line 1537]</span></h3>
+	<h3>method barcode_code11 <span class="smalllinenumber">[line 1541]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -362,7 +368,7 @@ $code)</code>
   </div>
   <hr />
 	<a name="methodbarcode_code39"></a>
-	<h3>method barcode_code39 <span class="smalllinenumber">[line 231]</span></h3>
+	<h3>method barcode_code39 <span class="smalllinenumber">[line 235]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -413,7 +419,7 @@ $checksum = false])</code>
   </div>
   <hr />
 	<a name="methodbarcode_code93"></a>
-	<h3>method barcode_code93 <span class="smalllinenumber">[line 400]</span></h3>
+	<h3>method barcode_code93 <span class="smalllinenumber">[line 404]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -458,7 +464,7 @@ $checksum)</code>
   </div>
   <hr />
 	<a name="methodbarcode_eanext"></a>
-	<h3>method barcode_eanext <span class="smalllinenumber">[line 1182]</span></h3>
+	<h3>method barcode_eanext <span class="smalllinenumber">[line 1186]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -503,7 +509,7 @@ $len = 5])</code>
   </div>
   <hr />
 	<a name="methodbarcode_eanupc"></a>
-	<h3>method barcode_eanupc <span class="smalllinenumber">[line 989]</span></h3>
+	<h3>method barcode_eanupc <span class="smalllinenumber">[line 993]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -548,7 +554,7 @@ $len = 13])</code>
   </div>
   <hr />
 	<a name="methodbarcode_i25"></a>
-	<h3>method barcode_i25 <span class="smalllinenumber">[line 729]</span></h3>
+	<h3>method barcode_i25 <span class="smalllinenumber">[line 733]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -592,8 +598,47 @@ $checksum = false])</code>
         <div class="top">[ <a href="#top">Top</a> ]</div>
   </div>
   <hr />
+	<a name="methodbarcode_imb"></a>
+	<h3>method barcode_imb <span class="smalllinenumber">[line 1722]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array barcode_imb(
+string
+$code)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		IMB - Intelligent Mail Barcode - Onecode - USPS-B-3200  (requires PHP bcmath extension)  Intelligent Mail barcode is a 65-bar code for use on mail in the United States.<br /><br /><p>The fields are described as follows:<ul><li>The Barcode Identifier shall be assigned by USPS to encode the presort identification that is currently printed in human readable form on the optional endorsement line (OEL) as well as for future USPS use. This shall be two digits, with the second digit in the range of 0–4. The allowable encoding ranges shall be 00–04, 10–14, 20–24, 30–34, 40–44, 50–54, 60–64, 70–74, 80–84, and 90–94.</li><li>The Service Type Identifier shall be assigned by USPS for any combination of services requested on the mailpiece. The allowable encoding range shall be 000http://it2.php.net/manual/en/function.dechex.php–999. Each 3-digit value shall correspond to a particular mail class with a particular combination of service(s). Each service program, such as OneCode Confirm and OneCode ACS, shall provide the list of Service Type Identifier values.</li><li>The Mailer or Customer Identifier shall be assigned by USPS as a unique, 6 or 9 digit number that identifies a business entity. The allowable encoding range for the 6 digit Mailer ID shall be 000000- 899999, while the allowable encoding range for the 9 digit Mailer ID shall be 900000000-999999999.</li><li>The Serial or Sequence Number shall be assigned by the mailer for uniquely identifying and tracking mailpieces. The allowable encoding range shall be 000000000–999999999 when used with a 6 digit Mailer ID and 000000-999999 when used with a 9 digit Mailer ID. e. The Delivery Point ZIP Code shall be assigned by the mailer for routing the mailpiece. This shall replace POSTNET for routing the mailpiece to its final delivery point. The length may be 0, 5, 9, or 11 digits. The allowable encoding ranges shall be no ZIP Code, 00000–99999,  000000000–999999999, and 00000000000–99999999999.</li></ul></p><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>barcode representation.</td>
+  </tr>
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>protected</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$code</b>&nbsp;&nbsp;</td>
+        <td>code to print, separate the ZIP (routing code) from the rest using a minus char '-' (BarcodeID_ServiceTypeID_MailerID_SerialNumber-RoutingCode)</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
 	<a name="methodbarcode_msi"></a>
-	<h3>method barcode_msi <span class="smalllinenumber">[line 599]</span></h3>
+	<h3>method barcode_msi <span class="smalllinenumber">[line 603]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -638,7 +683,7 @@ $checksum = false])</code>
   </div>
   <hr />
 	<a name="methodbarcode_pharmacode"></a>
-	<h3>method barcode_pharmacode <span class="smalllinenumber">[line 1629]</span></h3>
+	<h3>method barcode_pharmacode <span class="smalllinenumber">[line 1633]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -677,7 +722,7 @@ $code)</code>
   </div>
   <hr />
 	<a name="methodbarcode_pharmacode2t"></a>
-	<h3>method barcode_pharmacode2t <span class="smalllinenumber">[line 1655]</span></h3>
+	<h3>method barcode_pharmacode2t <span class="smalllinenumber">[line 1659]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -716,7 +761,7 @@ $code)</code>
   </div>
   <hr />
 	<a name="methodbarcode_postnet"></a>
-	<h3>method barcode_postnet <span class="smalllinenumber">[line 1257]</span></h3>
+	<h3>method barcode_postnet <span class="smalllinenumber">[line 1261]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -761,7 +806,7 @@ $planet = false])</code>
   </div>
   <hr />
 	<a name="methodbarcode_rms4cc"></a>
-	<h3>method barcode_rms4cc <span class="smalllinenumber">[line 1330]</span></h3>
+	<h3>method barcode_rms4cc <span class="smalllinenumber">[line 1334]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -806,7 +851,7 @@ $kix = false])</code>
   </div>
   <hr />
 	<a name="methodbarcode_s25"></a>
-	<h3>method barcode_s25 <span class="smalllinenumber">[line 658]</span></h3>
+	<h3>method barcode_s25 <span class="smalllinenumber">[line 662]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -851,7 +896,7 @@ $checksum = false])</code>
   </div>
   <hr />
 	<a name="methodbinseq_to_array"></a>
-	<h3>method binseq_to_array <span class="smalllinenumber">[line 699]</span></h3>
+	<h3>method binseq_to_array <span class="smalllinenumber">[line 703]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -883,7 +928,7 @@ $bararray)</code>
           <tr>
         <td class="type">string&nbsp;&nbsp;</td>
         <td><b>$seq</b>&nbsp;&nbsp;</td>
-        <td>barcode as binary sequence  �param array $bararray TCPDF barcode array to fill up</td>
+        <td>barcode as binary sequence  òparam array $bararray TCPDF barcode array to fill up</td>
       </tr>
           <tr>
         <td class="type">&nbsp;&nbsp;</td>
@@ -896,7 +941,7 @@ $bararray)</code>
   </div>
   <hr />
 	<a name="methodchecksum_code39"></a>
-	<h3>method checksum_code39 <span class="smalllinenumber">[line 376]</span></h3>
+	<h3>method checksum_code39 <span class="smalllinenumber">[line 380]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -935,7 +980,7 @@ $code)</code>
   </div>
   <hr />
 	<a name="methodchecksum_code93"></a>
-	<h3>method checksum_code93 <span class="smalllinenumber">[line 528]</span></h3>
+	<h3>method checksum_code93 <span class="smalllinenumber">[line 532]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -974,7 +1019,7 @@ $code)</code>
   </div>
   <hr />
 	<a name="methodchecksum_s25"></a>
-	<h3>method checksum_s25 <span class="smalllinenumber">[line 573]</span></h3>
+	<h3>method checksum_s25 <span class="smalllinenumber">[line 577]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -1012,8 +1057,47 @@ $code)</code>
         <div class="top">[ <a href="#top">Top</a> ]</div>
   </div>
   <hr />
+	<a name="methoddec_to_hex"></a>
+	<h3>method dec_to_hex <span class="smalllinenumber">[line 1846]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>string dec_to_hex(
+string
+$number)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Convert large integer number to hexadecimal representation.<br /><br /><p>(requires PHP bcmath extension)</p><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>hexadecimal representation</td>
+  </tr>
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>public</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$number</b>&nbsp;&nbsp;</td>
+        <td>number to convert specified as a string</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
 	<a name="methodencode_code39_ext"></a>
-	<h3>method encode_code39_ext <span class="smalllinenumber">[line 325]</span></h3>
+	<h3>method encode_code39_ext <span class="smalllinenumber">[line 329]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -1076,6 +1160,168 @@ $code)</code>
         <div class="top">[ <a href="#top">Top</a> ]</div>
   </div>
   <hr />
+	<a name="methodhex_to_dec"></a>
+	<h3>method hex_to_dec <span class="smalllinenumber">[line 1870]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>string hex_to_dec(
+string
+$hex)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Convert large hexadecimal number to decimal representation (string).<br /><br /><p>(requires PHP bcmath extension)</p><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>hexadecimal representation</td>
+  </tr>
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>public</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$hex</b>&nbsp;&nbsp;</td>
+        <td>hexadecimal number to convert specified as a string</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodimb_crc11fcs"></a>
+	<h3>method imb_crc11fcs <span class="smalllinenumber">[line 1887]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>int imb_crc11fcs(
+string
+$code_arr)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Intelligent Mail Barcode calculation of Frame Check Sequence<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>11 bit Frame Check Sequence as integer (decimal base)</td>
+  </tr>
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>protected</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$code_arr</b>&nbsp;&nbsp;</td>
+        <td>array of hexadecimal values (13 bytes holding 102 bits right justified).</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodimb_reverse_us"></a>
+	<h3>method imb_reverse_us <span class="smalllinenumber">[line 1923]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>int imb_reverse_us(
+int
+$num)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Reverse unsigned short value<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>reversed value</td>
+  </tr>
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>protected</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">int&nbsp;&nbsp;</td>
+        <td><b>$num</b>&nbsp;&nbsp;</td>
+        <td>value to reversr</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodimb_tables"></a>
+	<h3>method imb_tables <span class="smalllinenumber">[line 1940]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array imb_tables(
+int
+$n, int
+$size)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		generate Nof13 tables used for Intelligent Mail Barcode<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>requested table</td>
+  </tr>
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>protected</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">int&nbsp;&nbsp;</td>
+        <td><b>$n</b>&nbsp;&nbsp;</td>
+        <td>is the type of table: 2 for 2of13 table, 5 for 5of13table</td>
+      </tr>
+          <tr>
+        <td class="type">int&nbsp;&nbsp;</td>
+        <td><b>$size</b>&nbsp;&nbsp;</td>
+        <td>size of table (78 for n=2 and 1287 for n=5)</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
 	<a name="methodsetBarcode"></a>
 	<h3>method setBarcode <span class="smalllinenumber">[line 102]</span></h3>
 	<div class="function">
@@ -1111,7 +1357,7 @@ $type)</code>
           <tr>
         <td class="type">string&nbsp;&nbsp;</td>
         <td><b>$type</b>&nbsp;&nbsp;</td>
-        <td>type of barcode: <ul><li>C39 : CODE 39 - ANSI MH10.8M-1983 - USD-3 - 3 of 9.</li><li>C39+ : CODE 39 with checksum</li><li>C39E : CODE 39 EXTENDED</li><li>C39E+ : CODE 39 EXTENDED + CHECKSUM</li><li>C93 : CODE 93 - USS-93</li><li>S25 : Standard 2 of 5</li><li>S25+ : Standard 2 of 5 + CHECKSUM</li><li>I25 : Interleaved 2 of 5</li><li>I25+ : Interleaved 2 of 5 + CHECKSUM</li><li>C128A : CODE 128 A</li><li>C128B : CODE 128 B</li><li>C128C : CODE 128 C</li><li>EAN2 : 2-Digits UPC-Based Extention</li><li>EAN5 : 5-Digits UPC-Based Extention</li><li>EAN8 : EAN 8</li><li>EAN13 : EAN 13</li><li>UPCA : UPC-A</li><li>UPCE : UPC-E</li><li>MSI : MSI (Variation of Plessey code)</li><li>MSI+ : MSI + CHECKSUM (modulo 11)</li><li>POSTNET : POSTNET</li><li>PLANET : PLANET</li><li>RMS4CC : RMS4CC (Royal Mail 4-state Customer Code) - CBC (Customer Bar Code)</li><li>KIX : KIX (Klant index - Customer index)</li><li>CODABAR : CODABAR</li><li>CODE11 : CODE 11</li><li>PHARMA : PHARMACODE</li><li>PHARMA2T : PHARMACODE TWO-TRACKS</li></ul></td>
+        <td>type of barcode: <ul><li>C39 : CODE 39 - ANSI MH10.8M-1983 - USD-3 - 3 of 9.</li><li>C39+ : CODE 39 with checksum</li><li>C39E : CODE 39 EXTENDED</li><li>C39E+ : CODE 39 EXTENDED + CHECKSUM</li><li>C93 : CODE 93 - USS-93</li><li>S25 : Standard 2 of 5</li><li>S25+ : Standard 2 of 5 + CHECKSUM</li><li>I25 : Interleaved 2 of 5</li><li>I25+ : Interleaved 2 of 5 + CHECKSUM</li><li>C128A : CODE 128 A</li><li>C128B : CODE 128 B</li><li>C128C : CODE 128 C</li><li>EAN2 : 2-Digits UPC-Based Extention</li><li>EAN5 : 5-Digits UPC-Based Extention</li><li>EAN8 : EAN 8</li><li>EAN13 : EAN 13</li><li>UPCA : UPC-A</li><li>UPCE : UPC-E</li><li>MSI : MSI (Variation of Plessey code)</li><li>MSI+ : MSI + CHECKSUM (modulo 11)</li><li>POSTNET : POSTNET</li><li>PLANET : PLANET</li><li>RMS4CC : RMS4CC (Royal Mail 4-state Customer Code) - CBC (Customer Bar Code)</li><li>KIX : KIX (Klant index - Customer index)</li><li>IMB: Intelligent Mail Barcode - Onecode - USPS-B-3200</li><li>CODABAR : CODABAR</li><li>CODE11 : CODE 11</li><li>PHARMA : PHARMACODE</li><li>PHARMA2T : PHARMACODE TWO-TRACKS</li></ul></td>
       </tr>
         </table>
     </div><br />
@@ -1122,7 +1368,7 @@ $type)</code>
 
         <div class="credit">
 		    <hr />
-		    Documentation generated on Wed, 15 Apr 2009 10:39:57 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.1</a>
+		    Documentation generated on Wed, 15 Apr 2009 19:08:24 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.1</a>
 	      </div>
       </td></tr></table>
     </td>
