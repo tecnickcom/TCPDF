@@ -1,3 +1,6 @@
+4.5.042 (2009-04-15)
+	- Method Write() was fixed for the strings containing only zero value.
+
 4.5.041 (2009-04-14)
 	- Barcode methods were fixed.
 

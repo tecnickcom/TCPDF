@@ -8,8 +8,8 @@ http://sourceforge.net/donate/index.php?group_id=128076
 ------------------------------------------------------------
 
 Name: TCPDF
-Version: 4.5.041
-Release date: 2009-04-14
+Version: 4.5.042
+Release date: 2009-04-15
 Author:	Nicola Asuni 
 	
 Copyright (c) 2001-2009:
