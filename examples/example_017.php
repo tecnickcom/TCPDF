@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_017.php
 // Begin       : 2008-03-04
-// Last Update : 2009-03-18
+// Last Update : 2009-04-16
 // 
 // Description : Example 017 for TCPDF class
 //               Two independent columns with MultiCell
@@ -88,10 +88,10 @@ $second_column_width = 80;
 $current_y_position = $pdf->getY();
 
 // write the first column
-$pdf->MultiCell($first_column_width, 0, $left_column, 1, 'J', 0, 0, 0, 0, true, 0);
+$pdf->MultiCell($first_column_width, 0, $left_column, 1, 'J', 0, 0, '', '', true, 0);
 
 // write the second column
-$pdf->MultiCell($second_column_width, 0, $right_column, 1, 'J', 0, 1, 0, 0, true, 0);
+$pdf->MultiCell($second_column_width, 0, $right_column, 1, 'J', 0, 1, '', '', true, 0);
 
 // reset pointer to the last page
 $pdf->lastPage();

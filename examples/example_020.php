@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_020.php
 // Begin       : 2008-03-04
-// Last Update : 2009-03-18
+// Last Update : 2009-04-16
 //
 // Description : Example 020 for TCPDF class
 //               Two columns composed by MultiCell of different 
@@ -43,7 +43,7 @@ class MYPDF extends TCPDF {
 		$y_start = $this->GetY();
 		
 		// write the left cell
-		$this->MultiCell(40, 0, $left, 1, 'R', 0, 2, 0 ,0, true, 0);
+		$this->MultiCell(40, 0, $left, 1, 'R', 0, 2, '', '', true, 0);
 		
 		$page_end_1 = $this->getPage();
 		$y_end_1 = $this->GetY();

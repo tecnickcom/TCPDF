@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_010.php
 // Begin       : 2008-03-04
-// Last Update : 2009-03-18
+// Last Update : 2009-04-16
 // 
 // Description : Example 010 for TCPDF class
 //               Text on multiple columns
@@ -110,7 +110,7 @@ class MYPDF extends TCPDF {
 		// Font
 		$this->SetFont('times', '', 9);
 		// Output text in a column
-		$this->MultiCell($this->colwidth, 5, $txt, 0, 'J', 0, 1, 0, 0, true, 0, false);
+		$this->MultiCell($this->colwidth, 5, $txt, 0, 'J', 0, 1, '', '', true, 0, false);
 		$this->Ln();
 		// Go back to first column
 		$this->SetCol(0);

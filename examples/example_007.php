@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_007.php
 // Begin       : 2008-03-04
-// Last Update : 2009-03-18
+// Last Update : 2009-04-16
 // 
 // Description : Example 007 for TCPDF class
 //               Two independent columns with WriteHTMLCell
@@ -88,10 +88,10 @@ $second_column_width = 80;
 $current_y_position = $pdf->getY();
 
 // write the first column
-$pdf->writeHTMLCell($first_column_width, 0, 0, $current_y_position, $left_column, 1, 0, 0, true);
+$pdf->writeHTMLCell($first_column_width, '', '', $current_y_position, $left_column, 1, 0, 0, true);
 
 // write the second column
-$pdf->writeHTMLCell($second_column_width, 0, 0, 0, $right_column, 1, 1, 0, true);
+$pdf->writeHTMLCell($second_column_width, '', '', '', $right_column, 1, 1, 0, true);
 
 // reset pointer to the last page
 $pdf->lastPage();

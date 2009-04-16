@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_042.php
 // Begin       : 2008-12-23
-// Last Update : 2009-03-18
+// Last Update : 2009-04-16
 // 
 // Description : Example 042 for TCPDF class
 //               Test Image with alpha channel
@@ -79,7 +79,7 @@ $pdf->AddPage();
 
 // create background text
 $background_text = str_repeat('TCPDF test PNG Alpha Channel ', 50);
-$pdf->MultiCell(0, 5, $background_text, 0, 'J', 0, 2, 0 , 0, true, 0, false);
+$pdf->MultiCell(0, 5, $background_text, 0, 'J', 0, 2, '', '', true, 0, false);
 
 
 // [A] The Image() method recognizes the alpha channel embedded on the image:

@@ -1,3 +1,12 @@
+4.6.000 (2009-04-16)
+	- WARNING: THIS VERSION CHANGES THE BEHAVIOUR OF $x and $y parameters for several TCPDF methods:
+		zero coordinates for $x and $y are now valid coordinates;
+		set $x and $y as empty strings to get the current value.
+	- Some error caused by 'empty' funtion were fixed.
+	- Default color for convertHTMLColorToDec() method was changed to white and the return value for invalid color is false.
+	- HTML on footer bug was fixed.
+	- The following examples were fixed: 5,7,10,17,19,20,21,33,42,43.
+
 4.5.043 (2009-04-15)
 	- Barcode class (barcode.php) was extended to include new linear barcode types (see example n. 27):
 		C39 : CODE 39 - ANSI MH10.8M-1983 - USD-3 - 3 of 9
@@ -24,7 +33,7 @@
 		PLANET : PLANET
 		RMS4CC : RMS4CC (Royal Mail 4-state Customer Code) - CBC (Customer Bar Code)
 		KIX : KIX (Klant index - Customer index)
-		IMB: Intelligent Mail Barcode - Onecode - USPS-B-3200
+		IMB: Intelligent Mail Barcode - Onecode - USPS-B-3200 (NOTE: requires BCMath PHP extension)
 		CODABAR : CODABAR
 		CODE11 : CODE 11
 		PHARMA : PHARMACODE

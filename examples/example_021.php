@@ -70,7 +70,7 @@ $pdf->setLanguageArray($l);
 // ---------------------------------------------------------
 
 // set font
-$pdf->SetFont('dejavusans', '', 9);
+$pdf->SetFont('helvetica', '', 9);
 
 // add a page
 $pdf->AddPage();

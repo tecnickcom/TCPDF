@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_019.php
 // Begin       : 2008-03-07
-// Last Update : 2009-03-18
+// Last Update : 2009-04-16
 // 
 // Description : Example 019 for TCPDF class
 //               Non unicode with alternative config file
@@ -93,7 +93,7 @@ $pdf->Cell(0, 10, 'Example 019', 1, 1, 'C');
 $pdf->Ln();
 
 $pdf->SetFont('times', '', 10);
-$pdf->MultiCell(80, 0, 'Cras eros leo, porttitor porta, accumsan fermentum, ornare ac, est. Praesent dui lorem, imperdiet at, cursus sed, facilisis aliquam, nibh. Nulla accumsan nonummy diam. Donec tempus. Etiam posuere. Proin lectus. Donec purus. Duis in sem pretium urna feugiat vehicula. Ut suscipit velit eget massa. Nam nonummy, enim commodo euismod placerat, tortor elit tempus lectus, quis suscipit metus lorem blandit turpis.'."\n", 1, 'J', 0, 1, 0, 0, true, 0);
+$pdf->MultiCell(80, 0, 'Cras eros leo, porttitor porta, accumsan fermentum, ornare ac, est. Praesent dui lorem, imperdiet at, cursus sed, facilisis aliquam, nibh. Nulla accumsan nonummy diam. Donec tempus. Etiam posuere. Proin lectus. Donec purus. Duis in sem pretium urna feugiat vehicula. Ut suscipit velit eget massa. Nam nonummy, enim commodo euismod placerat, tortor elit tempus lectus, quis suscipit metus lorem blandit turpis.'."\n", 1, 'J', 0, 1, '', '', true, 0);
 
 // ---------------------------------------------------------
 

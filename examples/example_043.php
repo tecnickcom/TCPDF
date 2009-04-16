@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_043.php
 // Begin       : 2009-01-02
-// Last Update : 2009-03-18
+// Last Update : 2009-04-16
 // 
 // Description : Example 043 for TCPDF class
 //               Disk caching
@@ -76,7 +76,7 @@ $pdf->SetFont('times', '', 10);
 $pdf->AddPage();
 
 // Multicell test
-$pdf->MultiCell(0, 0, "DISK CACHING TEST: check the parameters on class constructor.", 1, 'L', 0, 0, 0 ,0, true);
+$pdf->MultiCell(0, 0, "DISK CACHING TEST: check the parameters on class constructor.", 1, 'L', 0, 0, '', '', true);
 
 // ---------------------------------------------------------
 
