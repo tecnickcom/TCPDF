@@ -1,3 +1,7 @@
+4.6.001 (2009-04-17)
+	- Spaces between HTML block tags are now automatically removed.
+	- The bug related to cMargin changes between tables was fixed.
+
 4.6.000 (2009-04-16)
 	- WARNING: THIS VERSION CHANGES THE BEHAVIOUR OF $x and $y parameters for several TCPDF methods:
 		zero coordinates for $x and $y are now valid coordinates;

@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-04-16
+// Last Update : 2009-04-17
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.6.000
+// Version     : 4.6.001
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -122,7 +122,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.6.000
+ * @version 4.6.001
  */
 
 /**
@@ -146,14 +146,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.6.000 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.6.001 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.6.000
+	* @version 4.6.001
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -10610,7 +10610,7 @@ if (!class_exists('TCPDF', false)) {
 		 */
 		protected function getHtmlDomArray($html) {
 			// remove all unsupported tags (the line below lists all supported tags)
-			$html = strip_tags($html, '<marker/><a><b><blockquote><br><br/><dd><del><div><dl><dt><em><font><h1><h2><h3><h4><h5><h6><hr><i><img><li><ol><p><pre><small><span><strong><sub><sup><table><tcpdf><td><th><thead><tr><tt><u><ul>'); 
+			$html = strip_tags($html, '<marker/><a><b><blockquote><br><br/><dd><del><div><dl><dt><em><font><h1><h2><h3><h4><h5><h6><hr><i><img><li><ol><p><pre><small><span><strong><sub><sup><table><tcpdf><td><th><thead><tr><tt><u><ul>');
 			//replace some blank characters
 			$html = preg_replace('@(\r\n|\r)@', "\n", $html);
 			$repTable = array("\t" => ' ', "\0" => ' ', "\x0B" => ' ', "\\" => "\\\\");
@@ -10627,25 +10627,16 @@ if (!class_exists('TCPDF', false)) {
 			$html = preg_replace("'</pre>'si", "</td></tr></table>", $html);
 			*/
 			// remove extra spaces from code
-			$html = preg_replace('/[\s]*<\/table>[\s]*/', '</table>', $html);
-			$html = preg_replace('/[\s]*<\/tr>[\s]*/', '</tr>', $html);
-			$html = preg_replace('/[\s]*<tr/', '<tr', $html);
-			$html = preg_replace('/[\s]*<\/th>[\s]*/', '</th>', $html);
-			$html = preg_replace('/[\s]*<th/', '<th', $html);
-			$html = preg_replace('/[\s]*<\/td>[\s]*/', '</td>', $html);
-			$html = preg_replace('/[\s]*<td/', '<td', $html);
-			$html = preg_replace('/<\/th>/', '<marker style="font-size:0"/></th>', $html);
-			$html = preg_replace('/<\/td>/', '<marker style="font-size:0"/></td>', $html);
+			$html = preg_replace('/[\s]+<\/(table|tr|td|th|ul|ol|li)>/', '</\\1>', $html);
+			$html = preg_replace('/[\s]+<(tr|td|th|ul|ol|li|br)/', '<\\1', $html);
+			$html = preg_replace('/<\/(table|tr|td|th|blockquote|dd|div|dt|h1|h2|h3|h4|h5|h6|hr|li|ol|p|ul)>[\s]+</', '</\\1><', $html);
+			$html = preg_replace('/<\/(td|th)>/', '<marker style="font-size:0"/></\\1>', $html);
 			$html = preg_replace('/<\/table>([\s]*)<marker style="font-size:0"\/>/', '</table>', $html);
 			$html = preg_replace('/<img/', ' <img', $html);
 			$html = preg_replace('/<img([^\>]*)>/xi', '<img\\1><span></span>', $html);
-			$html = preg_replace('/[\s]+<ul/', '<ul', $html);
-			$html = preg_replace('/[\s]+<ol/', '<ol', $html);
-			$html = preg_replace('/[\s]+<li/', '<li', $html);
-			$html = preg_replace('/[\s]*<\/li>[\s]*/', '</li>', $html);
-			$html = preg_replace('/[\s]*<\/ul>[\s]*/', '</ul>', $html);
-			$html = preg_replace('/[\s]*<\/ol>[\s]*/', '</ol>', $html);
-			$html = preg_replace('/[\s]+<br/', '<br', $html);
+			// trim string
+			$html = preg_replace('/^[\s]+/', '', $html);
+			$html = preg_replace('/[\s]+$/', '', $html);
 			// pattern for generic tag
 			$tagpattern = '/(<[^>]+>)/';
 			// explodes the string
@@ -11480,6 +11471,7 @@ if (!class_exists('TCPDF', false)) {
 							if (!isset($dom[$table_el]['cols'])) {
 								$dom[$table_el]['cols'] = $trid['cols'];
 							}
+							$oldmargin = $this->cMargin;
 							if (isset($dom[($dom[$trid]['parent'])]['attribute']['cellpadding'])) {
 								$currentcmargin = $this->getHTMLUnitToUnits($dom[($dom[$trid]['parent'])]['attribute']['cellpadding'], 1, 'px');
 							} else {
@@ -11602,7 +11594,7 @@ if (!class_exists('TCPDF', false)) {
 							// ****** write the cell content ******
 							$this->MultiCell($cellw, $cellh, $cell_content, false, $lalign, false, 2, '', '', true, 0, true);
 							$this->lasth = $prevLastH;
-							$this->cMargin = $currentcmargin;
+							$this->cMargin = $oldmargin;
 							$dom[$trid]['cellpos'][($cellid - 1)]['endx'] = $this->x;
 							// update the end of row position
 							if ($rowspan <= 1) {
