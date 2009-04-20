@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tcpdf_config.php
 // Begin       : 2004-06-11
-// Last Update : 2009-03-18
+// Last Update : 2009-04-20
 //
 // Description : Alternative configuration file for TCPDF.
 //
@@ -197,9 +197,9 @@ define ('PDF_FONT_SIZE_DATA', 8);
 define ('PDF_FONT_MONOSPACED', 'courier');
 
 /**
- * Ratio used to scale the images
+ * ratio used to adjust the conversion of pixels to user units
  */
-define ('PDF_IMAGE_SCALE_RATIO', 4);
+define ('PDF_IMAGE_SCALE_RATIO', 1);
 
 /**
  * magnification factor for titles

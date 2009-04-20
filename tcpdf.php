@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-04-17
+// Last Update : 2009-04-20
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.6.001
+// Version     : 4.6.002
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -122,7 +122,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.6.001
+ * @version 4.6.002
  */
 
 /**
@@ -146,14 +146,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.6.001 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.6.002 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.6.001
+	* @version 4.6.002
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -524,7 +524,7 @@ if (!class_exists('TCPDF', false)) {
 		protected $img_rb_y;
 
 		/**
-		* @var image scale factor
+		* @var adjusting factor to convert pixels to user units.
 		* @since 2004-06-14
 		* @author Nicola Asuni
 		* @access protected
@@ -1612,8 +1612,8 @@ if (!class_exists('TCPDF', false)) {
 		}
 		
 		/**
-		* Set the image scale.
-		* @param float $scale image scale.
+		* Set the adjusting factor to convert pixels to user units.
+		* @param float $scale adjusting factor to convert pixels to user units.
 		* @author Nicola Asuni
 		* @access public
 		* @since 1.5.2
@@ -1623,8 +1623,8 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
-		* Returns the image scale.
-		* @return float image scale.
+		* Returns the adjusting factor to convert pixels to user units.
+		* @return float adjusting factor to convert pixels to user units.
 		* @author Nicola Asuni
 		* @access public
 		* @since 1.5.2
@@ -4330,8 +4330,8 @@ if (!class_exists('TCPDF', false)) {
 			// calculate image width and height on document
 			if (($w <= 0) AND ($h <= 0)) {
 				// convert image size to document unit
-				$w = $pixw / ($this->imgscale * $this->k);
-				$h = $pixh / ($this->imgscale * $this->k);
+				$w = $this->pixelsToUnits($pixw);
+				$h = $this->pixelsToUnits($pixh);
 			} elseif ($w <= 0) {
 				$w = $h * $pixw / $pixh;
 			} elseif ($h <= 0) {
@@ -6842,9 +6842,10 @@ if (!class_exists('TCPDF', false)) {
 		 * @param int $px pixels
 		 * @return float value in user's unit
 		 * @access public
+		 * @see setImageScale(), getImageScale()
 		 */
 		public function pixelsToUnits($px) {
-			return ($px / $this->k);
+			return ($px / ($this->imgscale * $this->k));
 		}
 			
 		/**
@@ -11976,10 +11977,16 @@ if (!class_exists('TCPDF', false)) {
 							// currently only support 1 (frame) or a combination of 'LTRB'
 							$border = $tag['attribute']['border'];
 						}
+						if (isset($tag['attribute']['width'])) {
+							$iw = $this->getHTMLUnitToUnits($tag['attribute']['width'], 1, 'px', false);
+						}
+						if (isset($tag['attribute']['height'])) {
+							$ih = $this->getHTMLUnitToUnits($tag['attribute']['height'], 1, 'px', false);
+						}
 						if (($type == 'eps') OR ($type == 'ai')) {
-							$this->ImageEps($tag['attribute']['src'], $xpos, $this->GetY(), $this->pixelsToUnits($tag['attribute']['width']), $this->pixelsToUnits($tag['attribute']['height']), $imglink, true, $align, '', $border);
+							$this->ImageEps($tag['attribute']['src'], $xpos, $this->GetY(), $iw, $ih, $imglink, true, $align, '', $border);
 						} else {
-							$this->Image($tag['attribute']['src'], $xpos, $this->GetY(), $this->pixelsToUnits($tag['attribute']['width']), $this->pixelsToUnits($tag['attribute']['height']), '', $imglink, $align, false, 300, '', false, false, $border);
+							$this->Image($tag['attribute']['src'], $xpos, $this->GetY(), $iw, $ih, '', $imglink, $align, false, 300, '', false, false, $border);
 						}
 						switch($align) {
 							case 'T': {
@@ -12678,7 +12685,7 @@ if (!class_exists('TCPDF', false)) {
 				}
 				case 'px':
 				case 'pt': {
-					$retval = $value / $k;
+					$retval = $this->pixelsToUnits($value);
 					break;
 				}
 			}
@@ -13487,7 +13494,7 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
-		* Stores a copy of the current TCPDF object.
+		* Stores a copy of the current TCPDF object used for undo operation.
 		* @access public
 		* @since 4.5.029 (2009-03-19)
 		*/
@@ -13501,7 +13508,7 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
-		* Delete the copy of the current TCPDF object
+		* Delete the copy of the current TCPDF object used for undo operation.
 		* @access public
 		* @since 4.5.029 (2009-03-19)
 		*/
@@ -13513,8 +13520,8 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
-		* This method allows to encapsulate some TCPDF commands to be later commited or deleted.
-		* @param string $action the action to be taken. Legal values are 'start' = starts a new transaction; 'commit' = commit the latest transaction; 'rollback' = undo the latest transaction.
+		* This method allows to undo the latest transaction by returning the latest saved TCPDF object with startTransaction().
+		* @return TCPDF object.
 		* @access public
 		* @since 4.5.029 (2009-03-19)
 		*/

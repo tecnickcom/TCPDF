@@ -216,7 +216,7 @@
 							<dt><b>ComboBox</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodComboBox">TCPDF::ComboBox()</a></dd>
 							<dt><b>commitTransaction</b></dt>
-				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodcommitTransaction">TCPDF::commitTransaction()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Delete the copy of the current TCPDF object</dd>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodcommitTransaction">TCPDF::commitTransaction()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Delete the copy of the current TCPDF object used for undo operation.</dd>
 							<dt><b>convertHTMLColorToDec</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodconvertHTMLColorToDec">TCPDF::convertHTMLColorToDec()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns an associative array (keys: R,G,B) from an html color name or a six-digit or three-digit hexadecimal color representation (i.e. #3FE5AA or #7FF).</dd>
 							<dt><b>CoonsPatchMesh</b></dt>
@@ -406,7 +406,7 @@
 							<dt><b>getImageRBY</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetImageRBY">TCPDF::getImageRBY()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Return the right-bottom (or left-bottom for RTL) corner Y coordinate of last inserted image</dd>
 							<dt><b>getImageScale</b></dt>
-				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetImageScale">TCPDF::getImageScale()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns the image scale.</dd>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetImageScale">TCPDF::getImageScale()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns the adjusting factor to convert pixels to user units.</dd>
 							<dt><b>getLastH</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetLastH">TCPDF::getLastH()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Get the last cell height.</dd>
 							<dt><b>GetLineWidth</b></dt>
@@ -802,7 +802,7 @@
 							<dt><b>PDF_HEADER_TITLE</b></dt>
 				<dd>in file tcpdf_config.php, constant <a href="com-tecnick-tcpdf/_config---tcpdf_config.php.html#definePDF_HEADER_TITLE">PDF_HEADER_TITLE</a><br>&nbsp;&nbsp;&nbsp;&nbsp;header title</dd>
 							<dt><b>PDF_IMAGE_SCALE_RATIO</b></dt>
-				<dd>in file tcpdf_config.php, constant <a href="com-tecnick-tcpdf/_config---tcpdf_config.php.html#definePDF_IMAGE_SCALE_RATIO">PDF_IMAGE_SCALE_RATIO</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Ratio used to scale the images</dd>
+				<dd>in file tcpdf_config.php, constant <a href="com-tecnick-tcpdf/_config---tcpdf_config.php.html#definePDF_IMAGE_SCALE_RATIO">PDF_IMAGE_SCALE_RATIO</a><br>&nbsp;&nbsp;&nbsp;&nbsp;ratio used to adjust the conversion of pixels to user units</dd>
 							<dt><b>PDF_MARGIN_BOTTOM</b></dt>
 				<dd>in file tcpdf_config.php, constant <a href="com-tecnick-tcpdf/_config---tcpdf_config.php.html#definePDF_MARGIN_BOTTOM">PDF_MARGIN_BOTTOM</a><br>&nbsp;&nbsp;&nbsp;&nbsp;bottom margin</dd>
 							<dt><b>PDF_MARGIN_FOOTER</b></dt>
@@ -860,7 +860,7 @@
 							<dt><b>rfread</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodrfread">TCPDF::rfread()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Binary-safe and URL-safe file read.</dd>
 							<dt><b>rollbackTransaction</b></dt>
-				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodrollbackTransaction">TCPDF::rollbackTransaction()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;This method allows to encapsulate some TCPDF commands to be later commited or deleted.</dd>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodrollbackTransaction">TCPDF::rollbackTransaction()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;This method allows to undo the latest transaction by returning the latest saved TCPDF object with startTransaction().</dd>
 							<dt><b>Rotate</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodRotate">TCPDF::Rotate()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Rotate object.</dd>
 							<dt><b>RoundedRect</b></dt>
@@ -960,7 +960,7 @@
 							<dt><b>setImageBuffer</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetImageBuffer">TCPDF::setImageBuffer()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set image buffer content.</dd>
 							<dt><b>setImageScale</b></dt>
-				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetImageScale">TCPDF::setImageScale()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set the image scale.</dd>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetImageScale">TCPDF::setImageScale()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set the adjusting factor to convert pixels to user units.</dd>
 							<dt><b>setImageSubBuffer</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetImageSubBuffer">TCPDF::setImageSubBuffer()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set image buffer content.</dd>
 							<dt><b>setJPEGQuality</b></dt>
@@ -1052,7 +1052,7 @@
 							<dt><b>startPageGroup</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodstartPageGroup">TCPDF::startPageGroup()</a></dd>
 							<dt><b>startTransaction</b></dt>
-				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodstartTransaction">TCPDF::startTransaction()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Stores a copy of the current TCPDF object.</dd>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodstartTransaction">TCPDF::startTransaction()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Stores a copy of the current TCPDF object used for undo operation.</dd>
 							<dt><b>StartTransform</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodStartTransform">TCPDF::StartTransform()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Starts a 2D tranformation saving current graphic state.</dd>
 							<dt><b>StopTransform</b></dt>
@@ -1350,7 +1350,7 @@
 	<a href="elementindex.html#top">top</a><br>
         <div class="credit">
 		    <hr />
-		    Documentation generated on Fri, 17 Apr 2009 16:18:13 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.1</a>
+		    Documentation generated on Mon, 20 Apr 2009 18:18:31 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.1</a>
 	      </div>
       </td></tr></table>
     </td>

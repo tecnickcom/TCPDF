@@ -1,3 +1,9 @@
+4.6.002 (2009-04-20)
+	- Documentation of rollbackTransaction() method was fixed.
+	- The setImageScale() and getImageScale() methods now set and get the adjusting parameter used by pixelsToUnits() method.
+	- HTML images now support other units of measure than pixels (getHTMLUnitToUnits() is now used instead of pixelsToUnits()).
+	- WARNING: PDF_IMAGE_SCALE_RATIO has been changed by default to 1.
+
 4.6.001 (2009-04-17)
 	- Spaces between HTML block tags are now automatically removed.
 	- The bug related to cMargin changes between tables was fixed.
