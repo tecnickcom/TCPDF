@@ -1,3 +1,6 @@
+4.6.003 (2009-04-21)
+	- The caching mechanism of the UTF8StringToArray() method was fixed.
+
 4.6.002 (2009-04-20)
 	- Documentation of rollbackTransaction() method was fixed.
 	- The setImageScale() and getImageScale() methods now set and get the adjusting parameter used by pixelsToUnits() method.

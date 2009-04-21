@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-04-20
+// Last Update : 2009-04-21
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.6.002
+// Version     : 4.6.003
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -122,7 +122,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.6.002
+ * @version 4.6.003
  */
 
 /**
@@ -146,14 +146,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.6.002 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.6.003 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.6.002
+	* @version 4.6.003
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -6495,9 +6495,9 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 1.53.0.TC005 (2005-01-05)
 		 */
 		protected function UTF8StringToArray($str) {
-			if (isset($this->cache_UTF8StringToArray[$str])) {
+			if (isset($this->cache_UTF8StringToArray['_'.$str])) {
 				// return cached value
-				return($this->cache_UTF8StringToArray[$str]);
+				return($this->cache_UTF8StringToArray['_'.$str]);
 			}
 			// check cache size
 			if ($this->cache_size_UTF8StringToArray >= $this->cache_maxsize_UTF8StringToArray) {
@@ -6513,7 +6513,7 @@ if (!class_exists('TCPDF', false)) {
 					$strarr[] = ord($str{$i});
 				}
 				// insert new value on cache
-				$this->cache_UTF8StringToArray[$str] = $strarr;
+				$this->cache_UTF8StringToArray['_'.$str] = $strarr;
 				return $strarr;
 			}
 			$unicode = array(); // array containing unicode values
@@ -6571,7 +6571,7 @@ if (!class_exists('TCPDF', false)) {
 				}
 			}
 			// insert new value on cache
-			$this->cache_UTF8StringToArray[$str] = $unicode;
+			$this->cache_UTF8StringToArray['_'.$str] = $unicode;
 			return $unicode;
 		}
 		
@@ -12996,10 +12996,10 @@ if (!class_exists('TCPDF', false)) {
 				fclose($f);
 			}
 			// update file lenght (needed for transactions)
-			if (!isset($this->cache_file_lenght[$filename])) {
-				$this->cache_file_lenght[$filename] = strlen($data);
+			if (!isset($this->cache_file_lenght['_'.$filename])) {
+				$this->cache_file_lenght['_'.$filename] = strlen($data);
 			} else {
-				$this->cache_file_lenght[$filename] += strlen($data);
+				$this->cache_file_lenght['_'.$filename] += strlen($data);
 			}
 		}
 
@@ -13530,6 +13530,7 @@ if (!class_exists('TCPDF', false)) {
 				if (isset($this->objcopy->diskcache) AND $this->objcopy->diskcache) {
 					// truncate files to previous values
 					foreach ($this->objcopy->cache_file_lenght as $file => $lenght) {
+						$file = substr($file, 1);
 						$handle = fopen($file, 'r+');
 						ftruncate($handle, $lenght);
 					}
