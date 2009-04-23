@@ -1,3 +1,6 @@
+4.6.004 (2009-04-23)
+	- Method deletePage() was added to delete pages (see example n. 44).
+
 4.6.003 (2009-04-21)
 	- The caching mechanism of the UTF8StringToArray() method was fixed.
 

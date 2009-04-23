@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-04-21
+// Last Update : 2009-04-23
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.6.003
+// Version     : 4.6.004
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -122,7 +122,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.6.003
+ * @version 4.6.004
  */
 
 /**
@@ -146,14 +146,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.6.003 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.6.004 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.6.003
+	* @version 4.6.004
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -13209,7 +13209,6 @@ if (!class_exists('TCPDF', false)) {
 
         /**
 		* Move a page to a previous position.
-		* Use this method just before Output().
 		* @param int $frompage number of the source page
 		* @param int $topage number of the destination page (must be less than $frompage)
 		* @return true in case of success, false in case of error.
@@ -13244,34 +13243,35 @@ if (!class_exists('TCPDF', false)) {
 			if (isset($this->newpagegroup[$frompage])) {
 				$tmpnewpagegroup = $this->newpagegroup[$frompage];
 			}
-			for ($i = $frompage; $i > $topage; $i--) {
+			for ($i = $frompage; $i > $topage; --$i) {
+				$j = $i - 1;
 				// shift pages down
-				$this->pages[$i] = $this->pages[($i - 1)];
-				$this->pagedim[$i] = $this->pagedim[($i - 1)];
-				$this->pagelen[$i] = $this->pagelen[($i - 1)];
-				$this->intmrk[$i] = $this->intmrk[($i - 1)];
-				if (isset($this->footerpos[($i - 1)])) {
-					$this->footerpos[$i] = $this->footerpos[($i - 1)];
+				$this->pages[$i] = $this->pages[$j];
+				$this->pagedim[$i] = $this->pagedim[$j];
+				$this->pagelen[$i] = $this->pagelen[$j];
+				$this->intmrk[$i] = $this->intmrk[$j];
+				if (isset($this->footerpos[$j])) {
+					$this->footerpos[$i] = $this->footerpos[$j];
 				} elseif (isset($this->footerpos[$i])) {
 					unset($this->footerpos[$i]);
 				}
-				if (isset($this->footerlen[($i - 1)])) {
-					$this->footerlen[$i] = $this->footerlen[($i - 1)];
+				if (isset($this->footerlen[$j])) {
+					$this->footerlen[$i] = $this->footerlen[$j];
 				} elseif (isset($this->footerlen[$i])) {
 					unset($this->footerlen[$i]);
 				}
-				if (isset($this->transfmrk[($i - 1)])) {
-					$this->transfmrk[$i] = $this->transfmrk[($i - 1)];
+				if (isset($this->transfmrk[$j])) {
+					$this->transfmrk[$i] = $this->transfmrk[$j];
 				} elseif (isset($this->transfmrk[$i])) {
 					unset($this->transfmrk[$i]);
 				}
-				if (isset($this->PageAnnots[($i - 1)])) {
-					$this->PageAnnots[$i] = $this->PageAnnots[($i - 1)];
+				if (isset($this->PageAnnots[$j])) {
+					$this->PageAnnots[$i] = $this->PageAnnots[$j];
 				} elseif (isset($this->PageAnnots[$i])) {
 					unset($this->PageAnnots[$i]);
 				}
-				if (isset($this->newpagegroup[($i - 1)])) {
-					$this->newpagegroup[$i] = $this->newpagegroup[($i - 1)];
+				if (isset($this->newpagegroup[$j])) {
+					$this->newpagegroup[$i] = $this->newpagegroup[$j];
 				} elseif (isset($this->newpagegroup[$i])) {
 					unset($this->newpagegroup[$i]);
 				}
@@ -13335,6 +13335,143 @@ if (!class_exists('TCPDF', false)) {
 					$newpage = ($pagenum + 1);
 				} elseif ($pagenum == $jfrompage) {
 					$newpage = $jtopage;
+				} else {
+					$newpage = $pagenum;
+				}
+				--$newpage;
+				return "this.addField(\'".$matches[1]."\',\'".$matches[2]."\',".$newpage."";'), $tmpjavascript);
+			// return to last page
+			$this->lastPage(true);
+			return true;
+		}
+
+        /**
+		* Remove the specified page.
+		* @param int $page page to remove
+		* @return true in case of success, false in case of error.
+		* @access public
+		* @since 4.6.004 (2009-04-23)
+		*/
+		public function deletePage($page) {
+			if ($page > $this->numpages) {
+				return false;
+			}
+			// delete current page
+			unset($this->pages[$page]);
+			unset($this->pagedim[$page]);
+			unset($this->pagelen[$page]);
+			unset($this->intmrk[$page]);
+			if (isset($this->footerpos[$page])) {
+				unset($this->footerpos[$page]);
+			}
+			if (isset($this->footerlen[$page])) {
+				unset($this->footerlen[$page]);
+			}
+			if (isset($this->transfmrk[$page])) {
+				unset($this->transfmrk[$page]);
+			}
+			if (isset($this->PageAnnots[$page])) {
+				unset($this->PageAnnots[$page]);
+			}
+			if (isset($this->newpagegroup[$page])) {
+				unset($this->newpagegroup[$page]);
+			}
+			if (isset($this->pageopen[$page])) {
+				unset($this->pageopen[$page]);
+			}
+			// update remaining pages
+			for ($i = $page; $i < $this->numpages; ++$i) {
+				$j = $i + 1;
+				// shift pages
+				$this->pages[$i] = $this->pages[$j];
+				$this->pagedim[$i] = $this->pagedim[$j];
+				$this->pagelen[$i] = $this->pagelen[$j];
+				$this->intmrk[$i] = $this->intmrk[$j];
+				if (isset($this->footerpos[$j])) {
+					$this->footerpos[$i] = $this->footerpos[$j];
+				} elseif (isset($this->footerpos[$i])) {
+					unset($this->footerpos[$i]);
+				}
+				if (isset($this->footerlen[$j])) {
+					$this->footerlen[$i] = $this->footerlen[$j];
+				} elseif (isset($this->footerlen[$i])) {
+					unset($this->footerlen[$i]);
+				}
+				if (isset($this->transfmrk[$j])) {
+					$this->transfmrk[$i] = $this->transfmrk[$j];
+				} elseif (isset($this->transfmrk[$i])) {
+					unset($this->transfmrk[$i]);
+				}
+				if (isset($this->PageAnnots[$j])) {
+					$this->PageAnnots[$i] = $this->PageAnnots[$j];
+				} elseif (isset($this->PageAnnots[$i])) {
+					unset($this->PageAnnots[$i]);
+				}
+				if (isset($this->newpagegroup[$j])) {
+					$this->newpagegroup[$i] = $this->newpagegroup[$j];
+				} elseif (isset($this->newpagegroup[$i])) {
+					unset($this->newpagegroup[$i]);
+				}
+				if (isset($this->pageopen[$j])) {
+					$this->pageopen[$i] = $this->pageopen[$j];
+				} elseif (isset($this->pageopen[$i])) {
+					unset($this->pageopen[$i]);
+				}
+			}
+			// remove last page
+			unset($this->pages[$this->numpages]);
+			unset($this->pagedim[$this->numpages]);
+			unset($this->pagelen[$this->numpages]);
+			unset($this->intmrk[$this->numpages]);
+			if (isset($this->footerpos[$this->numpages])) {
+				unset($this->footerpos[$this->numpages]);
+			}
+			if (isset($this->footerlen[$this->numpages])) {
+				unset($this->footerlen[$this->numpages]);
+			}
+			if (isset($this->transfmrk[$this->numpages])) {
+				unset($this->transfmrk[$this->numpages]);
+			}
+			if (isset($this->PageAnnots[$this->numpages])) {
+				unset($this->PageAnnots[$this->numpages]);
+			}
+			if (isset($this->newpagegroup[$this->numpages])) {
+				unset($this->newpagegroup[$this->numpages]);
+			}
+			if (isset($this->pageopen[$this->numpages])) {
+				unset($this->pageopen[$this->numpages]);
+			}
+			--$this->numpages;
+			$this->page = $this->numpages;
+			// adjust outlines
+			$tmpoutlines = $this->outlines;
+			foreach ($tmpoutlines as $key => $outline) {
+				if ($outline['p'] > $page) {
+					$this->outlines[$key]['p'] = $outline['p'] - 1;
+				} elseif ($outline['p'] == $page) {
+					unset($this->outlines[$key]);
+				}
+			}
+			// adjust links
+			$tmplinks = $this->links;
+			foreach ($tmplinks as $key => $link) {
+				if ($link[0] > $page) {
+					$this->links[$key][0] = $link[0] - 1;
+				} elseif ($link[0] == $page) {
+					unset($this->links[$key]);
+				}
+			}
+			// adjust javascript
+			$tmpjavascript = $this->javascript;
+			global $jpage;
+			$jpage = $page;
+			$this->javascript = preg_replace_callback('/this\.addField\(\'([^\']*)\',\'([^\']*)\',([0-9]+)/',
+				create_function('$matches', 'global $jpage;
+				$pagenum = intval($matches[3]) + 1;
+				if ($pagenum >= $jpage) {
+					$newpage = ($pagenum - 1);
+				} elseif ($pagenum == $jpage) {
+					$newpage = 1;
 				} else {
 					$newpage = $pagenum;
 				}

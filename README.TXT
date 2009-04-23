@@ -8,8 +8,8 @@ http://sourceforge.net/donate/index.php?group_id=128076
 ------------------------------------------------------------
 
 Name: TCPDF
-Version: 4.6.003
-Release date: 2009-04-21
+Version: 4.6.004
+Release date: 2009-04-23
 Author:	Nicola Asuni 
 	
 Copyright (c) 2001-2009:
@@ -40,7 +40,7 @@ Main Features:
 // 	* includes Javascript and forms support;
 // 	* includes a method to print various barcode formats: CODE 39, ANSI MH10.8M-1983, USD-3, 3 of 9, CODE 93, USS-93, Standard 2 of 5, Interleaved 2 of 5, CODE 128 A/B/C, 2 and 5 Digits UPC-Based Extention, EAN 8, EAN 13, UPC-A, UPC-E, MSI, POSTNET, PLANET, RMS4CC (Royal Mail 4-state Customer Code), CBC (Customer Bar Code), KIX (Klant index - Customer index), Intelligent Mail Barcode, Onecode, USPS-B-3200, CODABAR, CODE 11, PHARMACODE, PHARMACODE TWO-TRACKS;
 // 	* includes methods to set Bookmarks and print a Table of Content;
-// 	* includes a method to move pages;
+// 	* includes methods to move and delete pages;
 // 	* includes methods for automatic page header and footer management;
 // 	* supports automatic page break;
 // 	* supports automatic page numbering and page groups;

@@ -2,10 +2,10 @@
 //============================================================+
 // File name   : example_044.php
 // Begin       : 2009-01-02
-// Last Update : 2009-03-18
+// Last Update : 2009-04-23
 // 
 // Description : Example 044 for TCPDF class
-//               Move page
+//               Move and delete pages
 // 
 // Author: Nicola Asuni
 // 
@@ -22,7 +22,7 @@
 /**
  * Creates an example PDF TEST document using TCPDF
  * @package com.tecnick.tcpdf
- * @abstract TCPDF - Example: Move page
+ * @abstract TCPDF - Example: Move and delete pages
  * @author Nicola Asuni
  * @copyright 2004-2008 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://tcpdf.org
@@ -86,6 +86,9 @@ $pdf->AddPage();
 $pdf->Cell(0, 10, 'PAGE E', 0, 1, 'L');
 
 $pdf->AddPage();
+$pdf->Cell(0, 10, 'PAGE E-2', 0, 1, 'L');
+
+$pdf->AddPage();
 $pdf->Cell(0, 10, 'PAGE F', 0, 1, 'L');
 
 $pdf->AddPage();
@@ -94,8 +97,16 @@ $pdf->Cell(0, 10, 'PAGE C', 0, 1, 'L');
 $pdf->AddPage();
 $pdf->Cell(0, 10, 'PAGE G', 0, 1, 'L');
 
-// Move page 6 to page 3
-$pdf->movePage(6, 3);
+// Move page 7 to page 3
+$pdf->movePage(7, 3);
+
+// Delete page 6
+$pdf->deletePage(6);
+
+$pdf->AddPage();
+$pdf->Cell(0, 10, 'PAGE H', 0, 1, 'L');
+
+// NOTE: to insert a page to a previous position, you can add a new page to the end of document and then move it using movePage().
 
 // ---------------------------------------------------------
 

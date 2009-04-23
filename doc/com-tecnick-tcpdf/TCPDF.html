@@ -74,7 +74,7 @@ Source Location: /tcpdf.php<br /><br />
                 
 <h4>Version:</h4>
 <ul>
-  <li>4.6.003</li>
+  <li>4.6.004</li>
 </ul>
 
         
@@ -284,6 +284,7 @@ Source Location: /tcpdf.php<br /><br />
     <li><a href="../com-tecnick-tcpdf/TCPDF.html#methodconvertHTMLColorToDec">convertHTMLColorToDec</a></li>
     <li><a href="../com-tecnick-tcpdf/TCPDF.html#methodCoonsPatchMesh">CoonsPatchMesh</a></li>
     <li><a href="../com-tecnick-tcpdf/TCPDF.html#methodCurve">Curve</a></li>
+    <li><a href="../com-tecnick-tcpdf/TCPDF.html#methoddeletePage">deletePage</a></li>
     <li><a href="../com-tecnick-tcpdf/TCPDF.html#methodEllipse">Ellipse</a></li>
     <li><a href="../com-tecnick-tcpdf/TCPDF.html#methodempty_string">empty_string</a></li>
     <li><a href="../com-tecnick-tcpdf/TCPDF.html#methodendPage">endPage</a></li>
@@ -581,7 +582,7 @@ This is a PHP class for generating PDF documents without requiring external exte
     <td><b>author:</b>&nbsp;&nbsp;</td><td>Nicola Asuni - info@tecnick.com</td>
   </tr>
   <tr>
-    <td><b>version:</b>&nbsp;&nbsp;</td><td>4.6.003</td>
+    <td><b>version:</b>&nbsp;&nbsp;</td><td>4.6.004</td>
   </tr>
   <tr>
     <td><b>link:</b>&nbsp;&nbsp;</td><td><a href="http://www.tcpdf.org">http://www.tcpdf.org</a></td>
@@ -5608,7 +5609,7 @@ $k)</code>
   </div>
   <hr />
 	<a name="methodaddTOC"></a>
-	<h3>method addTOC <span class="smalllinenumber">[line 13358]</span></h3>
+	<h3>method addTOC <span class="smalllinenumber">[line 13495]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -6512,7 +6513,7 @@ $prop = array()])</code>
   </div>
   <hr />
 	<a name="methodcommitTransaction"></a>
-	<h3>method commitTransaction <span class="smalllinenumber">[line 13515]</span></h3>
+	<h3>method commitTransaction <span class="smalllinenumber">[line 13652]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -6782,6 +6783,48 @@ $fill_color = array()])</code>
         <div class="top">[ <a href="#top">Top</a> ]</div>
   </div>
   <hr />
+	<a name="methoddeletePage"></a>
+	<h3>method deletePage <span class="smalllinenumber">[line 13355]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>true deletePage(
+int
+$page)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Remove the specified page.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>in case of success, false in case of error.</td>
+  </tr>
+  <tr>
+    <td><b>since:</b>&nbsp;&nbsp;</td><td>4.6.004 (2009-04-23)</td>
+  </tr>
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>public</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">int&nbsp;&nbsp;</td>
+        <td><b>$page</b>&nbsp;&nbsp;</td>
+        <td>page to remove</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
 	<a name="methodEllipse"></a>
 	<h3>method Ellipse <span class="smalllinenumber">[line 7772]</span></h3>
 	<div class="function">
@@ -6900,7 +6943,7 @@ $afinish:)</code>
   </div>
   <hr />
 	<a name="methodempty_string"></a>
-	<h3>method empty_string <span class="smalllinenumber">[line 13562]</span></h3>
+	<h3>method empty_string <span class="smalllinenumber">[line 13699]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -10131,7 +10174,7 @@ $y = ''])</code>
   </div>
   <hr />
 	<a name="methodmovePage"></a>
-	<h3>method movePage <span class="smalllinenumber">[line 13219]</span></h3>
+	<h3>method movePage <span class="smalllinenumber">[line 13218]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -10142,7 +10185,7 @@ $topage)</code>
     </td></tr></table>
     </td></tr></table><br />
 	
-		Move a page to a previous position.<br /><br /><p>Use this method just before Output().</p><br /><br /><br />
+		Move a page to a previous position.<br /><br /><br /><br />
 <h4>Tags:</h4>
 <div class="tags">
 <table border="0" cellspacing="0" cellpadding="0">
@@ -10305,7 +10348,7 @@ $maxh = 0])</code>
   </div>
   <hr />
 	<a name="methodobjclone"></a>
-	<h3>method objclone <span class="smalllinenumber">[line 13551]</span></h3>
+	<h3>method objclone <span class="smalllinenumber">[line 13688]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -11325,7 +11368,7 @@ $length)</code>
   </div>
   <hr />
 	<a name="methodrollbackTransaction"></a>
-	<h3>method rollbackTransaction <span class="smalllinenumber">[line 13528]</span></h3>
+	<h3>method rollbackTransaction <span class="smalllinenumber">[line 13665]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -15331,7 +15374,7 @@ $page = ''])</code>
   </div>
   <hr />
 	<a name="methodstartTransaction"></a>
-	<h3>method startTransaction <span class="smalllinenumber">[line 13501]</span></h3>
+	<h3>method startTransaction <span class="smalllinenumber">[line 13638]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -18903,7 +18946,7 @@ $file)</code>
 
         <div class="credit">
 		    <hr />
-		    Documentation generated on Tue, 21 Apr 2009 12:11:54 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.1</a>
+		    Documentation generated on Thu, 23 Apr 2009 10:53:12 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.1</a>
 	      </div>
       </td></tr></table>
     </td>
