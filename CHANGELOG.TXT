@@ -1,3 +1,8 @@
+4.6.005 (2009-04-25)
+	- Points (pt) conversion in getHTMLUnitToUnits() was fixed.
+	- Default tcpdf.pem certificate file was added.
+	- Experimental support for signing document was added but it is not yet completed (some help is needed - I think that the calculation of the ByteRange is OK and the problem is on the signature calculation).
+
 4.6.004 (2009-04-23)
 	- Method deletePage() was added to delete pages (see example n. 44).
 
