@@ -1,3 +1,7 @@
+4.6.006 (2009-04-28)
+	- Support for "<a name="...">...</a>" was added.
+	- By default TCPDF requires PCRE Unicode support turned on but now works also without it (with limited ability to detect some Unicode blank spaces).
+
 4.6.005 (2009-04-25)
 	- Points (pt) conversion in getHTMLUnitToUnits() was fixed.
 	- Default tcpdf.pem certificate file was added.

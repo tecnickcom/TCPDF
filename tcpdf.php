@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-04-25
+// Last Update : 2009-04-28
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.6.005
+// Version     : 4.6.006
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -126,7 +126,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.6.005
+ * @version 4.6.006
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.6.005 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.6.006 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.6.005
+	* @version 4.6.006
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1287,6 +1287,13 @@ if (!class_exists('TCPDF', false)) {
 		 */
 		protected $signature_max_lenght = 5120;
 
+		/**
+		 * Regular expression used to find blank characters used for word-wrapping.
+		 * @access protected
+		 * @since 4.6.006 (2009-04-28)
+		 */
+		protected $re_spaces = '/[\s\p{Z}\p{Lo}]/';
+
 		//------------------------------------------------------------
 		// METHODS
 		//------------------------------------------------------------
@@ -1406,6 +1413,17 @@ if (!class_exists('TCPDF', false)) {
 			$this->utf8Bidi(array(''), '');
 			// set default font
 			$this->SetFont($this->FontFamily, $this->FontStyle, $this->FontSizePt);
+			// check if PCRE Unicode support is enabled
+			if (@preg_match('/\pL/u', 'a') == 1) {
+				// PCRE unicode support is turned ON
+				// \p{Z} or \p{Separator}: any kind of Unicode whitespace or invisible separator.
+				// \p{Lo} or \p{Other_Letter}: a Unicode letter or ideograph that does not have lowercase and uppercase variants.
+				// \p{Lo} is needed because Chinese characters are packed next to each other without spaces in between.
+				$this->re_spaces = '/[\s\p{Z}\p{Lo}]/';
+			} else {
+				// PCRE unicode support is turned OFF
+				$this->re_spaces = '/[\s]/';
+			}
 		}
 		
 		/**
@@ -4011,7 +4029,7 @@ if (!class_exists('TCPDF', false)) {
 					// \p{Z} or \p{Separator}: any kind of Unicode whitespace or invisible separator.
 					// \p{Lo} or \p{Other_Letter}: a Unicode letter or ideograph that does not have lowercase and uppercase variants.
 					// \p{Lo} is needed because Chinese characters are packed next to each other without spaces in between.
-					if (($c != 160) AND (($c == 173) OR preg_match('/[\s\p{Z}\p{Lo}]/', $this->unichr($c)))) {
+					if (($c != 160) AND (($c == 173) OR preg_match($this->re_spaces, $this->unichr($c)))) {
 						// update last blank space position
 						$sep = $i;
 						// check if is a SHY
@@ -11827,7 +11845,7 @@ if (!class_exists('TCPDF', false)) {
 						$firstblock = false;
 					}
 					$strrest = '';
-					if (!empty($this->HREF)) {
+					if (!empty($this->HREF) AND (isset($this->HREF['url']))) {
 						// HTML <a> Link
 						$strrest = $this->addHtmlLink($this->HREF['url'], $dom[$key]['value'], $wfill, true, $this->HREF['color'], $this->HREF['style']);
 					} else {
