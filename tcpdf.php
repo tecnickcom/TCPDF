@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-04-28
+// Last Update : 2009-05-05
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.6.006
+// Version     : 4.6.007
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -126,7 +126,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.6.006
+ * @version 4.6.007
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.6.006 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.6.007 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.6.006
+	* @version 4.6.007
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -10758,28 +10758,25 @@ if (!class_exists('TCPDF', false)) {
 			// remove all unsupported tags (the line below lists all supported tags)
 			$html = strip_tags($html, '<marker/><a><b><blockquote><br><br/><dd><del><div><dl><dt><em><font><h1><h2><h3><h4><h5><h6><hr><i><img><li><ol><p><pre><small><span><strong><sub><sup><table><tcpdf><td><th><thead><tr><tt><u><ul>');
 			//replace some blank characters
+			$html = preg_replace('/<pre/', '<xre', $html); // preserve pre tag
+			$html = preg_replace('/<(table|tr|td|th|blockquote|dd|div|dt|h1|h2|h3|h4|h5|h6|br|hr|li|ol|ul|p)([^\>]*)>[\n\r\t]+/', '<\\1\\2>', $html);
 			$html = preg_replace('@(\r\n|\r)@', "\n", $html);
 			$repTable = array("\t" => ' ', "\0" => ' ', "\x0B" => ' ', "\\" => "\\\\");
 			$html = strtr($html, $repTable);
-			while (preg_match("'<pre([^\>]*)>(.*?)\n(.*?)</pre>'si", $html)) {
+			while (preg_match("'<xre([^\>]*)>(.*?)\n(.*?)</pre>'si", $html)) {
 				// preserve newlines on <pre> tag
-				$html = preg_replace("'<pre([^\>]*)>(.*?)\n(.*?)</pre>'si", "<pre\\1>\\2<br />\\3</pre>", $html);
+				$html = preg_replace("'<xre([^\>]*)>(.*?)\n(.*?)</pre>'si", "<xre\\1>\\2<br />\\3</pre>", $html);
 			}
 			$html = str_replace("\n", ' ', $html);
-			/*
-			$html = preg_replace("'<div([^\>]*)>'si", "<br /><table><tr><td\\1>", $html);
-			$html = preg_replace("'</div>'si", "</td></tr></table>", $html);
-			$html = preg_replace("'<pre([^\>]*)>'si", "<table><tr><td\\1>", $html);
-			$html = preg_replace("'</pre>'si", "</td></tr></table>", $html);
-			*/
 			// remove extra spaces from code
 			$html = preg_replace('/[\s]+<\/(table|tr|td|th|ul|ol|li)>/', '</\\1>', $html);
 			$html = preg_replace('/[\s]+<(tr|td|th|ul|ol|li|br)/', '<\\1', $html);
-			$html = preg_replace('/<\/(table|tr|td|th|blockquote|dd|div|dt|h1|h2|h3|h4|h5|h6|hr|li|ol|p|ul)>[\s]+</', '</\\1><', $html);
+			$html = preg_replace('/<\/(table|tr|td|th|blockquote|dd|div|dt|h1|h2|h3|h4|h5|h6|hr|li|ol|ul|p)>[\s]+</', '</\\1><', $html);
 			$html = preg_replace('/<\/(td|th)>/', '<marker style="font-size:0"/></\\1>', $html);
 			$html = preg_replace('/<\/table>([\s]*)<marker style="font-size:0"\/>/', '</table>', $html);
 			$html = preg_replace('/<img/', ' <img', $html);
 			$html = preg_replace('/<img([^\>]*)>/xi', '<img\\1><span></span>', $html);
+			$html = preg_replace('/<xre/', '<pre', $html); // restore pre tag
 			// trim string
 			$html = preg_replace('/^[\s]+/', '', $html);
 			$html = preg_replace('/[\s]+$/', '', $html);
@@ -11343,12 +11340,12 @@ if (!class_exists('TCPDF', false)) {
 							// the last line must be shifted to be aligned as requested
 							$linew = abs($this->endlinex - $startlinex);
 							$pstart = substr($this->getPageBuffer($startlinepage), 0, $startlinepos);
-							if (isset($opentagpos) AND isset($this->footerlen[$startlinepage])) {
+							if (isset($opentagpos) AND isset($this->footerlen[$startlinepage]) AND (!$this->InFooter)) {
 								$this->footerpos[$startlinepage] = $this->pagelen[$startlinepage] - $this->footerlen[$startlinepage];
 								$midpos = min($opentagpos, $this->footerpos[$startlinepage]);
 							} elseif (isset($opentagpos)) {
 								$midpos = $opentagpos;
-							} elseif (isset($this->footerlen[$startlinepage])) {
+							} elseif (isset($this->footerlen[$startlinepage]) AND (!$this->InFooter)) {
 								$this->footerpos[$startlinepage] = $this->pagelen[$startlinepage] - $this->footerlen[$startlinepage];
 								$midpos = $this->footerpos[$startlinepage];
 							} else {
@@ -11390,7 +11387,6 @@ if (!class_exists('TCPDF', false)) {
 								}
 								$no = 0;
 								$ns = 0;
-
 								$pmidtemp = $pmid;
 								// escape special characters
 								$pmidtemp = preg_replace('/[\\\][\(]/x', '\\#!#OP#!#', $pmidtemp);
@@ -11398,7 +11394,6 @@ if (!class_exists('TCPDF', false)) {
 								// search spaces
 								if (preg_match_all('/\[\(([^\)]*)\)\]/x', $pmidtemp, $lnstring, PREG_PATTERN_ORDER)) {
 									$maxkk = count($lnstring[1]) - 1;
-									//foreach ($lnstring[1] as $kk => $value) {
 									for ($kk=0; $kk <= $maxkk; ++$kk) {
 										// restore special characters
 										$lnstring[1][$kk] = str_replace('#!#OP#!#', '(', $lnstring[1][$kk]);
@@ -11791,8 +11786,8 @@ if (!class_exists('TCPDF', false)) {
 									} else {
 										$this->footerpos[$this->page] = $this->pagelen[$this->page];
 									}
+									$opentagpos = $this->footerpos[$this->page];
 								}
-								$opentagpos = $this->footerpos[$this->page];
 							}
 							$this->openHTMLTagHandler($dom, $key, $cell);
 						}
@@ -11891,12 +11886,12 @@ if (!class_exists('TCPDF', false)) {
 					// the last line must be shifted to be aligned as requested
 					$linew = abs($this->endlinex - $startlinex);
 					$pstart = substr($this->getPageBuffer($startlinepage), 0, $startlinepos);
-					if (isset($opentagpos) AND isset($this->footerlen[$startlinepage])) {
+					if (isset($opentagpos) AND isset($this->footerlen[$startlinepage]) AND (!$this->InFooter)) {
 						$this->footerpos[$startlinepage] = $this->pagelen[$startlinepage] - $this->footerlen[$startlinepage];
 						$midpos = min($opentagpos, $this->footerpos[$startlinepage]);
 					} elseif (isset($opentagpos)) {
 						$midpos = $opentagpos;
-					} elseif (isset($this->footerlen[$startlinepage])) {
+					} elseif (isset($this->footerlen[$startlinepage]) AND (!$this->InFooter)) {
 						$this->footerpos[$startlinepage] = $this->pagelen[$startlinepage] - $this->footerlen[$startlinepage];
 						$midpos = $this->footerpos[$startlinepage];
 					} else {
@@ -11937,7 +11932,7 @@ if (!class_exists('TCPDF', false)) {
 						// shift the line
 						$trx = sprintf('1 0 0 1 %.3F %.3F cm', ($t_x * $this->k), ($yshift * $this->k));
 						$this->setPageBuffer($startlinepage, $pstart."\nq\n".$trx."\n".$pmid."\nQ\n".$pend);
-						$endlinepos = strlen($pstart."\nq\n".$trx."\n".$pmid."\nQ\n");										
+						$endlinepos = strlen($pstart."\nq\n".$trx."\n".$pmid."\nQ\n");
 						// shift the annotations and links
 						if (isset($this->PageAnnots[$this->page])) {
 							foreach ($this->PageAnnots[$this->page] as $pak => $pac) {
@@ -12504,14 +12499,14 @@ if (!class_exists('TCPDF', false)) {
 						$this->cMargin = $this->oldcMargin;
 					}
 					$this->lasth = $this->FontSize * $this->cell_height_ratio;
-					if (!$this->empty_string($table_el['thead']) AND !$this->empty_string($this->theadMargin)) {
-						// reset table header
-						$this->thead = '';
+					if (!$this->empty_string($this->theadMargin)) {
 						// restore top margin
 						$this->tMargin = $this->theadMargin;
 						$this->pagedim[$this->page]['tm'] = $this->theadMargin;
-						$this->theadMargin = '';
 					}
+					// reset table header
+					$this->thead = '';
+					$this->theadMargin = '';
 					break;
 				}
 				case 'a': {

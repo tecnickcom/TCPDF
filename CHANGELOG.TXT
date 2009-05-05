@@ -1,3 +1,8 @@
+4.6.007 (2009-05-05)
+	- Bug #2786685 "writeHtmlCell and <br /> in custom footer" was fixed.
+	- Table header repeating bug was fixed.
+	- Some newlines and tabs are now automatically removed from HTML strings.
+
 4.6.006 (2009-04-28)
 	- Support for "<a name="...">...</a>" was added.
 	- By default TCPDF requires PCRE Unicode support turned on but now works also without it (with limited ability to detect some Unicode blank spaces).
