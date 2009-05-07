@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-05-05
+// Last Update : 2009-05-07
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.6.007
+// Version     : 4.6.008
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -126,7 +126,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.6.007
+ * @version 4.6.008
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.6.007 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.6.008 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.6.007
+	* @version 4.6.008
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -4955,7 +4955,7 @@ if (!class_exists('TCPDF', false)) {
 				$name = preg_replace('/[^a-zA-Z0-9_\.-]/', '', $name);
 			}
 			if ($this->sign) {
-				// *** apply digital signature to the document (NOT WORKING) ***
+				// *** apply digital signature to the document ***
 				// get the document content
 				$pdfdoc = $this->getBuffer();
 				// remove last newline
@@ -5594,7 +5594,7 @@ if (!class_exists('TCPDF', false)) {
 							}
 							$filename = basename($pl['opt']['sound']);
 							if (isset($this->embeddedfiles[$filename]['n'])) {
-								// to be completed...
+								// ... TO BE COMPLETED ...
 								$iconsapp = array('Speaker', 'Mic');
 								if (isset($pl['opt']['name']) AND in_array($pl['opt']['name'], $iconsapp)) {
 									$annots .= ' /Name /'.$pl['opt']['name'];
@@ -5608,6 +5608,14 @@ if (!class_exists('TCPDF', false)) {
 							break;
 						}
 						case 'widget': {
+							if (isset($pl['opt']['h'])) {
+								$annots .= ' /H '.intval($pl['opt']['h']);
+							}
+						 	if (isset($pl['opt']['mk']) AND (is_array($pl['opt']['mk']))) {
+						 		$annots .= ' /MK <<';
+						 		// ... TO BE COMPLETED ...
+						 		$annots .= '>>';
+						 	}
 							break;
 						}
 						case 'screen': {
@@ -6345,6 +6353,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->_newobj();
 			$this->_out('<<');
 			$this->_putcatalog();
+			$this->_putcertification();
 			$this->_putuserrights();
 			$this->_out('>>');
 			$this->_out('endobj');
@@ -9180,13 +9189,13 @@ if (!class_exists('TCPDF', false)) {
 		
 		/*
 		* Enable Write permissions for PDF Reader.
-		* (EXPERIMENTAL - NOT WORKING)
+		* WARNING: This works only using the Adobe private key with the setSignature() method.
 		* @access protected
 		* @author Nicola Asuni
 		* @since 2.9.000 (2008-03-26)
 		*/
 		protected function _putuserrights() {
-			if (!$this->sign) {
+			if ((!$this->sign) OR (isset($this->signature_data['cert_type']) AND ($this->signature_data['cert_type'] > 0))) {
 				return;
 			}
 			$this->_out('/Perms');
@@ -9230,8 +9239,57 @@ if (!class_exists('TCPDF', false)) {
 		}
 		
 		/*
+		* Add certification signature (DocMDP)
+		* @access protected
+		* @author Nicola Asuni
+		* @since 4.6.008 (2009-05-07)
+		*/
+		protected function _putcertification() {
+			if ((!$this->sign) OR (isset($this->signature_data['cert_type']) AND ($this->signature_data['cert_type'] <= 0))) {
+				return;
+			}
+			$this->_out('/Perms');
+			$this->_out('<<');
+			$this->_out('/DocMDP');
+			$this->_out('<<');
+			$this->_out('/Type/Sig');
+			$this->_out('/Filter/Adobe.PPKLite');
+			$this->_out('/SubFilter/adbe.pkcs7.detached');
+			$this->_out('/ByteRange[0 ********** ********** **********]');
+			$this->_out('/Contents<>'.str_repeat(' ', $this->signature_max_lenght));
+			$this->_out('/Reference');
+			$this->_out('[');
+			$this->_out('<<');
+			$this->_out('/Type/SigRef');
+			$this->_out('/TransformMethod/DocMDP');
+			$this->_out('/TransformParams');
+			$this->_out('<<');
+			$this->_out('/Type/TransformParams');
+			$this->_out('/V/1.2');
+			$this->_out('/P '.$this->signature_data['cert_type'].'');
+			$this->_out('>>');
+			$this->_out('>>');
+			$this->_out(']');
+			$this->_out('/M '.$this->_datastring('D:'.date('YmdHisO')));
+			if (isset($this->signature_data['info']['Name']) AND !$this->empty_string($this->signature_data['info']['Name'])) {
+				$this->_out('/Name '.$this->_textstring($this->signature_data['info']['Name']).'');
+			}
+			if (isset($this->signature_data['info']['Location']) AND !$this->empty_string($this->signature_data['info']['Location'])) {
+				$this->_out('/Location '.$this->_textstring($this->signature_data['info']['Location']).'');
+			}
+			if (isset($this->signature_data['info']['Reason']) AND !$this->empty_string($this->signature_data['info']['Reason'])) {
+				$this->_out('/Reason '.$this->_textstring($this->signature_data['info']['Reason']).'');
+			}
+			if (isset($this->signature_data['info']['ContactInfo']) AND !$this->empty_string($this->signature_data['info']['ContactInfo'])) {
+				$this->_out('/ContactInfo '.$this->_textstring($this->signature_data['info']['ContactInfo']).'');
+			}
+			$this->_out('>>');
+			$this->_out('>>');
+		}
+		
+		/*
 		* Set User's Rights for PDF Reader
-		* (EXPERIMENTAL - NOT WORKING)
+		* WARNING: This should work only using the Adobe private key with the setSignature() method.
 		* Check the PDF Reference 8.7.1 Transform Methods, 
 		* Table 8.105 Entries in the UR transform parameters dictionary
 		* @param boolean $enable if true enable user's rights on PDF reader
@@ -9255,23 +9313,24 @@ if (!class_exists('TCPDF', false)) {
 			$this->ur_form = $form;
 			$this->ur_signature = $signature;
 			if ($this->ur) {
-				$this->setSignature();
+				$this->setSignature('', '', '', '', 0);
 			}
 		}
 		
 		/*
 		* Enable document signature (requires the OpenSSL Library).
-		* (EXPERIMENTAL - NOT WORKING)
 		* The digital signature improve document authenticity and integrity and allows o enable extra features on Acrobat Reader.
 		* @param mixed $signing_cert signing certificate (string or filename prefixed with 'file://')
 		* @param mixed $private_key private key (string or filename prefixed with 'file://')
 		* @param string $private_key_password password
 		* @param string $extracerts specifies the name of a file containing a bunch of extra certificates to include in the signature which can for example be used to help the recipient to verify the certificate that you used.
+		* @param int $cert_type The access permissions granted for this document. Valid values shall be: 1 = No changes to the document shall be permitted; any change to the document shall invalidate the signature; 2 = Permitted changes shall be filling in forms, instantiating page templates, and signing; other changes shall invalidate the signature; 3 = Permitted changes shall be the same as for 2, as well as annotation creation, deletion, and modification; other changes shall invalidate the signature.
+		* @parm array $info array of option information: Name, Location, Reason, ContactInfo.
 		* @access public
 		* @author Nicola Asuni
 		* @since 4.6.005 (2009-04-24)
 		*/
-		public function setSignature($signing_cert='', $private_key='', $private_key_password='', $extracerts='') {
+		public function setSignature($signing_cert='', $private_key='', $private_key_password='', $extracerts='', $cert_type=2, $info=array()) {
 			// to create self-signed signature: openssl req -x509 -nodes -days 365000 -newkey rsa:1024 -keyout tcpdf.pem -out tcpdf.pem
 			$this->sign = true;
 			$this->signature_data = array();
@@ -9285,6 +9344,8 @@ if (!class_exists('TCPDF', false)) {
 			$this->signature_data['privkey'] = $private_key;
 			$this->signature_data['password'] = $private_key_password;
 			$this->signature_data['extracerts'] = $extracerts;
+			$this->signature_data['cert_type'] = $cert_type;
+			$this->signature_data['info'] = array();
 		}
 		
 		/*

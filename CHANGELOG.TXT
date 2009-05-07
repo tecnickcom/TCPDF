@@ -1,3 +1,6 @@
+4.6.008 (2009-05-07)
+	- setSignature() method was improved (but is still experimental).
+
 4.6.007 (2009-05-05)
 	- Bug #2786685 "writeHtmlCell and <br /> in custom footer" was fixed.
 	- Table header repeating bug was fixed.

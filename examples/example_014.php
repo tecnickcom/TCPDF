@@ -2,10 +2,10 @@
 //============================================================+
 // File name   : example_014.php
 // Begin       : 2008-03-04
-// Last Update : 2009-03-18
+// Last Update : 2009-05-07
 // 
 // Description : Example 014 for TCPDF class
-//               Javascript Form and user rights
+//               Javascript Form and user rights (only works on Adobe Acrobat)
 // 
 // Author: Nicola Asuni
 // 
@@ -22,7 +22,7 @@
 /**
  * Creates an example PDF TEST document using TCPDF
  * @package com.tecnick.tcpdf
- * @abstract TCPDF - Example: Javascript Form and user rights
+ * @abstract TCPDF - Example: Javascript Form and user rights (only works on Adobe Acrobat)
  * @author Nicola Asuni
  * @copyright 2004-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://tcpdf.org
@@ -70,7 +70,7 @@ $pdf->setLanguageArray($l);
 // ---------------------------------------------------------
 
 // set font
-$pdf->SetFont('helvetica', 'BI', 20);
+$pdf->SetFont('helvetica', 'BI', 18);
 
 // add a page
 $pdf->AddPage();
@@ -116,6 +116,9 @@ Upon field creation, an associative array can be passed to set a number of prope
 	multipleSelection: Whether multiple list box items may be selected.
 Colors can be chosen in the following list (case sensitive): black white red green blue cyan magenta yellow dkGray gray ltGray or be in the form #RRGGBB.
 */
+
+// WARNING: only works on Adobe Acrobat
+$pdf->Cell(0, 5, 'THIS EXAMPLE ONLY WORKS ON ADOBE ACROBAT', 0, 1, 'C');
 
 $pdf->Cell(0, 5, 'Subscription form', 0, 1, 'C');
 $pdf->Ln(10);
