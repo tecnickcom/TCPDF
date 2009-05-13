@@ -1,3 +1,6 @@
+4.6.009 (2009-05-13)
+	- xref table for embedded files was fixed.
+
 4.6.008 (2009-05-07)
 	- setSignature() method was improved (but is still experimental).
 	- Example n. 52 was added.

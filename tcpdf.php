@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-05-07
+// Last Update : 2009-05-13
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.6.008
+// Version     : 4.6.009
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -126,7 +126,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.6.008
+ * @version 4.6.009
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.6.008 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.6.009 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.6.008
+	* @version 4.6.009
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -3214,7 +3214,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 			$this->PageAnnots[$this->page][] = array('x' => $x, 'y' => $y, 'w' => $w, 'h' => $h, 'txt' => $text, 'opt' => $opt, 'numspaces' => $spaces);
 			if (($opt['Subtype'] == 'FileAttachment') AND (!$this->empty_string($opt['FS'])) AND file_exists($opt['FS']) AND (!isset($this->embeddedfiles[basename($opt['FS'])]))) {
-				$this->embeddedfiles[basename($opt['FS'])] = array('file' => $opt['FS'], 'n' => ($this->n + count($this->embeddedfiles) + 10000));
+				$this->embeddedfiles[basename($opt['FS'])] = array('file' => $opt['FS'], 'n' => (count($this->embeddedfiles) + 100000));
 			}
 		}
 
@@ -6363,10 +6363,11 @@ if (!class_exists('TCPDF', false)) {
 			$this->_out('0 '.($this->n + 1));
 			$this->_out('0000000000 65535 f ');
 			for($i=1; $i <= $this->n; ++$i) {
-				$this->_out(sprintf('%010d 00000 n ',$this->offsets[$i]));
+				$this->_out(sprintf('%010d 00000 n ', $this->offsets[$i]));
 			}
+			$this->_out('100000 '.count($this->embeddedfiles));
 			foreach ($this->embeddedfiles as $filename => $filedata) {
-				$this->_out(sprintf('%010d 00000 n ',$this->offsets[$filedata['n']]));
+				$this->_out(sprintf('%010d 00000 n ', $this->offsets[$filedata['n']]));
 			}
 			//Trailer
 			$this->_out('trailer');
@@ -6916,6 +6917,7 @@ if (!class_exists('TCPDF', false)) {
 		 */		
 		public function convertHTMLColorToDec($color='#FFFFFF') {
 			global $webcolor;
+			$returncolor = false;
 			$color = preg_replace('/[\s]*/', '', $color); // remove extra spaces
 			$color = strtolower($color);
 			if (strlen($color) == 0) {
