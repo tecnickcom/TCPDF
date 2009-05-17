@@ -1,3 +1,9 @@
+4.6.010 (2009-05-17)
+	- Image() method was improved: now is possible to specify the maximum dimensions for a constraint box defined by $w and $h parameters, and setting the $resize parameter to null.
+	- <tcpdf> tag indent problem was fixed.
+	- $y parameter was added to checkPageBreak() method.
+	- Bug n. 2791773 "writeHTML" was fixed.
+
 4.6.009 (2009-05-13)
 	- xref table for embedded files was fixed.
 

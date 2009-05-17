@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-05-13
+// Last Update : 2009-05-17
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.6.009
+// Version     : 4.6.010
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -126,7 +126,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.6.009
+ * @version 4.6.010
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.6.009 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.6.010 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.6.009
+	* @version 4.6.010
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -3302,12 +3302,16 @@ if (!class_exists('TCPDF', false)) {
 		/**
 		* Add page if needed.
 		* @param float $h Cell height. Default value: 0.
+		* @param mixed $y starting y position, leave empty for current position.
 		* @return boolean true in case of page break, false otherwise.
 		* @since 3.2.000 (2008-07-01)
 		* @access protected
 		*/
-		protected function checkPageBreak($h) {
-			if ((($this->y + $h) > $this->PageBreakTrigger) AND (!$this->InFooter) AND ($this->AcceptPageBreak())) {
+		protected function checkPageBreak($h=0, $y='') {
+			if ($this->empty_string($y)) {
+				$y = $this->y;
+			}
+			if ((($y + $h) > $this->PageBreakTrigger) AND (!$this->InFooter) AND ($this->AcceptPageBreak())) {
 				//Automatic page break
 				$x = $this->x;
 				$this->AddPage($this->CurOrientation);
@@ -4341,7 +4345,7 @@ if (!class_exists('TCPDF', false)) {
 		* @param string $type Image format. Possible values are (case insensitive): JPEG and PNG (whitout GD library) and all images supported by GD: GD, GD2, GD2PART, GIF, JPEG, PNG, BMP, XBM, XPM;. If not specified, the type is inferred from the file extension.
 		* @param mixed $link URL or identifier returned by AddLink().
 		* @param string $align Indicates the alignment of the pointer next to image insertion relative to image height. The value can be:<ul><li>T: top-right for LTR or top-left for RTL</li><li>M: middle-right for LTR or middle-left for RTL</li><li>B: bottom-right for LTR or bottom-left for RTL</li><li>N: next line</li></ul>
-		* @param boolean $resize If true resize (reduce) the image to fit $w and $h (requires GD library).
+		* @param mixed $resize If false do not resize, if true resize (reduce) the image to fit $w and $h (requires GD library), if null scale image dimensions to fit within the ($w,$h) box proportionally.
 		* @param int $dpi dot-per-inch resolution used on resize
 		* @param string $palign Allows to center or align the image on the current line. Possible values are:<ul><li>L : left align</li><li>C : center</li><li>R : right align</li><li>'' : empty string : left for LTR or right for RTL</li></ul>
 		* @param boolean $ismask true if this image is a mask, false otherwise
@@ -4379,6 +4383,14 @@ if (!class_exists('TCPDF', false)) {
 				$w = $h * $pixw / $pixh;
 			} elseif ($h <= 0) {
 				$h = $w * $pixh / $pixw;
+			} elseif (($w > 0) AND ($h > 0) AND is_null($resize)) {
+				// scale image dimensions to fit within the ($w, $h) box proportionally without resampling the image
+				if ($pixw >= $pixh) {
+					$h = $w * $pixh / $pixw;
+				} else {
+					$w = $h * $pixw / $pixh;
+				}
+				$resize = false;
 			}
 			// calculate new minimum dimensions in pixels
 			$neww = round($w * $this->k * $dpi / $this->dpi);
@@ -4464,10 +4476,7 @@ if (!class_exists('TCPDF', false)) {
 				$info = $this->getImageBuffer($file);
 			}
 			// Check whether we need a new page first as this does not fit
-			if ((($y + $h) > $this->PageBreakTrigger) AND (!$this->InFooter) AND $this->AcceptPageBreak()) {
-				// Automatic page break
-				$this->AddPage($this->CurOrientation);
-				// Reset Y coordinate to the top of next page
+			if ($this->checkPageBreak($h, $y)) {
 				$y = $this->GetY() + $this->cMargin;
 			}
 			// set bottomcoordinates
@@ -10093,10 +10102,7 @@ if (!class_exists('TCPDF', false)) {
 				}
 			}
 			// Check whether we need a new page first as this does not fit
-			if ((($y + $h) > $this->PageBreakTrigger) AND (!$this->InFooter) AND $this->AcceptPageBreak()) {
-				// Automatic page break
-				$this->AddPage($this->CurOrientation);
-				// Reset Y coordinate to the top of next page
+			if ($this->checkPageBreak($h, $y)) {
 				$y = $this->GetY() + $this->cMargin;
 			}
 			// set bottomcoordinates
@@ -10822,7 +10828,7 @@ if (!class_exists('TCPDF', false)) {
 			$html = strip_tags($html, '<marker/><a><b><blockquote><br><br/><dd><del><div><dl><dt><em><font><h1><h2><h3><h4><h5><h6><hr><i><img><li><ol><p><pre><small><span><strong><sub><sup><table><tcpdf><td><th><thead><tr><tt><u><ul>');
 			//replace some blank characters
 			$html = preg_replace('/<pre/', '<xre', $html); // preserve pre tag
-			$html = preg_replace('/<(table|tr|td|th|blockquote|dd|div|dt|h1|h2|h3|h4|h5|h6|br|hr|li|ol|ul|p)([^\>]*)>[\n\r\t]+/', '<\\1\\2>', $html);
+			$html = preg_replace('/<(table|tr|td|th|tcpdf|blockquote|dd|div|dt|h1|h2|h3|h4|h5|h6|br|hr|li|ol|ul|p)([^\>]*)>[\n\r\t]+/', '<\\1\\2>', $html);
 			$html = preg_replace('@(\r\n|\r)@', "\n", $html);
 			$repTable = array("\t" => ' ', "\0" => ' ', "\x0B" => ' ', "\\" => "\\\\");
 			$html = strtr($html, $repTable);
@@ -11226,7 +11232,7 @@ if (!class_exists('TCPDF', false)) {
 			$newline = true;
 			$loop = 0;
 			$curpos = 0;
-			$blocktags = array('blockquote','br','dd','div','dt','h1','h2','h3','h4','h5','h6','hr','li','ol','p','ul');
+			$blocktags = array('blockquote','br','dd','div','dt','h1','h2','h3','h4','h5','h6','hr','li','ol','p','ul','tcpdf');
 			$this->premode = false;
 			if (isset($this->PageAnnots[$this->page])) {
 				$pask = count($this->PageAnnots[$this->page]);
@@ -11276,11 +11282,13 @@ if (!class_exists('TCPDF', false)) {
 					if ((!$this->newline)
 						AND ($dom[$key]['value'] == 'img')
 						AND (isset($dom[$key]['attribute']['height']))
-						AND ($dom[$key]['attribute']['height'] > 0)
-						AND (!((($this->y + $this->getHTMLUnitToUnits($dom[$key]['attribute']['height'], $this->lasth, 'px')) > $this->PageBreakTrigger)
-							AND (!$this->InFooter)
-							AND $this->AcceptPageBreak()))
-						) {
+						AND ($dom[$key]['attribute']['height'] > 0)) {
+						// get image height
+						$imgh = $this->getHTMLUnitToUnits($dom[$key]['attribute']['height'], $this->lasth, 'px');
+						if (!$this->InFooter) {
+							// check for page break
+							$this->checkPageBreak($imgh);
+						}
 						if ($this->page > $startlinepage) {
 							// fix lines splitted over two pages
 							if (isset($this->footerlen[$startlinepage])) {
@@ -11311,9 +11319,14 @@ if (!class_exists('TCPDF', false)) {
 									}
 								}
 							}
+							$startlinepos = $this->intmrk[$this->page];
+							$startlinepage = $this->page;
+							$startliney = $this->y;
 						}
-						$this->y += (($curfontsize / $this->k) - $this->getHTMLUnitToUnits($dom[$key]['attribute']['height'], $this->lasth, 'px'));
+						
+						$this->y += (($curfontsize / $this->k) - $imgh);
 						$minstartliney = min($this->y, $minstartliney);
+						
 					} elseif (isset($dom[$key]['fontname']) OR isset($dom[$key]['fontstyle']) OR isset($dom[$key]['fontsize'])) {
 						// account for different font size
 						$pfontname = $curfontname;
@@ -12180,9 +12193,11 @@ if (!class_exists('TCPDF', false)) {
 							// currently only support 1 (frame) or a combination of 'LTRB'
 							$border = $tag['attribute']['border'];
 						}
+						$iw = '';
 						if (isset($tag['attribute']['width'])) {
 							$iw = $this->getHTMLUnitToUnits($tag['attribute']['width'], 1, 'px', false);
 						}
+						$ih = '';
 						if (isset($tag['attribute']['height'])) {
 							$ih = $this->getHTMLUnitToUnits($tag['attribute']['height'], 1, 'px', false);
 						}
