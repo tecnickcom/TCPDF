@@ -1,3 +1,6 @@
+4.6.011 (2009-05-18)
+	- Signature of the Image() method was changed to include the new $fitbox parameter (see source code documentation).
+
 4.6.010 (2009-05-17)
 	- Image() method was improved: now is possible to specify the maximum dimensions for a constraint box defined by $w and $h parameters, and setting the $resize parameter to null.
 	- <tcpdf> tag indent problem was fixed.

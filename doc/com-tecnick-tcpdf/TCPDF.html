@@ -74,7 +74,7 @@ Source Location: /tcpdf.php<br /><br />
                 
 <h4>Version:</h4>
 <ul>
-  <li>4.6.010</li>
+  <li>4.6.011</li>
 </ul>
 
         
@@ -588,7 +588,7 @@ This is a PHP class for generating PDF documents without requiring external exte
     <td><b>author:</b>&nbsp;&nbsp;</td><td>Nicola Asuni - info@tecnick.com</td>
   </tr>
   <tr>
-    <td><b>version:</b>&nbsp;&nbsp;</td><td>4.6.010</td>
+    <td><b>version:</b>&nbsp;&nbsp;</td><td>4.6.011</td>
   </tr>
   <tr>
     <td><b>link:</b>&nbsp;&nbsp;</td><td><a href="http://www.tcpdf.org">http://www.tcpdf.org</a></td>
@@ -9343,7 +9343,7 @@ $coords)</code>
   </div>
   <hr />
 	<a name="methodImage"></a>
-	<h3>method Image <span class="smalllinenumber">[line 4358]</span></h3>
+	<h3>method Image <span class="smalllinenumber">[line 4359]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -9356,13 +9356,14 @@ $w = 0], [float
 $h = 0], [string
 $type = ''], [mixed
 $link = ''], [string
-$align = ''], [mixed
+$align = ''], [boolean
 $resize = false], [int
 $dpi = 300], [string
 $palign = ''], [boolean
 $ismask = false], [mixed
 $imgmask = false], [mixed
-$border = 0])</code>
+$border = 0], [boolean
+$fitbox = false])</code>
     </td></tr></table>
     </td></tr></table><br />
 	
@@ -9428,9 +9429,9 @@ $border = 0])</code>
         <td>Indicates the alignment of the pointer next to image insertion relative to image height. The value can be:<ul><li>T: top-right for LTR or top-left for RTL</li><li>M: middle-right for LTR or middle-left for RTL</li><li>B: bottom-right for LTR or bottom-left for RTL</li><li>N: next line</li></ul></td>
       </tr>
           <tr>
-        <td class="type">mixed&nbsp;&nbsp;</td>
+        <td class="type">boolean&nbsp;&nbsp;</td>
         <td><b>$resize</b>&nbsp;&nbsp;</td>
-        <td>If false do not resize, if true resize (reduce) the image to fit $w and $h (requires GD library), if null scale image dimensions to fit within the ($w,$h) box proportionally.</td>
+        <td>If true resize (reduce) the image to fit $w and $h (requires GD library).</td>
       </tr>
           <tr>
         <td class="type">int&nbsp;&nbsp;</td>
@@ -9456,6 +9457,11 @@ $border = 0])</code>
         <td class="type">mixed&nbsp;&nbsp;</td>
         <td><b>$border</b>&nbsp;&nbsp;</td>
         <td>Indicates if borders must be drawn around the image. The value can be either a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul>or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul></td>
+      </tr>
+          <tr>
+        <td class="type">boolean&nbsp;&nbsp;</td>
+        <td><b>$fitbox</b>&nbsp;&nbsp;</td>
+        <td>If true scale image dimensions proportionally to fit within the ($w, $h) box.</td>
       </tr>
         </table>
     </div><br />
@@ -19157,7 +19163,7 @@ $file)</code>
 
         <div class="credit">
 		    <hr />
-		    Documentation generated on Sun, 17 May 2009 21:39:15 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.1</a>
+		    Documentation generated on Mon, 18 May 2009 20:13:05 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.1</a>
 	      </div>
       </td></tr></table>
     </td>

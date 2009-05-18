@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-05-17
+// Last Update : 2009-05-18
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.6.010
+// Version     : 4.6.011
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -126,7 +126,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.6.010
+ * @version 4.6.011
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.6.010 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.6.011 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.6.010
+	* @version 4.6.011
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -4345,17 +4345,18 @@ if (!class_exists('TCPDF', false)) {
 		* @param string $type Image format. Possible values are (case insensitive): JPEG and PNG (whitout GD library) and all images supported by GD: GD, GD2, GD2PART, GIF, JPEG, PNG, BMP, XBM, XPM;. If not specified, the type is inferred from the file extension.
 		* @param mixed $link URL or identifier returned by AddLink().
 		* @param string $align Indicates the alignment of the pointer next to image insertion relative to image height. The value can be:<ul><li>T: top-right for LTR or top-left for RTL</li><li>M: middle-right for LTR or middle-left for RTL</li><li>B: bottom-right for LTR or bottom-left for RTL</li><li>N: next line</li></ul>
-		* @param mixed $resize If false do not resize, if true resize (reduce) the image to fit $w and $h (requires GD library), if null scale image dimensions to fit within the ($w,$h) box proportionally.
+		* @param boolean $resize If true resize (reduce) the image to fit $w and $h (requires GD library).
 		* @param int $dpi dot-per-inch resolution used on resize
 		* @param string $palign Allows to center or align the image on the current line. Possible values are:<ul><li>L : left align</li><li>C : center</li><li>R : right align</li><li>'' : empty string : left for LTR or right for RTL</li></ul>
 		* @param boolean $ismask true if this image is a mask, false otherwise
 		* @param mixed $imgmask image object returned by this function or false
 		* @param mixed $border Indicates if borders must be drawn around the image. The value can be either a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul>or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul>
+		* @param boolean $fitbox If true scale image dimensions proportionally to fit within the ($w, $h) box.
 		* @return image information
 		* @access public
 		* @since 1.1
 		*/
-		public function Image($file, $x='', $y='', $w=0, $h=0, $type='', $link='', $align='', $resize=false, $dpi=300, $palign='', $ismask=false, $imgmask=false, $border=0) {
+		public function Image($file, $x='', $y='', $w=0, $h=0, $type='', $link='', $align='', $resize=false, $dpi=300, $palign='', $ismask=false, $imgmask=false, $border=0, $fitbox=false) {
 			if ($x === '') {
 				$x = $this->x;
 			}
@@ -4383,14 +4384,13 @@ if (!class_exists('TCPDF', false)) {
 				$w = $h * $pixw / $pixh;
 			} elseif ($h <= 0) {
 				$h = $w * $pixh / $pixw;
-			} elseif (($w > 0) AND ($h > 0) AND is_null($resize)) {
-				// scale image dimensions to fit within the ($w, $h) box proportionally without resampling the image
-				if ($pixw >= $pixh) {
+			} elseif ($fitbox AND ($w > 0) AND ($h > 0)) {
+				// scale image dimensions proportionally to fit within the ($w, $h) box
+				if ((($w * $pixh) / ($h * $pixw)) < 1) {
 					$h = $w * $pixh / $pixw;
 				} else {
 					$w = $h * $pixw / $pixh;
 				}
-				$resize = false;
 			}
 			// calculate new minimum dimensions in pixels
 			$neww = round($w * $this->k * $dpi / $this->dpi);
