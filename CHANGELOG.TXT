@@ -1,3 +1,6 @@
+4.6.012 (2009-05-23)
+	- setUserRights() method doesn't work anymore unless you call the setSignature() method with the Adobe private key!
+
 4.6.011 (2009-05-18)
 	- Signature of the Image() method was changed to include the new $fitbox parameter (see source code documentation).
 
