@@ -1,3 +1,6 @@
+4.6.013 (2009-05-28)
+	- List bullets position was fixed for RTL languages.
+
 4.6.012 (2009-05-23)
 	- setUserRights() method doesn't work anymore unless you call the setSignature() method with the Adobe private key!
 
