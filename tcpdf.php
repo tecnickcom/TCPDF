@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-05-28
+// Last Update : 2009-06-04
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.6.013
+// Version     : 4.6.014
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -126,7 +126,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.6.013
+ * @version 4.6.014
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.6.013 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.6.014 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.6.013
+	* @version 4.6.014
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1239,11 +1239,11 @@ if (!class_exists('TCPDF', false)) {
 		protected $thead = '';
 
 		/**
-		 * Distance between the top of page and end of table headers on a new page.
+		 * Margins used for table header.
 		 * @access protected
 		 * @since 4.5.030 (2009-03-20)
 		 */
-		protected $theadMargin = '';
+		protected $theadMargins = array();
 
 		/**
 		 * Cache array for UTF8StringToArray() method.
@@ -2485,21 +2485,26 @@ if (!class_exists('TCPDF', false)) {
 	 	 * @since 4.5.030 (2009-03-25)
 		 */
 		protected function setTableHeader() {
-			if (!$this->empty_string($this->theadMargin)) {
+			if (isset($this->theadMargins['top'])) {
 				// restore the original top-margin
-				$this->tMargin = $this->theadMargin;
-				$this->pagedim[$this->page]['tm'] = $this->theadMargin;
-				$this->y = $this->theadMargin;
+				$this->tMargin = $this->theadMargins['top'];
+				$this->pagedim[$this->page]['tm'] = $this->tMargin;
+				$this->y = $this->tMargin;
 			}
 			if (!$this->empty_string($this->thead)) {
+				// set margins
+				$this->lMargin = $this->pagedim[$this->page]['olm'];
+				$this->rMargin = $this->pagedim[$this->page]['orm'];
+				$this->cMargin = $this->theadMargins['cmargin'];
 				// print table header
 				$this->writeHTML($this->thead, false, false, false, false, '');
 				// set new top margin to skip the table headers
-				if (!isset($this->theadMargin) OR ($this->empty_string($this->theadMargin))) {
-					$this->theadMargin = $this->tMargin;
+				if (!isset($this->theadMargins['top'])) {
+					$this->theadMargins['top'] = $this->tMargin;
 				}
 				$this->tMargin = $this->y;
 				$this->pagedim[$this->page]['tm'] = $this->tMargin;
+				$this->lasth = 0;
 			}
 		}
 		
@@ -3964,7 +3969,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 			// max column width
 			$wmax = $w - (2 * $this->cMargin);
-			if ($chrwidth > $wmax) {
+			if (($chrwidth > $wmax) OR ($this->GetCharWidth($chars[0]) > $wmax)) {
 				// a single character do not fit on column
 				return '';
 			}
@@ -10828,16 +10833,23 @@ if (!class_exists('TCPDF', false)) {
 		 */
 		protected function getHtmlDomArray($html) {
 			// remove all unsupported tags (the line below lists all supported tags)
-			$html = strip_tags($html, '<marker/><a><b><blockquote><br><br/><dd><del><div><dl><dt><em><font><h1><h2><h3><h4><h5><h6><hr><i><img><li><ol><p><pre><small><span><strong><sub><sup><table><tcpdf><td><th><thead><tr><tt><u><ul>');
+			$html = strip_tags($html, '<marker/><a><b><blockquote><br><br/><dd><del><div><dl><dt><em><font><h1><h2><h3><h4><h5><h6><hr><i><img><li><ol><p><pre><small><span><strong><sub><sup><table><tablehead><tcpdf><td><th><thead><tr><tt><u><ul>');
 			//replace some blank characters
 			$html = preg_replace('/<pre/', '<xre', $html); // preserve pre tag
 			$html = preg_replace('/<(table|tr|td|th|tcpdf|blockquote|dd|div|dt|h1|h2|h3|h4|h5|h6|br|hr|li|ol|ul|p)([^\>]*)>[\n\r\t]+/', '<\\1\\2>', $html);
 			$html = preg_replace('@(\r\n|\r)@', "\n", $html);
 			$repTable = array("\t" => ' ', "\0" => ' ', "\x0B" => ' ', "\\" => "\\\\");
 			$html = strtr($html, $repTable);
-			while (preg_match("'<xre([^\>]*)>(.*?)\n(.*?)</pre>'si", $html)) {
-				// preserve newlines on <pre> tag
-				$html = preg_replace("'<xre([^\>]*)>(.*?)\n(.*?)</pre>'si", "<xre\\1>\\2<br />\\3</pre>", $html);
+			$offset = 0;
+			while (($offset < strlen($html)) AND ($pos = strpos($html, '</pre>', $offset)) !== false) {
+				$html_a = substr($html, 0, $offset);
+				$html_b = substr($html, $offset, ($pos - $offset + 6));
+				while (preg_match("'<xre([^\>]*)>(.*?)\n(.*?)</pre>'si", $html_b)) {
+					// preserve newlines on <pre> tag
+					$html_b = preg_replace("'<xre([^\>]*)>(.*?)\n(.*?)</pre>'si", "<xre\\1>\\2<br />\\3</pre>", $html_b);
+				}
+				$html = $html_a.$html_b.substr($html, $pos + 6);
+				$offset = strlen($html_a.$html_b);
 			}
 			$html = str_replace("\n", ' ', $html);
 			// remove extra spaces from code
@@ -10935,7 +10947,7 @@ if (!class_exists('TCPDF', false)) {
 							}
 						}
 						if (($dom[$key]['value'] == 'table') AND (!$this->empty_string($dom[($dom[$key]['parent'])]['thead']))) {
-							$dom[($dom[$key]['parent'])]['thead'] .= '</table>';
+							$dom[($dom[$key]['parent'])]['thead'] .= '</tablehead>';
 						}
 					} else {
 						// opening html tag
@@ -12063,6 +12075,10 @@ if (!class_exists('TCPDF', false)) {
 					if (!$this->empty_string($dom[$key]['thead'])) {
 						// set table header
 						$this->thead = $dom[$key]['thead'];
+						if (!isset($this->theadMargins) OR (empty($this->theadMargins))) {
+							$this->theadMargins = array();
+							$this->theadMargins['cmargin'] = $this->cMargin;
+						}
 					}
 					if (isset($tag['attribute']['cellpadding'])) {
 						$cp = $this->getHTMLUnitToUnits($tag['attribute']['cellpadding'], 1, 'px');
@@ -12374,6 +12390,7 @@ if (!class_exists('TCPDF', false)) {
 			$tag = $dom[$key];
 			$parent = $dom[($dom[$key]['parent'])];
 			$firstorlast = ((!isset($dom[($key + 1)])) OR ((!isset($dom[($key + 2)])) AND ($dom[($key + 1)]['value'] == 'marker')));
+			$in_table_head = false;
 			//Closing tag
 			switch($tag['value']) {
 				case 'tr': {
@@ -12434,6 +12451,9 @@ if (!class_exists('TCPDF', false)) {
 					}
 					break;
 				}
+				case 'tablehead':
+					// closing tag used for the thead part
+					$in_table_head = true;
 				case 'table': {
 					// draw borders
 					$table_el = $parent;
@@ -12576,18 +12596,21 @@ if (!class_exists('TCPDF', false)) {
 							}
 						}
 					}
-					if (isset($parent['cellpadding'])) {
-						$this->cMargin = $this->oldcMargin;
+					if (!$in_table_head) {
+						// we are not inside a thead section
+						if (isset($parent['cellpadding'])) {
+							$this->cMargin = $this->oldcMargin;
+						}
+						$this->lasth = $this->FontSize * $this->cell_height_ratio;
+						if (!empty($this->theadMargins)) {
+							// restore top margin
+							$this->tMargin = $this->theadMargins['top'];
+							$this->pagedim[$this->page]['tm'] = $this->tMargin;
+						}
+						// reset table header
+						$this->thead = '';
+						$this->theadMargins = array();
 					}
-					$this->lasth = $this->FontSize * $this->cell_height_ratio;
-					if (!$this->empty_string($this->theadMargin)) {
-						// restore top margin
-						$this->tMargin = $this->theadMargin;
-						$this->pagedim[$this->page]['tm'] = $this->theadMargin;
-					}
-					// reset table header
-					$this->thead = '';
-					$this->theadMargin = '';
 					break;
 				}
 				case 'a': {

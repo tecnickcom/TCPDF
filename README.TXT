@@ -8,8 +8,8 @@ http://sourceforge.net/donate/index.php?group_id=128076
 ------------------------------------------------------------
 
 Name: TCPDF
-Version: 4.6.013
-Release date: 2009-05-28
+Version: 4.6.014
+Release date: 2009-06-04
 Author:	Nicola Asuni 
 	
 Copyright (c) 2001-2009:
@@ -57,7 +57,7 @@ Main Features:
 Installation (full instructions on http://www.tcpdf.org):
 	1. copy the folder on your Web server
 	2. set your installation path and other parameters on the config/tcpdf_config.php
-	3. call the example/example_001.php page with your browser to see an example
+	3. call the examples/example_001.php page with your browser to see an example
 
 Source Code Documentation:
 	doc/index.html
