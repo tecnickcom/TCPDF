@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-06-04
+// Last Update : 2009-06-11
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.6.014
+// Version     : 4.6.015
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -126,7 +126,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.6.014
+ * @version 4.6.015
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.6.014 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.6.015 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.6.014
+	* @version 4.6.015
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1414,7 +1414,7 @@ if (!class_exists('TCPDF', false)) {
 			// set default font
 			$this->SetFont($this->FontFamily, $this->FontStyle, $this->FontSizePt);
 			// check if PCRE Unicode support is enabled
-			if (@preg_match('/\pL/u', 'a') == 1) {
+			if ($this->isunicode AND (@preg_match('/\pL/u', 'a') == 1)) {
 				// PCRE unicode support is turned ON
 				// \p{Z} or \p{Separator}: any kind of Unicode whitespace or invisible separator.
 				// \p{Lo} or \p{Other_Letter}: a Unicode letter or ideograph that does not have lowercase and uppercase variants.
@@ -5006,7 +5006,7 @@ if (!class_exists('TCPDF', false)) {
 				fwrite($f, $pdfdoc, $pdfdoc_lenght);
 				fclose($f);
 				// get digital signature.
-				// IS THE FOLLOWING PROCEDURE CORRECT? THE SIGNED DOCUMENTS ARE NOT VALID!
+				// IS THE FOLLOWING PROCEDURE CORRECT?
 				$tempsign = tempnam(K_PATH_CACHE, 'tmpsig_');
 				if (empty($this->signature_data['extracerts'])) {
 					openssl_pkcs7_sign($tempdoc, $tempsign, $this->signature_data['signcert'], array($this->signature_data['privkey'], $this->signature_data['password']), array(), PKCS7_BINARY | PKCS7_DETACHED);

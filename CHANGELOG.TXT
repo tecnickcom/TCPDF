@@ -1,3 +1,6 @@
+4.6.015 (2009-06-11)
+	- Bug #2804667 "word wrap bug" was fixed.
+
 4.6.014 (2009-06-04)
 	- Bug #2800931 "Table thead tag bug" was fixed.
 	- A bug related to <pre> tag was fixed.
