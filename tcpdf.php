@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-06-11
+// Last Update : 2009-06-15
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.6.015
+// Version     : 4.6.016
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -126,7 +126,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.6.015
+ * @version 4.6.016
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.6.015 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.6.016 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.6.015
+	* @version 4.6.016
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1292,7 +1292,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @access protected
 		 * @since 4.6.006 (2009-04-28)
 		 */
-		protected $re_spaces = '/[\s\p{Z}\p{Lo}]/';
+		protected $re_spaces = '/[\s]/';
 
 		//------------------------------------------------------------
 		// METHODS
@@ -1419,7 +1419,8 @@ if (!class_exists('TCPDF', false)) {
 				// \p{Z} or \p{Separator}: any kind of Unicode whitespace or invisible separator.
 				// \p{Lo} or \p{Other_Letter}: a Unicode letter or ideograph that does not have lowercase and uppercase variants.
 				// \p{Lo} is needed because Chinese characters are packed next to each other without spaces in between.
-				$this->re_spaces = '/[\s\p{Z}\p{Lo}]/';
+				//$this->re_spaces = '/[\s\p{Z}\p{Lo}]/';
+				$this->re_spaces = '/[\s\p{Z}]/';
 			} else {
 				// PCRE unicode support is turned OFF
 				$this->re_spaces = '/[\s]/';
@@ -1595,7 +1596,21 @@ if (!class_exists('TCPDF', false)) {
 			// store page dimensions
 			$this->pagedim[$this->page] = array('w' => $this->wPt, 'h' => $this->hPt, 'wk' => $this->w, 'hk' => $this->h, 'tm' => $this->tMargin, 'bm' => $bottommargin, 'lm' => $this->lMargin, 'rm' => $this->rMargin, 'pb' => $autopagebreak, 'or' => $this->CurOrientation, 'olm' => $this->original_lMargin, 'orm' => $this->original_rMargin);
 		}
-				
+		
+		/**
+		 * Set regular expression to detect withespaces or word separators.
+		 * @param string $re regular expression (leave empty for default).
+		 * @access public
+		 * @since 4.6.016 (2009-06-15)
+		 */
+		public function setSpacesRE($re='/[\s]/') {
+			// if PCRE unicode support is turned ON:
+			// 	\p{Z} or \p{Separator}: any kind of Unicode whitespace or invisible separator.
+			// 	\p{Lo} or \p{Other_Letter}: a Unicode letter or ideograph that does not have lowercase and uppercase variants.
+			// 	\p{Lo} is needed because Chinese characters are packed next to each other without spaces in between.
+			$this->re_spaces = $re;
+		}
+			
 		/**
 		 * Enable or disable Right-To-Left language mode
 		 * @param Boolean $enable if true enable Right-To-Left language mode.
@@ -6195,23 +6210,30 @@ if (!class_exists('TCPDF', false)) {
 		* @access protected
 		*/
 		protected function _putinfo() {
-			if (!$this->empty_string($this->title)) {
-				$this->_out('/Title '.$this->_textstring($this->title));
+			if ($this->empty_string($this->title)) {
+				$this->title = '?';
 			}
-			if (!$this->empty_string($this->author)) {
-				$this->_out('/Author '.$this->_textstring($this->author));
+			$this->_out('/Title '.$this->_textstring($this->title));
+			if ($this->empty_string($this->author)) {
+				$this->author = '?';
 			}
-			if (!$this->empty_string($this->subject)) {
-				$this->_out('/Subject '.$this->_textstring($this->subject));
+			$this->_out('/Author '.$this->_textstring($this->author));
+			if ($this->empty_string($this->subject)) {
+				$this->subject = '?';
 			}
-			if (!$this->empty_string($this->keywords)) {
-				$this->_out('/Keywords '.$this->_textstring($this->keywords));
+			$this->_out('/Subject '.$this->_textstring($this->subject));
+			if ($this->empty_string($this->keywords)) {
+				$this->keywords = '?';
 			}
-			if (!$this->empty_string($this->creator)) {
-				$this->_out('/Creator '.$this->_textstring($this->creator));
+			$this->_out('/Keywords '.$this->_textstring($this->keywords));
+			if ($this->empty_string($this->creator)) {
+				$this->creator = '?';
 			}
+			$this->_out('/Creator '.$this->_textstring($this->creator));
 			if (defined('PDF_PRODUCER')) {
 				$this->_out('/Producer '.$this->_textstring(PDF_PRODUCER));
+			} else {
+				$this->_out('/Producer '.$this->_textstring('TCPDF'));
 			}
 			$this->_out('/CreationDate '.$this->_datastring('D:'.date('YmdHis')));
 			$this->_out('/ModDate '.$this->_datastring('D:'.date('YmdHis')));	
