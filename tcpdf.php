@@ -3323,7 +3323,7 @@ if (!class_exists('TCPDF', false)) {
 		* Add page if needed.
 		* @param float $h Cell height. Default value: 0.
 		* @param mixed $y starting y position, leave empty for current position.
-		* @param boolean $add_page if true add a page, otherwise only return the true/false state
+		* @param boolean $addpage if true add a page, otherwise only return the true/false state
 		* @return boolean true in case of page break, false otherwise.
 		* @since 3.2.000 (2008-07-01)
 		* @access protected
@@ -3333,7 +3333,7 @@ if (!class_exists('TCPDF', false)) {
 				$y = $this->y;
 			}
 			if ((($y + $h) > $this->PageBreakTrigger) AND (!$this->InFooter) AND ($this->AcceptPageBreak())) {
-				if ($add_page) {
+				if ($addpage) {
 					//Automatic page break
 					$x = $this->x;
 					$this->AddPage($this->CurOrientation);
