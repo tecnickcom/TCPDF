@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-06-15
+// Last Update : 2009-07-05
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.6.016
+// Version     : 4.6.017
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -126,7 +126,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.6.016
+ * @version 4.6.017
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.6.016 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.6.017 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.6.016
+	* @version 4.6.017
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -3323,31 +3323,34 @@ if (!class_exists('TCPDF', false)) {
 		* Add page if needed.
 		* @param float $h Cell height. Default value: 0.
 		* @param mixed $y starting y position, leave empty for current position.
+		* @param boolean $add_page if true add a page, otherwise only return the true/false state
 		* @return boolean true in case of page break, false otherwise.
 		* @since 3.2.000 (2008-07-01)
 		* @access protected
 		*/
-		protected function checkPageBreak($h=0, $y='') {
+		protected function checkPageBreak($h=0, $y='', $addpage=true) {
 			if ($this->empty_string($y)) {
 				$y = $this->y;
 			}
 			if ((($y + $h) > $this->PageBreakTrigger) AND (!$this->InFooter) AND ($this->AcceptPageBreak())) {
-				//Automatic page break
-				$x = $this->x;
-				$this->AddPage($this->CurOrientation);
-				$this->y = $this->tMargin;
-				$oldpage = $this->page - 1;
-				if ($this->rtl) {
-					if ($this->pagedim[$this->page]['orm'] != $this->pagedim[$oldpage]['orm']) {
-						$this->x = $x - ($this->pagedim[$this->page]['orm'] - $this->pagedim[$oldpage]['orm']);
+				if ($add_page) {
+					//Automatic page break
+					$x = $this->x;
+					$this->AddPage($this->CurOrientation);
+					$this->y = $this->tMargin;
+					$oldpage = $this->page - 1;
+					if ($this->rtl) {
+						if ($this->pagedim[$this->page]['orm'] != $this->pagedim[$oldpage]['orm']) {
+							$this->x = $x - ($this->pagedim[$this->page]['orm'] - $this->pagedim[$oldpage]['orm']);
+						} else {
+							$this->x = $x;
+						}
 					} else {
-						$this->x = $x;
-					}
-				} else {
-					if ($this->pagedim[$this->page]['olm'] != $this->pagedim[$oldpage]['olm']) {
-						$this->x = $x + ($this->pagedim[$this->page]['olm'] - $this->pagedim[$oldpage]['olm']);
-					} else {
-						$this->x = $x;
+						if ($this->pagedim[$this->page]['olm'] != $this->pagedim[$oldpage]['olm']) {
+							$this->x = $x + ($this->pagedim[$this->page]['olm'] - $this->pagedim[$oldpage]['olm']);
+						} else {
+							$this->x = $x;
+						}
 					}
 				}
 				return true;
@@ -3648,8 +3651,8 @@ if (!class_exists('TCPDF', false)) {
 		* @param string $align Allows to center or align the text. Possible values are:<ul><li>L or empty string: left align</li><li>C: center</li><li>R: right align</li><li>J: justification (default value when $ishtml=false)</li></ul>
 		* @param int $fill Indicates if the cell background must be painted (1) or transparent (0). Default value: 0.
 		* @param int $ln Indicates where the current position should go after the call. Possible values are:<ul><li>0: to the right</li><li>1: to the beginning of the next line [DEFAULT]</li><li>2: below</li></ul>
-		* @param int $x x position in user units
-		* @param int $y y position in user units
+		* @param float $x x position in user units
+		* @param float $y y position in user units
 		* @param boolean $reseth if true reset the last cell height (default true).
 		* @param int $stretch stretch carachter mode: <ul><li>0 = disabled</li><li>1 = horizontal scaling only if necessary</li><li>2 = forced horizontal scaling</li><li>3 = character spacing only if necessary</li><li>4 = forced character spacing</li></ul>
 		* @param boolean $ishtml set to true if $txt is HTML content (default = false).
@@ -9675,7 +9678,7 @@ if (!class_exists('TCPDF', false)) {
 		}
 		
 		/*
-		* Set the height of cell repect font height.
+		* Set the height of the cell (line height) respect the font height.
 		* @param int $h cell proportion respect font height (typical value = 1.25).
 		* @access public
 		* @since 3.0.014 (2008-06-04)
@@ -12624,7 +12627,7 @@ if (!class_exists('TCPDF', false)) {
 							$this->cMargin = $this->oldcMargin;
 						}
 						$this->lasth = $this->FontSize * $this->cell_height_ratio;
-						if (!empty($this->theadMargins)) {
+						if (isset($this->theadMargins['top'])) {
 							// restore top margin
 							$this->tMargin = $this->theadMargins['top'];
 							$this->pagedim[$this->page]['tm'] = $this->tMargin;

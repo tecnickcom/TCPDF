@@ -1,5 +1,9 @@
+4.6.017 (2009-07-05)
+	- Bug item #2816079 "Example 48 not working" was fixed.
+	- The signature of the checkPageBreak() was changed. The parameter $addpage was added to turn off the automatic page creation.
+	
 4.6.016 (2009-06-16)
-	- Method setSpacesRE() was added to set the regular expression for detecting withespaces or word separators. If you are using chinese, try: setSpacesRE('/[\s\p{Z}\p{Lo}]/');, otherwise you can use setSpacesRE('/[\s\p{Z}]/');
+	- Method setSpacesRE() was added to set the regular expression used for detecting withespaces or word separators. If you are using chinese, try: setSpacesRE('/[\s\p{Z}\p{Lo}]/');, otherwise you can use setSpacesRE('/[\s\p{Z}]/');
 	- The method _putinfo() now automatically fills the metadata with '?' in case of empty string.
 	
 4.6.015 (2009-06-11)
