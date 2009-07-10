@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_012.php
 // Begin       : 2008-03-04
-// Last Update : 2009-03-18
+// Last Update : 2009-07-10
 // 
 // Description : Example 012 for TCPDF class
 //               Graphic Functions
@@ -152,6 +152,13 @@ $pdf->RoundedRect(5, 255, 40, 30, 3.50, '1111', 'DF');
 $pdf->RoundedRect(50, 255, 40, 30, 6.50, '1000');
 $pdf->RoundedRect(95, 255, 40, 30, 10.0, '1111', null, $style6);
 $pdf->RoundedRect(140, 255, 40, 30, 8.0, '0101', 'DF', $style6, array(200, 200, 200));
+
+// Arrows
+$pdf->Text(190, 252, 'Arrows');
+$pdf->SetLineStyle($style5);
+$pdf->Arrow($x0=200, $y0=280, $x1=190, $y1=260, $head_style=0, $arm_size=5, $arm_angle=15);
+$pdf->Arrow($x0=200, $y0=280, $x1=195, $y1=260, $head_style=1, $arm_size=5, $arm_angle=15);
+$pdf->Arrow($x0=200, $y0=280, $x1=200, $y1=260, $head_style=2, $arm_size=5, $arm_angle=15);
 
 // ---------------------------------------------------------
 
