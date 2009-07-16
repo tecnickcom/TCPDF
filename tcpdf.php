@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-07-13
+// Last Update : 2009-07-16
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.6.019
+// Version     : 4.6.020
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -126,7 +126,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.6.019
+ * @version 4.6.020
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.6.019 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.6.020 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.6.019
+	* @version 4.6.020
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1614,12 +1614,18 @@ if (!class_exists('TCPDF', false)) {
 		/**
 		 * Enable or disable Right-To-Left language mode
 		 * @param Boolean $enable if true enable Right-To-Left language mode.
+		 * @param Boolean $resetx if true reset the X position on direction change.
 		 * @access public
 		* @since 2.0.000 (2008-01-03)
 		 */
-		public function setRTL($enable) {
-			$this->rtl = $enable ? true : false;
+		public function setRTL($enable, $resetx=true) {
+			$enable = $enable ? true : false;
+			$resetx = ($resetx AND ($enable != $this->rtl));
+			$this->rtl = $enable;
 			$this->tmprtl = false;
+			if ($resetx) {
+				$this->Ln(0);
+			}
 		}
 		
 		/**
