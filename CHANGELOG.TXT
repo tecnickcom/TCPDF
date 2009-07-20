@@ -1,3 +1,9 @@
+4.6.021 (2009-07-20)
+	- Bug item #2824015 "XHTML Ampersand &amp; in hyperlink bug" was fixed.
+	- Bug item #2824036 "Image as hyperlink in table, text displaced at page break" was fixed.
+	- Links alignment on justified text was fixed.
+	- Unicode "\u" modifier was added to re_spaces variable by default.
+	
 4.6.020 (2009-07-16)
 	- Bug item #2821921 "issue in example 18" was fixed.
 	- Signature of SetRTL() method was changed.
