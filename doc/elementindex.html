@@ -887,6 +887,8 @@
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$signature_data">TCPDF::$signature_data</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Signature data</dd>
 							<dt><b>$signature_max_lenght</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$signature_max_lenght">TCPDF::$signature_max_lenght</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Signature max lenght</dd>
+							<dt><b>$sig_obj_id</b></dt>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$sig_obj_id">TCPDF::$sig_obj_id</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Signature object ID</dd>
 							<dt><b>$spot_colors</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$spot_colors">TCPDF::$spot_colors</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Array of Spot colors</dd>
 							<dt><b>$state</b></dt>
@@ -1280,7 +1282,7 @@
 							<dt><b>_md5_16</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_md5_16">TCPDF::_md5_16()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Encrypts a string using MD5 and returns it's value as a binary string.</dd>
 							<dt><b>_newobj</b></dt>
-				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_newobj">TCPDF::_newobj()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Begin a new object.</dd>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_newobj">TCPDF::_newobj()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Begin a new object and return the object number.</dd>
 							<dt><b>_objectkey</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_objectkey">TCPDF::_objectkey()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Compute encryption key depending on object number where the encrypted data is stored</dd>
 							<dt><b>_out</b></dt>
@@ -1307,8 +1309,6 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_putbookmarks">TCPDF::_putbookmarks()</a></dd>
 							<dt><b>_putcatalog</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_putcatalog">TCPDF::_putcatalog()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Output Catalog.</dd>
-							<dt><b>_putcertification</b></dt>
-				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_putcertification">TCPDF::_putcertification()</a></dd>
 							<dt><b>_putcidfont0</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_putcidfont0">TCPDF::_putcidfont0()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Output CID-0 fonts.</dd>
 							<dt><b>_putEmbeddedFiles</b></dt>
@@ -1339,6 +1339,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_putresources">TCPDF::_putresources()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Output Resources.</dd>
 							<dt><b>_putshaders</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_putshaders">TCPDF::_putshaders()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Output shaders.</dd>
+							<dt><b>_putsignature</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_putsignature">TCPDF::_putsignature()</a></dd>
 							<dt><b>_putspotcolors</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_putspotcolors">TCPDF::_putspotcolors()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Output Spot Colors Resources.</dd>
 							<dt><b>_putstream</b></dt>
@@ -1347,8 +1349,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_puttrailer">TCPDF::_puttrailer()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Output trailer.</dd>
 							<dt><b>_puttruetypeunicode</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_puttruetypeunicode">TCPDF::_puttruetypeunicode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Adds unicode fonts.<br /></dd>
-							<dt><b>_putuserrights</b></dt>
-				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_putuserrights">TCPDF::_putuserrights()</a></dd>
+							<dt><b>_putursignature</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_putursignature">TCPDF::_putursignature()</a></dd>
 							<dt><b>_putviewerpreferences</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_putviewerpreferences">TCPDF::_putviewerpreferences()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Output viewer preferences.</dd>
 							<dt><b>_putxobjectdict</b></dt>
@@ -1372,7 +1374,7 @@
 	<a href="elementindex.html#top">top</a><br>
         <div class="credit">
 		    <hr />
-		    Documentation generated on Mon, 20 Jul 2009 15:44:26 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.1</a>
+		    Documentation generated on Fri, 24 Jul 2009 01:08:00 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.1</a>
 	      </div>
       </td></tr></table>
     </td>

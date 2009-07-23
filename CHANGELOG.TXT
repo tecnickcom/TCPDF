@@ -1,3 +1,8 @@
+4.6.022 (2009-07-24)
+	- A bug relative to single line printing when using WriteHTMLCell() was fixed.
+	- Signature support were improved but is still experimental.
+	- Fonts Free and Dejavu were updated to latest versions.
+
 4.6.021 (2009-07-20)
 	- Bug item #2824015 "XHTML Ampersand &amp; in hyperlink bug" was fixed.
 	- Bug item #2824036 "Image as hyperlink in table, text displaced at page break" was fixed.
