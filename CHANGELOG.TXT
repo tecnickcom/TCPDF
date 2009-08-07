@@ -1,3 +1,7 @@
+4.6.024 (2009-08-07)
+	- Bug item #2833556 "justification using other units than mm" was fixed.
+	- Documentation was fixed/updated.
+
 4.6.023 (2009-08-02)
 	- Bug item #2830537 "MirrorH can show mask for transparent PNGs" was fixed.
 
