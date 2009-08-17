@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-08-07
+// Last Update : 2009-08-17
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.6.024
+// Version     : 4.6.025
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -126,7 +126,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.6.024
+ * @version 4.6.025
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.6.024 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.6.025 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.6.024
+	* @version 4.6.025
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -4490,8 +4490,8 @@ if (!class_exists('TCPDF', false)) {
 				if ($type == 'jpg') {
 					$type = 'jpeg';
 				}
-				$mqr = get_magic_quotes_runtime();
-				set_magic_quotes_runtime(0);
+				$mqr = $this->get_mqr();
+				$this->set_mqr(false);
 				// Specific image handlers
 				$mtd = '_parse'.$type;
 				// GD image handler function
@@ -4537,7 +4537,7 @@ if (!class_exists('TCPDF', false)) {
 					//If false, we cannot process image
 					return;
 				}
-				set_magic_quotes_runtime($mqr);
+				$this->set_mqr($mqr);
 				if ($ismask) {
 					// force grayscale
 					$info['cs'] = 'DeviceGray';
@@ -4634,7 +4634,30 @@ if (!class_exists('TCPDF', false)) {
 			$this->endlinex = $this->img_rb_x;
 			return $info['i'];
 		}
-				
+		
+		/**
+		 * Sets the current active configuration setting of magic_quotes_runtime (if the set_magic_quotes_runtime function exist)
+		 * @param boolean $mqr FALSE for off, TRUE for on.
+		 * @since 4.6.025 (2009-08-17)
+		 */
+		public function set_mqr($mqr) {
+			if (function_exists('set_magic_quotes_runtime')) {
+				@set_magic_quotes_runtime($mqr);
+			}
+		}
+		
+		/**
+		 * Gets the current active configuration setting of magic_quotes_runtime (if the get_magic_quotes_runtime function exist)
+		 * @return Returns 0 if magic quotes runtime is off or get_magic_quotes_runtime doesn't exist, 1 otherwise. 
+		 * @since 4.6.025 (2009-08-17)
+		 */
+		public function get_mqr() {
+			if (function_exists('get_magic_quotes_runtime')) {
+				return @get_magic_quotes_runtime();
+			}
+			return 0;
+		}
+						
 		/**
 		* Convert the loaded php image to a JPEG and then return a structure for the PDF creator.
 		* This function requires GD library and write access to the directory defined on K_PATH_CACHE constant.
@@ -5742,8 +5765,8 @@ if (!class_exists('TCPDF', false)) {
 				$this->_out('<</Type /Encoding /BaseEncoding /WinAnsiEncoding /Differences ['.$diff.']>>');
 				$this->_out('endobj');
 			}
-			$mqr = get_magic_quotes_runtime();
-			set_magic_quotes_runtime(0);
+			$mqr = $this->get_mqr();
+			$this->set_mqr(false);
 			foreach ($this->FontFiles as $file => $info) {
 				// search and get font file to embedd
 				$fontdir = $info['fontdir'];
@@ -5786,7 +5809,7 @@ if (!class_exists('TCPDF', false)) {
 					$this->_out('endobj');
 				}
 			}
-			set_magic_quotes_runtime($mqr);
+			$this->set_mqr($mqr);
 			foreach ($this->fontkeys as $k) {
 				//Font objects
 				$this->setFontSubBuffer($k, 'n', $this->n + 1);

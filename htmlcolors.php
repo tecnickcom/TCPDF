@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : htmlcolors.php
 // Begin       : 2002-04-09
-// Last Update : 2008-11-17
+// Last Update : 2009-08-17
 // Version     : 1.0.002
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------

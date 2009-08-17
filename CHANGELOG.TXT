@@ -1,3 +1,7 @@
+4.6.025 (2009-08-17)
+	- Carriage returns (\r) were removed from source code.
+	- Problem related to set_magic_quotes_runtime() depracated was fixed.
+
 4.6.024 (2009-08-07)
 	- Bug item #2833556 "justification using other units than mm" was fixed.
 	- Documentation was fixed/updated.

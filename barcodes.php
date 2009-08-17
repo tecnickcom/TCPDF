@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : barcodes.php
 // Begin       : 2008-06-09
-// Last Update : 2009-04-15
+// Last Update : 2009-08-17
 // Version     : 1.0.008
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
