@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_052.php
 // Begin       : 2009-05-07
-// Last Update : 2009-05-07
+// Last Update : 2009-08-21
 // 
 // Description : Example 052 for TCPDF class
 //               Certification Signature (experimental)
@@ -70,7 +70,7 @@ $pdf->setLanguageArray($l);
 // ---------------------------------------------------------
 
 // set certificate file
-$certificate = 'file://../tcpdf.pem';
+$certificate = 'file://../tcpdf.crt';
 
 // set additional information
 $info = array(
@@ -81,7 +81,7 @@ $info = array(
 	);
 
 // set document signature
-$pdf->setSignature($certificate, $certificate, '', '', 2, $info);
+$pdf->setSignature($certificate, $certificate, 'tcpdfdemo', '', 2, $info);
 
 // set font
 $pdf->SetFont('helvetica', '', 10);
@@ -95,6 +95,7 @@ $pdf->Cell(0, 12, 'Signed Document', 1, 1, 'C');
 // ---------------------------------------------------------
 
 //Close and output PDF document
+//echo $pdf->Output('example_052.pdf', 'S');
 $pdf->Output('example_052.pdf', 'I');
 
 //============================================================+

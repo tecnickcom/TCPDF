@@ -1,3 +1,7 @@
+4.6.026 (2009-08-21)
+	- Bug #2841693 "Problem with MultiCell and ishtml and justification" was fixed.
+	- Signature functions were improved but not yet fixed (tcpdf.crt and example n. 52 were updated).
+
 4.6.025 (2009-08-17)
 	- Carriage returns (\r) were removed from source code.
 	- Problem related to set_magic_quotes_runtime() depracated was fixed.

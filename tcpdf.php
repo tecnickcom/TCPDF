@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-08-17
+// Last Update : 2009-08-21
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.6.025
+// Version     : 4.6.026
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -126,7 +126,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.6.025
+ * @version 4.6.026
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.6.025 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.6.026 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.6.025
+	* @version 4.6.026
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -5401,8 +5401,19 @@ if (!class_exists('TCPDF', false)) {
 		* @since 4.0.018 (2008-08-06)
 		*/
 		protected function _putannots($n) {
+			if ($this->sign AND isset($this->signature_data['cert_type']) AND $this->signature_data['cert_type'] > 0) {
+			// set reference for signature object
+				$annots = '/Annots [ *!*!*! 0 R';
+				if (!isset($this->PageAnnots[$n])) {
+					$annots .= "\n]";
+					$this->_out($annots);
+					return;
+				}
+			}
 			if (isset($this->PageAnnots[$n])) {
-				$annots = '/Annots [';
+				if (!isset($annots)) {
+					$annots = '/Annots [';
+				}
 				foreach ($this->PageAnnots[$n] as $key => $pl) {
 					$pl['opt'] = array_change_key_case($pl['opt'], CASE_LOWER);
 					$a = $pl['x'] * $this->k;
@@ -6330,6 +6341,19 @@ if (!class_exists('TCPDF', false)) {
 			} elseif (!is_string($this->ZoomMode)) {
 				$this->_out('/OpenAction [3 0 R /XYZ null null '.($this->ZoomMode / 100).']');
 			}
+			// signatures
+			if ($this->sign AND isset($this->signature_data['cert_type'])) {
+				if ($this->signature_data['cert_type'] > 0) {
+					$this->_out('/AcroForm<<');
+					$this->_out('/Fields ['.$this->sig_obj_id.' 0 R]');
+					$this->_out('/NeedAppearances false');
+					$this->_out('/SigFlags 3');
+					$this->_out('>>');
+					$this->_out('/Perms<</DocMDP '.($this->sig_obj_id + 1).' 0 R>>');
+				} else {
+					$this->_out('/Perms<</UR3 '.($this->sig_obj_id + 1).' 0 R>>');
+				}
+			}
 			if (isset($this->LayoutMode) AND (!$this->empty_string($this->LayoutMode))) {
 				$this->_out('/PageLayout /'.$this->LayoutMode.'');
 			}
@@ -6353,19 +6377,6 @@ if (!class_exists('TCPDF', false)) {
 			$v = $this->n_ocg_view.' 0 R';
 			$as = '<</Event /Print /OCGs ['.$p.' '.$v.'] /Category [/Print]>> <</Event /View /OCGs ['.$p.' '.$v.'] /Category [/View]>>';
 			$this->_out('/OCProperties <</OCGs ['.$p.' '.$v.'] /D <</ON ['.$p.'] /OFF ['.$v.'] /AS ['.$as.']>>>>');
-			// signatures
-			if ($this->sign AND isset($this->signature_data['cert_type'])) {
-				if ($this->signature_data['cert_type'] > 0) {
-					$this->_out('/AcroForm<<');
-					$this->_out('/Fields ['.$this->sig_obj_id.' 0 R]');
-					$this->_out('/NeedAppearances false');
-					$this->_out('/SigFlags 3');
-					$this->_out('>>');
-					$this->_out('/Perms<</DocMDP '.($this->sig_obj_id + 1).' 0 R>>');
-				} else {
-					$this->_out('/Perms<</UR3 '.($this->sig_obj_id + 1).' 0 R>>');
-				}
-			}
 		}
 		
 		/**
@@ -6473,11 +6484,28 @@ if (!class_exists('TCPDF', false)) {
 			$this->_putresources();
 			// Signature
 			if ($this->sign AND isset($this->signature_data['cert_type'])) {
-				// widget annotation
+				// widget annotation for signature
 				$this->sig_obj_id = $this->_newobj();
+				// --- replace signature ID on the first page ---
+				// get the document content
+				$pdfdoc = $this->getBuffer();
+				// Remove the original buffer
+				if (isset($this->diskcache) AND $this->diskcache) {
+					// remove buffer file from cache
+					unlink($this->buffer);
+				}
+				unset($this->buffer);
+				$signature_widget_ref = sprintf('/Annots [ % 6u 0 R', $this->sig_obj_id);
+				$pdfdoc = str_replace('/Annots [ *!*!*! 0 R', $signature_widget_ref, $pdfdoc);
+				$this->diskcache = false;
+				$this->buffer = &$pdfdoc;
+				$this->bufferlen = strlen($pdfdoc);
+				// ---
 				$this->_out('<<');
+				$this->_out('/Type /Annot /Subtype /Widget /Rect [0 0 0 0]');
+				$this->_out('/P 3 0 R'); // link to first page object
 				$this->_out('/FT /Sig');
-				$this->_out('/T '.$this->_textstring('SIGNATURE'));
+				$this->_out('/T '.$this->_textstring('Signature'));
 				$this->_out('/Ff 0');
 				$this->_out('/V '.($this->sig_obj_id + 1).' 0 R');
 				$this->_out('>>');
@@ -9422,6 +9450,9 @@ if (!class_exists('TCPDF', false)) {
 					$this->_out('/Signature['.$this->ur_signature.']');
 				}			
 				$this->_out('>>');
+				
+				// /Data 30 0 R
+				
 				$this->_out('>>');
 				$this->_out(']');
 			}
@@ -9513,6 +9544,8 @@ if (!class_exists('TCPDF', false)) {
 		*/
 		public function setSignature($signing_cert='', $private_key='', $private_key_password='', $extracerts='', $cert_type=2, $info=array()) {
 			// to create self-signed signature: openssl req -x509 -nodes -days 365000 -newkey rsa:1024 -keyout tcpdf.pem -out tcpdf.pem
+			// to convert pfx certificate to pem: openssl
+			//     OpenSSL> pkcs12 -in <cert.pfx> -out <cert.pem> -nodes
 			$this->sign = true;
 			$this->signature_data = array();
 			if (strlen($signing_cert) == 0) {
@@ -11679,8 +11712,9 @@ if (!class_exists('TCPDF', false)) {
 										$t_x = $this->lMargin - $this->endlinex - (($no - $ns - 1) * $this->GetStringWidth(chr(32)));
 									}
 									// calculate additional space to add to each space
-									$spacewidth = (($tw - $linew + (($no - $ns) * $this->GetStringWidth(chr(32)))) / ($ns?$ns:1)) * $this->k;
-									$spacewidthu = -1000 * ($tw - $linew + ($no * $this->GetStringWidth(chr(32)))) / ($ns?$ns:1) / $this->FontSize;
+									$spacelen = $this->GetStringWidth(chr(32));
+									$spacewidth = (($tw - $linew + (($no - $ns) * $spacelen)) / ($ns?$ns:1)) * $this->k;
+									$spacewidthu = -1000 * ($tw - $linew + ($no * $spacelen)) / ($ns?$ns:1) / $this->FontSize;
 									$nsmax = $ns;
 									$ns = 0;
 									reset($lnstring);
@@ -11689,6 +11723,19 @@ if (!class_exists('TCPDF', false)) {
 									$prev_epsposbeg = 0;
 									global $spacew;
 									while (preg_match('/([0-9\.\+\-]*)[\s](Td|cm|m|l|c|re)[\s]/x', $pmid, $strpiece, PREG_OFFSET_CAPTURE, $offset) == 1) {
+										// check if we are inside a string section '[( ... )]'
+										$stroffset = strpos($pmid, '[(', $offset);
+										if (($stroffset !== false) AND ($stroffset <= $strpiece[2][1])) {
+											// set offset to the end of string section 
+											$offset = strpos($pmid, ')]', $stroffset);
+											while (($offset !== false) AND ($pmid{($offset - 1)} == '\\')) {
+												$offset = strpos($pmid, ')]', ($offset + 1));
+											}
+											if ($offset === false) {
+												$this->Error('HTML Justification: malformed PDF code.');
+											}
+											continue;
+										}
 										if ($this->rtl OR $this->tmprtl) {
 											$spacew = ($spacewidth * ($nsmax - $ns));
 										} else {
