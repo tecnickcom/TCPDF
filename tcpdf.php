@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-08-21
+// Last Update : 2009-08-24
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.6.026
+// Version     : 4.6.027
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -126,7 +126,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.6.026
+ * @version 4.6.027
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.6.026 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.6.027 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.6.026
+	* @version 4.6.027
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -3047,11 +3047,31 @@ if (!class_exists('TCPDF', false)) {
 			if ((!isset($type)) OR (!isset($cw))) {
 				$this->Error('The font definition file has a bad format: '.$fontfile.'');
 			}
-			if (!isset($file)) {
+			// SET default parameters
+			if (!isset($file) OR $this->empty_string($file)) {
 				$file = '';
 			}
-			if (!isset($enc)) {
+			if (!isset($enc) OR $this->empty_string($enc)) {
 				$enc = '';
+			}
+			if (!isset($cidinfo) OR $this->empty_string($cidinfo)) {
+				$cidinfo = array('Registry'=>'Adobe','Ordering'=>'Identity','Supplement'=>0);
+				$cidinfo['uni2cid'] = array();
+			}
+			if (!isset($ctg) OR $this->empty_string($ctg)) {
+				$ctg = '';
+			}
+			if (!isset($desc) OR $this->empty_string($desc)) {
+				$desc = array();
+			}
+			if (!isset($up) OR $this->empty_string($up)) {
+				$up = -100;
+			}
+			if (!isset($ut) OR $this->empty_string($ut)) {
+				$ut = 50;
+			}
+			if (!isset($cw) OR $this->empty_string($cw)) {
+				$cw = array();
 			}
 			if (!isset($dw) OR $this->empty_string($dw)) {
 				// set default width
@@ -3064,24 +3084,23 @@ if (!class_exists('TCPDF', false)) {
 				}
 			}
 			++$this->numfonts;			
-			// register CID font (all styles at once)
 			if ($type == 'cidfont0') {
-				$file = ''; // not embedded
+				// register CID font (all styles at once)
 				$styles = array('' => '', 'B' => ',Bold', 'I' => ',Italic', 'BI' => ',BoldItalic');
 				$sname = $name.$styles[$bistyle];
 				if ((strpos($bistyle, 'B') !== false) AND (isset($desc['StemV'])) AND ($desc['StemV'] == 70)) {
 					$desc['StemV'] = 120;
 				}
-				$this->setFontBuffer($fontkey, array('i' => $this->numfonts, 'type' => $type, 'name' => $sname, 'desc' => $desc, 'cidinfo' => $cidinfo, 'up' => $up, 'ut' => $ut, 'cw' => $cw, 'dw' => $dw, 'enc' => $enc));
 			} elseif ($type == 'core') {
-				$this->setFontBuffer($fontkey, array('i' => $this->numfonts, 'type' => 'core', 'name' => $this->CoreFonts[$fontkey], 'up' => -100, 'ut' => 50, 'cw' => $cw, 'dw' => $dw));
+				$name = $this->CoreFonts[$fontkey];
 			} elseif (($type == 'TrueType') OR ($type == 'Type1')) {
-				$this->setFontBuffer($fontkey, array('i' => $this->numfonts, 'type' => $type, 'name' => $name, 'up' => $up, 'ut' => $ut, 'cw' => $cw, 'dw' => $dw, 'file' => $file, 'enc' => $enc, 'desc' => $desc));
+				// ...
 			} elseif ($type == 'TrueTypeUnicode') {
-				$this->setFontBuffer($fontkey, array('i' => $this->numfonts, 'type' => $type, 'name' => $name, 'desc' => $desc, 'up' => $up, 'ut' => $ut, 'cw' => $cw, 'dw' => $dw, 'enc' => $enc, 'file' => $file, 'ctg' => $ctg));
+				$enc = 'Identity-H';
 			} else {
 				$this->Error('Unknow font type: '.$type.'');
 			}
+			$this->setFontBuffer($fontkey, array('i' => $this->numfonts, 'type' => $type, 'name' => $name, 'desc' => $desc, 'up' => $up, 'ut' => $ut, 'cw' => $cw, 'dw' => $dw, 'enc' => $enc, 'cidinfo' => $cidinfo, 'file' => $file, 'ctg' => $ctg));
 			if (isset($diff) AND (!empty($diff))) {
 				//Search existing encodings
 				$d = 0;
@@ -5831,8 +5850,9 @@ if (!class_exists('TCPDF', false)) {
 					//Standard font
 					$this->_newobj();
 					$this->_out('<</Type /Font');
-					$this->_out('/BaseFont /'.$name);
 					$this->_out('/Subtype /Type1');
+					$this->_out('/BaseFont /'.$name);
+					$this->_out('/Name /F'.$font['i']);
 					if (($name != 'symbol') AND ($name != 'zapfdingbats')) {
 						$this->_out('/Encoding /WinAnsiEncoding');
 					}
@@ -5842,8 +5862,9 @@ if (!class_exists('TCPDF', false)) {
 					//Additional Type1 or TrueType font
 					$this->_newobj();
 					$this->_out('<</Type /Font');
-					$this->_out('/BaseFont /'.$name);
 					$this->_out('/Subtype /'.$type);
+					$this->_out('/BaseFont /'.$name);
+					$this->_out('/Name /F'.$font['i']);
 					$this->_out('/FirstChar 32 /LastChar 255');
 					$this->_out('/Widths '.($this->n + 1).' 0 R');
 					$this->_out('/FontDescriptor '.($this->n + 2).' 0 R');
@@ -6000,7 +6021,8 @@ if (!class_exists('TCPDF', false)) {
 			$this->_out('<</Type /Font');
 			$this->_out('/Subtype /Type0');
 			$this->_out('/BaseFont /'.$font['name'].'');
-			$this->_out('/Encoding /Identity-H'); //The horizontal identity mapping for 2-byte CIDs; may be used with CIDFonts using any Registry, Ordering, and Supplement values.
+			$this->_out('/Name /F'.$font['i']);
+			$this->_out('/Encoding /'.$font['enc']);
 			$this->_out('/ToUnicode /Identity-H');
 			$this->_out('/DescendantFonts ['.($this->n + 1).' 0 R]');
 			$this->_out('>>');
@@ -6012,9 +6034,9 @@ if (!class_exists('TCPDF', false)) {
 			$this->_out('/Subtype /CIDFontType2');
 			$this->_out('/BaseFont /'.$font['name'].'');
 			// A dictionary containing entries that define the character collection of the CIDFont.
-			$cidinfo = '/Registry '.$this->_datastring('Adobe');
-			$cidinfo .= ' /Ordering '.$this->_datastring('Identity');
-			$cidinfo .= ' /Supplement 0';
+			$cidinfo = '/Registry '.$this->_datastring($font['cidinfo']['Registry']);
+			$cidinfo .= ' /Ordering '.$this->_datastring($font['cidinfo']['Ordering']);
+			$cidinfo .= ' /Supplement '.$font['cidinfo']['Supplement'];
 			$this->_out('/CIDSystemInfo <<'.$cidinfo.'>>');
 			$this->_out('/FontDescriptor '.($this->n + 1).' 0 R');
 			$this->_out('/DW '.$font['dw'].''); // default width
@@ -6073,6 +6095,7 @@ if (!class_exists('TCPDF', false)) {
 		
 		/**
 		 * Output CID-0 fonts.
+		 * A Type 0 CIDFont contains glyph descriptions based on the Adobe Type 1 font format
 		 * @param array $font font data
 		 * @access protected
 		 * @author Andrew Whitehead, Nicola Asuni, Yukihiro Nakadaira
@@ -6102,8 +6125,9 @@ if (!class_exists('TCPDF', false)) {
 			}
 			$this->_newobj();
 			$this->_out('<</Type /Font');
-			$this->_out('/BaseFont /'.$longname);
 			$this->_out('/Subtype /Type0');
+			$this->_out('/BaseFont /'.$longname);
+			$this->_out('/Name /F'.$font['i']);
 			if ($enc) {
 				$this->_out('/Encoding /'.$enc);
 			}
@@ -6112,8 +6136,8 @@ if (!class_exists('TCPDF', false)) {
 			$this->_out('endobj');
 			$this->_newobj();
 			$this->_out('<</Type /Font');
-			$this->_out('/BaseFont /'.$name);
 			$this->_out('/Subtype /CIDFontType0');
+			$this->_out('/BaseFont /'.$name);
 			$cidinfo = '/Registry '.$this->_datastring($font['cidinfo']['Registry']);
 			$cidinfo .= ' /Ordering '.$this->_datastring($font['cidinfo']['Ordering']);
 			$cidinfo .= ' /Supplement '.$font['cidinfo']['Supplement'];

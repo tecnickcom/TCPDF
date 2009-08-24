@@ -1,3 +1,6 @@
+4.6.027 (2009-08-24)
+	- TCPDF now supports unembedded TrueTypeUnicode Fonts (just comment the $file entry on the fonts' php file.
+
 4.6.026 (2009-08-21)
 	- Bug #2841693 "Problem with MultiCell and ishtml and justification" was fixed.
 	- Signature functions were improved but not yet fixed (tcpdf.crt and example n. 52 were updated).

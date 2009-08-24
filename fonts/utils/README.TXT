@@ -95,6 +95,7 @@ Setting up a font for usage with TCPDF requires the following steps:
 
    4. Edit and copy resulting files by case:
           * For embedded fonts: copy the resulting .php, .z and .ctg.z (if available) files to the TCPDF fonts directory.
+          * For not-embedding the font, edit the .php file and comment the $file entry.
           * For CID-0 fonts (not embeddeed) you have to edit the .php file:
                 o change the font type to: $type='cidfont0';
                 o set the default font width by adding the line: $dw=1000;
