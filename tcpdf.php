@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-08-24
+// Last Update : 2009-08-25
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.6.027
+// Version     : 4.6.028
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -126,7 +126,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.6.027
+ * @version 4.6.028
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.6.027 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.6.028 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.6.027
+	* @version 4.6.028
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1308,6 +1308,20 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 4.6.022 (2009-06-23)
 		 */
 		protected $sig_obj_id = 0;
+
+		/**
+		 * ByteRange placemark used during signature process.
+		 * @access protected
+		 * @since 4.6.028 (2009-08-25)
+		 */
+		protected $byterange_string = '/ByteRange[0 ********** ********** **********]';
+
+		/**
+		 * Placemark used during signature process.
+		 * @access protected
+		 * @since 4.6.028 (2009-08-25)
+		 */
+		protected $sig_annot_ref = '/Annots [********** 0 R';
 		
 		//------------------------------------------------------------
 		// METHODS
@@ -5094,17 +5108,18 @@ if (!class_exists('TCPDF', false)) {
 				}
 				unset($this->buffer);
 				// remove filler space
-				$tmppos = strpos($pdfdoc, '/ByteRange[0 ********** ********** **********]') + 58;
-				$pdfdoc = substr($pdfdoc, 0, $tmppos).substr($pdfdoc, $tmppos + $this->signature_max_lenght);
+				$byterange_string_len = strlen($this->byterange_string);
 				// define the ByteRange
 				$byte_range = array();
 				$byte_range[0] = 0;
-				$byte_range[1] = $tmppos - 1;
-				$byte_range[2] = $byte_range[1] + $this->signature_max_lenght;
-				$byte_range[3] = strlen($pdfdoc) - $byte_range[1];
+				$byte_range[1] = strpos($pdfdoc, $this->byterange_string) + $byterange_string_len + 10;
+				$byte_range[2] = $byte_range[1] + $this->signature_max_lenght + 2;
+				$byte_range[3] = strlen($pdfdoc) - $byte_range[2];
+				$pdfdoc = substr($pdfdoc, 0, $byte_range[1]).substr($pdfdoc, $byte_range[2]);
 				// replace the ByteRange
-				$byterange = sprintf('/ByteRange[0 %010u %010u %010u]', $byte_range[1], $byte_range[2], $byte_range[3]);
-				$pdfdoc = str_replace('/ByteRange[0 ********** ********** **********]', $byterange, $pdfdoc);
+				$byterange = sprintf('/ByteRange[0 %u %u %u]', $byte_range[1], $byte_range[2], $byte_range[3]);
+				$byterange .= str_repeat(' ', ($byterange_string_len - strlen($byterange)));
+				$pdfdoc = str_replace($this->byterange_string, $byterange, $pdfdoc);
 				// write the document to a temporary folder
 				$tempdoc = tempnam(K_PATH_CACHE, 'tmppdf_');
 				$f = fopen($tempdoc, 'wb');
@@ -5136,7 +5151,7 @@ if (!class_exists('TCPDF', false)) {
 				$signature = current(unpack('H*', $signature));
 				$signature = str_pad($signature, $this->signature_max_lenght, '0');
 				// Add signature to the document
-				$pdfdoc = substr($pdfdoc, 0, $byte_range[1]).$signature.substr($pdfdoc, (0 - $byte_range[3]));
+				$pdfdoc = substr($pdfdoc, 0, $byte_range[1]).'<'.$signature.'>'.substr($pdfdoc, ($byte_range[1]));
 				$this->diskcache = false;
 				$this->buffer = &$pdfdoc;
 				$this->bufferlen = strlen($pdfdoc);
@@ -5235,6 +5250,7 @@ if (!class_exists('TCPDF', false)) {
 					AND ($val != 'sign')
 					AND ($val != 'signature_data')
 					AND ($val != 'signature_max_lenght')
+					AND ($val != 'byterange_string')
 					)) {
 					if (!$preserve_objcopy OR ($val != 'objcopy')) {
 						unset($this->$val);
@@ -5421,10 +5437,10 @@ if (!class_exists('TCPDF', false)) {
 		*/
 		protected function _putannots($n) {
 			if ($this->sign AND isset($this->signature_data['cert_type']) AND $this->signature_data['cert_type'] > 0) {
-			// set reference for signature object
-				$annots = '/Annots [ *!*!*! 0 R';
+				// set reference for signature object
+				$annots = $this->sig_annot_ref;
 				if (!isset($this->PageAnnots[$n])) {
-					$annots .= "\n]";
+					$annots .= ']';
 					$this->_out($annots);
 					return;
 				}
@@ -5447,7 +5463,7 @@ if (!class_exists('TCPDF', false)) {
 					$annots .= ' /Contents '.$this->_textstring($pl['txt']);
 					//$annots .= ' /P ';
 					$annots .= ' /NM '.$this->_textstring(sprintf('%04u-%04u', $n, $key));
-					$annots .= ' /M '.$this->_datastring('D:'.date('YmdHis'));
+					$annots .= ' /M '.$this->_datestring();
 					if (isset($pl['opt']['f'])) {
 						$val = 0;
 						if (is_array($pl['opt']['f'])) {
@@ -5575,7 +5591,7 @@ if (!class_exists('TCPDF', false)) {
 						if (isset($pl['opt']['rc'])) {
 							$annots .= ' /RC '.$this->_textstring($pl['opt']['rc']);
 						}
-						$annots .= ' /CreationDate '.$this->_datastring('D:'.date('YmdHis'));
+						$annots .= ' /CreationDate '.$this->_datestring();
 						//$annots .= ' /IRT ';
 						if (isset($pl['opt']['subj'])) {
 							$annots .= ' /Subj '.$this->_textstring($pl['opt']['subj']);
@@ -6345,8 +6361,8 @@ if (!class_exists('TCPDF', false)) {
 			} else {
 				$this->_out('/Producer '.$this->_textstring('TCPDF'));
 			}
-			$this->_out('/CreationDate '.$this->_datastring('D:'.date('YmdHis')));
-			$this->_out('/ModDate '.$this->_datastring('D:'.date('YmdHis')));	
+			$this->_out('/CreationDate '.$this->_datestring());
+			$this->_out('/ModDate '.$this->_datestring());	
 		}
 		
 		/**
@@ -6519,8 +6535,9 @@ if (!class_exists('TCPDF', false)) {
 					unlink($this->buffer);
 				}
 				unset($this->buffer);
-				$signature_widget_ref = sprintf('/Annots [ % 6u 0 R', $this->sig_obj_id);
-				$pdfdoc = str_replace('/Annots [ *!*!*! 0 R', $signature_widget_ref, $pdfdoc);
+				$signature_widget_ref = sprintf('/Annots [%u 0 R', $this->sig_obj_id);
+				$signature_widget_ref .= str_repeat(' ', (strlen($this->sig_annot_ref) - strlen($signature_widget_ref)));
+				$pdfdoc = str_replace($this->sig_annot_ref, $signature_widget_ref, $pdfdoc);
 				$this->diskcache = false;
 				$this->buffer = &$pdfdoc;
 				$this->bufferlen = strlen($pdfdoc);
@@ -6703,7 +6720,7 @@ if (!class_exists('TCPDF', false)) {
 		}
 		
 		/**
-		* Format a date string for meta information
+		* Format a data string for meta information
 		* @param string $s date string to escape.
 		* @return string escaped string.
 		* @access protected
@@ -6714,7 +6731,18 @@ if (!class_exists('TCPDF', false)) {
 			}
 			return '('. $this->_escape($s).')';
 		}
-		
+
+		/**
+		* Returns a formatted date for meta information
+		* @return string escaped date string.
+		* @access protected
+		* @since 4.6.028 (2009-08-25)
+		*/
+		protected function _datestring() {
+			$current_time = substr_replace(date('YmdHisO'), '\'', (0 - 2), 0).'\'';
+			return $this->_datastring('D:'.$current_time);
+		}
+
 		/**
 		* Format a text string for meta information
 		* @param string $s string to escape.
@@ -9446,21 +9474,21 @@ if (!class_exists('TCPDF', false)) {
 			if ((!$this->sign) OR (isset($this->signature_data['cert_type']) AND ($this->signature_data['cert_type'] > 0))) {
 				return;
 			}
-			$this->_out('/Type/Sig');
-			$this->_out('/Filter/Adobe.PPKLite');
-			$this->_out('/SubFilter/adbe.pkcs7.detached');
-			$this->_out('/ByteRange[0 ********** ********** **********]');
+			$this->_out('/Type /Sig');
+			$this->_out('/Filter /Adobe.PPKLite');
+			$this->_out('/SubFilter /adbe.pkcs7.detached');
+			$this->_out($this->byterange_string);
 			$this->_out('/Contents<>'.str_repeat(' ', $this->signature_max_lenght));
 			if ($this->ur) {
 				$this->_out('/Reference');
 				$this->_out('[');
 				$this->_out('<<');
-				$this->_out('/Type/SigRef');
-				$this->_out('/TransformMethod/UR3');
+				$this->_out('/Type /SigRef');
+				$this->_out('/TransformMethod /UR3');
 				$this->_out('/TransformParams');
 				$this->_out('<<');
-				$this->_out('/Type/TransformParams');
-				$this->_out('/V/2.2');
+				$this->_out('/Type /TransformParams');
+				$this->_out('/V /2.2');
 				if (!$this->empty_string($this->ur_document)) {
 					$this->_out('/Document['.$this->ur_document.']');
 				}
@@ -9474,13 +9502,10 @@ if (!class_exists('TCPDF', false)) {
 					$this->_out('/Signature['.$this->ur_signature.']');
 				}			
 				$this->_out('>>');
-				
-				// /Data 30 0 R
-				
 				$this->_out('>>');
 				$this->_out(']');
 			}
-			$this->_out('/M '.$this->_datastring('D:'.date('YmdHisO')));
+			$this->_out('/M '.$this->_datestring());
 		}
 		
 		/*
@@ -9493,25 +9518,24 @@ if (!class_exists('TCPDF', false)) {
 			if ((!$this->sign) OR (isset($this->signature_data['cert_type']) AND ($this->signature_data['cert_type'] <= 0))) {
 				return;
 			}
-			$this->_out('/Type/Sig');
-			$this->_out('/Filter/Adobe.PPKLite');
-			$this->_out('/SubFilter/adbe.pkcs7.detached');
-			$this->_out('/ByteRange[0 ********** ********** **********]');
+			$this->_out('/Type /Sig');
+			$this->_out('/Filter /Adobe.PPKLite');
+			$this->_out('/SubFilter /adbe.pkcs7.detached');
+			$this->_out($this->byterange_string);
 			$this->_out('/Contents<>'.str_repeat(' ', $this->signature_max_lenght));
 			$this->_out('/Reference');
 			$this->_out('[');
 			$this->_out('<<');
-			$this->_out('/Type/SigRef');
-			$this->_out('/TransformMethod/DocMDP');
+			$this->_out('/Type /SigRef');
+			$this->_out('/TransformMethod /DocMDP');
 			$this->_out('/TransformParams');
 			$this->_out('<<');
-			$this->_out('/Type/TransformParams');
-			$this->_out('/V/1.2');
+			$this->_out('/Type /TransformParams');
+			$this->_out('/V /1.2');
 			$this->_out('/P '.$this->signature_data['cert_type'].'');
 			$this->_out('>>');
 			$this->_out('>>');
 			$this->_out(']');
-			$this->_out('/M '.$this->_datastring('D:'.date('YmdHisO')));
 			if (isset($this->signature_data['info']['Name']) AND !$this->empty_string($this->signature_data['info']['Name'])) {
 				$this->_out('/Name '.$this->_textstring($this->signature_data['info']['Name']).'');
 			}
@@ -9524,6 +9548,7 @@ if (!class_exists('TCPDF', false)) {
 			if (isset($this->signature_data['info']['ContactInfo']) AND !$this->empty_string($this->signature_data['info']['ContactInfo'])) {
 				$this->_out('/ContactInfo '.$this->_textstring($this->signature_data['info']['ContactInfo']).'');
 			}
+			$this->_out('/M '.$this->_datestring());
 		}
 		
 		/*
@@ -9567,13 +9592,13 @@ if (!class_exists('TCPDF', false)) {
 		* @since 4.6.005 (2009-04-24)
 		*/
 		public function setSignature($signing_cert='', $private_key='', $private_key_password='', $extracerts='', $cert_type=2, $info=array()) {
-			// to create self-signed signature: openssl req -x509 -nodes -days 365000 -newkey rsa:1024 -keyout tcpdf.pem -out tcpdf.pem
+			// to create self-signed signature: openssl req -x509 -nodes -days 365000 -newkey rsa:1024 -keyout tcpdf.crt -out tcpdf.crt
 			// to convert pfx certificate to pem: openssl
-			//     OpenSSL> pkcs12 -in <cert.pfx> -out <cert.pem> -nodes
+			//     OpenSSL> pkcs12 -in <cert.pfx> -out <cert.crt> -nodes
 			$this->sign = true;
 			$this->signature_data = array();
 			if (strlen($signing_cert) == 0) {
-				$signing_cert = 'file://'.dirname(__FILE__).'/tcpdf.pem';
+				$signing_cert = 'file://'.dirname(__FILE__).'/tcpdf.crt';
 			}
 			if (strlen($private_key) == 0) {
 				$private_key = $signing_cert;

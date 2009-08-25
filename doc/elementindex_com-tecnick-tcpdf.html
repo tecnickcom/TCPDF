@@ -91,7 +91,9 @@
 							<dt><b>_beginpage</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_beginpage">TCPDF::_beginpage()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Initialize a new page.</dd>
 							<dt><b>_datastring</b></dt>
-				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_datastring">TCPDF::_datastring()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Format a date string for meta information</dd>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_datastring">TCPDF::_datastring()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Format a data string for meta information</dd>
+							<dt><b>_datestring</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_datestring">TCPDF::_datestring()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns a formatted date for meta information</dd>
 							<dt><b>_destroy</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_destroy">TCPDF::_destroy()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Unset all class variables except the following critical variables: internal_encoding, state, bufferlen, buffer and diskcache.</dd>
 							<dt><b>_dochecks</b></dt>
@@ -272,6 +274,8 @@
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$buffer">TCPDF::$buffer</a></dd>
 							<dt><b>$bufferlen</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$bufferlen">TCPDF::$bufferlen</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Lenght of the buffer in bytes.</dd>
+							<dt><b>$byterange_string</b></dt>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$byterange_string">TCPDF::$byterange_string</a><br>&nbsp;&nbsp;&nbsp;&nbsp;ByteRange placemark used during signature process.</dd>
 							<dt><b>barcodes.php</b></dt>
 				<dd>procedural page <a href="com-tecnick-tcpdf/_barcodes.php.html">barcodes.php</a></dd>
 							<dt><b>barcode_c128</b></dt>
@@ -1040,6 +1044,8 @@
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$signature_data">TCPDF::$signature_data</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Signature data</dd>
 							<dt><b>$signature_max_lenght</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$signature_max_lenght">TCPDF::$signature_max_lenght</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Signature max lenght</dd>
+							<dt><b>$sig_annot_ref</b></dt>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$sig_annot_ref">TCPDF::$sig_annot_ref</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Placemark used during signature process.</dd>
 							<dt><b>$sig_obj_id</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$sig_obj_id">TCPDF::$sig_obj_id</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Signature object ID</dd>
 							<dt><b>$spot_colors</b></dt>
@@ -1063,9 +1069,9 @@
 							<dt><b>SetAutoPageBreak</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodSetAutoPageBreak">TCPDF::SetAutoPageBreak()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Enables or disables the automatic page breaking mode. When enabling, the second parameter is the distance from the bottom of the page that defines the triggering limit. By default, the mode is on and the margin is 2 cm.</dd>
 							<dt><b>setBarcode</b></dt>
-				<dd>in file barcodes.php, method <a href="com-tecnick-tcpdf/TCPDFBarcode.html#methodsetBarcode">TCPDFBarcode::setBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set the barcode.</dd>
-							<dt><b>setBarcode</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetBarcode">TCPDF::setBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set document barcode.</dd>
+							<dt><b>setBarcode</b></dt>
+				<dd>in file barcodes.php, method <a href="com-tecnick-tcpdf/TCPDFBarcode.html#methodsetBarcode">TCPDFBarcode::setBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set the barcode.</dd>
 							<dt><b>SetBooklet</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodSetBooklet">TCPDF::SetBooklet()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set the booklet mode for double-sided pages.</dd>
 							<dt><b>setBuffer</b></dt>
@@ -1401,7 +1407,7 @@
 	<a href="elementindex_com-tecnick-tcpdf.html#top">top</a><br>
         <div class="credit">
 		    <hr />
-		    Documentation generated on Mon, 24 Aug 2009 17:52:21 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.1</a>
+		    Documentation generated on Tue, 25 Aug 2009 20:07:38 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.1</a>
 	      </div>
       </td></tr></table>
     </td>
