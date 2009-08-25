@@ -53,6 +53,7 @@ Main Features:
 // 	* supports page compression (requires zlib extension);
 //  * supports text hyphenation.
 //  * supports transactions to UNDO commands.
+//  * supports signature certifications.
 
 Installation (full instructions on http://www.tcpdf.org):
 	1. copy the folder on your Web server

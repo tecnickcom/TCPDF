@@ -1,5 +1,5 @@
 4.6.028 (2009-08-25)
-	- Signature algorithm was fixed (see example n. 52).
+	- Signature algorithm was finally fixed (see example n. 52).
 
 4.6.027 (2009-08-24)
 	- TCPDF now supports unembedded TrueTypeUnicode Fonts (just comment the $file entry on the fonts' php file.
