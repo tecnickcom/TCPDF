@@ -1,3 +1,6 @@
+4.6.029 (2009-08-26)
+	- PHP4 version was fixed.
+
 4.6.028 (2009-08-25)
 	- Signature algorithm was finally fixed (see example n. 52).
 
