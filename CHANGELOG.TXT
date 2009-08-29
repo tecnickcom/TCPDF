@@ -1,3 +1,8 @@
+4.7.000 (2009-08-29)
+	- This is a major release.
+	- Some procedures were internally optimized.
+	- The problem of mixed signature and annotations was fixed (example n. 52).
+	
 4.6.030 (2009-08-29)
 	- IMPORTANT: percentages on table cell widths are now relative to the full table width (as in standard HTML).
 	- Various minor bugs were fixed.
