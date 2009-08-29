@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-08-26
+// Last Update : 2009-08-29
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.6.029
+// Version     : 4.6.030
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -119,6 +119,7 @@
 * <li>supports page compression (requires zlib extension);</li>
 * <li>supports text hyphenation.</li>
 * <li>supports transactions to UNDO commands.</li>
+* <li>supports signature certifications.</li>
  * </ul>
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
@@ -127,7 +128,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.6.029
+ * @version 4.6.030
  */
 
 /**
@@ -151,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.6.029 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.6.030 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.6.029
+	* @version 4.6.030
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -10606,15 +10607,13 @@ if (!class_exists('TCPDF', false)) {
 			if (!isset($style['border'])) {
 				$style['border'] = false;
 			}
+			$fontsize = 0;
 			if (!isset($style['text'])) {
 				$style['text'] = false;
-				$fontsize = 0;
 			}
 			if ($style['text'] AND isset($style['font'])) {
 				if (isset($style['fontsize'])) {
 					$fontsize = $style['fontsize'];
-				} else {
-					$fontsize = 0;
 				}
 				$this->SetFont($style['font'], '', $fontsize);
 			}
@@ -10698,7 +10697,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->rtl = false;
 			// print background color
 			if ($style['bgcolor']) {
-				$this->Rect($xpos_rect, $y, $fbw, $h, 'DF', '', $style['bgcolor']);
+				$this->Rect($xpos_rect, $y, $fbw, $h, $style['border'] ? 'DF' : 'F', '', $style['bgcolor']);
 			} elseif ($style['border']) {
 				$this->Rect($xpos_rect, $y, $fbw, $h, 'D');
 			}
@@ -10893,7 +10892,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->rtl = false;
 			// print background color
 			if ($style['bgcolor']) {
-				$this->Rect($x, $y, $w, $h, 'DF', '', $style['bgcolor']);
+				$this->Rect($x, $y, $w, $h, $style['border'] ? 'DF' : 'F', '', $style['bgcolor']);
 			} elseif ($style['border']) {
 				$this->Rect($x, $y, $w, $h, 'D');
 			}
@@ -11993,7 +11992,7 @@ if (!class_exists('TCPDF', false)) {
 							$colspan = $dom[$key]['attribute']['colspan'];
 							$wtmp = ($colspan * ($table_width / $dom[$table_el]['cols']));
 							if (isset($dom[$key]['width'])) {
-								$cellw = $this->getHTMLUnitToUnits($dom[$key]['width'], $wtmp, 'px');
+								$cellw = $this->getHTMLUnitToUnits($dom[$key]['width'], $table_width, 'px');
 							} else {
 								$cellw = $wtmp;
 							}
