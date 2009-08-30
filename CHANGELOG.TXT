@@ -1,3 +1,6 @@
+4.7.001 (2009-08-30)
+	- The Polygon() and Arrow() methods were fixed and improved (see example n. 12).
+	
 4.7.000 (2009-08-29)
 	- This is a major release.
 	- Some procedures were internally optimized.

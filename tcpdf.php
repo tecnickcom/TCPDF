@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-08-29
+// Last Update : 2009-08-30
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.7.000
+// Version     : 4.7.001
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -128,7 +128,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.7.000
+ * @version 4.7.001
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.7.000 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.7.001 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.7.000
+	* @version 4.7.001
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1352,7 +1352,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 4.7.000 (2009-08-29)
 		 */
 		protected $annot_obj_id = 200000;
-		
+
 		//------------------------------------------------------------
 		// METHODS
 		//------------------------------------------------------------
@@ -5474,7 +5474,7 @@ if (!class_exists('TCPDF', false)) {
 					$this->_out($this->annot_obj_id.' 0 R');
 				}
 			}
-			if ($this->sign AND isset($this->signature_data['cert_type']) AND ($this->signature_data['cert_type'] > 0)) {
+			if (($n==1) AND $this->sign AND isset($this->signature_data['cert_type']) AND ($this->signature_data['cert_type'] > 0)) {
 				// set reference for signature object
 				$this->_out($this->sig_annot_ref);
 			}
@@ -7809,6 +7809,9 @@ if (!class_exists('TCPDF', false)) {
 		* @since 2.1.000 (2008-01-08)
 		*/
 		public function SetLineStyle($style) {
+			if (!is_array($style)) {
+				return;
+			}
 			extract($style);
 			if (isset($width)) {
 				$width_prev = $this->LineWidth;
@@ -7934,7 +7937,7 @@ if (!class_exists('TCPDF', false)) {
 		* @see SetLineWidth(), SetDrawColor(), SetLineStyle()
 		*/
 		public function Line($x1, $y1, $x2, $y2, $style=array()) {
-			if ($style) {
+			if (is_array($style)) {
 				$this->SetLineStyle($style);
 			}
 			$this->_outPoint($x1, $y1);
@@ -8317,7 +8320,17 @@ if (!class_exists('TCPDF', false)) {
 		* @since 2.1.000 (2008-01-08)
 		*/
 		public function Polygon($p, $style='', $line_style=array(), $fill_color=array()) {
-			$np = count($p) / 2;
+			$nc = count($p); // number of coordinates
+			$np = $nc / 2; // number of points
+			for ($i = 0; $i < 4; ++$i) {
+				// close polygon by adding the first 2 points at the end (one line)
+				$p[$nc + $i] = $p[$i];
+			}
+			// copy style for the last added line
+			if (isset($line_style[0])) {
+				$line_style[$np] = $line_style[0];
+			}			
+			$nc += 4;			
 			if (!(false === strpos($style, 'F')) AND isset($fill_color)) {
 				$this->SetFillColorArray($fill_color);
 			}
@@ -8349,32 +8362,46 @@ if (!class_exists('TCPDF', false)) {
 			if ($line_style) {
 				if (isset($line_style['all'])) {
 					$this->SetLineStyle($line_style['all']);
-				} else { // 0 .. (np - 1), op = {B, S}
+				} else {
 					$draw = false;
-					if ('B' == $op) {
+					if ($op == 'B') {
+						// draw fill
 						$op = 'f';
 						$this->_outPoint($p[0], $p[1]);
-						for ($i = 2; $i < ($np * 2); $i = $i + 2) {
+						for ($i = 2; $i < $nc; $i = $i + 2) {
 							$this->_outLine($p[$i], $p[$i + 1]);
 						}
-						$this->_outLine($p[0], $p[1]);
 						$this->_out($op);
 					}
-					$p[($np * 2)] = $p[0];
-					$p[(($np * 2) + 1)] = $p[1];
-					for ($i = 0; $i < $np; ++$i) {
-						if (isset($line_style[$i]) AND ($line_style[$i] != 0)) {
-							$this->Line($p[($i * 2)], $p[(($i * 2) + 1)], $p[(($i * 2) + 2)], $p[(($i * 2) + 3)], $line_style[$i]);
+					// draw outline
+					$this->_outPoint($p[0], $p[1]);
+					for ($i = 2; $i < $nc; $i = $i + 2) {
+						$line_num = ($i / 2) - 1;
+						if (isset($line_style[$line_num])) {
+							if ($line_style[$line_num] != 0) {
+								if (is_array($line_style[$line_num])) {
+									$this->_out('S');
+									$this->SetLineStyle($line_style[$line_num]);
+									$this->_outPoint($p[$i - 2], $p[$i - 1]);
+									$this->_outLine($p[$i], $p[$i + 1]);
+									$this->_out('S');
+									$this->_outPoint($p[$i], $p[$i + 1]);
+								} else {
+									$this->_outLine($p[$i], $p[$i + 1]);
+								}
+							}
+						} else {
+							$this->_outLine($p[$i], $p[$i + 1]);
 						}
 					}
+					$this->_out($op);
 				}
 			}
 			if ($draw) {
 				$this->_outPoint($p[0], $p[1]);
-				for ($i = 2; $i < ($np * 2); $i = $i + 2) {
+				for ($i = 2; $i < $nc; $i = $i + 2) {
 					$this->_outLine($p[$i], $p[$i + 1]);
 				}
-				$this->_outLine($p[0], $p[1]);
 				$this->_out($op);
 			}
 		}
@@ -8471,7 +8498,7 @@ if (!class_exists('TCPDF', false)) {
 		* @since 2.1.000 (2008-01-08)
 		*/
 		public function StarPolygon($x0, $y0, $r, $nv, $ng, $angle=0, $draw_circle=false, $style='', $line_style=array(), $fill_color=array(), $circle_style='', $circle_outLine_style=array(), $circle_fill_color=array()) {
-			if (2 > $nv) {
+			if ($nv < 2) {
 				$nv = 2;
 			}
 			if ($draw_circle) {
@@ -8598,34 +8625,58 @@ if (!class_exists('TCPDF', false)) {
 		* @parameter float $y0 Ordinate of first point.
 		* @parameter float $x0 Abscissa of second point.
 		* @parameter float $y1 Ordinate of second point.
-		* @parameter int $head_style (0 = draw only arrowhead arms, 1 = draw closed arrowhead, but no fill, 2 = closed and filled arrowhead)
+		* @parameter int $head_style (0 = draw only arrowhead arms, 1 = draw closed arrowhead, but no fill, 2 = closed and filled arrowhead, 3 = filled arrowhead)
 		* @parameter float $arm_size length of arrowhead arms
 		* @parameter int $arm_angle angle between an arm and the shaft
-		* @author Piotr Galecki, Nicola Asuni
+		* @author Piotr Galecki, Nicola Asuni, Andy Meier
 		* @since 4.6.018 (2009-07-10)
 		*/
 		public function Arrow($x0, $y0, $x1, $y1, $head_style=0, $arm_size=5, $arm_angle=15) {
-			//main arrow line / shaft
-			$this->Line($x0, $y0, $x1, $y1);
-			//getting arrow direction angle
+			// getting arrow direction angle
+			// 0 deg angle is when both arms go along X axis. angle grows clockwise.
 			$dir_angle = rad2deg(atan2(($y0 - $y1), ($x0 - $x1)));
-			//0 angle is when both arms go along X axis. angle grows clockwise.
-			//left arrowhead arm tip
+			$sx1 = $x1;
+			$sy1 = $y1;
+			if ($head_style > 0) {
+				// calculate the stopping point for the arrow shaft
+				$sx1 = $x1 + (($arm_size - $this->LineWidth) * cos(deg2rad($dir_angle)));
+				$sy1 = $y1 + (($arm_size - $this->LineWidth) * sin(deg2rad($dir_angle)));
+			} 
+			// main arrow line / shaft
+			$this->Line($x0, $y0, $sx1, $sy1);
+			// left arrowhead arm tip
 			$x2L = $x1 + ($arm_size * cos(deg2rad($dir_angle + $arm_angle)));
 			$y2L = $y1 + ($arm_size * sin(deg2rad($dir_angle + $arm_angle)));
-			//right arrowhead arm tip
+			// right arrowhead arm tip
 			$x2R = $x1 + ($arm_size * cos(deg2rad($dir_angle - $arm_angle)));
 			$y2R = $y1 + ($arm_size * sin(deg2rad($dir_angle - $arm_angle)));
-			if($head_style > 0) {
-				//closed arrowhead
-				$this->Polygon(array($x1, $y1, $x2L, $y2L, $x2R, $y2R), (($head_style === 1) ? 'D' : 'DF'), array(), array());
-			} else { //just arms
-				//left arm
-				$this->Line($x1, $y1, $x2L, $y2L);
-				//right arm
-				$this->Line($x1, $y1, $x2R, $y2R);
+			$mode = 'D';
+			$style = array();
+			switch ($head_style) {
+				case 0: {
+					// draw only arrowhead arms
+					$mode = 'D';
+					$style = array(1, 1, 0);
+					break;
+				}
+				case 1: {
+					// draw closed arrowhead, but no fill
+					$mode = 'D';
+					break;
+				}
+				case 2: {
+					// closed and filled arrowhead
+					$mode = 'DF';
+					break;
+				}
+				case 3: {
+					// filled arrowhead
+					$mode = 'F';
+					break;
+				}
 			}
-		} 
+			$this->Polygon(array($x2L, $y2L, $x1, $y1, $x2R, $y2R), $mode, $style, array());
+		}
 		
 		// END GRAPHIC FUNCTIONS SECTION -----------------------
 		

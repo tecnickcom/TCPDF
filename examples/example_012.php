@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_012.php
 // Begin       : 2008-03-04
-// Last Update : 2009-07-10
+// Last Update : 2009-08-30
 // 
 // Description : Example 012 for TCPDF class
 //               Graphic Functions
@@ -77,9 +77,9 @@ $style4 = array('L' => 0,
                 'T' => array('width' => 0.25, 'cap' => 'butt', 'join' => 'miter', 'dash' => '20,10', 'phase' => 10, 'color' => array(100, 100, 255)),
                 'R' => array('width' => 0.50, 'cap' => 'round', 'join' => 'miter', 'dash' => 0, 'color' => array(50, 50, 127)),
                 'B' => array('width' => 0.75, 'cap' => 'square', 'join' => 'miter', 'dash' => '30,10,5,10'));
-$style5 = array('width' => 0.25, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0));
-$style6 = array('width' => 0.5, 'cap' => 'butt', 'join' => 'miter', 'dash' => '10,10', 'color' => array(0, 255, 0));
-$style7 = array('width' => 0.5, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(200, 200, 0));
+$style5 = array('width' => 0.25, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 64, 128));
+$style6 = array('width' => 0.5, 'cap' => 'butt', 'join' => 'miter', 'dash' => '10,10', 'color' => array(0, 128, 0));
+$style7 = array('width' => 0.5, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(255, 128, 0));
 
 // Line
 $pdf->Text(5, 7, 'Line examples');
@@ -129,7 +129,7 @@ $pdf->Text(5, 172, 'Regular polygon examples');
 $pdf->SetLineStyle($style5);
 $pdf->RegularPolygon(20, 190, 15, 6, 0, 1, 'F');
 $pdf->RegularPolygon(55, 190, 15, 6);
-$pdf->RegularPolygon(55, 190, 10, 6, 45, 0, 'DF', array($style6, 0, $style7, 0, $style7, $style7, $style6));
+$pdf->RegularPolygon(55, 190, 10, 6, 45, 0, 'DF', array($style6, 0, $style7, 0, $style7, $style7));
 $pdf->RegularPolygon(90, 190, 15, 3, 0, 1, 'DF', array('all' => $style5), array(200, 220, 200), 'F', array(255, 200, 200));
 $pdf->RegularPolygon(125, 190, 15, 4, 30, 1, null, array('all' => $style5), null, null, $style6);
 $pdf->RegularPolygon(160, 190, 15, 10);
@@ -139,7 +139,7 @@ $pdf->Text(5, 212, 'Star polygon examples');
 $pdf->SetLineStyle($style5);
 $pdf->StarPolygon(20, 230, 15, 20, 3, 0, 1, 'F');
 $pdf->StarPolygon(55, 230, 15, 12, 5);
-$pdf->StarPolygon(55, 230, 7, 12, 5, 45, 0, 'DF', array($style6, 0, $style7, 0, $style7, $style7, $style6));
+$pdf->StarPolygon(55, 230, 7, 12, 5, 45, 0, 'DF', array('all' => $style7), array(220, 220, 200), 'F', array(255, 200, 200));
 $pdf->StarPolygon(90, 230, 15, 20, 6, 0, 1, 'DF', array('all' => $style5), array(220, 220, 200), 'F', array(255, 200, 200));
 $pdf->StarPolygon(125, 230, 15, 5, 2, 30, 1, null, array('all' => $style5), null, null, $style6);
 $pdf->StarPolygon(160, 230, 15, 10, 3);
@@ -156,9 +156,11 @@ $pdf->RoundedRect(140, 255, 40, 30, 8.0, '0101', 'DF', $style6, array(200, 200, 
 // Arrows
 $pdf->Text(190, 252, 'Arrows');
 $pdf->SetLineStyle($style5);
-$pdf->Arrow($x0=200, $y0=280, $x1=190, $y1=260, $head_style=0, $arm_size=5, $arm_angle=15);
-$pdf->Arrow($x0=200, $y0=280, $x1=195, $y1=260, $head_style=1, $arm_size=5, $arm_angle=15);
-$pdf->Arrow($x0=200, $y0=280, $x1=200, $y1=260, $head_style=2, $arm_size=5, $arm_angle=15);
+$pdf->SetFillColor(255, 0, 0);
+$pdf->Arrow($x0=200, $y0=280, $x1=185, $y1=266, $head_style=0, $arm_size=5, $arm_angle=15);
+$pdf->Arrow($x0=200, $y0=280, $x1=190, $y1=263, $head_style=1, $arm_size=5, $arm_angle=15);
+$pdf->Arrow($x0=200, $y0=280, $x1=195, $y1=261, $head_style=2, $arm_size=5, $arm_angle=15);
+$pdf->Arrow($x0=200, $y0=280, $x1=200, $y1=260, $head_style=3, $arm_size=5, $arm_angle=15);
 
 // ---------------------------------------------------------
 
