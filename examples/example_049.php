@@ -77,10 +77,12 @@ $pdf->AddPage();
 
 $htmlcontent = <<<EOF
 <h1>Test TCPDF Methods in HTML</h1>
+<h2>write1DBarcode method in HTML</h2>
+<tcpdf method="write1DBarcode" params="'CODE 39', 'C39', '', '', 80, 30, 0.4, array('position'=&gt;'S', 'border'=&gt;true, 'padding'=&gt;4, 'fgcolor'=&gt;array(0,0,0), 'bgcolor'=&gt;array(255,255,255), 'text'=&gt;true, 'font'=&gt;'helvetica', 'fontsize'=&gt;8, 'stretchtext'=&gt;4), 'N'" />
+<tcpdf method="AddPage" />
+<h2> Graphic Functions</h2>
 <tcpdf method="SetDrawColor" params="0" />
 <tcpdf method="Rect" params="50, 50, 40, 10, 'DF', array(), array(0,128,255)" />
-<tcpdf method="AddPage" />
-<h1>New Page</h1>
 EOF;
 
 // output the HTML content

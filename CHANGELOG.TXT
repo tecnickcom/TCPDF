@@ -1,3 +1,6 @@
+4.7.003 (2009-09-03)
+	- Support for TCPDF methods on HTML was improved (see example n. 49).
+	
 4.7.002 (2009-09-02)
 	- Bug item #2848892 "writeHTML + table: Gaps between rows" was fixed.
 	- JavaScript support was fixed (see example n. 53).
