@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_014.php
 // Begin       : 2008-03-04
-// Last Update : 2009-05-07
+// Last Update : 2009-09-02
 // 
 // Description : Example 014 for TCPDF class
 //               Javascript Form and user rights (only works on Adobe Acrobat)
@@ -75,12 +75,8 @@ $pdf->SetFont('helvetica', 'BI', 18);
 // add a page
 $pdf->AddPage();
 
-// Release User's Rights For PDF reader.
-// This is required to display and fill form fields on PDF Readers.
-$pdf->setUserRights();
-
 /*
-Caution: the generated PDF works only with Acrobat Reader 5.1.
+Caution: the generated PDF works only with Adobe Acrobat
 It is possible to create text fields, combo boxes, check boxes and buttons. Fields are created at the current position and are given a name. This name allows to manipulate them via JavaScript in order to perform some validation for instance.
 Upon field creation, an associative array can be passed to set a number of properties, among which:
 	rect: Position and size of field on page.
@@ -118,7 +114,8 @@ Colors can be chosen in the following list (case sensitive): black white red gre
 */
 
 // WARNING: only works on Adobe Acrobat
-$pdf->Cell(0, 5, 'THIS EXAMPLE ONLY WORKS ON ADOBE ACROBAT', 0, 1, 'C');
+$pdf->Cell(0, 5, 'THIS EXAMPLE ONLY WORKS ON ADOBE ACROBAT!', 0, 1, 'C');
+$pdf->Ln(10);
 
 $pdf->Cell(0, 5, 'Subscription form', 0, 1, 'C');
 $pdf->Ln(10);

@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-08-30
+// Last Update : 2009-09-02
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.7.001
+// Version     : 4.7.002
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -128,7 +128,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.7.001
+ * @version 4.7.002
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.7.001 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.7.002 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.7.001
+	* @version 4.7.002
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1295,7 +1295,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @access protected
 		 * @since 4.6.005 (2009-04-24)
 		 */
-		protected $signature_max_lenght = 5120;
+		protected $signature_max_lenght = 11742;
 
 		/**
 		 * Regular expression used to find blank characters used for word-wrapping.
@@ -5463,7 +5463,7 @@ if (!class_exists('TCPDF', false)) {
 		* @since 4.7.000 (2008-08-29)
 		*/
 		protected function _putannotsrefs($n) {
-			if (!(isset($this->PageAnnots[$n]) OR ($this->sign AND isset($this->signature_data['cert_type']) AND ($this->signature_data['cert_type'] > 0)))) {
+			if (!(isset($this->PageAnnots[$n]) OR ($this->sign AND isset($this->signature_data['cert_type'])))) {
 				return;
 			}
 			$this->_out('/Annots [');
@@ -5474,7 +5474,7 @@ if (!class_exists('TCPDF', false)) {
 					$this->_out($this->annot_obj_id.' 0 R');
 				}
 			}
-			if (($n==1) AND $this->sign AND isset($this->signature_data['cert_type']) AND ($this->signature_data['cert_type'] > 0)) {
+			if (($n==1) AND $this->sign AND isset($this->signature_data['cert_type'])) {
 				// set reference for signature object
 				$this->_out($this->sig_annot_ref);
 			}
@@ -6431,20 +6431,7 @@ if (!class_exists('TCPDF', false)) {
 				$this->_out('/OpenAction [3 0 R /XYZ null null 1]');
 			} elseif (!is_string($this->ZoomMode)) {
 				$this->_out('/OpenAction [3 0 R /XYZ null null '.($this->ZoomMode / 100).']');
-			}
-			// signatures
-			if ($this->sign AND isset($this->signature_data['cert_type'])) {
-				if ($this->signature_data['cert_type'] > 0) {
-					$this->_out('/AcroForm<<');
-					$this->_out('/Fields ['.$this->sig_obj_id.' 0 R]');
-					$this->_out('/NeedAppearances false');
-					$this->_out('/SigFlags 3');
-					$this->_out('>>');
-					$this->_out('/Perms<</DocMDP '.($this->sig_obj_id + 1).' 0 R>>');
-				} else {
-					$this->_out('/Perms<</UR3 '.($this->sig_obj_id + 1).' 0 R>>');
-				}
-			}
+			}			
 			if (isset($this->LayoutMode) AND (!$this->empty_string($this->LayoutMode))) {
 				$this->_out('/PageLayout /'.$this->LayoutMode.'');
 			}
@@ -6458,7 +6445,7 @@ if (!class_exists('TCPDF', false)) {
 			if (!$this->empty_string($this->javascript)) {
 				$this->_out('/JavaScript '.($this->n_js).' 0 R');
 			}
-			$this->_out('>>');
+			$this->_out('>>');			
 			if (count($this->outlines) > 0) {
 				$this->_out('/Outlines '.$this->OutlineRoot.' 0 R');
 				$this->_out('/PageMode /UseOutlines');
@@ -6468,6 +6455,19 @@ if (!class_exists('TCPDF', false)) {
 			$v = $this->n_ocg_view.' 0 R';
 			$as = '<</Event /Print /OCGs ['.$p.' '.$v.'] /Category [/Print]>> <</Event /View /OCGs ['.$p.' '.$v.'] /Category [/View]>>';
 			$this->_out('/OCProperties <</OCGs ['.$p.' '.$v.'] /D <</ON ['.$p.'] /OFF ['.$v.'] /AS ['.$as.']>>>>');
+			// signatures
+			if ($this->sign AND isset($this->signature_data['cert_type'])) {
+				$this->_out('/AcroForm<<');
+				$this->_out('/Fields ['.$this->sig_obj_id.' 0 R]');
+				$this->_out('/NeedAppearances false');
+				$this->_out('/SigFlags 3');
+				$this->_out('>>');
+				if ($this->signature_data['cert_type'] > 0) {
+					$this->_out('/Perms<</DocMDP '.($this->sig_obj_id + 1).' 0 R>>');
+				} else {
+					$this->_out('/Perms<</UR3 '.($this->sig_obj_id + 1).' 0 R>>');
+				}
+			}
 		}
 		
 		/**
@@ -6606,7 +6606,6 @@ if (!class_exists('TCPDF', false)) {
 				$this->_newobj();
 				$this->_out('<<');
 				$this->_putsignature();
-				$this->_putursignature();
 				$this->_out('>>');
 				$this->_out('endobj');
 			}
@@ -9381,9 +9380,17 @@ if (!class_exists('TCPDF', false)) {
 			if (empty($this->javascript)) {
 				return;
 			}
-			// the following two lines are uded to avoid form fields duplication after saving
-			$js1 = sprintf("ftcpdfdocsaved=this.addField('%s','%s',%d,[%.2F,%.2F,%.2F,%.2F]);", 'tcpdfdocsaved', 'text', 0, 0, 1, 0, 1);
-			$js2 = "getField('tcpdfdocsaved').value = 'saved';";
+			if (!$this->ur) {
+				// enable JavaScript
+				$this->setUserRights();
+			}
+			if (strpos($this->javascript, 'this.addField') > 0) {
+				// the following two lines are used to avoid form fields duplication after saving
+				// The addField method only works on Acrobat Writer, unless the document is signed with Adobe private key (UR3)
+				$jsa = sprintf("ftcpdfdocsaved=this.addField('%s','%s',%d,[%.2F,%.2F,%.2F,%.2F]);", 'tcpdfdocsaved', 'text', 0, 0, 1, 0, 1);
+				$jsb = "getField('tcpdfdocsaved').value='saved';";
+				$this->javascript = $jsa."\n".$this->javascript."\n".$jsb;
+			}
 			$this->_newobj();
 			$this->n_js = $this->n;
 			$this->_out('<<');
@@ -9393,7 +9400,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->_newobj();
 			$this->_out('<<');
 			$this->_out('/S /JavaScript');
-			$this->_out('/JS '.$this->_textstring($js1."\n".$this->javascript."\n".$js2));
+			$this->_out('/JS '.$this->_textstring($this->javascript));
 			$this->_out('>>');
 			$this->_out('endobj');
 		}
@@ -9574,14 +9581,14 @@ if (!class_exists('TCPDF', false)) {
 		// END JAVASCRIPT - FORMS ------------------------------
 		
 		/*
-		* Enable Write permissions for PDF Reader.
-		* WARNING: This works only using the Adobe private key with the setSignature() method.
+		* Add certification signature (DocMDP or UR3)
+		* You can set only one signature type
 		* @access protected
 		* @author Nicola Asuni
-		* @since 2.9.000 (2008-03-26)
+		* @since 4.6.008 (2009-05-07)
 		*/
-		protected function _putursignature() {
-			if ((!$this->sign) OR (isset($this->signature_data['cert_type']) AND ($this->signature_data['cert_type'] > 0))) {
+		protected function _putsignature() {
+			if ((!$this->sign) OR (!isset($this->signature_data['cert_type']))) {
 				return;
 			}
 			$this->_out('/Type /Sig');
@@ -9589,11 +9596,18 @@ if (!class_exists('TCPDF', false)) {
 			$this->_out('/SubFilter /adbe.pkcs7.detached');
 			$this->_out($this->byterange_string);
 			$this->_out('/Contents<>'.str_repeat(' ', $this->signature_max_lenght));
-			if ($this->ur) {
-				$this->_out('/Reference');
-				$this->_out('[');
+			$this->_out('/Reference');
+			$this->_out('[');
+			$this->_out('<<');
+			$this->_out('/Type /SigRef');
+			if ($this->signature_data['cert_type'] > 0) {
+				$this->_out('/TransformMethod /DocMDP');
+				$this->_out('/TransformParams');
 				$this->_out('<<');
-				$this->_out('/Type /SigRef');
+				$this->_out('/Type /TransformParams');
+				$this->_out('/V /1.2');
+				$this->_out('/P '.$this->signature_data['cert_type'].'');
+			} else {
 				$this->_out('/TransformMethod /UR3');
 				$this->_out('/TransformParams');
 				$this->_out('<<');
@@ -9610,39 +9624,8 @@ if (!class_exists('TCPDF', false)) {
 				}
 				if (!$this->empty_string($this->ur_signature)) {
 					$this->_out('/Signature['.$this->ur_signature.']');
-				}			
-				$this->_out('>>');
-				$this->_out('>>');
-				$this->_out(']');
+				}
 			}
-			$this->_out('/M '.$this->_datestring());
-		}
-		
-		/*
-		* Add certification signature (DocMDP)
-		* @access protected
-		* @author Nicola Asuni
-		* @since 4.6.008 (2009-05-07)
-		*/
-		protected function _putsignature() {
-			if ((!$this->sign) OR (isset($this->signature_data['cert_type']) AND ($this->signature_data['cert_type'] <= 0))) {
-				return;
-			}
-			$this->_out('/Type /Sig');
-			$this->_out('/Filter /Adobe.PPKLite');
-			$this->_out('/SubFilter /adbe.pkcs7.detached');
-			$this->_out($this->byterange_string);
-			$this->_out('/Contents<>'.str_repeat(' ', $this->signature_max_lenght));
-			$this->_out('/Reference');
-			$this->_out('[');
-			$this->_out('<<');
-			$this->_out('/Type /SigRef');
-			$this->_out('/TransformMethod /DocMDP');
-			$this->_out('/TransformParams');
-			$this->_out('<<');
-			$this->_out('/Type /TransformParams');
-			$this->_out('/V /1.2');
-			$this->_out('/P '.$this->signature_data['cert_type'].'');
 			$this->_out('>>');
 			$this->_out('>>');
 			$this->_out(']');
@@ -9686,6 +9669,10 @@ if (!class_exists('TCPDF', false)) {
 			$this->ur_annots = $annots;
 			$this->ur_form = $form;
 			$this->ur_signature = $signature;
+			if (!$this->sign) {
+				// This signature only works using the Adobe Private key that is unavailable!
+				//$this->setSignature('', '', '', '', 0, array());
+			}
 		}
 		
 		/*
@@ -9709,6 +9696,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->signature_data = array();
 			if (strlen($signing_cert) == 0) {
 				$signing_cert = 'file://'.dirname(__FILE__).'/tcpdf.crt';
+				$private_key_password = 'tcpdfdemo';
 			}
 			if (strlen($private_key) == 0) {
 				$private_key = $signing_cert;
@@ -11650,6 +11638,7 @@ if (!class_exists('TCPDF', false)) {
 						AND ($dom[$key]['value'] == 'img')
 						AND (isset($dom[$key]['attribute']['height']))
 						AND ($dom[$key]['attribute']['height'] > 0)) {
+						
 						// get image height
 						$imgh = $this->getHTMLUnitToUnits($dom[$key]['attribute']['height'], $this->lasth, 'px');
 						if (!$this->InFooter) {
@@ -11752,7 +11741,9 @@ if (!class_exists('TCPDF', false)) {
 									}
 									$pask = $next_pask;
 								}
-								$this->y += (($curfontsize - $fontsize) / $this->k);
+								if (($dom[$key]['value'] != 'td') AND ($dom[$key]['value'] != 'th')) {
+									$this->y += (($curfontsize - $fontsize) / $this->k);
+								}
 								$minstartliney = min($this->y, $minstartliney);
 							}
 							$curfontname = $fontname;
@@ -12244,7 +12235,7 @@ if (!class_exists('TCPDF', false)) {
 									}
 								}
 							}
-							$this->x += ($cellspacingx / 2);							
+							$this->x += ($cellspacingx / 2);
 						} else {
 							// opening tag (or self-closing tag)
 							if (!isset($opentagpos)) {
@@ -12811,7 +12802,7 @@ if (!class_exists('TCPDF', false)) {
 						}
 					}
 					$this->setPage($dom[($dom[$key]['parent'])]['endpage']);
-					$this->y = $dom[($dom[$key]['parent'])]['endy'];					
+					$this->y = $dom[($dom[$key]['parent'])]['endy'];
 					if (isset($dom[$table_el]['attribute']['cellspacing'])) {
 						$cellspacing = $this->getHTMLUnitToUnits($dom[$table_el]['attribute']['cellspacing'], 1, 'px');
 						$this->y += $cellspacing;

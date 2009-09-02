@@ -1,3 +1,7 @@
+4.7.002 (2009-09-02)
+	- Bug item #2848892 "writeHTML + table: Gaps between rows" was fixed.
+	- JavaScript support was fixed (see example n. 53).
+	
 4.7.001 (2009-08-30)
 	- The Polygon() and Arrow() methods were fixed and improved (see example n. 12).
 	
