@@ -8,8 +8,8 @@ http://sourceforge.net/donate/index.php?group_id=128076
 ------------------------------------------------------------
 
 Name: TCPDF
-Version: 4.7.003
-Release date: 2009-09-02
+Version: 4.8.000
+Release date: 2009-09-07
 Author:	Nicola Asuni 
 	
 Copyright (c) 2001-2009:
@@ -35,9 +35,9 @@ Main Features:
 // 	* supports UTF-8 Unicode and Right-To-Left languages;
 // 	* supports TrueTypeUnicode, OpenTypeUnicode, TrueType, OpenType, Type1 and CID-0 fonts;
 // 	* supports document encryption;
-// 	* includes methods to publish some XHTML code;
+// 	* includes methods to publish some XHTML code, including forms;
 // 	* includes graphic (geometric) and transformation methods;
-// 	* includes Javascript and forms support;
+// 	* includes Javascript and Forms support;
 // 	* includes a method to print various barcode formats: CODE 39, ANSI MH10.8M-1983, USD-3, 3 of 9, CODE 93, USS-93, Standard 2 of 5, Interleaved 2 of 5, CODE 128 A/B/C, 2 and 5 Digits UPC-Based Extention, EAN 8, EAN 13, UPC-A, UPC-E, MSI, POSTNET, PLANET, RMS4CC (Royal Mail 4-state Customer Code), CBC (Customer Bar Code), KIX (Klant index - Customer index), Intelligent Mail Barcode, Onecode, USPS-B-3200, CODABAR, CODE 11, PHARMACODE, PHARMACODE TWO-TRACKS;
 // 	* includes methods to set Bookmarks and print a Table of Content;
 // 	* includes methods to move and delete pages;

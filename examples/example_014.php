@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_014.php
 // Begin       : 2008-03-04
-// Last Update : 2009-09-02
+// Last Update : 2009-09-07
 // 
 // Description : Example 014 for TCPDF class
 //               Javascript Form and user rights (only works on Adobe Acrobat)
@@ -70,125 +70,95 @@ $pdf->setLanguageArray($l);
 // ---------------------------------------------------------
 
 // set font
-$pdf->SetFont('helvetica', 'BI', 18);
+$pdf->SetFont('helvetica', '', 10);
 
 // add a page
 $pdf->AddPage();
 
 /*
-Caution: the generated PDF works only with Adobe Acrobat
-It is possible to create text fields, combo boxes, check boxes and buttons. Fields are created at the current position and are given a name. This name allows to manipulate them via JavaScript in order to perform some validation for instance.
-Upon field creation, an associative array can be passed to set a number of properties, among which:
-	rect: Position and size of field on page.
-	borderStyle: Rectangle border appearance.
-	strokeColor: Color of bounding rectangle.
-	lineWidth: Width of the edge of the surrounding rectangle.
-	rotation: Rotation of field in 90-degree increments.
-	fillColor: Background color of field (gray, transparent, RGB, or CMYK).
-	userName: Short description of field that appears on mouse-over.
-	readonly: Whether the user may change the field contents.
-	doNotScroll: Whether text fields may scroll.
-	display: Whether visible or hidden on screen or in print.
-	textFont: Text font.
-	textColor: Text color.
-	textSize: Text size.
-	richText: Rich text.
-	richValue: Text.
-	comb: Text comb format.
-	multiline: Text multiline.
-	charLimit: Text limit to number of characters.
-	fileSelect: Text file selection format.
-	password: Text password format.
-	alignment: Text layout in text fields.
-	buttonAlignX: X alignment of icon on button face.
-	buttonAlignY: Y alignment of icon on button face.
-	buttonFitBounds: Relative scaling of an icon to fit inside a button face.
-	buttonScaleHow: Relative scaling of an icon to fit inside a button face.
-	buttonScaleWhen: Relative scaling of an icon to fit inside a button face.
-	highlight: Appearance of a button when pushed.
-	style: Glyph style for checkbox and radio buttons.
-	numItems: Number of items in a combo box or list box.
-	editable: Whether the user can type in a combo box.
-	multipleSelection: Whether multiple list box items may be selected.
-Colors can be chosen in the following list (case sensitive): black white red green blue cyan magenta yellow dkGray gray ltGray or be in the form #RRGGBB.
+It is possible to create text fields, combo boxes, check boxes and buttons.
+Fields are created at the current position and are given a name.
+This name allows to manipulate them via JavaScript in order to perform some validation for instance.
 */
 
-// WARNING: only works on Adobe Acrobat
-$pdf->Cell(0, 5, 'THIS EXAMPLE ONLY WORKS ON ADOBE ACROBAT!', 0, 1, 'C');
-$pdf->Ln(10);
+// set default form properties
+$pdf->setFormDefaultProp(array('lineWidth'=>1, 'borderStyle'=>'solid', 'fillColor'=>array(255, 255, 200), 'strokeColor'=>array(255, 128, 128)));
 
+$pdf->SetFont('helvetica', 'BI', 18);
 $pdf->Cell(0, 5, 'Subscription form', 0, 1, 'C');
 $pdf->Ln(10);
-$pdf->SetFont('', '', 12);
 
-//First name
+$pdf->SetFont('helvetica', '', 12);
+
+// First name
 $pdf->Cell(35, 5, 'First name:');
-$pdf->TextField('firstname', 50, 5, array('strokeColor'=>'ltGray'));
+$pdf->TextField('firstname', 50, 5);
 $pdf->Ln(6);
 
-//Last name
+// Last name
 $pdf->Cell(35, 5, 'Last name:');
-$pdf->TextField('lastname', 50, 5, array('strokeColor'=>'ltGray'));
+$pdf->TextField('lastname', 50, 5);
 $pdf->Ln(6);
 
-//Gender
+// Gender
 $pdf->Cell(35, 5, 'Gender:');
-$pdf->ComboBox('gender', 10, 5, array('', 'M', 'F'), array('strokeColor'=>'ltGray'));
+//$pdf->ComboBox('gender', 10, 5, array('', 'M', 'F'));
+$pdf->ComboBox('gender', 10, 5, array(array('', '-'), array('M', 'Male'), array('F', 'Female')));
 $pdf->Ln(6);
 
-//Drink
+// Drink
 $pdf->Cell(35, 5, 'Drink:');
-$pdf->RadioButton('drink', 5, false);
+$pdf->RadioButton('drink', 5, array(), array(), 'Water');
 $pdf->Cell(35, 5, 'Water');
 $pdf->Ln(6);
 $pdf->Cell(35, 5, '');
-$pdf->RadioButton('drink', 5, false);
+$pdf->RadioButton('drink', 5, array(), array(), 'Beer');
 $pdf->Cell(35, 5, 'Beer');
 $pdf->Ln(6);
 $pdf->Cell(35, 5, '');
-$pdf->RadioButton('drink', 5, false);
+$pdf->RadioButton('drink', 5, array(), array(), 'Wine');
 $pdf->Cell(35, 5, 'Wine');
-// set export values
-$pdf->IncludeJS('fdrink.exportValues=["Water", "Beer", "Wine"];'."\n");
-// check the second radiobutton
-$pdf->IncludeJS("fdrink.checkThisBox(1,true);\n");
 $pdf->Ln(10);
 
-//Gender
+// Listbox
 $pdf->Cell(35, 5, 'List:');
 $pdf->ListBox('listbox', 60, 15, array('', 'item1', 'item2', 'item3', 'item4', 'item5', 'item6', 'item7'), array('multipleSelection'=>'true'));
 $pdf->Ln(20);
 
-//Adress
+// Adress
 $pdf->Cell(35, 5, 'Address:');
-$pdf->TextField('address', 60, 18, array('multiline'=>true,'strokeColor'=>'ltGray'));
+$pdf->TextField('address', 60, 18, array('multiline'=>true));
 $pdf->Ln(19);
 
-//E-mail
+// E-mail
 $pdf->Cell(35, 5, 'E-mail:');
-$pdf->TextField('email', 50, 5, array('strokeColor'=>'ltGray'));
+$pdf->TextField('email', 50, 5);
 $pdf->Ln(6);
 
-//Newsletter
-$pdf->Cell(35, 5, 'Receive our', 0, 1);
-$pdf->Cell(35, 5, 'newsletter:');
-$pdf->CheckBox('newsletter', 5, true);
+// Newsletter
+$pdf->Cell(35, 5, 'Newsletter:');
+$pdf->CheckBox('newsletter', 5, true, array(), array(), 'OK');
 $pdf->Ln(10);
 
-//Date of the day (determined and formatted by JS)
-$pdf->Write(5, 'Date: ');
-$pdf->TextField('date', 30, 5);
-$pdf->IncludeJS("getField('date').value=util.printd('dd/mm/yyyy',new Date());\n");
-$pdf->Ln();
-$pdf->Write(5, 'Signature:');
-$pdf->Ln(3);
+// Date of the day
+$pdf->Cell(35, 5, 'Date:');
+$pdf->TextField('date', 30, 5, array(), array('v'=>date('Y-m-d'), 'dv'=>date('Y-m-d')));
+$pdf->Ln(10);
 
-//Button to validate and print
-$pdf->SetX(95);
-$pdf->Button('print', 20, 8, 'Print', 'Print()', array('textColor'=>'yellow', 'fillColor'=>'#FF5050'));
+$pdf->SetX(50);
 
-//Form validation functions
-$pdf->IncludeJS("
+// Button to validate and print
+$pdf->Button('print', 30, 10, 'Print', 'Print()', array('lineWidth'=>2, 'borderStyle'=>'beveled', 'fillColor'=>array(128, 196, 255), 'strokeColor'=>array(64, 64, 64)));
+
+// Reset Button
+$pdf->Button('reset', 30, 10, 'Reset', array('S'=>'ResetForm'), array('lineWidth'=>2, 'borderStyle'=>'beveled', 'fillColor'=>array(128, 196, 255), 'strokeColor'=>array(64, 64, 64)));
+
+// Submit Button
+$pdf->Button('submit', 30, 10, 'Submit', array('S'=>'SubmitForm', 'F'=>'http://localhost/printvars.php', 'Flags'=>array('ExportFormat')), array('lineWidth'=>2, 'borderStyle'=>'beveled', 'fillColor'=>array(128, 196, 255), 'strokeColor'=>array(64, 64, 64)));
+
+
+// Form validation functions
+$js = <<<EOD
 function CheckField(name,message) {
 	var f = getField(name);
 	if(f.value == '') {
@@ -198,21 +168,17 @@ function CheckField(name,message) {
 	}
 	return true;
 }
-
 function Print() {
-	//Validation
-	if(!CheckField('firstname','First name is mandatory'))
-		return;
-	if(!CheckField('lastname','Last name is mandatory'))
-		return;
-	if(!CheckField('gender','Gender is mandatory'))
-		return;
-	if(!CheckField('address','Address is mandatory'))
-		return;
-	//Print
+	if(!CheckField('firstname','First name is mandatory')) {return;}
+	if(!CheckField('lastname','Last name is mandatory')) {return;}
+	if(!CheckField('gender','Gender is mandatory')) {return;}
+	if(!CheckField('address','Address is mandatory')) {return;}
 	print();
 }
-");
+EOD;
+
+// Add Javascript code
+$pdf->IncludeJS($js);
 
 // ---------------------------------------------------------
 

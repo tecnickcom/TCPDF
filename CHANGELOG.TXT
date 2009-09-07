@@ -1,3 +1,14 @@
+4.8.000 (2009-09-07)
+	- This version includes some support for Forms fields (see example n. 14) and XHTML forms (see example n. 54).
+	- The following methods were changed to work without JavaScript: TextField(), RadioButton(), ListBox(), ComboBox(), CheckBox(), Button().
+	- Support for Widget annotations was improved.
+	- Alignment of annotation objects was fixed (examples 36 and 41 were updated).
+	- addJavascriptObject() method was added.
+	- Signature of Image() method was changed.
+	- htmlcolors.php file was updated.
+
+--------------------------------------------------------------------------------
+
 4.7.003 (2009-09-03)
 	- Support for TCPDF methods on HTML was improved (see example n. 49).
 	
@@ -1089,3 +1100,4 @@
 	- Bitstream Vera Fonts were added (http://www.bitstream.com/font_rendering/products/dev_fonts/vera.html).
 	- Now the AddFont and SetFont functions returns the basic font if the styled version do not exist.
 
+EOF ----------------------------------------------------------------------------

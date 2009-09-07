@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_041.php
 // Begin       : 2008-12-07
-// Last Update : 2009-03-18
+// Last Update : 2009-09-05
 // 
 // Description : Example 041 for TCPDF class
 //               Annotation - FileAttachment
@@ -79,7 +79,7 @@ $pdf->AddPage();
 $pdf->Cell(0, 12, 'File Attachment', 1, 1, 'C');
 
 // attach an external file
-$pdf->Annotation(124, 28, 4, 4, 'text file', array('Subtype'=>'FileAttachment', 'Name' => 'PushPin', 'FS' => '../cache/utf8test.txt'));
+$pdf->Annotation(78, 30, 4, 4, 'text file', array('Subtype'=>'FileAttachment', 'Name' => 'PushPin', 'FS' => '../cache/utf8test.txt'));
 
 // ---------------------------------------------------------
 

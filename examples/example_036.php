@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_036.php
 // Begin       : 2008-08-08
-// Last Update : 2009-03-18
+// Last Update : 2009-09-05
 // 
 // Description : Example 036 for TCPDF class
 //               Annotations
@@ -79,7 +79,7 @@ $pdf->AddPage();
 $pdf->Cell(0, 12, 'Example 036', 1, 1, 'C');
 
 // text annotation
-$pdf->Annotation(124, 18, 10, 10, "Text annotation example\naccented letters test: àèéìòù", array('Subtype'=>'Text', 'Name' => 'Comment', 'T' => 'title example', 'Subj' => 'example', 'C' => array(255, 255, 0)));
+$pdf->Annotation(124, 30, 10, 10, "Text annotation example\naccented letters test: àèéìòù", array('Subtype'=>'Text', 'Name' => 'Comment', 'T' => 'title example', 'Subj' => 'example', 'C' => array(255, 255, 0)));
 
 // ---------------------------------------------------------
 
