@@ -1,3 +1,7 @@
+4.8.001 (2009-09-09)
+	- The appearance streams (AP) for anotations form fields was fixed (see examples n. 14 and 54).
+	- Radiobuttons were fixed.
+
 4.8.000 (2009-09-07)
 	- This version includes some support for Forms fields (see example n. 14) and XHTML forms (see example n. 54).
 	- The following methods were changed to work without JavaScript: TextField(), RadioButton(), ListBox(), ComboBox(), CheckBox(), Button().

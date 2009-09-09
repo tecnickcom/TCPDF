@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_054.php
 // Begin       : 2009-09-07
-// Last Update : 2009-09-07
+// Last Update : 2009-09-09
 // 
 // Description : Example 054 for TCPDF class
 //               XHTML Forms
@@ -84,7 +84,7 @@ $html = <<<EOD
 <label for="infile">file:</label> <input type="file" name="userfile" size="20" /><br /><br />
 <input type="checkbox" name="agree" value="1" checked="checked" /> <label for="agree">I agree </label><br /><br />
 <input type="radio" name="radioquestion" id="rqa" value="1" /> <label for="rqa">one</label><br />
-<input type="radio" name="radioquestion" id="rqb" value="2" /> <label for="rqb">two</label><br />
+<input type="radio" name="radioquestion" id="rqb" value="2" checked="checked"/> <label for="rqb">two</label><br />
 <input type="radio" name="radioquestion" id="rqc" value="3" /> <label for="rqc">three</label><br /><br />
 <label for="selection">select:</label>
 <select name="selection" size="0">

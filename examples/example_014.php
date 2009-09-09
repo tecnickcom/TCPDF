@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_014.php
 // Begin       : 2008-03-04
-// Last Update : 2009-09-07
+// Last Update : 2009-09-09
 // 
 // Description : Example 014 for TCPDF class
 //               Javascript Form and user rights (only works on Adobe Acrobat)
@@ -103,7 +103,7 @@ $pdf->Ln(6);
 // Gender
 $pdf->Cell(35, 5, 'Gender:');
 //$pdf->ComboBox('gender', 10, 5, array('', 'M', 'F'));
-$pdf->ComboBox('gender', 10, 5, array(array('', '-'), array('M', 'Male'), array('F', 'Female')));
+$pdf->ComboBox('gender', 30, 5, array(array('', '-'), array('M', 'Male'), array('F', 'Female')));
 $pdf->Ln(6);
 
 // Drink
@@ -112,7 +112,7 @@ $pdf->RadioButton('drink', 5, array(), array(), 'Water');
 $pdf->Cell(35, 5, 'Water');
 $pdf->Ln(6);
 $pdf->Cell(35, 5, '');
-$pdf->RadioButton('drink', 5, array(), array(), 'Beer');
+$pdf->RadioButton('drink', 5, array(), array(), 'Beer', true);
 $pdf->Cell(35, 5, 'Beer');
 $pdf->Ln(6);
 $pdf->Cell(35, 5, '');

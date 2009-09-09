@@ -146,6 +146,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_putannotsobjs">TCPDF::_putannotsobjs()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Output annotations objects for all pages.</dd>
 							<dt><b>_putannotsrefs</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_putannotsrefs">TCPDF::_putannotsrefs()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Output referencees to page annotations</dd>
+							<dt><b>_putAPXObject</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_putAPXObject">TCPDF::_putAPXObject()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Put appearance streams XObject used to define annotation's appearance states</dd>
 							<dt><b>_putbookmarks</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_putbookmarks">TCPDF::_putbookmarks()</a></dd>
 							<dt><b>_putcatalog</b></dt>
@@ -220,10 +222,16 @@
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$AliasNbPages">TCPDF::$AliasNbPages</a></dd>
 							<dt><b>$AliasNumPage</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$AliasNumPage">TCPDF::$AliasNumPage</a></dd>
+							<dt><b>$annotation_fonts</b></dt>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$annotation_fonts">TCPDF::$annotation_fonts</a><br>&nbsp;&nbsp;&nbsp;&nbsp;List of fonts used on form fields (fontname =&gt; fontkey).</dd>
 							<dt><b>$annots_start_obj_id</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$annots_start_obj_id">TCPDF::$annots_start_obj_id</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Start ID for annotation objects</dd>
 							<dt><b>$annot_obj_id</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$annot_obj_id">TCPDF::$annot_obj_id</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Current ID of annotation object</dd>
+							<dt><b>$apxo_obj_id</b></dt>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$apxo_obj_id">TCPDF::$apxo_obj_id</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Current ID of appearance streams XObjects</dd>
+							<dt><b>$apxo_start_obj_id</b></dt>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$apxo_start_obj_id">TCPDF::$apxo_start_obj_id</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Start ID for appearance streams XObjects</dd>
 							<dt><b>$author</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$author">TCPDF::$author</a></dd>
 							<dt><b>$AutoPageBreak</b></dt>
@@ -486,6 +494,8 @@
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$FontSizePt">TCPDF::$FontSizePt</a></dd>
 							<dt><b>$FontStyle</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$FontStyle">TCPDF::$FontStyle</a></dd>
+							<dt><b>$font_obj_ids</b></dt>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$font_obj_ids">TCPDF::$font_obj_ids</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Store the font object IDs.</dd>
 							<dt><b>$footerlen</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$footerlen">TCPDF::$footerlen</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Array used to store footer lenght of each page.</dd>
 							<dt><b>$footerpos</b></dt>
@@ -501,7 +511,7 @@
 							<dt><b>$form_mode</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$form_mode">TCPDF::$form_mode</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Current method to submit forms.</dd>
 							<dt><b>$form_obj_id</b></dt>
-				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$form_obj_id">TCPDF::$form_obj_id</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Array of form annotations IDs</dd>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$form_obj_id">TCPDF::$form_obj_id</a><br>&nbsp;&nbsp;&nbsp;&nbsp;List of form annotations IDs</dd>
 							<dt><b>$fwPt</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$fwPt">TCPDF::$fwPt</a></dd>
 							<dt><b>Footer</b></dt>
@@ -1034,6 +1044,10 @@
 	<div>
 		<h2>r</h2>
 		<dl>
+							<dt><b>$radiobutton_groups</b></dt>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$radiobutton_groups">TCPDF::$radiobutton_groups</a><br>&nbsp;&nbsp;&nbsp;&nbsp;List of radio buttons parent objects.</dd>
+							<dt><b>$radio_groups</b></dt>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$radio_groups">TCPDF::$radio_groups</a><br>&nbsp;&nbsp;&nbsp;&nbsp;List of radio group objects IDs</dd>
 							<dt><b>$re_spaces</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$re_spaces">TCPDF::$re_spaces</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Regular expression used to find blank characters used for word-wrapping.</dd>
 							<dt><b>$rMargin</b></dt>
@@ -1439,7 +1453,7 @@
 	<a href="elementindex_com-tecnick-tcpdf.html#top">top</a><br>
         <div class="credit">
 		    <hr />
-		    Documentation generated on Mon, 07 Sep 2009 23:53:26 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.1</a>
+		    Documentation generated on Wed, 09 Sep 2009 23:21:11 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.1</a>
 	      </div>
       </td></tr></table>
     </td>

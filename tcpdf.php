@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-09-07
+// Last Update : 2009-09-09
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.8.000
+// Version     : 4.8.001
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -128,7 +128,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.8.000
+ * @version 4.8.001
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.8.000 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.8.001 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.8.000
+	* @version 4.8.001
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1212,6 +1212,13 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 4.5.000 (2009-01-02)
 		 */
 		protected $fontkeys = array();
+		
+		/**
+		 * Store the font object IDs.
+		 * @access protected
+		 * @since 4.8.001 (2009-09-09)
+		 */
+		protected $font_obj_ids = array();
 
 		/**
 		 * Store the fage status (true when opened, false when closed).
@@ -1354,7 +1361,7 @@ if (!class_exists('TCPDF', false)) {
 		protected $annot_obj_id = 200000;
 		
 		/**
-		 * Array of form annotations IDs
+		 * List of form annotations IDs
 		 * @access protected
 		 * @since 4.8.000 (2009-09-07)
 		 */
@@ -1408,7 +1415,41 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 4.8.000 (2009-09-07)
 		 */
 		protected $form_mode = 'post';
+
+		/**
+		 * Start ID for appearance streams XObjects
+		 * @access protected
+		 * @since 4.8.001 (2009-09-09)
+		 */
+		protected $apxo_start_obj_id = 400000;
 		
+		/**
+		 * Current ID of appearance streams XObjects
+		 * @access protected
+		 * @since 4.8.001 (2009-09-09)
+		 */
+		protected $apxo_obj_id = 400000;
+		
+		/**
+		 * List of fonts used on form fields (fontname => fontkey).
+		 * @access protected
+		 * @since 4.8.001 (2009-09-09)
+		 */
+		protected $annotation_fonts = array();
+		
+		/**
+		 * List of radio buttons parent objects.
+		 * @access protected
+		 * @since 4.8.001 (2009-09-09)
+		 */
+		protected $radiobutton_groups = array();
+		
+		/**
+		 * List of radio group objects IDs
+		 * @access protected
+		 * @since 4.8.001 (2009-09-09)
+		 */
+		protected $radio_groups = array();
 		
 		//------------------------------------------------------------
 		// METHODS
@@ -1542,6 +1583,7 @@ if (!class_exists('TCPDF', false)) {
 				$this->re_spaces = '/[\s]/';
 			}
 			$this->annot_obj_id = $this->annots_start_obj_id;
+			$this->apxo_obj_id = $this->apxo_start_obj_id;
 			$this->js_obj_id = $this->js_start_obj_id;
 			$this->default_form_prop = array('lineWidth'=>1, 'borderStyle'=>'solid', 'fillColor'=>array(255, 255, 255), 'strokeColor'=>array(128, 128, 128));
 		}
@@ -3409,6 +3451,9 @@ if (!class_exists('TCPDF', false)) {
 			} else {
 				$page = $this->page;
 			}
+			if (!isset($this->PageAnnots[$page])) {
+				$this->PageAnnots[$page] = array();
+			}
 			$this->PageAnnots[$page][] = array('x' => $x, 'y' => $y, 'w' => $w, 'h' => $h, 'txt' => $text, 'opt' => $opt, 'numspaces' => $spaces);
 			if (($opt['Subtype'] == 'FileAttachment') AND (!$this->empty_string($opt['FS'])) AND file_exists($opt['FS']) AND (!isset($this->embeddedfiles[basename($opt['FS'])]))) {
 				$this->embeddedfiles[basename($opt['FS'])] = array('file' => $opt['FS'], 'n' => (count($this->embeddedfiles) + $this->embedded_start_obj_id));
@@ -3423,6 +3468,7 @@ if (!class_exists('TCPDF', false)) {
 			if (isset($opt['mk']['ix']) AND file_exists($opt['mk']['ix'])) {
 				$this->Image($opt['mk']['ix'], '', '', 0, 0, '', '', '', false, 300, '', false, false, 0, false, true);
 			}
+			++$this->annot_obj_id;
 		}
 
 		/**
@@ -5542,11 +5588,9 @@ if (!class_exists('TCPDF', false)) {
 				return;
 			}
 			$this->_out('/Annots [');
-			if (isset($this->PageAnnots[$n])) {
-				// set page annotations
-				foreach ($this->PageAnnots[$n] as $id) {
-					++$this->annot_obj_id;
-					$this->_out($this->annot_obj_id.' 0 R');
+			for ($i = ($this->annots_start_obj_id + 1); $i <= $this->annot_obj_id; ++$i) {
+				if (!in_array($i, $this->radio_groups)) {
+					$this->_out($i.' 0 R');
 				}
 			}
 			if (($n==1) AND $this->sign AND isset($this->signature_data['cert_type'])) {
@@ -5571,6 +5615,35 @@ if (!class_exists('TCPDF', false)) {
 				if (isset($this->PageAnnots[$n])) {
 					// set page annotations
 					foreach ($this->PageAnnots[$n] as $key => $pl) {
+						// create annotation object for grouping radiobuttons
+						if (isset($this->radiobutton_groups[$n][$pl['txt']]) AND is_array($this->radiobutton_groups[$n][$pl['txt']])) {
+							$annots = '<<';
+							$annots .= ' /Type /Annot';
+							$annots .= ' /Subtype /Widget';
+							$annots .= ' /T '.$this->_datastring($pl['txt']);
+							$annots .= ' /FT /Btn';
+							$annots .= ' /Ff 49152';
+							$annots .= ' /Kids [';
+							foreach ($this->radiobutton_groups[$n][$pl['txt']] as $data) {
+								$annots .= ' '.$data['kid'].' 0 R';
+								if ($data['def'] !== 'Off') {
+									$defval = $data['def'];
+								}
+							}
+							$annots .= ' ]';
+							if (isset($defval)) {
+								$annots .= ' /V /'.$defval;
+							}
+							$annots .= ' >>';
+							++$this->annot_obj_id;
+							$this->offsets[$this->annot_obj_id] = $this->bufferlen;
+							$this->_out($this->annot_obj_id.' 0 obj');
+							$this->_out($annots);
+							$this->_out('endobj');
+							$this->form_obj_id[] = $this->annot_obj_id;
+							// store object id to be used on Parent entry of Kids
+							$this->radiobutton_groups[$n][$pl['txt']] = $this->annot_obj_id;
+						}
 						$formfield = false;
 						$pl['opt'] = array_change_key_case($pl['opt'], CASE_LOWER);
 						$a = $pl['x'] * $this->k;
@@ -5649,20 +5722,30 @@ if (!class_exists('TCPDF', false)) {
 						if (isset($pl['opt']['as']) AND is_string($pl['opt']['as'])) {
 							$annots .= ' /AS /'.$pl['opt']['as'];
 						}
-						if (isset($pl['opt']['ap']) AND is_string($pl['opt']['ap'])) {
-							$annots .= ' /AP << '.$pl['opt']['ap'].' >>';
-						} elseif (isset($pl['opt']['ft']) AND in_array($pl['opt']['ft'], $ft)) {
+						if (isset($pl['opt']['ap'])) {
+							// appearance stream
 							$annots .= ' /AP <<';
-							$annots .= ' /N <<';
-							$annots .= ' /Type /XObject';
-							$annots .= ' /Subtype /Form';
-							$annots .= ' /FormType 1';
-							$rect = sprintf('%.2F %.2F', $c, $d);
-							$annots .= ' /BBox [0 0 '.$rect.']';
-							$annots .= ' /Matrix [1 0 0 1 0 0]';
-							$annots .= ' /Resources << /ProcSet [/PDF] >>';
-							$annots .= ' /Length 0';
-							$annots .= ' >>';
+							if (is_array($pl['opt']['ap'])) {
+								foreach ($pl['opt']['ap'] as $apmode => $apdef) {
+									// $apmode can be: n = normal; r = rollover; d = down;
+									$annots .= ' /'.strtoupper($apmode);
+									if (is_array($apdef)) {
+										$annots .= ' <<';
+										foreach ($apdef as $apstate => $stream) {
+											// reference to XObject that define the appearance for this mode-state
+											$apsobjid = $this->_putAPXObject($c, $d, $stream);
+											$annots .= ' /'.$apstate.' '.$apsobjid.' 0 R';
+										}
+										$annots .= ' >>';
+									} else {
+										// reference to XObject that define the appearance for this mode
+										$apsobjid = $this->_putAPXObject($c, $d, $apdef);
+										$annots .= ' '.$apsobjid.' 0 R';
+									}
+								}
+							} else {
+								$annots .= $pl['opt']['ap'];
+							}
 							$annots .= ' >>';
 						}
 						if (isset($pl['opt']['bs']) AND (is_array($pl['opt']['bs']))) {
@@ -5802,7 +5885,9 @@ if (!class_exists('TCPDF', false)) {
 								break;
 							}
 							case 'freetext': {
-								$annots .= ' /DA '.$this->_textstring($pl['txt']);
+								if (isset($pl['opt']['da']) AND !empty($pl['opt']['da'])) {
+									$annots .= ' /DA ('.$pl['opt']['da'].')';
+								}
 								if (isset($pl['opt']['q']) AND ($pl['opt']['q'] >= 0) AND ($pl['opt']['q'] <= 2)) {
 									$annots .= ' /Q '.intval($pl['opt']['q']);
 								}
@@ -5941,20 +6026,14 @@ if (!class_exists('TCPDF', false)) {
 							 			$annots .= ']';
 							 		}
 							 		if (isset($pl['opt']['mk']['ca'])) {
-							 			$annots .= ' /CA '.$this->_textstring($pl['opt']['mk']['ca']);
-							 		} elseif (isset($pl['opt']['t']) AND is_string($pl['opt']['t'])) {
-							 			$annots .= ' /CA '.$this->_textstring($pl['opt']['t']);
+							 			$annots .= ' /CA '.$pl['opt']['mk']['ca'].'';
 							 		}
 							 		if (isset($pl['opt']['mk']['rc'])) {
-							 			$annots .= ' /RC '.$this->_textstring($pl['opt']['mk']['rc']);
-							 		} elseif (isset($pl['opt']['t']) AND is_string($pl['opt']['t'])) {
-							 			$annots .= ' /RC '.$this->_textstring($pl['opt']['t']);
+							 			$annots .= ' /RC '.$pl['opt']['mk']['ca'].'';
 							 		}
 							 		if (isset($pl['opt']['mk']['ac'])) {
-							 			$annots .= ' /AC '.$this->_textstring($pl['opt']['mk']['ac']);
-							 		} elseif (isset($pl['opt']['t']) AND is_string($pl['opt']['t'])) {
-							 			$annots .= ' /AC '.$this->_textstring($pl['opt']['t']);
-							 		}							 		
+							 			$annots .= ' /AC '.$pl['opt']['mk']['ca'].'';
+							 		}							 								 		
 							 		if (isset($pl['opt']['mk']['i'])) {
 							 			$info = $this->getImageBuffer($pl['opt']['mk']['i']);
 							 			if ($info !== false) {
@@ -5999,8 +6078,10 @@ if (!class_exists('TCPDF', false)) {
 							 		$annots .= '>>';
 							 	} // end MK
 							 	// --- Entries for field dictionaries ---
-							 	// /Parent
-							 	// /Kids
+							 	if (isset($this->radiobutton_groups[$n][$pl['txt']])) {
+							 		// set parent
+							 		$annots .= ' /Parent '.$this->radiobutton_groups[$n][$pl['txt']].' 0 R';
+							 	}
 							 	if (isset($pl['opt']['t']) AND is_string($pl['opt']['t'])) {
 									$annots .= ' /T '.$this->_datastring($pl['opt']['t']);
 								}
@@ -6061,6 +6142,9 @@ if (!class_exists('TCPDF', false)) {
 								if (isset($pl['opt']['aa']) AND !empty($pl['opt']['aa'])) {
 									$annots .= ' /AA << '.$pl['opt']['aa'].' >>';
 								}
+								if (isset($pl['opt']['da']) AND !empty($pl['opt']['da'])) {
+									$annots .= ' /DA ('.$pl['opt']['da'].')';
+								}
 								if (isset($pl['opt']['q']) AND ($pl['opt']['q'] >= 0) AND ($pl['opt']['q'] <= 2)) {
 									$annots .= ' /Q '.intval($pl['opt']['q']);
 								}
@@ -6113,13 +6197,46 @@ if (!class_exists('TCPDF', false)) {
 						$this->_out($this->annot_obj_id.' 0 obj');
 						$this->_out($annots);
 						$this->_out('endobj');
-						if ($formfield) {
+						if ($formfield AND ! isset($this->radiobutton_groups[$n][$pl['txt']])) {
 							// store reference of form object
 							$this->form_obj_id[] = $this->annot_obj_id;
 						}
 					}
 				}
 			} // end for each page
+		}
+
+		/**
+		* Put appearance streams XObject used to define annotation's appearance states
+		* @param int $w annotation width
+		* @param int $h annotation height
+		* @param string $stream appearance stream
+		* @return int object ID
+		* @access protected
+		* @since 4.8.001 (2009-09-09)
+		*/
+		protected function _putAPXObject($w=0, $h=0, $stream='') {
+			$stream = trim($stream);
+			++$this->apxo_obj_id;
+			$this->offsets[$this->apxo_obj_id] = $this->bufferlen;
+			$this->_out($this->apxo_obj_id.' 0 obj');
+			$this->_out('<<');
+			$this->_out('/Type /XObject');
+			$this->_out('/Subtype /Form');
+			$this->_out('/FormType 1');
+			if ($this->compress) {
+				$stream = gzcompress($stream);
+				$this->_out('/Filter /FlateDecode');
+			}
+			$rect = sprintf('%.2F %.2F', $w, $h);
+			$this->_out('/BBox [0 0 '.$rect.']');
+			$this->_out('/Matrix [1 0 0 1 0 0]');
+			$this->_out('/Resources <</ProcSet [/PDF]>>');
+			$this->_out('/Length '.strlen($stream));
+			$this->_out('>>');
+			$this->_putstream($stream);
+			$this->_out('endobj');
+			return $this->apxo_obj_id;
 		}
 
 		/**
@@ -6187,19 +6304,23 @@ if (!class_exists('TCPDF', false)) {
 				$name = $font['name'];
 				if ($type == 'core') {
 					//Standard font
-					$this->_newobj();
+					$obj_id = $this->_newobj();
 					$this->_out('<</Type /Font');
 					$this->_out('/Subtype /Type1');
 					$this->_out('/BaseFont /'.$name);
 					$this->_out('/Name /F'.$font['i']);
-					if (($name != 'symbol') AND ($name != 'zapfdingbats')) {
+					if ((strtolower($name) != 'symbol') AND (strtolower($name) != 'zapfdingbats')) {
 						$this->_out('/Encoding /WinAnsiEncoding');
+					}
+					if (strtolower($name) == 'helvetica') {
+						// add default font for annotations
+						$this->annotation_fonts['helvetica'] = $k;
 					}
 					$this->_out('>>');
 					$this->_out('endobj');
 				} elseif (($type == 'Type1') OR ($type == 'TrueType')) {
 					//Additional Type1 or TrueType font
-					$this->_newobj();
+					$obj_id = $this->_newobj();
 					$this->_out('<</Type /Font');
 					$this->_out('/Subtype /'.$type);
 					$this->_out('/BaseFont /'.$name);
@@ -6228,8 +6349,8 @@ if (!class_exists('TCPDF', false)) {
 					//Descriptor
 					$this->_newobj();
 					$s = '<</Type /FontDescriptor /FontName /'.$name;
-					foreach ($font['desc'] as $k => $v) {
-						$s .= ' /'.$k.' '.$v.'';
+					foreach ($font['desc'] as $fdk => $fdv) {
+						$s .= ' /'.$fdk.' '.$fdv.'';
 					}
 					if (!$this->empty_string($font['file'])) {
 						$s .= ' /FontFile'.($type == 'Type1' ? '' : '2').' '.$this->FontFiles[$font['file']]['n'].' 0 R';
@@ -6242,8 +6363,10 @@ if (!class_exists('TCPDF', false)) {
 					if (!method_exists($this, $mtd)) {
 						$this->Error('Unsupported font type: '.$type);
 					}
-					$this->$mtd($font);
+					$obj_id = $this->$mtd($font);
 				}
+				// store object ID for current font
+				$this->font_obj_ids[$k] = $obj_id;
 			}
 		}
 		
@@ -6349,6 +6472,7 @@ if (!class_exists('TCPDF', false)) {
 		* Adds unicode fonts.<br>
 		* Based on PDF Reference 1.3 (section 5)
 		* @parameter array $font font data
+		* @return int font object ID
 		* @access protected
 		* @author Nicola Asuni
 		* @since 1.52.0.TC005 (2005-01-05)
@@ -6356,7 +6480,7 @@ if (!class_exists('TCPDF', false)) {
 		protected function _puttruetypeunicode($font) {
 			// Type0 Font
 			// A composite font composed of other fonts, organized hierarchically
-			$this->_newobj();
+			$obj_id = $this->_newobj();
 			$this->_out('<</Type /Font');
 			$this->_out('/Subtype /Type0');
 			$this->_out('/BaseFont /'.$font['name'].'');
@@ -6430,12 +6554,14 @@ if (!class_exists('TCPDF', false)) {
 				$this->_putstream(file_get_contents($fontfile));
 			}
 			$this->_out('endobj');
+			return $obj_id;
 		}
 		
 		/**
 		 * Output CID-0 fonts.
 		 * A Type 0 CIDFont contains glyph descriptions based on the Adobe Type 1 font format
 		 * @param array $font font data
+		 * @return int font object ID
 		 * @access protected
 		 * @author Andrew Whitehead, Nicola Asuni, Yukihiro Nakadaira
 		 * @since 3.2.000 (2008-06-23)
@@ -6462,7 +6588,7 @@ if (!class_exists('TCPDF', false)) {
 			} else {
 				$longname = $name;
 			}
-			$this->_newobj();
+			$obj_id = $this->_newobj();
 			$this->_out('<</Type /Font');
 			$this->_out('/Subtype /Type0');
 			$this->_out('/BaseFont /'.$longname);
@@ -6495,6 +6621,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 			$this->_out($s.'>>');
 			$this->_out('endobj');
+			return $obj_id;
 		}
 
 		/**
@@ -6746,8 +6873,16 @@ if (!class_exists('TCPDF', false)) {
 					$this->_out('/SigFlags 3');
 				}
 				//$this->_out('/CO ');
-				//$this->_out('/DR << >>');
-				//$this->_out('/DA ');
+				if (isset($this->annotation_fonts) AND !empty($this->annotation_fonts)) {
+					$this->_out('/DR <<');
+					$this->_out('/Font <<');
+					foreach ($this->annotation_fonts as $font => $fontkey) {
+						$this->_out('/F'.($fontkey + 1).' '.$this->font_obj_ids[$font].' 0 R');
+					}
+					$this->_out('>>');
+					$this->_out('>>');
+				}
+				$this->_out('/DA (/F'.(array_search('helvetica', $this->fontkeys) + 1).' 0 Tf 0 g)');
 				$this->_out('/Q '.(($this->rtl)?'2':'0'));
 				//$this->_out('/XFA ');
 				$this->_out('>>');
@@ -6939,6 +7074,13 @@ if (!class_exists('TCPDF', false)) {
 			if ($this->js_obj_id > $this->js_start_obj_id) {
 				$this->_out(($this->js_start_obj_id + 1).' '.($this->js_obj_id - $this->js_start_obj_id));
 				for ($i = ($this->js_start_obj_id + 1); $i <= $this->js_obj_id; ++$i) {
+					$this->_out(sprintf('%010d 00000 n ', $this->offsets[$i]));
+				}
+			}
+			// Appearance streams XObjects
+			if ($this->apxo_obj_id > $this->apxo_start_obj_id) {
+				$this->_out(($this->apxo_start_obj_id + 1).' '.($this->apxo_obj_id - $this->apxo_start_obj_id));
+				for ($i = ($this->apxo_start_obj_id + 1); $i <= $this->apxo_obj_id; ++$i) {
 					$this->_out(sprintf('%010d 00000 n ', $this->offsets[$i]));
 				}
 			}
@@ -10222,6 +10364,16 @@ if (!class_exists('TCPDF', false)) {
 			$prop = array_merge($this->getFormDefaultProp(), $prop);
 			// get annotation data
 			$popt = $this->getAnnotOptFromJSProp($prop);
+			// set default appearance stream
+			$font = $this->FontFamily;
+			$fontkey = array_search($font, $this->fontkeys);
+			if (!in_array($fontkey, $this->annotation_fonts)) {
+				$this->annotation_fonts[$font] = $fontkey;
+			}
+			$fontstyle = sprintf('/F%d %.2F Tf %s', ($fontkey + 1), $this->FontSizePt, $this->TextColor);
+			$popt['da'] = $fontstyle;
+			$popt['ap'] = array();
+			$popt['ap']['n'] = 'q BT '.$fontstyle.' ET Q';
 			// merge options
 			$opt = array_merge($popt, $opt);
 			// remove some conflicting options
@@ -10280,6 +10432,7 @@ if (!class_exists('TCPDF', false)) {
 		* @param array $prop javascript field properties. Possible values are described on official Javascript for Acrobat API reference.
 		* @param array $opt annotation parameters. Possible values are described on official PDF32000_2008 reference.
 		* @param string $onvalue value to be returned if selected.
+		* @param boolean $checked define the initial state.
 		* @param float $x Abscissa of the upper-left corner of the rectangle
 		* @param float $y Ordinate of the upper-left corner of the rectangle
 		* @param boolean $js if true put the field using JavaScript (requires Acrobat Writer to be rendered).
@@ -10287,7 +10440,7 @@ if (!class_exists('TCPDF', false)) {
 		* @author Nicola Asuni
 		* @since 4.8.000 (2009-09-07)
 		*/
-		public function RadioButton($name, $w, $prop=array(), $opt=array(), $onvalue='', $x='', $y='', $js=false) {
+		public function RadioButton($name, $w, $prop=array(), $opt=array(), $onvalue='On', $checked=false, $x='', $y='', $js=false) {
 			if ($x === '') {
 				$x = $this->x;
 			}
@@ -10298,20 +10451,60 @@ if (!class_exists('TCPDF', false)) {
 				$this->_addfield('radiobutton', $name, $x, $y, $w, $w, $prop);
 				return;
 			}
+			if ($this->empty_string($onvalue)) {
+				$onvalue = 'On';
+			}
+			if ($checked) {
+				$defval = $onvalue;
+			} else {
+				$defval = 'Off';
+			}
+			// set data for parent group
+			if (!isset($this->radiobutton_groups[$this->page])) {
+				$this->radiobutton_groups[$this->page] = array();
+			}
+			if (!isset($this->radiobutton_groups[$this->page][$name])) {
+				$this->radiobutton_groups[$this->page][$name] = array();
+				++$this->annot_obj_id;
+				$this->radio_groups[] = $this->annot_obj_id;
+			}
+			// save object ID to be added on Kids entry on parent object
+			$this->radiobutton_groups[$this->page][$name][] = array('kid' => ($this->annot_obj_id + 1), 'def' => $defval);
 			// get default style
 			$prop = array_merge($this->getFormDefaultProp(), $prop);
 			$prop['NoToggleToOff'] = 'true';
 			$prop['Radio'] = 'true';
+			$prop['borderStyle'] = 'inset';
 			// get annotation data
 			$popt = $this->getAnnotOptFromJSProp($prop);
+			// set additional default values
+			$font = 'zapfdingbats';
+			$this->AddFont($font);
+			$fontkey = array_search($font, $this->fontkeys);
+			if (!in_array($fontkey, $this->annotation_fonts)) {
+				$this->annotation_fonts[$font] = $fontkey;
+			}
+			$fontstyle = sprintf('/F%d %.2F Tf %s', ($fontkey + 1), $this->FontSizePt, $this->TextColor);
+			$popt['da'] = $fontstyle;
+			$popt['ap'] = array();
+			$popt['ap']['n'] = array();
+			$popt['ap']['n'][$onvalue] = 'q BT '.$fontstyle.' 0 0 Td (8) Tj ET Q';
+			$popt['ap']['n']['Off'] = 'q BT '.$fontstyle.' 0 0 Td (8) Tj ET Q';
+			if (!isset($popt['mk'])) {
+				$popt['mk'] = array();
+			}
+			$popt['mk']['ca'] = '(l)';
 			// merge options
 			$opt = array_merge($popt, $opt);
 			// set remaining annotation data
 			$opt['Subtype'] = 'Widget';
 			$opt['ft'] = 'Btn';
-			$opt['t'] = $name;
-			$opt['as'] = 'Off';
-			$opt['ap'] = '/N << /'.$onvalue.' /null >>';
+			if ($checked) {
+				$opt['v'] = array('/'.$onvalue);
+				$opt['as'] = $onvalue;
+			} else {
+				$opt['as'] = 'Off';
+			}
 			$this->Annotation($x, $y, $w, $w, $name, $opt, 0);
 			if ($this->rtl) {
 				$this->x -= $w;
@@ -10355,6 +10548,16 @@ if (!class_exists('TCPDF', false)) {
 			$prop = array_merge($this->getFormDefaultProp(), $prop);
 			// get annotation data
 			$popt = $this->getAnnotOptFromJSProp($prop);
+			// set additional default values
+			$font = $this->FontFamily;
+			$fontkey = array_search($font, $this->fontkeys);
+			if (!in_array($fontkey, $this->annotation_fonts)) {
+				$this->annotation_fonts[$font] = $fontkey;
+			}
+			$fontstyle = sprintf('/F%d %.2F Tf %s', ($fontkey + 1), $this->FontSizePt, $this->TextColor);
+			$popt['da'] = $fontstyle;
+			$popt['ap'] = array();
+			$popt['ap']['n'] = 'q BT '.$fontstyle.' ET Q';
 			// merge options
 			$opt = array_merge($popt, $opt);
 			// set remaining annotation data
@@ -10406,6 +10609,16 @@ if (!class_exists('TCPDF', false)) {
 			$prop['Combo'] = true;
 			// get annotation data
 			$popt = $this->getAnnotOptFromJSProp($prop);
+			// set additional default options
+			$font = $this->FontFamily;
+			$fontkey = array_search($font, $this->fontkeys);
+			if (!in_array($fontkey, $this->annotation_fonts)) {
+				$this->annotation_fonts[$font] = $fontkey;
+			}
+			$fontstyle = sprintf('/F%d %.2F Tf %s', ($fontkey + 1), $this->FontSizePt, $this->TextColor);
+			$popt['da'] = $fontstyle;
+			$popt['ap'] = array();
+			$popt['ap']['n'] = 'q BT '.$fontstyle.' ET Q';
 			// merge options
 			$opt = array_merge($popt, $opt);
 			// set remaining annotation data
@@ -10425,7 +10638,7 @@ if (!class_exists('TCPDF', false)) {
 		* Creates a CheckBox field
 		* @param string $name field name
 		* @param int $w width
-		* @param boolean $checked define the initial state (default = false).
+		* @param boolean $checked define the initial state.
 		* @param array $prop javascript field properties. Possible values are described on official Javascript for Acrobat API reference.
 		* @param array $opt annotation parameters. Possible values are described on official PDF32000_2008 reference.
 		* @param string $onvalue value to be returned if selected.
@@ -10452,8 +10665,22 @@ if (!class_exists('TCPDF', false)) {
 			}
 			// get default style
 			$prop = array_merge($this->getFormDefaultProp(), $prop);
+			$prop['borderStyle'] = 'inset';
 			// get annotation data
 			$popt = $this->getAnnotOptFromJSProp($prop);
+			// set additional default options
+			$font = 'zapfdingbats';
+			$this->AddFont($font);
+			$fontkey = array_search($font, $this->fontkeys);
+			if (!in_array($fontkey, $this->annotation_fonts)) {
+				$this->annotation_fonts[$font] = $fontkey;
+			}
+			$fontstyle = sprintf('/F%d %.2F Tf %s', ($fontkey + 1), $this->FontSizePt, $this->TextColor);
+			$popt['da'] = $fontstyle;
+			$popt['ap'] = array();
+			$popt['ap']['n'] = array();
+			$popt['ap']['n']['Yes'] = 'q BT '.$fontstyle.' 0 0 Td (8) Tj ET Q';
+			$popt['ap']['n']['Off'] = 'q BT '.$fontstyle.' 0 0 Td (8) Tj ET Q';
 			// merge options
 			$opt = array_merge($popt, $opt);
 			// set remaining annotation data
@@ -10463,9 +10690,11 @@ if (!class_exists('TCPDF', false)) {
 			$opt['opt'] = array($onvalue);
 			if ($checked) {
 				$opt['v'] = array('/0');
+				$opt['as'] = 'Yes';
+			} else {
+				$opt['v'] = array('/Off');
+				$opt['as'] = 'Off';
 			}
-			$opt['as'] = '0';
-			$opt['ap'] = '/N << /0 /On >>';
 			$this->Annotation($x, $y, $w, $w, $name, $opt, 0);
 			if ($this->rtl) {
 				$this->x -= $w;
@@ -10512,6 +10741,22 @@ if (!class_exists('TCPDF', false)) {
 			$prop['display'] = 'display.noPrint';
 			// get annotation data
 			$popt = $this->getAnnotOptFromJSProp($prop);
+			// set additional default options
+			if (!isset($popt['mk'])) {
+				$popt['mk'] = array();
+			}
+			$popt['mk']['ca'] = $this->_textstring($caption);
+			$popt['mk']['rc'] = $this->_textstring($caption);
+			$popt['mk']['ac'] = $this->_textstring($caption);
+			$font = $this->FontFamily;
+			$fontkey = array_search($font, $this->fontkeys);
+			if (!in_array($fontkey, $this->annotation_fonts)) {
+				$this->annotation_fonts[$font] = $fontkey;
+			}
+			$fontstyle = sprintf('/F%d %.2F Tf %s', ($fontkey + 1), $this->FontSizePt, $this->TextColor);
+			$popt['da'] = $fontstyle;
+			$popt['ap'] = array();
+			$popt['ap']['n'] = 'q BT '.$fontstyle.' ET Q';
 			// merge options
 			$opt = array_merge($popt, $opt);
 			// set remaining annotation data
@@ -13859,7 +14104,7 @@ if (!class_exists('TCPDF', false)) {
 							break;
 						}
 						case 'radio': {
-							$this->RadioButton($name, $w, $prop, $opt, $value, '', '', false);
+							$this->RadioButton($name, $w, $prop, $opt, $value, $checked, '', '', false);
 							break;
 						}
 						case 'submit': {
@@ -13981,9 +14226,9 @@ if (!class_exists('TCPDF', false)) {
 						$values = array();
 						foreach ($options as $val) {
 							if (strpos($val, "\t") !== false) {
-								$opt = explode("\t", $val);
-								$values[] = $opt;
-								$w = max($w, $this->GetStringWidth($opt[1]));
+								$opts = explode("\t", $val);
+								$values[] = $opts;
+								$w = max($w, $this->GetStringWidth($opts[1]));
 							} else {
 								$values[] = $val;
 								$w = max($w, $this->GetStringWidth($val));
