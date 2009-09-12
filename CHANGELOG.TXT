@@ -1,3 +1,6 @@
+4.8.002 (2009-09-12)
+	- A problem related to CID-0 fonts offset was fixed: if the $cw[1] entry on the CID-0 font file is not defined, then a CID keys offset is introduced.
+
 4.8.001 (2009-09-09)
 	- The appearance streams (AP) for anotations form fields was fixed (see examples n. 14 and 54).
 	- Radiobuttons were fixed.
