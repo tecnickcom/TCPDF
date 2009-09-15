@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_012.php
 // Begin       : 2008-03-04
-// Last Update : 2009-08-30
+// Last Update : 2009-09-14
 // 
 // Description : Example 012 for TCPDF class
 //               Graphic Functions
@@ -123,6 +123,10 @@ $pdf->Polygon(array(5,135,45,135,15,165));
 $pdf->Polygon(array(60,135,80,135,80,155,70,165,50,155), 'DF', array($style6, $style7, $style7, 0, $style6), array(220, 200, 200));
 $pdf->Polygon(array(120,135,140,135,150,155,110,155), 'D', array($style6, 0, $style7, $style6));
 $pdf->Polygon(array(160,135,190,155,170,155,200,160,160,165), 'DF', array('all' => $style6), array(220, 220, 220));
+
+// Polygonal Line
+$pdf->SetLineStyle(array('width' => 0.5, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 164)));
+$pdf->PolyLine(array(80,165,90,160,100,165,110,160,120,165,130,160,140,165), 'D', array(), array());
 
 // Regular polygon
 $pdf->Text(5, 172, 'Regular polygon examples');

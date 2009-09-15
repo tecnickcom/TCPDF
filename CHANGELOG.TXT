@@ -1,3 +1,10 @@
+4.8.003 (2009-09-15)
+	- Bug item #2858754 "Division by zero" was fixed.
+	- A bug relative to HTML list items was fixed.
+	- A bug relative to form fields on multiple pages was fixed.
+	- PolyLine() method was added (see example n. 12).
+	- Signature of Polygon() method was changed.
+
 4.8.002 (2009-09-12)
 	- A problem related to CID-0 fonts offset was fixed: if the $cw[1] entry on the CID-0 font file is not defined, then a CID keys offset is introduced.
 

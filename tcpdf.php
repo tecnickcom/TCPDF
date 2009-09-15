@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-09-12
+// Last Update : 2009-09-15
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.8.002
+// Version     : 4.8.003
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -128,7 +128,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.8.002
+ * @version 4.8.003
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.8.002 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.8.003 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.8.002
+	* @version 4.8.003
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1354,11 +1354,18 @@ if (!class_exists('TCPDF', false)) {
 		protected $annots_start_obj_id = 200000;
 		
 		/**
-		 * Current ID of annotation object
+		 * Max ID of annotation object
 		 * @access protected
 		 * @since 4.7.000 (2009-08-29)
 		 */
 		protected $annot_obj_id = 200000;
+		
+		/**
+		 * Current ID of annotation object
+		 * @access protected
+		 * @since 4.8.003 (2009-09-15)
+		 */
+		protected $curr_annot_obj_id = 200000;
 		
 		/**
 		 * List of form annotations IDs
@@ -1583,6 +1590,7 @@ if (!class_exists('TCPDF', false)) {
 				$this->re_spaces = '/[\s]/';
 			}
 			$this->annot_obj_id = $this->annots_start_obj_id;
+			$this->curr_annot_obj_id = $this->annots_start_obj_id;
 			$this->apxo_obj_id = $this->apxo_start_obj_id;
 			$this->js_obj_id = $this->js_start_obj_id;
 			$this->default_form_prop = array('lineWidth'=>1, 'borderStyle'=>'solid', 'fillColor'=>array(255, 255, 255), 'strokeColor'=>array(128, 128, 128));
@@ -3737,8 +3745,11 @@ if (!class_exists('TCPDF', false)) {
 				// text lenght
 				$width = $this->GetStringWidth($txt);
 				// ratio between cell lenght and text lenght
-				$ratio = ($w - (2 * $this->cMargin)) / $width;
-				
+				if ($width <= 0) {
+					$ratio = 1;
+				} else {
+					$ratio = ($w - (2 * $this->cMargin)) / $width;
+				}
 				// stretch text if required
 				if (($stretch > 0) AND (($ratio < 1) OR (($ratio > 1) AND (($stretch % 2) == 0)))) {
 					if ($stretch > 2) {
@@ -5588,11 +5599,16 @@ if (!class_exists('TCPDF', false)) {
 				return;
 			}
 			$this->_out('/Annots [');
-			for ($i = ($this->annots_start_obj_id + 1); $i <= $this->annot_obj_id; ++$i) {
-				if (!in_array($i, $this->radio_groups)) {
-					$this->_out($i.' 0 R');
+			$num_annots = count($this->PageAnnots[$n]);
+			for ($i = 0; $i < $num_annots; ++$i) {
+				++$this->curr_annot_obj_id;
+				if (!in_array($this->curr_annot_obj_id, $this->radio_groups)) {
+					$this->_out($this->curr_annot_obj_id.' 0 R');
+				} else {
+					++$num_annots;
 				}
 			}
+			
 			if (($n==1) AND $this->sign AND isset($this->signature_data['cert_type'])) {
 				// set reference for signature object
 				$this->_out($this->sig_annot_ref);
@@ -8744,7 +8760,33 @@ if (!class_exists('TCPDF', false)) {
 		public function Circle($x0, $y0, $r, $astart=0, $afinish=360, $style='', $line_style=array(), $fill_color=array(), $nc=8) {
 			$this->Ellipse($x0, $y0, $r, 0, 0, $astart, $afinish, $style, $line_style, $fill_color, $nc);
 		}
-		
+
+		/**
+		* Draws a polygonal line
+		* @param array $p Points 0 to ($np - 1). Array with values (x0, y0, x1, y1,..., x(np-1), y(np - 1))
+		* @param string $style Style of rendering. Possible values are:
+		* <ul>
+		*	 <li>D or empty string: Draw (default).</li>
+		*	 <li>F: Fill.</li>
+		*	 <li>DF or FD: Draw and fill.</li>
+		*	 <li>CNZ: Clipping mode (using the even-odd rule to determine which regions lie inside the clipping path).</li>
+		*	 <li>CEO: Clipping mode (using the nonzero winding number rule to determine which regions lie inside the clipping path).</li>
+		* </ul>
+		* @param array $line_style Line style of polygon. Array with keys among the following:
+		* <ul>
+		*	 <li>all: Line style of all lines. Array like for {@link SetLineStyle SetLineStyle}.</li>
+		*	 <li>0 to ($np - 1): Line style of each line. Array like for {@link SetLineStyle SetLineStyle}.</li>
+		* </ul>
+		* If a key is not present or is null, not draws the line. Default value is default line style (empty array).
+		* @param array $fill_color Fill color. Format: array(GREY) or array(R,G,B) or array(C,M,Y,K). Default value: default color (empty array).
+		* @param boolean $closed if true the polygon is closes, otherwise will remain open
+		* @access public
+		* @since 4.8.003 (2009-09-15)
+		*/
+		public function PolyLine($p, $style='', $line_style=array(), $fill_color=array()) {
+			$this->Polygon($p, $style, $line_style, $fill_color, false);
+		}
+
 		/**
 		* Draws a polygon.
 		* @param array $p Points 0 to ($np - 1). Array with values (x0, y0, x1, y1,..., x(np-1), y(np - 1))
@@ -8763,21 +8805,24 @@ if (!class_exists('TCPDF', false)) {
 		* </ul>
 		* If a key is not present or is null, not draws the line. Default value is default line style (empty array).
 		* @param array $fill_color Fill color. Format: array(GREY) or array(R,G,B) or array(C,M,Y,K). Default value: default color (empty array).
+		* @param boolean $closed if true the polygon is closes, otherwise will remain open
 		* @access public
 		* @since 2.1.000 (2008-01-08)
 		*/
-		public function Polygon($p, $style='', $line_style=array(), $fill_color=array()) {
+		public function Polygon($p, $style='', $line_style=array(), $fill_color=array(), $closed=true) {
 			$nc = count($p); // number of coordinates
 			$np = $nc / 2; // number of points
-			for ($i = 0; $i < 4; ++$i) {
+			if ($closed) {
 				// close polygon by adding the first 2 points at the end (one line)
-				$p[$nc + $i] = $p[$i];
+				for ($i = 0; $i < 4; ++$i) {
+					$p[$nc + $i] = $p[$i];
+				}
+				// copy style for the last added line
+				if (isset($line_style[0])) {
+					$line_style[$np] = $line_style[0];
+				}			
+				$nc += 4;
 			}
-			// copy style for the last added line
-			if (isset($line_style[0])) {
-				$line_style[$np] = $line_style[0];
-			}			
-			$nc += 4;			
 			if (!(false === strpos($style, 'F')) AND isset($fill_color)) {
 				$this->SetFillColorArray($fill_color);
 			}
@@ -12936,7 +12981,15 @@ if (!class_exists('TCPDF', false)) {
 			} else {
 				$this->listindent = $this->GetStringWidth('0000');
 			}
+			// save previous list state
+			$prev_listnum = $this->listnum;
+			$prev_listordered = $this->listordered;
+			$prev_listcount = $this->listcount;
+			$prev_lispacer = $this->lispacer;
 			$this->listnum = 0;
+			$this->listordered = array();
+			$this->listcount = array();
+			$this->lispacer = '';
 			if (($this->empty_string($this->lasth)) OR ($reseth)) {
 				//set row height
 				$this->lasth = $this->FontSize * $this->cell_height_ratio; 
@@ -13730,6 +13783,11 @@ if (!class_exists('TCPDF', false)) {
 				$this->lMargin = $this->pagedim[$this->page]['olm'];
 				$this->rMargin = $this->pagedim[$this->page]['orm'];
 			}
+			// restore previous list state
+			$this->listnum = $prev_listnum;
+			$this->listordered = $prev_listordered;
+			$this->listcount = $prev_listcount;
+			$this->lispacer = $prev_lispacer;
 			unset($dom);
 		}
 		

@@ -72,7 +72,7 @@
 							<dt><b>$annots_start_obj_id</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$annots_start_obj_id">TCPDF::$annots_start_obj_id</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Start ID for annotation objects</dd>
 							<dt><b>$annot_obj_id</b></dt>
-				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$annot_obj_id">TCPDF::$annot_obj_id</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Current ID of annotation object</dd>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$annot_obj_id">TCPDF::$annot_obj_id</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Max ID of annotation object</dd>
 							<dt><b>$apxo_obj_id</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$apxo_obj_id">TCPDF::$apxo_obj_id</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Current ID of appearance streams XObjects</dd>
 							<dt><b>$apxo_start_obj_id</b></dt>
@@ -209,6 +209,8 @@
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$CurrentFont">TCPDF::$CurrentFont</a></dd>
 							<dt><b>$currpagegroup</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$currpagegroup">TCPDF::$currpagegroup</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Contains the alias of the current page group</dd>
+							<dt><b>$curr_annot_obj_id</b></dt>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$curr_annot_obj_id">TCPDF::$curr_annot_obj_id</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Current ID of annotation object</dd>
 							<dt><b>$customlistindent</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$customlistindent">TCPDF::$customlistindent</a></dd>
 							<dt><b>Cell</b></dt>
@@ -879,6 +881,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodPolycurve">TCPDF::Polycurve()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Draws a poly-Bezier curve.</dd>
 							<dt><b>Polygon</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodPolygon">TCPDF::Polygon()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Draws a polygon.</dd>
+							<dt><b>PolyLine</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodPolyLine">TCPDF::PolyLine()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Draws a polygonal line</dd>
 							<dt><b>putHtmlListBullet</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodputHtmlListBullet">TCPDF::putHtmlListBullet()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Output an HTML list bullet or ordered item symbol</dd>
 					</dl>
@@ -1430,7 +1434,7 @@
 	<a href="elementindex.html#top">top</a><br>
         <div class="credit">
 		    <hr />
-		    Documentation generated on Sat, 12 Sep 2009 11:43:28 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.1</a>
+		    Documentation generated on Tue, 15 Sep 2009 13:07:01 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.1</a>
 	      </div>
       </td></tr></table>
     </td>
