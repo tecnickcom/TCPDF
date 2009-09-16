@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-09-15
+// Last Update : 2009-09-16
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.8.003
+// Version     : 4.8.004
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -128,7 +128,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.8.003
+ * @version 4.8.004
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.8.003 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.8.004 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.8.003
+	* @version 4.8.004
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -5599,16 +5599,17 @@ if (!class_exists('TCPDF', false)) {
 				return;
 			}
 			$this->_out('/Annots [');
-			$num_annots = count($this->PageAnnots[$n]);
-			for ($i = 0; $i < $num_annots; ++$i) {
-				++$this->curr_annot_obj_id;
-				if (!in_array($this->curr_annot_obj_id, $this->radio_groups)) {
-					$this->_out($this->curr_annot_obj_id.' 0 R');
-				} else {
-					++$num_annots;
+			if (isset($this->PageAnnots[$n])) {
+				$num_annots = count($this->PageAnnots[$n]);
+				for ($i = 0; $i < $num_annots; ++$i) {
+					++$this->curr_annot_obj_id;
+					if (!in_array($this->curr_annot_obj_id, $this->radio_groups)) {
+						$this->_out($this->curr_annot_obj_id.' 0 R');
+					} else {
+						++$num_annots;
+					}
 				}
 			}
-			
 			if (($n==1) AND $this->sign AND isset($this->signature_data['cert_type'])) {
 				// set reference for signature object
 				$this->_out($this->sig_annot_ref);

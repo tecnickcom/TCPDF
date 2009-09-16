@@ -1,3 +1,6 @@
+4.8.004 (2009-09-16)
+	- A bug on _putannotsrefs() method was fixed.
+
 4.8.003 (2009-09-15)
 	- Bug item #2858754 "Division by zero" was fixed.
 	- A bug relative to HTML list items was fixed.
