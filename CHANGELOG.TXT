@@ -1,3 +1,6 @@
+4.8.005 (2009-09-17)
+	- A bug relative to multiple transformations and annotations was fixed.
+
 4.8.004 (2009-09-16)
 	- A bug on _putannotsrefs() method was fixed.
 

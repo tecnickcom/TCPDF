@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-09-16
+// Last Update : 2009-09-17
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.8.004
+// Version     : 4.8.005
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -128,7 +128,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.8.004
+ * @version 4.8.005
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.8.004 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.8.005 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.8.004
+	* @version 4.8.005
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1084,7 +1084,14 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 4.2.000 (2008-10-29)
 		 */
 		protected $transfmatrix = array();
-		
+
+		/**
+		 * Current key for transformation matrix
+		 * @access protected
+		 * @since 4.8.005 (2009-09-17)
+		 */
+		protected $transfmatrix_key = 0;
+
 		/**
 		 * Booklet mode for double-sided pages
 		 * @access protected
@@ -3416,41 +3423,43 @@ if (!class_exists('TCPDF', false)) {
 			}
 			// recalculate coordinates to account for graphic transformations
 			if (isset($this->transfmatrix)) {
-				$maxid = count($this->transfmatrix) - 1;
-				for ($i=$maxid; $i >= 0; $i--) {
-					$ctm = $this->transfmatrix[$i];
-					if (isset($ctm['a'])) {
-						$x = $x * $this->k;
-						$y = ($this->h - $y) * $this->k;
-						$w = $w * $this->k;
-						$h = $h * $this->k;
-						// top left
-						$xt = $x;
-						$yt = $y;
-						$x1 = ($ctm['a'] * $xt) + ($ctm['c'] * $yt) + $ctm['e'];
-						$y1 = ($ctm['b'] * $xt) + ($ctm['d'] * $yt) + $ctm['f'];
-						// top right
-						$xt = $x + $w;
-						$yt = $y;
-						$x2 = ($ctm['a'] * $xt) + ($ctm['c'] * $yt) + $ctm['e'];
-						$y2 = ($ctm['b'] * $xt) + ($ctm['d'] * $yt) + $ctm['f'];
-						// bottom left
-						$xt = $x;
-						$yt = $y - $h;
-						$x3 = ($ctm['a'] * $xt) + ($ctm['c'] * $yt) + $ctm['e'];
-						$y3 = ($ctm['b'] * $xt) + ($ctm['d'] * $yt) + $ctm['f'];
-						// bottom right
-						$xt = $x + $w;
-						$yt = $y - $h;
-						$x4 = ($ctm['a'] * $xt) + ($ctm['c'] * $yt) + $ctm['e'];
-						$y4 = ($ctm['b'] * $xt) + ($ctm['d'] * $yt) + $ctm['f'];
-						// new coordinates (rectangle area)
-						$x = min($x1, $x2, $x3, $x4);
-						$y = max($y1, $y2, $y3, $y4);
-						$w = (max($x1, $x2, $x3, $x4) - $x) / $this->k;
-						$h = ($y - min($y1, $y2, $y3, $y4)) / $this->k;
-						$x = $x / $this->k;
-						$y = $this->h - ($y / $this->k);
+				for ($i=$this->transfmatrix_key; $i > 0; --$i) {
+					$maxid = count($this->transfmatrix[$i]) - 1;
+					for ($j=$maxid; $j >= 0; --$j) {
+						$ctm = $this->transfmatrix[$i][$j];
+						if (isset($ctm['a'])) {
+							$x = $x * $this->k;
+							$y = ($this->h - $y) * $this->k;
+							$w = $w * $this->k;
+							$h = $h * $this->k;
+							// top left
+							$xt = $x;
+							$yt = $y;
+							$x1 = ($ctm['a'] * $xt) + ($ctm['c'] * $yt) + $ctm['e'];
+							$y1 = ($ctm['b'] * $xt) + ($ctm['d'] * $yt) + $ctm['f'];
+							// top right
+							$xt = $x + $w;
+							$yt = $y;
+							$x2 = ($ctm['a'] * $xt) + ($ctm['c'] * $yt) + $ctm['e'];
+							$y2 = ($ctm['b'] * $xt) + ($ctm['d'] * $yt) + $ctm['f'];
+							// bottom left
+							$xt = $x;
+							$yt = $y - $h;
+							$x3 = ($ctm['a'] * $xt) + ($ctm['c'] * $yt) + $ctm['e'];
+							$y3 = ($ctm['b'] * $xt) + ($ctm['d'] * $yt) + $ctm['f'];
+							// bottom right
+							$xt = $x + $w;
+							$yt = $y - $h;
+							$x4 = ($ctm['a'] * $xt) + ($ctm['c'] * $yt) + $ctm['e'];
+							$y4 = ($ctm['b'] * $xt) + ($ctm['d'] * $yt) + $ctm['f'];
+							// new coordinates (rectangle area)
+							$x = min($x1, $x2, $x3, $x4);
+							$y = max($y1, $y2, $y3, $y4);
+							$w = (max($x1, $x2, $x3, $x4) - $x) / $this->k;
+							$h = ($y - min($y1, $y2, $y3, $y4)) / $this->k;
+							$x = $x / $this->k;
+							$y = $this->h - ($y / $this->k);
+						}
 					}
 				}
 			}
@@ -7918,6 +7927,8 @@ if (!class_exists('TCPDF', false)) {
 		public function StartTransform() {
 			$this->_out('q');
 			$this->transfmrk[$this->page][] = $this->pagelen[$this->page];
+			++$this->transfmatrix_key;
+			$this->transfmatrix[$this->transfmatrix_key] = array();
 		}
 		
 		/**
@@ -7930,8 +7941,9 @@ if (!class_exists('TCPDF', false)) {
 		*/
 		public function StopTransform() {
 			$this->_out('Q');
-			if (isset($this->transfmatrix)) {
-				array_pop($this->transfmatrix);
+			if (isset($this->transfmatrix[$this->transfmatrix_key])) {
+				array_pop($this->transfmatrix[$this->transfmatrix_key]);
+				--$this->transfmatrix_key;
 			}
 			array_pop($this->transfmrk[$this->page]);
 		}
@@ -8209,8 +8221,8 @@ if (!class_exists('TCPDF', false)) {
 		*/
 		protected function Transform($tm) {
 			$this->_out(sprintf('%.3F %.3F %.3F %.3F %.3F %.3F cm', $tm[0], $tm[1], $tm[2], $tm[3], $tm[4], $tm[5]));
-			// store transformation matrix
-			$this->transfmatrix[] = array('a' => $tm[0], 'b' => $tm[1], 'c' => $tm[2], 'd' => $tm[3], 'e' => $tm[4], 'f' => $tm[5]);
+			// add tranformation matrix
+			$this->transfmatrix[$this->transfmatrix_key][] = array('a' => $tm[0], 'b' => $tm[1], 'c' => $tm[2], 'd' => $tm[3], 'e' => $tm[4], 'f' => $tm[5]);
 			// update tranformation mark
 			if (end($this->transfmrk[$this->page]) !== false) {
 				$key = key($this->transfmrk[$this->page]);
