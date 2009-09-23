@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-09-17
+// Last Update : 2009-09-23
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.8.005
+// Version     : 4.8.006
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -128,7 +128,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.8.005
+ * @version 4.8.006
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.8.005 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.8.006 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.8.005
+	* @version 4.8.006
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1464,6 +1464,20 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 4.8.001 (2009-09-09)
 		 */
 		protected $radio_groups = array();
+		
+		/**
+		 * Text indentation value (used for text-indent CSS attribute) 
+		 * @access protected
+		 * @since 4.8.006 (2009-09-23)
+		 */
+		protected $textindent = 0;
+		
+		/**
+		 * Store page number when startTransaction() is called.
+		 * @access protected
+		 * @since 4.8.006 (2009-09-23)
+		 */
+		protected $start_transaction_page = 0;
 		
 		//------------------------------------------------------------
 		// METHODS
@@ -12600,6 +12614,7 @@ if (!class_exists('TCPDF', false)) {
 			$dom[$key]['fgcolor'] = $this->fgcolor;
 			$dom[$key]['align'] = '';
 			$dom[$key]['listtype'] = '';
+			$dom[$key]['text-indent'] = 0;
 			$thead = false; // true when we are inside the THEAD tag
 			++$key;
 			$level = array();
@@ -12652,7 +12667,7 @@ if (!class_exists('TCPDF', false)) {
 							$key = $i;
 						}
 						// store header rows on a new table
-						if (($dom[$key]['value'] == 'tr') AND ($dom[($dom[$key]['parent'])]['thead'] == true)) {
+						if (($dom[$key]['value'] == 'tr') AND ($dom[($dom[$key]['parent'])]['thead'] === true)) {
 							if ($this->empty_string($dom[($dom[($dom[$key]['parent'])]['parent'])]['thead'])) {
 								$dom[($dom[($dom[$key]['parent'])]['parent'])]['thead'] = $a[$dom[($dom[($dom[$key]['parent'])]['parent'])]['elkey']];
 							}
@@ -12685,6 +12700,7 @@ if (!class_exists('TCPDF', false)) {
 							$dom[$key]['fgcolor'] = $dom[$parentkey]['fgcolor'];
 							$dom[$key]['align'] = $dom[$parentkey]['align'];
 							$dom[$key]['listtype'] = $dom[$parentkey]['listtype'];
+							$dom[$key]['text-indent'] = $dom[$parentkey]['text-indent'];
 						}
 						// get attributes
 						preg_match_all('/([^=\s]*)=["]?([^"]*)["]?/', $element, $attr_array, PREG_PATTERN_ORDER);
@@ -12719,6 +12735,13 @@ if (!class_exists('TCPDF', false)) {
 								$dom[$key]['listtype'] = trim(strtolower($dom[$key]['style']['list-style-type']));
 								if ($dom[$key]['listtype'] == 'inherit') {
 									$dom[$key]['listtype'] = $dom[$parentkey]['listtype'];
+								}
+							}
+							// text-indent
+							if (isset($dom[$key]['style']['text-indent'])) {
+								$dom[$key]['text-indent'] = $this->getHTMLUnitToUnits($dom[$key]['style']['text-indent']);
+								if ($dom[$key]['text-indent'] == 'inherit') {
+									$dom[$key]['text-indent'] = $dom[$parentkey]['text-indent'];
 								}
 							}
 							// font size
@@ -12955,12 +12978,15 @@ if (!class_exists('TCPDF', false)) {
 			$curfontstyle = $this->FontStyle;
 			$curfontsize = $this->FontSizePt;	
 			$this->newline = true;
-			$minstartliney = $this->y;
-			$yshift = 0;
 			$startlinepage = $this->page;
+			$minstartliney = $this->y;
+			$startlinex = $this->x;
+			$startliney = $this->y;
+			$yshift = 0;
 			$newline = true;
 			$loop = 0;
 			$curpos = 0;
+			$this_method_vars = array();
 			$blocktags = array('blockquote','br','dd','div','dt','h1','h2','h3','h4','h5','h6','hr','li','ol','p','ul','tcpdf');
 			$this->premode = false;
 			if (isset($this->PageAnnots[$this->page])) {
@@ -12994,7 +13020,7 @@ if (!class_exists('TCPDF', false)) {
 			} else {
 				$this->listindent = $this->GetStringWidth('0000');
 			}
-			// save previous list state
+			// save previous states
 			$prev_listnum = $this->listnum;
 			$prev_listordered = $this->listordered;
 			$prev_listcount = $this->listcount;
@@ -13011,6 +13037,47 @@ if (!class_exists('TCPDF', false)) {
 			$maxel = count($dom);
 			$key = 0;
 			while ($key < $maxel) {
+				if ($dom[$key]['tag'] AND $dom[$key]['opening'] AND isset($dom[$key]['attribute']['nobr']) AND ($dom[$key]['attribute']['nobr'] == 'true')) {
+					if (isset($dom[($dom[$key]['parent'])]['attribute']['nobr']) AND ($dom[($dom[$key]['parent'])]['attribute']['nobr'] == 'true')) {
+						$dom[$key]['attribute']['nobr'] = false;
+					} else {
+						// store current object
+						$this->startTransaction();
+						// save this method vars
+						$this_method_vars['html'] = $html;
+						$this_method_vars['ln'] = $ln;
+						$this_method_vars['fill'] = $fill;
+						$this_method_vars['reseth'] = $reseth;
+						$this_method_vars['cell'] = $cell;
+						$this_method_vars['align'] = $align;
+						$this_method_vars['gvars'] = $gvars;
+						$this_method_vars['prevPage'] = $prevPage;
+						$this_method_vars['prevlMargin'] = $prevlMargin;
+						$this_method_vars['prevrMargin'] = $prevrMargin;
+						$this_method_vars['curfontname'] = $curfontname;
+						$this_method_vars['curfontstyle'] = $curfontstyle;
+						$this_method_vars['curfontsize'] = $curfontsize;
+						$this_method_vars['minstartliney'] = $minstartliney;
+						$this_method_vars['yshift'] = $yshift;
+						$this_method_vars['startlinepage'] = $startlinepage;
+						$this_method_vars['startlinepos'] = $startlinepos;
+						$this_method_vars['startlinex'] = $startlinex;
+						$this_method_vars['startliney'] = $startliney;
+						$this_method_vars['newline'] = $newline;
+						$this_method_vars['loop'] = $loop;
+						$this_method_vars['curpos'] = $curpos;
+						$this_method_vars['pask'] = $pask;
+						$this_method_vars['lalign'] = $lalign;
+						$this_method_vars['plalign'] = $plalign;
+						$this_method_vars['w'] = $w;
+						$this_method_vars['prev_listnum'] = $prev_listnum;
+						$this_method_vars['prev_listordered'] = $prev_listordered;
+						$this_method_vars['prev_listcount'] = $prev_listcount;
+						$this_method_vars['prev_lispacer'] = $prev_lispacer;
+						$this_method_vars['key'] = $key;
+						$this_method_vars['dom'] = $dom;
+					}
+				}
 				if ($dom[$key]['tag'] OR ($key == 0)) {
 					if ((($dom[$key]['value'] == 'table') OR ($dom[$key]['value'] == 'tr')) AND (isset($dom[$key]['align']))) {
 						$dom[$key]['align'] = ($this->rtl) ? 'R' : 'L';
@@ -13432,6 +13499,10 @@ if (!class_exists('TCPDF', false)) {
 				}
 				if ($dom[$key]['tag']) {
 					if ($dom[$key]['opening']) {
+						// get text indentation (if any)
+						if (isset($dom[$key]['text-indent']) AND in_array($dom[$key]['value'], array('blockquote','dd','div','dt','h1','h2','h3','h4','h5','h6','li','ol','p','ul','table','tr','td'))) {
+							$this->textindent = $dom[$key]['text-indent'];
+						}
 						if ($dom[$key]['value'] == 'table') {
 							if ($this->rtl) {
 								$wtmp = $this->x - $this->lMargin;
@@ -13687,8 +13758,14 @@ if (!class_exists('TCPDF', false)) {
 					} else {
 						$ctmpmargin = $this->cMargin;
 						$this->cMargin = 0;
+						if ($this->rtl) {
+							$this->x -= $this->textindent;
+						} else {
+							$this->x += $this->textindent;
+						}
 						// ****** write only until the end of the line and get the rest ******
 						$strrest = $this->Write($this->lasth, $dom[$key]['value'], '', $wfill, '', false, 0, true, $firstblock);
+						$this->textindent = 0;
 						$this->cMargin = $ctmpmargin;
 					}
 					if (strlen($strrest) > 0) {
@@ -13716,6 +13793,16 @@ if (!class_exists('TCPDF', false)) {
 					}
 				}
 				++$key;
+				if (isset($dom[$key]['tag']) AND $dom[$key]['tag'] AND (!isset($dom[$key]['opening']) OR !$dom[$key]['opening']) AND isset($dom[($dom[$key]['parent'])]['attribute']['nobr']) AND ($dom[($dom[$key]['parent'])]['attribute']['nobr'] == 'true') AND ($this->start_transaction_page < $this->numpages)) {
+						// restore previous object
+						$this->rollbackTransaction(true);
+						// restore previous values
+						foreach ($this_method_vars as $vkey => $vval) {
+							$$vkey = $vval;
+						}
+						// add a page
+						$this->AddPage();
+				}
 			} // end for each $key
 			// align the last line
 			if (isset($startlinex)) {
@@ -13905,7 +13992,7 @@ if (!class_exists('TCPDF', false)) {
 				case 'img': {
 					if (isset($tag['attribute']['src'])) {
 						// replace relative path with real server path
-						if ($tag['attribute']['src'][0] == '/') {
+						if (($tag['attribute']['src'][0] == '/') AND ($_SERVER['DOCUMENT_ROOT'] != '/')) {
 							$tag['attribute']['src'] = $_SERVER['DOCUMENT_ROOT'].$tag['attribute']['src'];
 						}
 						$tag['attribute']['src'] = urldecode($tag['attribute']['src']);
@@ -15855,6 +15942,8 @@ if (!class_exists('TCPDF', false)) {
 				// remove previous copy
 				$this->commitTransaction();
 			}
+			// record current page number
+			$this->start_transaction_page = $this->page;
 			// clone current object
 			$this->objcopy = $this->objclone($this);
 		}
@@ -15873,11 +15962,12 @@ if (!class_exists('TCPDF', false)) {
 
 		/**
 		* This method allows to undo the latest transaction by returning the latest saved TCPDF object with startTransaction().
+		* @param boolean $self if true restores current class object to previous state without the need of reassignment via the returned value.
 		* @return TCPDF object.
 		* @access public
 		* @since 4.5.029 (2009-03-19)
 		*/
-		public function rollbackTransaction() {
+		public function rollbackTransaction($self=false) {
 			if (isset($this->objcopy)) {
 				if (isset($this->objcopy->diskcache) AND $this->objcopy->diskcache) {
 					// truncate files to previous values
@@ -15888,6 +15978,12 @@ if (!class_exists('TCPDF', false)) {
 					}
 				}
 				$this->_destroy(true, true);
+				if ($self) {
+					$objvars = get_object_vars($this->objcopy);
+					foreach ($objvars as $key => $value) {
+						$this->$key = $value;
+					}
+				}
 				return $this->objcopy;
 			}
 			return $this;

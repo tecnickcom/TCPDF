@@ -1,3 +1,9 @@
+4.8.006 (2009-09-23)
+	- Bug item #2864522 "No images if DOCUMENT_ROOT=='/'" was fixed.
+	- Support for text-indent CSS attribute was added.
+	- Method rollbackTransaction() was changed to support self-reassigment of previous object (check source code documentation).
+	- Support for the HTML "nobr" attribute was added to avoid splitting a table or a table row on two pages (i.e.: <tr nobr="true">...</tr>).
+
 4.8.005 (2009-09-17)
 	- A bug relative to multiple transformations and annotations was fixed.
 
