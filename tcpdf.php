@@ -4,7 +4,7 @@
 // Begin       : 2002-08-03
 // Last Update : 2009-09-23
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.8.006
+// Version     : 4.8.007
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -128,7 +128,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.8.006
+ * @version 4.8.007
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.8.006 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.8.007 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.8.006
+	* @version 4.8.007
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -12987,6 +12987,7 @@ if (!class_exists('TCPDF', false)) {
 			$loop = 0;
 			$curpos = 0;
 			$this_method_vars = array();
+			$undo = false;
 			$blocktags = array('blockquote','br','dd','div','dt','h1','h2','h3','h4','h5','h6','hr','li','ol','p','ul','tcpdf');
 			$this->premode = false;
 			if (isset($this->PageAnnots[$this->page])) {
@@ -13793,7 +13794,8 @@ if (!class_exists('TCPDF', false)) {
 					}
 				}
 				++$key;
-				if (isset($dom[$key]['tag']) AND $dom[$key]['tag'] AND (!isset($dom[$key]['opening']) OR !$dom[$key]['opening']) AND isset($dom[($dom[$key]['parent'])]['attribute']['nobr']) AND ($dom[($dom[$key]['parent'])]['attribute']['nobr'] == 'true') AND ($this->start_transaction_page < $this->numpages)) {
+				if (isset($dom[$key]['tag']) AND $dom[$key]['tag'] AND (!isset($dom[$key]['opening']) OR !$dom[$key]['opening']) AND isset($dom[($dom[$key]['parent'])]['attribute']['nobr']) AND ($dom[($dom[$key]['parent'])]['attribute']['nobr'] == 'true')) {
+					if ((!$undo) AND ($this->start_transaction_page == ($this->numpages - 1))) {
 						// restore previous object
 						$this->rollbackTransaction(true);
 						// restore previous values
@@ -13802,6 +13804,10 @@ if (!class_exists('TCPDF', false)) {
 						}
 						// add a page
 						$this->AddPage();
+						$undo = true; // avoid infinite loop
+					} else {
+						$undo = false;
+					}
 				}
 			} // end for each $key
 			// align the last line

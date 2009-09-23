@@ -1,3 +1,6 @@
+4.8.007 (2009-09-23)
+	- Infinite loop problem caused by nobr attribute was fixed.
+	
 4.8.006 (2009-09-23)
 	- Bug item #2864522 "No images if DOCUMENT_ROOT=='/'" was fixed.
 	- Support for text-indent CSS attribute was added.
