@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-09-23
+// Last Update : 2009-09-29
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.8.007
+// Version     : 4.8.008
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -128,7 +128,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.8.007
+ * @version 4.8.008
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.8.007 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.8.008 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.8.007
+	* @version 4.8.008
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -3545,7 +3545,7 @@ if (!class_exists('TCPDF', false)) {
 				// bidirectional algorithm (some chars may be changed affecting the line length)
 				$s = $this->utf8Bidi($this->UTF8StringToArray($txt), $txt, $this->tmprtl);
 				$l = $this->GetArrStringWidth($s);
-				$xr = $this->w - $x - $this->GetArrStringWidth($s);
+				$xr = $this->w - $x - $l;
 			} else {
 				$xr = $x;
 			}
@@ -3854,10 +3854,10 @@ if (!class_exists('TCPDF', false)) {
 					$xdx = $this->x + $dx;
 				}
 				if ($this->underline)  {
-					$s .= ' '.$this->_dounderline($xdx, $basefonty, $txt);
+					$s .= ' '.$this->_dounderlinew($xdx, $basefonty, $width);
 				}
 				if ($this->linethrough) { 
-					$s .= ' '.$this->_dolinethrough($xdx, $basefonty, $txt);
+					$s .= ' '.$this->_dolinethroughw($xdx, $basefonty, $width);
 				}
 				if ($this->ColorFlag) {
 					$s .= ' Q';
@@ -7219,10 +7219,8 @@ if (!class_exists('TCPDF', false)) {
 		* @access protected
 		*/
 		protected function _dounderline($x, $y, $txt) {
-			$up = $this->CurrentFont['up'];
-			$ut = $this->CurrentFont['ut'];
 			$w = $this->GetStringWidth($txt);
-			return sprintf('%.2F %.2F %.2F %.2F re f', $x * $this->k, ($this->h - ($y - $up / 1000 * $this->FontSize)) * $this->k, $w * $this->k, -$ut / 1000 * $this->FontSizePt);
+			return $this->_dounderlinew($x, $y, $w);
 		}
 		
 		/**
@@ -7233,9 +7231,35 @@ if (!class_exists('TCPDF', false)) {
 		* @access protected
 		*/
 		protected function _dolinethrough($x, $y, $txt) {
+			$w = $this->GetStringWidth($txt);
+			return $this->_dolinethroughw($x, $y, $w);
+		}
+
+		/**
+		* Underline for rectangular text area.
+		* @param int $x X coordinate
+		* @param int $y Y coordinate
+		* @param int $w width to underline
+		* @access protected
+		* @since 4.8.008 (2009-09-29)
+		*/
+		protected function _dounderlinew($x, $y, $w) {
 			$up = $this->CurrentFont['up'];
 			$ut = $this->CurrentFont['ut'];
-			$w = $this->GetStringWidth($txt);
+			return sprintf('%.2F %.2F %.2F %.2F re f', $x * $this->k, ($this->h - ($y - $up / 1000 * $this->FontSize)) * $this->k, $w * $this->k, -$ut / 1000 * $this->FontSizePt);
+		}
+		
+		/**
+		* Line through for rectangular text area.
+		* @param int $x X coordinate
+		* @param int $y Y coordinate
+		* @param string $txt text to linethrough
+		* @access protected
+		* @since 4.8.008 (2009-09-29)
+		*/
+		protected function _dolinethroughw($x, $y, $w) {
+			$up = $this->CurrentFont['up'];
+			$ut = $this->CurrentFont['ut'];
 			return sprintf('%.2F %.2F %.2F %.2F re f', $x * $this->k, ($this->h - ($y - ($this->FontSize/2) - $up / 1000 * $this->FontSize)) * $this->k, $w * $this->k, -$ut / 1000 * $this->FontSizePt);
 		}
 		

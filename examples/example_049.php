@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_049.php
 // Begin       : 2009-04-03
-// Last Update : 2009-04-03
+// Last Update : 2009-09-25
 // 
 // Description : Example 049 for TCPDF class
 //               WriteHTML with TCPDF callback functions
@@ -75,10 +75,28 @@ $pdf->SetFont('helvetica', '', 10);
 // add a page
 $pdf->AddPage();
 
+/*
+NOTE:
+When using TCPDF methods embedded on XHTML code, you have to escape special
+characters with equivalent HTML entities:
+
+- replace double quotes with: &quot;
+- replace single quote with: &#x5c;&#x27;
+- replace > with: &gt;
+- replace < with: &lt;
+
+Note that the single quote escape contains an additional back-slash character.
+*/
+
 $htmlcontent = <<<EOF
 <h1>Test TCPDF Methods in HTML</h1>
 <h2>write1DBarcode method in HTML</h2>
 <tcpdf method="write1DBarcode" params="'CODE 39', 'C39', '', '', 80, 30, 0.4, array('position'=&gt;'S', 'border'=&gt;true, 'padding'=&gt;4, 'fgcolor'=&gt;array(0,0,0), 'bgcolor'=&gt;array(255,255,255), 'text'=&gt;true, 'font'=&gt;'helvetica', 'fontsize'=&gt;8, 'stretchtext'=&gt;4), 'N'" />
+<tcpdf method="write1DBarcode" params="'CODE 128C+ &quot; &#x5c;&#x27;',
+'C128C', '', '', 80, 30, 0.4, array('position'=&gt;'S', 'border'=&gt;true,
+'padding'=&gt;4, 'fgcolor'=&gt;array(0,0,0),
+'bgcolor'=&gt;array(255,255,255), 'text'=&gt;true, 'font'=&gt;'helvetica',
+'fontsize'=&gt;8, 'stretchtext'=&gt;4), 'N'" />
 <tcpdf method="AddPage" />
 <h2> Graphic Functions</h2>
 <tcpdf method="SetDrawColor" params="0" />

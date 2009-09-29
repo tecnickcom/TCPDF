@@ -1,3 +1,7 @@
+4.8.008 (2009-09-29)
+	- Example 49 was updated.
+	- Underline and linethrough now works with cell stretching mode.
+	
 4.8.007 (2009-09-23)
 	- Infinite loop problem caused by nobr attribute was fixed.
 	
