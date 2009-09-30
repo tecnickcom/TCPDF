@@ -1,3 +1,8 @@
+4.8.009 (2009-09-30)
+	- Compatibility with PHP 5.3 was improved.
+	- All examples were updated.
+	- Index file for examples was added.
+	
 4.8.008 (2009-09-29)
 	- Example 49 was updated.
 	- Underline and linethrough now works with cell stretching mode.

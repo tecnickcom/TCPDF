@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_001.php
 // Begin       : 2008-03-04
-// Last Update : 2009-03-18
+// Last Update : 2009-09-30
 // 
 // Description : Example 001 for TCPDF class
 //               Default Header and Footer

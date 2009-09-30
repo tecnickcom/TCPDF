@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : eng.php
 // Begin       : 2004-03-03
-// Last Update : 2008-11-17
+// Last Update : 2009-09-30
 // 
 // Description : Language module for TCPDF
 //               (contains translated texts)

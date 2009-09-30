@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_007.php
 // Begin       : 2008-03-04
-// Last Update : 2009-04-16
+// Last Update : 2009-09-30
 // 
 // Description : Example 007 for TCPDF class
 //               Two independent columns with WriteHTMLCell

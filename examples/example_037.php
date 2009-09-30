@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_037.php
 // Begin       : 2008-09-12
-// Last Update : 2009-03-18
+// Last Update : 2009-09-30
 // 
 // Description : Example 037 for TCPDF class
 //               Spot colors

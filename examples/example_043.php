@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_043.php
 // Begin       : 2009-01-02
-// Last Update : 2009-04-16
+// Last Update : 2009-09-30
 // 
 // Description : Example 043 for TCPDF class
 //               Disk caching

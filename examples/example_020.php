@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_020.php
 // Begin       : 2008-03-04
-// Last Update : 2009-04-16
+// Last Update : 2009-09-30
 //
 // Description : Example 020 for TCPDF class
 //               Two columns composed by MultiCell of different 
@@ -110,7 +110,7 @@ $pdf->setLanguageArray($l);
 // ---------------------------------------------------------
 
 // set font
-$pdf->SetFont('times', '', 9);
+$pdf->SetFont('times', '', 9);
 // add a page
 $pdf->AddPage();
 

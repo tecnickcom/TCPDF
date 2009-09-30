@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : ita.php
 // Begin       : 2004-03-03
-// Last Update : 2009-03-18
+// Last Update : 2009-09-30
 // 
 // Description : Language module for TCPDF
 //               (contains translated texts)

@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_005.php
 // Begin       : 2008-03-04
-// Last Update : 2009-04-16
+// Last Update : 2009-09-30
 // 
 // Description : Example 005 for TCPDF class
 //               Multicell

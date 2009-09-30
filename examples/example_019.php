@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_019.php
 // Begin       : 2008-03-07
-// Last Update : 2009-04-16
+// Last Update : 2009-09-30
 // 
 // Description : Example 019 for TCPDF class
 //               Non unicode with alternative config file

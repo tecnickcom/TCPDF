@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_029.php
 // Begin       : 2008-06-09
-// Last Update : 2009-03-18
+// Last Update : 2009-09-30
 // 
 // Description : Example 029 for TCPDF class
 //               Set PDF viewer display preferences.

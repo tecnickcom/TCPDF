@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_053.php
 // Begin       : 2009-09-02
-// Last Update : 2009-09-07
+// Last Update : 2009-09-30
 // 
 // Description : Example 053 for TCPDF class
 //               Javascript example.

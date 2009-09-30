@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_039.php
 // Begin       : 2008-10-16
-// Last Update : 2009-03-18
+// Last Update : 2009-09-30
 // 
 // Description : Example 039 for TCPDF class
 //               HTML justification

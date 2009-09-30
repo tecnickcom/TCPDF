@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_040.php
 // Begin       : 2008-10-28
-// Last Update : 2009-03-18
+// Last Update : 2009-09-30
 // 
 // Description : Example 040 for TCPDF class
 //               Booklet mode (double-sided pages)

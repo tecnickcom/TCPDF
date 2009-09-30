@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_036.php
 // Begin       : 2008-08-08
-// Last Update : 2009-09-05
+// Last Update : 2009-09-30
 // 
 // Description : Example 036 for TCPDF class
 //               Annotations

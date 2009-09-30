@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_031.php
 // Begin       : 2008-06-09
-// Last Update : 2009-03-18
+// Last Update : 2009-09-30
 // 
 // Description : Example 031 for TCPDF class
 //               Pie Chart

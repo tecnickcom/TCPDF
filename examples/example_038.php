@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_038.php
 // Begin       : 2008-09-15
-// Last Update : 2009-03-18
+// Last Update : 2009-09-30
 // 
 // Description : Example 038 for TCPDF class
 //               CID-0 CJK Fonts without embedding

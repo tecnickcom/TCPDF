@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_010.php
 // Begin       : 2008-03-04
-// Last Update : 2009-04-16
+// Last Update : 2009-09-30
 // 
 // Description : Example 010 for TCPDF class
 //               Text on multiple columns

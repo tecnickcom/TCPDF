@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_046.php
 // Begin       : 2009-02-28
-// Last Update : 2009-03-18
+// Last Update : 2009-09-30
 // 
 // Description : Example 046 for TCPDF class
 //               Text Hyphenation

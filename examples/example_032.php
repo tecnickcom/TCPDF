@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_032.php
 // Begin       : 2008-06-09
-// Last Update : 2009-03-18
+// Last Update : 2009-09-30
 // 
 // Description : Example 032 for TCPDF class
 //               EPS/AI image

@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_027.php
 // Begin       : 2008-03-04
-// Last Update : 2009-04-15
+// Last Update : 2009-09-30
 // 
 // Description : Example 027 for TCPDF class
 //               1D Barcodes

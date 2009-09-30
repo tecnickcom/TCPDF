@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_047.php
 // Begin       : 2009-03-19
-// Last Update : 2009-03-19
+// Last Update : 2009-09-30
 // 
 // Description : Example 047 for TCPDF class
 //               Transactions

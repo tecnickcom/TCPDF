@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_049.php
 // Begin       : 2009-04-03
-// Last Update : 2009-09-25
+// Last Update : 2009-09-30
 // 
 // Description : Example 049 for TCPDF class
 //               WriteHTML with TCPDF callback functions

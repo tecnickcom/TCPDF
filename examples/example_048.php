@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_048.php
 // Begin       : 2009-03-20
-// Last Update : 2009-03-27
+// Last Update : 2009-09-30
 // 
 // Description : Example 048 for TCPDF class
 //               HTML tables and table headers
@@ -241,6 +241,64 @@ $tbl = <<<EOD
 EOD;
 
 $pdf->writeHTML($tbl, true, false, false, false, '');
+
+$pdf->writeHTML($tbl, true, false, false, false, '');
+
+// -----------------------------------------------------------------------------
+
+// NON-BREAKING TABLE (nobr="true")
+
+$tbl = <<<EOD
+<table border="1" cellpadding="2" cellspacing="2" nobr="true">
+ <tr>
+  <th colspan="3" align="center">NON-BREAKING TABLE</th>
+ </tr>
+ <tr>
+  <td>1-1</td>
+  <td>1-2</td>
+  <td>1-3</td>
+ </tr>
+ <tr>
+  <td>2-1</td>
+  <td>3-2</td>
+  <td>3-3</td>
+ </tr>
+ <tr>
+  <td>3-1</td>
+  <td>3-2</td>
+  <td>3-3</td>
+ </tr>
+</table>
+EOD;
+
+$pdf->writeHTML($tbl, true, false, false, false, '');
+
+// -----------------------------------------------------------------------------
+
+// NON-BREAKING ROWS (nobr="true")
+
+$tbl = <<<EOD
+<table border="1" cellpadding="2" cellspacing="2" align="center">
+ <tr nobr="true">
+  <th colspan="3">NON-BREAKING ROWS</th>
+ </tr>
+ <tr nobr="true">
+  <td>ROW 1<br />COLUMN 1</td>
+  <td>ROW 1<br />COLUMN 2</td>
+  <td>ROW 1<br />COLUMN 3</td>
+ </tr>
+ <tr nobr="true">
+  <td>ROW 2<br />COLUMN 1</td>
+  <td>ROW 2<br />COLUMN 2</td>
+  <td>ROW 2<br />COLUMN 3</td>
+ </tr>
+ <tr nobr="true">
+  <td>ROW 3<br />COLUMN 1</td>
+  <td>ROW 3<br />COLUMN 2</td>
+  <td>ROW 3<br />COLUMN 3</td>
+ </tr>
+</table>
+EOD;
 
 $pdf->writeHTML($tbl, true, false, false, false, '');
 

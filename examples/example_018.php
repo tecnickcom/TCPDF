@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_018.php
 // Begin       : 2008-03-06
-// Last Update : 2009-03-18
+// Last Update : 2009-09-30
 // 
 // Description : Example 018 for TCPDF class
 //               RTL document with Persian language

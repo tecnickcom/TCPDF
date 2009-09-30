@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_042.php
 // Begin       : 2008-12-23
-// Last Update : 2009-04-16
+// Last Update : 2009-09-30
 // 
 // Description : Example 042 for TCPDF class
 //               Test Image with alpha channel

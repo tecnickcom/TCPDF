@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_050.php
 // Begin       : 2009-04-09
-// Last Update : 2009-04-09
+// Last Update : 2009-09-30
 // 
 // Description : Example 050 for TCPDF class
 //               2D Barcodes

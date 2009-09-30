@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-09-29
+// Last Update : 2009-09-30
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.8.008
+// Version     : 4.8.009
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -128,7 +128,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.8.008
+ * @version 4.8.009
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.8.008 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.8.009 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.8.008
+	* @version 4.8.009
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -4860,7 +4860,11 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 4.6.025 (2009-08-17)
 		 */
 		public function set_mqr($mqr) {
-			if (function_exists('set_magic_quotes_runtime')) {
+			if(!defined('PHP_VERSION_ID')) {
+				$version = PHP_VERSION;
+				define('PHP_VERSION_ID', (($version{0} * 10000) + ($version{2} * 100) + $version{4}));
+			}
+			if (PHP_VERSION_ID < 50300) {
 				@set_magic_quotes_runtime($mqr);
 			}
 		}
@@ -4871,7 +4875,11 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 4.6.025 (2009-08-17)
 		 */
 		public function get_mqr() {
-			if (function_exists('get_magic_quotes_runtime')) {
+			if(!defined('PHP_VERSION_ID')) {
+				$version = PHP_VERSION;
+				define('PHP_VERSION_ID', (($version{0} * 10000) + ($version{2} * 100) + $version{4}));
+			}
+			if (PHP_VERSION_ID < 50300) {
 				return @get_magic_quotes_runtime();
 			}
 			return 0;

@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_016.php
 // Begin       : 2008-03-04
-// Last Update : 2009-03-18
+// Last Update : 2009-09-30
 // 
 // Description : Example 016 for TCPDF class
 //               Document Encryption / Security

@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_023.php
 // Begin       : 2008-03-04
-// Last Update : 2009-03-18
+// Last Update : 2009-09-30
 // 
 // Description : Example 023 for TCPDF class
 //               Page Groups

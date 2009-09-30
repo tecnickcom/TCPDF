@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_052.php
 // Begin       : 2009-05-07
-// Last Update : 2009-08-29
+// Last Update : 2009-09-30
 // 
 // Description : Example 052 for TCPDF class
 //               Certification Signature (experimental)
