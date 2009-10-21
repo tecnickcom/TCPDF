@@ -73,6 +73,7 @@ echo '<'.'?'.'xml version="1.0" encoding="UTF-8"'.'?'.'>';
 <li>Digital Signature Certification: [<a href="example_052.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Javascript functions: [<a href="example_053.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>XHTML Form: [<a href="example_054.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
+<li>Font Dump: [<a href="example_055.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 </ol>
 
 </body>
