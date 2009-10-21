@@ -1,3 +1,10 @@
+4.8.010 (2009-10-21)
+	- Bookmark for TOC page was added.
+	- Signature of addTOC() method is changed.
+	- Bookmarks are now automatically sorted by page and Y position.
+	- Example n. 45 was updated.
+	- Example n. 55 was added to display all charactes available on core fonts.
+	
 4.8.009 (2009-09-30)
 	- Compatibility with PHP 5.3 was improved.
 	- All examples were updated.

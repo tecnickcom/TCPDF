@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_045.php
 // Begin       : 2008-03-04
-// Last Update : 2009-09-30
+// Last Update : 2009-10-21
 // 
 // Description : Example 045 for TCPDF class
 //               Bookmarks and Table of Content
@@ -116,7 +116,7 @@ $pdf->Ln();
 $pdf->SetFont('dejavusans', '', 12);
 
 // add table of content at page 1
-$pdf->addTOC(1, 'courier', '.');
+$pdf->addTOC(1, 'courier', '.', 'INDEX');
 
 // ---------------------------------------------------------
 

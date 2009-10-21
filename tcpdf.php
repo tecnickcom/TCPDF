@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-09-30
+// Last Update : 2009-10-21
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.8.009
+// Version     : 4.8.010
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -128,7 +128,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.8.009
+ * @version 4.8.010
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.8.009 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.8.010 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.8.009
+	* @version 4.8.010
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -9859,6 +9859,15 @@ if (!class_exists('TCPDF', false)) {
 			if ($nb == 0) {
 				return;
 			}
+			// get sorting columns
+			$outline_p = array();
+			$outline_y = array();			
+			foreach ($this->outlines as $key => $row) {
+				$outline_p[$key]  = $row['p'];
+				$outline_y[$key] = $row['p'];
+			}
+			// sort outlines by page and y position
+			array_multisort($outline_p, SORT_NUMERIC, SORT_ASC, $outline_y, SORT_NUMERIC, SORT_ASC, $this->outlines);			
 			$lru = array();
 			$level = 0;
 			foreach ($this->outlines as $i => $o) {
@@ -9908,7 +9917,6 @@ if (!class_exists('TCPDF', false)) {
 			$this->_out('/Last '.($n + $lru[0]).' 0 R>>');
 			$this->_out('endobj');
 		}
-		
 		
 		// --- JAVASCRIPT ------------------------------------------------------
 		
@@ -15828,11 +15836,12 @@ if (!class_exists('TCPDF', false)) {
 		* @param int $page page number where this TOC should be inserted (leave empty for current page).
 		* @param string $numbersfont set the font for page numbers (please use monospaced font for better alignment).
 		* @param string $filler string used to fill the space between text and page number.
+		* @param string $toc_name name to use for TOC bookmark.
 		* @access public
 		* @author Nicola Asuni
 		* @since 4.5.000 (2009-01-02)
 		*/
-		public function addTOC($page='', $numbersfont='', $filler='.') {
+		public function addTOC($page='', $numbersfont='', $filler='.', $toc_name='TOC') {
 			$fontsize = $this->FontSizePt;
 			$fontfamily = $this->FontFamily;
 			$fontstyle = $this->FontStyle;
@@ -15907,7 +15916,6 @@ if (!class_exists('TCPDF', false)) {
 					$pagenum = ' '.$rowfill.$gap.$pagenum;
 				}
 				// write the number
-				//$this->SetX($x_start);
 				$this->Cell($tw, 0, $pagenum, 0, 1, $alignnum, 0, $link, 0);
 				$this->SetX($x_start);
 				$this->lMargin = $lmargin;
@@ -15964,6 +15972,7 @@ if (!class_exists('TCPDF', false)) {
 				}
 				// move pages
 				for ($i = 0; $i < $numpages; ++$i) {
+					$this->Bookmark($toc_name, 0, 0, $page_last);
 					$this->movePage($page_last, $page);
 				}
 			}
