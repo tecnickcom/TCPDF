@@ -500,5 +500,5 @@ $enc='';
 $diff='';
 $file='dejavusanscondensedb.z';
 $ctg='dejavusanscondensedb.ctg.z';
-$originalsize=534236;
+$originalsize=534464;
 ?>

@@ -454,5 +454,5 @@ $enc='';
 $diff='';
 $file='dejavusansbi.z';
 $ctg='dejavusansbi.ctg.z';
-$originalsize=523712;
+$originalsize=524056;
 ?>

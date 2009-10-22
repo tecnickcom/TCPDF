@@ -1,3 +1,6 @@
+4.8.011 (2009-10-22)
+	- DejaVu fonts were updated to latest version.
+	
 4.8.010 (2009-10-21)
 	- Bookmark for TOC page was added.
 	- Signature of addTOC() method is changed.

@@ -513,5 +513,5 @@ $enc='';
 $diff='';
 $file='dejavusans.z';
 $ctg='dejavusans.ctg.z';
-$originalsize=622020;
+$originalsize=622280;
 ?>

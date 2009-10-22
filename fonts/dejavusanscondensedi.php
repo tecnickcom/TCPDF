@@ -467,5 +467,5 @@ $enc='';
 $diff='';
 $file='dejavusanscondensedi.z';
 $ctg='dejavusanscondensedi.ctg.z';
-$originalsize=488072;
+$originalsize=488440;
 ?>
