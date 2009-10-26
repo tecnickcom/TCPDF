@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-10-23
+// Last Update : 2009-10-26
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.8.012
+// Version     : 4.8.013
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -128,7 +128,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.8.012
+ * @version 4.8.013
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.8.012 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.8.013 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.8.012
+	* @version 4.8.013
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -4266,6 +4266,7 @@ if (!class_exists('TCPDF', false)) {
 			$l = 0; // current string lenght
 			$nl = 0; //number of lines
 			$linebreak = false;
+			$pc = 0; // previous character
 			// for each character
 			while ($i < $nb) {
 				if (($maxh > 0) AND ($this->y >= $maxy) ) {
@@ -4334,6 +4335,13 @@ if (!class_exists('TCPDF', false)) {
 						// check if is a SHY
 						if ($c == 173) {
 							$shy = true;
+							if ($pc == 45) {
+								$tmp_shy_replacement_width = 0;
+								$tmp_shy_replacement_char = '';
+							} else {
+								$tmp_shy_replacement_width = $shy_replacement_width;
+								$tmp_shy_replacement_char = $shy_replacement_char;
+							}
 						} else {
 							$shy = false;
 						}
@@ -4346,7 +4354,7 @@ if (!class_exists('TCPDF', false)) {
 					} else {
 						$l += $this->GetCharWidth($c);
 					}
-					if (($l > $wmax) OR ($shy AND (($l + $shy_replacement_width) > $wmax)) ) {
+					if (($l > $wmax) OR ($shy AND (($l + $tmp_shy_replacement_width) > $wmax)) ) {
 						// we have reached the end of column
 						if ($sep == -1) {
 							// check if the line was already started
@@ -4398,13 +4406,13 @@ if (!class_exists('TCPDF', false)) {
 							}
 							if ($shy) {
 								// add hypen (minus symbol) at the end of the line
-								$shy_width = $shy_replacement_width;
+								$shy_width = $tmp_shy_replacement_width;
 								if ($this->rtl) {
-									$shy_char_left = $shy_replacement_char;
+									$shy_char_left = $tmp_shy_replacement_char;
 									$shy_char_right = '';
 								} else {
 									$shy_char_left = '';
-									$shy_char_right = $shy_replacement_char;
+									$shy_char_right = $tmp_shy_replacement_char;
 								}
 							} else {
 								$shy_width = 0;
@@ -4459,6 +4467,8 @@ if (!class_exists('TCPDF', false)) {
 						}
 					}
 				}
+				// save last character
+				$pc = $c;
 				++$i;
 			} // end while i < nb
 			// print last substring (if any)
