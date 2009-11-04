@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-10-26
+// Last Update : 2009-11-04
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.8.013
+// Version     : 4.8.014
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -128,7 +128,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.8.013
+ * @version 4.8.014
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.8.013 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.8.014 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.8.013
+	* @version 4.8.014
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1835,15 +1835,43 @@ if (!class_exists('TCPDF', false)) {
 		* @since 2.1.000 (2008-01-09)
 		*/
 		public function setTempRTL($mode) {
+			$newmode = false;
 			switch ($mode) {
-				case false:
-				case 'L':
+				case 'ltr':
+				case 'LTR':
+				case 'L': {
+					if ($this->rtl) {
+						$newmode = 'L';
+					}
+					break;
+				}
+				case 'rtl':
+				case 'RTL':
 				case 'R': {
-					$this->tmprtl = $mode;
+					if (!$this->rtl) {
+						$newmode = 'R';
+					}
+					break;
+				}
+				case false:
+				default: {
+					$newmode = false;
+					break;
 				}
 			}
+			$this->tmprtl = $newmode;
 		}
 		
+		/**
+		 * Return the current temporary RTL status
+		 * @return boolean
+		 * @access public
+		 * @since 4.8.014 (2009-11-04)
+		 */
+		public function isRTLTextDir() {
+			return ($this->rtl OR ($this->tmprtl == 'R'));
+		}
+				
 		/**
 		* Set the last cell height.
 		* @param float $h cell height.
@@ -4224,7 +4252,7 @@ if (!class_exists('TCPDF', false)) {
 				$arabic = false;
 			}
 			// check if string contains RTL text
-			if ($arabic OR $this->tmprtl OR preg_match(K_RE_PATTERN_RTL, $txt)) {
+			if ($arabic OR ($this->tmprtl == 'R') OR preg_match(K_RE_PATTERN_RTL, $txt)) {
 				$rtlmode = true;
 			} else {
 				$rtlmode = false;
@@ -9296,9 +9324,9 @@ if (!class_exists('TCPDF', false)) {
 			$numchars = count($ta);
 			
 			if ($forcertl == 'R') {
-					$pel = 1;
+				$pel = 1;
 			} elseif ($forcertl == 'L') {
-					$pel = 0;
+				$pel = 0;
 			} else {
 				// P2. In each paragraph, find the first character of type L, AL, or R.
 				// P3. If a character is found in P2 and it is of type AL or R, then set the paragraph embedding level to one; otherwise, set it to zero.
@@ -13351,7 +13379,7 @@ if (!class_exists('TCPDF', false)) {
 								$t_x = -$mdiff;
 							} elseif (($plalign == 'J') AND ($plalign == $lalign)) {
 								// Justification
-								if ($this->rtl OR $this->tmprtl) {
+								if ($this->isRTLTextDir()) {
 									$t_x = $this->lMargin - $this->endlinex;
 								}
 								$no = 0;
@@ -13368,7 +13396,7 @@ if (!class_exists('TCPDF', false)) {
 										$lnstring[1][$kk] = str_replace('#!#OP#!#', '(', $lnstring[1][$kk]);
 										$lnstring[1][$kk] = str_replace('#!#CP#!#', ')', $lnstring[1][$kk]);
 										if ($kk == $maxkk) {
-											if ($this->rtl OR $this->tmprtl) {
+											if ($this->isRTLTextDir()) {
 												$tvalue = ltrim($lnstring[1][$kk]);
 											} else {
 												$tvalue = rtrim($lnstring[1][$kk]);
@@ -13380,7 +13408,7 @@ if (!class_exists('TCPDF', false)) {
 										$no += substr_count($lnstring[1][$kk], chr(32));
 										$ns += substr_count($tvalue, chr(32));
 									}
-									if ($this->rtl OR $this->tmprtl) {
+									if ($this->isRTLTextDir()) {
 										$t_x = $this->lMargin - $this->endlinex - (($no - $ns - 1) * $this->GetStringWidth(chr(32)));
 									}
 									// calculate additional space to add to each space
@@ -13408,7 +13436,7 @@ if (!class_exists('TCPDF', false)) {
 											}
 											continue;
 										}
-										if ($this->rtl OR $this->tmprtl) {
+										if ($this->isRTLTextDir()) {
 											$spacew = ($spacewidth * ($nsmax - $ns));
 										} else {
 											$spacew = ($spacewidth * $ns);
@@ -13441,7 +13469,7 @@ if (!class_exists('TCPDF', false)) {
 												$currentxpos = $xmatches[1];
 												if (($strcount <= $maxkk) AND ($strpiece[2][0] == 'Td')) {
 													if ($strcount == $maxkk) {
-														if ($this->rtl OR $this->tmprtl) {
+														if ($this->isRTLTextDir()) {
 															$tvalue = $lnstring[1][$strcount];
 														} else {
 															$tvalue = rtrim($lnstring[1][$strcount]);
@@ -13452,7 +13480,7 @@ if (!class_exists('TCPDF', false)) {
 													$ns += substr_count($tvalue, chr(32));
 													++$strcount;
 												}
-												if ($this->rtl OR $this->tmprtl) {
+												if ($this->isRTLTextDir()) {
 													$spacew = ($spacewidth * ($nsmax - $ns));
 												}
 												// justify block
@@ -13798,7 +13826,7 @@ if (!class_exists('TCPDF', false)) {
 					}
 					// text
 					$this->htmlvspace = 0;
-					if ((!$this->premode) AND ($this->rtl OR $this->tmprtl)) {
+					if ((!$this->premode) AND $this->isRTLTextDir()) {
 						// reverse spaces order
 						$len1 = strlen($dom[$key]['value']);
 						$lsp = $len1 - strlen(ltrim($dom[$key]['value']));
@@ -13815,7 +13843,7 @@ if (!class_exists('TCPDF', false)) {
 					}
 					if ($newline) {
 						if (!$this->premode) {
-							if (($this->rtl OR $this->tmprtl)) {
+							if ($this->isRTLTextDir()) {
 								$dom[$key]['value'] = rtrim($dom[$key]['value']);
 							} else {
 								$dom[$key]['value'] = ltrim($dom[$key]['value']);
@@ -13984,7 +14012,7 @@ if (!class_exists('TCPDF', false)) {
 			$firstorlast = ($key == 1);
 			// check for text direction attribute
 			if (isset($tag['attribute']['dir'])) {
-				$this->tmprtl = $tag['attribute']['dir'] == 'rtl' ? 'R' : 'L';
+				$this->setTempRTL($tag['attribute']['dir']);
 			} else {
 				$this->tmprtl = false;
 			}
