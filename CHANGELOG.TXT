@@ -1,3 +1,8 @@
+4.8.015 (2009-11-20)
+	- A problem with some PNG transparency images was fixed.
+	- Bug #2900762 "Sort issues in Bookmarks" was fixed.
+	- Text justification was fixed for various modes: underline, strikeout and background.
+	
 4.8.014 (2009-11-04)
 	- Bug item #2891316 "writeHTML, underlining replacing spaces" was fixed.
 	- The handling of temporary RTL text direction mode was fixed.
