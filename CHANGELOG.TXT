@@ -1,3 +1,9 @@
+4.8.016 (2009-11-21)
+	- Document Information Dictionary was fixed.
+	- CSS attributes 'page-break-before', 'page-break-after' and 'page-break-inside' are now supported.
+	- Problem of unclosed last page was fixed.
+	- Problem of 'thead' unnecessarily repeated on the next page was fixed.
+	
 4.8.015 (2009-11-20)
 	- A problem with some PNG transparency images was fixed.
 	- Bug #2900762 "Sort issues in Bookmarks" was fixed.

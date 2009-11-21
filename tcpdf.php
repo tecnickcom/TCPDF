@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-11-20
+// Last Update : 2009-11-21
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.8.015
+// Version     : 4.8.016
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -128,7 +128,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.8.015
+ * @version 4.8.016
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.8.015 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.8.016 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.8.015
+	* @version 4.8.016
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -5321,6 +5321,7 @@ if (!class_exists('TCPDF', false)) {
 		public function Output($name='doc.pdf', $dest='I') {
 			//Output PDF to some destination
 			//Finish document if necessary
+			$this->lastpage();
 			if ($this->state < 3) {
 				$this->Close();
 			}
@@ -6877,38 +6878,44 @@ if (!class_exists('TCPDF', false)) {
 		}
 		
 		/**
-		* Adds some Metadata information
-		* (see Chapter 10.2 of PDF Reference)
+		* Adds some Metadata information (Document Information Dictionary)
+		* (see Chapter 14.3.3 Document Information Dictionary of PDF32000_2008.pdf Reference)
 		* @access protected
 		*/
 		protected function _putinfo() {
-			if ($this->empty_string($this->title)) {
-				$this->title = '?';
+			if (!$this->empty_string($this->title)) {
+				// The document's title.
+				$this->_out('/Title '.$this->_textstring($this->title));
 			}
-			$this->_out('/Title '.$this->_textstring($this->title));
-			if ($this->empty_string($this->author)) {
-				$this->author = '?';
+			if (!$this->empty_string($this->author)) {
+				// The name of the person who created the document.
+				$this->_out('/Author '.$this->_textstring($this->author));
 			}
-			$this->_out('/Author '.$this->_textstring($this->author));
-			if ($this->empty_string($this->subject)) {
-				$this->subject = '?';
+			if (!$this->empty_string($this->subject)) {
+				// The subject of the document.
+				$this->_out('/Subject '.$this->_textstring($this->subject));
 			}
-			$this->_out('/Subject '.$this->_textstring($this->subject));
-			if ($this->empty_string($this->keywords)) {
-				$this->keywords = '?';
+			if (!$this->empty_string($this->keywords)) {
+				// Keywords associated with the document.
+				$this->_out('/Keywords '.$this->_textstring($this->keywords));
 			}
-			$this->_out('/Keywords '.$this->_textstring($this->keywords));
-			if ($this->empty_string($this->creator)) {
-				$this->creator = '?';
+			if (!$this->empty_string($this->creator)) {
+				// If the document was converted to PDF from another format, the name of the conforming product that created the original document from which it was converted.
+				$this->_out('/Creator '.$this->_textstring($this->creator));
 			}
-			$this->_out('/Creator '.$this->_textstring($this->creator));
 			if (defined('PDF_PRODUCER')) {
+				// If the document was converted to PDF from another format, the name of the conforming product that converted it to PDF.
 				$this->_out('/Producer '.$this->_textstring(PDF_PRODUCER));
 			} else {
+				// default producer
 				$this->_out('/Producer '.$this->_textstring('TCPDF'));
 			}
+			// The date and time the document was created, in human-readable form
 			$this->_out('/CreationDate '.$this->_datestring());
-			$this->_out('/ModDate '.$this->_datestring());	
+			// The date and time the document was most recently modified, in human-readable form
+			$this->_out('/ModDate '.$this->_datestring());
+			// A name object indicating whether the document has been modified to include trapping information
+			//$this->_out('/Trapped /False');
 		}
 		
 		/**
@@ -12938,6 +12945,30 @@ if (!class_exists('TCPDF', false)) {
 							if (isset($dom[$key]['style']['border'])) {
 								$dom[$key]['attribute']['border'] = $dom[$key]['style']['border'];
 							}
+							// page-break-inside
+							if (isset($dom[$key]['style']['page-break-inside']) AND ($dom[$key]['style']['page-break-inside'] == 'avoid')) {
+								$dom[$key]['attribute']['nobr'] = 'true';
+							}
+							// page-break-before
+							if (isset($dom[$key]['style']['page-break-before'])) {
+								if ($dom[$key]['style']['page-break-before'] == 'always') {
+									$dom[$key]['attribute']['pagebreak'] = 'true';
+								} elseif ($dom[$key]['style']['page-break-before'] == 'left') {
+									$dom[$key]['attribute']['pagebreak'] = 'left';
+								} elseif ($dom[$key]['style']['page-break-before'] == 'right') {
+									$dom[$key]['attribute']['pagebreak'] = 'right';
+								}
+							}
+							// page-break-after
+							if (isset($dom[$key]['style']['page-break-after'])) {
+								if ($dom[$key]['style']['page-break-after'] == 'always') {
+									$dom[$key]['attribute']['pagebreakafter'] = 'true';
+								} elseif ($dom[$key]['style']['page-break-after'] == 'left') {
+									$dom[$key]['attribute']['pagebreakafter'] = 'left';
+								} elseif ($dom[$key]['style']['page-break-after'] == 'right') {
+									$dom[$key]['attribute']['pagebreakafter'] = 'right';
+								}
+							}
 						}
 						// check for font tag
 						if ($dom[$key]['value'] == 'font') {
@@ -13140,6 +13171,16 @@ if (!class_exists('TCPDF', false)) {
 			$maxel = count($dom);
 			$key = 0;
 			while ($key < $maxel) {
+				if ($dom[$key]['tag'] AND isset($dom[$key]['attribute']['pagebreak'])) {
+					// check for pagebreak 
+					if (($dom[$key]['attribute']['pagebreak'] == 'true') OR ($dom[$key]['attribute']['pagebreak'] == 'left') OR ($dom[$key]['attribute']['pagebreak'] == 'right')) {
+						$this->AddPage();
+					}
+					if ((($dom[$key]['attribute']['pagebreak'] == 'left') AND (((!$this->rtl) AND (($this->page % 2) == 0)) OR (($this->rtl) AND (($this->page % 2) != 0))))
+						OR (($dom[$key]['attribute']['pagebreak'] == 'right') AND (((!$this->rtl) AND (($this->page % 2) != 0)) OR (($this->rtl) AND (($this->page % 2) == 0))))) {
+						$this->AddPage();
+					}
+				}
 				if ($dom[$key]['tag'] AND $dom[$key]['opening'] AND isset($dom[$key]['attribute']['nobr']) AND ($dom[$key]['attribute']['nobr'] == 'true')) {
 					if (isset($dom[($dom[$key]['parent'])]['attribute']['nobr']) AND ($dom[($dom[$key]['parent'])]['attribute']['nobr'] == 'true')) {
 						$dom[$key]['attribute']['nobr'] = false;
@@ -14572,6 +14613,17 @@ if (!class_exists('TCPDF', false)) {
 					break;
 				}
 			}
+			if ($dom[$key]['self'] AND isset($dom[$key]['attribute']['pagebreakafter'])) {
+				$pba = $dom[$key]['attribute']['pagebreakafter'];
+				// check for pagebreak 
+				if (($pba == 'true') OR ($pba == 'left') OR ($pba == 'right')) {
+					$this->AddPage();
+				}
+				if ((($pba == 'left') AND (((!$this->rtl) AND (($this->page % 2) == 0)) OR (($this->rtl) AND (($this->page % 2) != 0))))
+					OR (($pba == 'right') AND (((!$this->rtl) AND (($this->page % 2) != 0)) OR (($this->rtl) AND (($this->page % 2) == 0))))) {
+					$this->AddPage();
+				}
+			}
 		}
 		
 		/**
@@ -14650,8 +14702,8 @@ if (!class_exists('TCPDF', false)) {
 					// closing tag used for the thead part
 					$in_table_head = true;
 				case 'table': {
-					// draw borders
 					$table_el = $parent;
+					// draw borders
 					if ((isset($table_el['attribute']['border']) AND ($table_el['attribute']['border'] > 0)) 
 						OR (isset($table_el['style']['border']) AND ($table_el['style']['border'] > 0))) {
 							$border = 1;
@@ -14798,6 +14850,10 @@ if (!class_exists('TCPDF', false)) {
 						}
 						$this->lasth = $this->FontSize * $this->cell_height_ratio;
 						if (isset($this->theadMargins['top'])) {
+							if (($this->theadMargins['top'] == $this->tMargin) AND ($this->page == ($this->numpages - 1))) {
+								// remove last page containing only THEAD
+								$this->deletePage($this->numpages);
+							}
 							// restore top margin
 							$this->tMargin = $this->theadMargins['top'];
 							$this->pagedim[$this->page]['tm'] = $this->tMargin;
@@ -14903,6 +14959,17 @@ if (!class_exists('TCPDF', false)) {
 				}
 				default : {
 					break;
+				}
+			}
+			if (isset($dom[($dom[$key]['parent'])]['attribute']['pagebreakafter'])) {
+				$pba = $dom[($dom[$key]['parent'])]['attribute']['pagebreakafter'];
+				// check for pagebreak 
+				if (($pba == 'true') OR ($pba == 'left') OR ($pba == 'right')) {
+					$this->AddPage();
+				}
+				if ((($pba == 'left') AND (((!$this->rtl) AND (($this->page % 2) == 0)) OR (($this->rtl) AND (($this->page % 2) != 0))))
+					OR (($pba == 'right') AND (((!$this->rtl) AND (($this->page % 2) != 0)) OR (($this->rtl) AND (($this->page % 2) == 0))))) {
+					$this->AddPage();
 				}
 			}
 			$this->tmprtl = false;
