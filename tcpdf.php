@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-11-21
+// Last Update : 2009-11-27
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.8.016
+// Version     : 4.8.017
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -128,7 +128,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.8.016
+ * @version 4.8.017
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.8.016 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.8.017 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.8.016
+	* @version 4.8.017
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -2670,6 +2670,8 @@ if (!class_exists('TCPDF', false)) {
 		 */
 		protected function setHeader() {
 			if ($this->print_header) {
+				$temp_thead = $this->thead;
+    			$temp_theadMargins = $this->theadMargins;
 				$lasth = $this->lasth;
 				$this->_out('q');
 				$this->rMargin = $this->original_rMargin;
@@ -2691,6 +2693,8 @@ if (!class_exists('TCPDF', false)) {
 				}
 				$this->_out('Q');
 				$this->lasth = $lasth;
+				$this->thead = $temp_thead;
+				$this->theadMargins = $temp_theadMargins;
 			}
 		}
 		
@@ -2707,6 +2711,8 @@ if (!class_exists('TCPDF', false)) {
 			$this->footerpos[$this->page] = $this->pagelen[$this->page];
 			$this->_out("\n");
 			if ($this->print_footer) {
+				$temp_thead = $this->thead;
+    			$temp_theadMargins = $this->theadMargins;
 				$lasth = $this->lasth;
 				$this->_out('q');
 				$this->rMargin = $this->original_rMargin;
@@ -2729,6 +2735,8 @@ if (!class_exists('TCPDF', false)) {
 				}
 				$this->_out('Q');
 				$this->lasth = $lasth;
+				$this->thead = $temp_thead;
+				$this->theadMargins = $temp_theadMargins;
 			}
 			// restore graphic settings
 			$this->setGraphicVars($gvars);
@@ -4660,6 +4668,24 @@ if (!class_exists('TCPDF', false)) {
 		}
 		
 		/**
+		 * Return the image type given the file name and path
+		 * @param string $imgfile image file name
+		 * @return string image type
+		 * @since 4.8.017 (2009-11-27)
+		 */
+		public function getImageFileType($imgfile) {
+			$type = ''; // default type
+			$fileinfo = pathinfo($imgfile);
+			if (isset($fileinfo['extension']) AND (!$this->empty_string($fileinfo['extension']))) {
+				$type = strtolower($fileinfo['extension']);
+			}
+			if ($type == 'jpg') {
+				$type = 'jpeg';
+			}
+			return $type;
+		}
+
+		/**
 		* Puts an image in the page. 
 		* The upper-left corner must be given. 
 		* The dimensions can be specified in different ways:<ul>
@@ -4737,16 +4763,7 @@ if (!class_exists('TCPDF', false)) {
 			if (!in_array($file, $this->imagekeys)) {
 				//First use of image, get info
 				if ($type == '') {
-					$fileinfo = pathinfo($file);
-					if (isset($fileinfo['extension']) AND (!$this->empty_string($fileinfo['extension']))) {
-						$type = $fileinfo['extension'];
-					} else {
-						$this->Error('Image file has no extension and no type was specified: '.$file);
-					}
-				}
-				$type = strtolower($type);
-				if ($type == 'jpg') {
-					$type = 'jpeg';
+					$type = $this->getImageFileType($file);
 				}
 				$mqr = $this->get_mqr();
 				$this->set_mqr(false);
@@ -13424,8 +13441,8 @@ if (!class_exists('TCPDF', false)) {
 									$t_x = $this->lMargin - $this->endlinex;
 								}
 								$one_space_width = $this->GetStringWidth(chr(32));
-								$no = 0;
-								$ns = 0;
+								$no = 0; // spaces without trim
+								$ns = 0; // spaces with trim
 								$pmidtemp = $pmid;
 								// escape special characters
 								$pmidtemp = preg_replace('/[\\\][\(]/x', '\\#!#OP#!#', $pmidtemp);
@@ -13460,8 +13477,8 @@ if (!class_exists('TCPDF', false)) {
 									}
 									// calculate additional space to add to each space
 									$spacelen = $one_space_width;
-									$spacewidth = (($tw - $linew + (($no - $ns) * $spacelen)) / ($ns?$ns:1)) * $this->k;
-									$spacewidthu = -1000 * ($tw - $linew + ($no * $spacelen)) / ($ns?$ns:1) / $this->FontSize;
+									$spacewidth = ((($tw - $linew) + (($no - $ns) * $spacelen)) / ($ns?$ns:1)) * $this->k;
+									$spacewidthu = -1000 * (($tw - $linew) + ($ns * $spacelen)) / ($ns?$ns:1) / $this->FontSize;
 									$nsmax = $ns;
 									$ns = 0;
 									reset($lnstring);
@@ -14213,10 +14230,7 @@ if (!class_exists('TCPDF', false)) {
 								break;
 							}
 						}
-						$fileinfo = pathinfo($tag['attribute']['src']);
-						if (isset($fileinfo['extension']) AND (!$this->empty_string($fileinfo['extension']))) {
-							$type = strtolower($fileinfo['extension']);
-						}
+						$type = $this->getImageFileType($tag['attribute']['src']);
 						$prevy = $this->y;
 						$xpos = $this->GetX();
 						if (isset($dom[($key - 1)]) AND ($dom[($key - 1)]['value'] == ' ')) {

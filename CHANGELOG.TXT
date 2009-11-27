@@ -1,3 +1,9 @@
+4.8.017 (2009-11-27)
+	- THEAD problem when table is used on header/footer was fixed.
+	- A first line alignment on HTML justification was fixed.
+	- Method getImageFileType() was added.
+	- Images with unknown extension and type are now supported via ImageMagick PHP extension.
+
 4.8.016 (2009-11-21)
 	- Document Information Dictionary was fixed.
 	- CSS attributes 'page-break-before', 'page-break-after' and 'page-break-inside' are now supported.
