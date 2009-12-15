@@ -1,3 +1,6 @@
+4.8.018 (2009-12-15)
+	- Bug item #2914352 "write error" was fixed.
+
 4.8.017 (2009-11-27)
 	- THEAD problem when table is used on header/footer was fixed.
 	- A first line alignment on HTML justification was fixed.

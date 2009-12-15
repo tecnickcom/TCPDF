@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-11-27
+// Last Update : 2009-12-15
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.8.017
+// Version     : 4.8.018
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -104,7 +104,7 @@
 * <li>includes methods to publish some XHTML code, including forms;</li>
 * <li>includes graphic (geometric) and transformation methods;</li>
 * <li>includes Javascript and Forms support;</li>
-* <li>includes a method to print various barcode formats: CODE 39, ANSI MH10.8M-1983, USD-3, 3 of 9, CODE 93, USS-93, Standard 2 of 5, Interleaved 2 of 5, CODE 128 A/B/C, 2 and 5 Digits UPC-Based Extention, EAN 8, EAN 13, UPC-A, UPC-E, MSI, POSTNET, PLANET, RMS4CC (Royal Mail 4-state Customer Code), CBC (Customer Bar Code), KIX (Klant index - Customer index), Intelligent Mail Barcode, Onecode, USPS-B-3200, CODABAR, CODE 11, PHARMACODE, PHARMACODE TWO-TRACKS;</li>
+* <li>includes a method to print various barcode formats: CODE 39, ANSI MH10.8M-1983, USD-3, 3 of 9, CODE 93, USS-93, Standard 2 of 5, Interleaved 2 of 5, CODE 128 A/B/C, 2 and 5 Digits UPC-Based Extention, EAN 8, EAN 13, UPC-A, UPC-E, MSI, POSTNET, PLANET, RMS4CC (Royal Mail 4-state Customer Code), CBC (Customer Bar Code), KIX (Klant index - Customer index), Intelligent Mail Barcode, Onecode, USPS-B-3200, CODABAR, CODE 11, PHARMACODE, PHARMACODE TWO-TRACKS</li>
 * <li>includes methods to set Bookmarks and print a Table of Content;</li>
 * <li>includes methods to move and delete pages;</li>
 * <li>includes methods for automatic page header and footer management;</li>
@@ -128,7 +128,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.8.017
+ * @version 4.8.018
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.8.017 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.8.018 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.8.017
+	* @version 4.8.018
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -4324,7 +4324,7 @@ if (!class_exists('TCPDF', false)) {
 					$tmpstr = $this->UniArrSubString($uchars, $j, $i);
 					if ($firstline) {
 						$startx = $this->x;
-						$tmparr = array_slice($chars, $j, $i);
+						$tmparr = array_slice($chars, $j, ($i - $j));
 						if ($rtlmode) {
 							$tmparr = $this->utf8Bidi($tmparr, $tmpstr, $this->tmprtl);
 						}
@@ -4386,7 +4386,7 @@ if (!class_exists('TCPDF', false)) {
 					if ((($this->CurrentFont['type'] == 'TrueTypeUnicode') OR ($this->CurrentFont['type'] == 'cidfont0')) AND ($arabic)) {
 						// with bidirectional algorithm some chars may be changed affecting the line length
 						// *** very slow ***
-						$l = $this->GetArrStringWidth($this->utf8Bidi(array_slice($chars, $j, $i-$j+1), '', $this->tmprtl));
+						$l = $this->GetArrStringWidth($this->utf8Bidi(array_slice($chars, $j, ($i - $j)), '', $this->tmprtl));
 					} else {
 						$l += $this->GetCharWidth($c);
 					}
@@ -4407,7 +4407,7 @@ if (!class_exists('TCPDF', false)) {
 								$tmpstr = $this->UniArrSubString($uchars, $j, $i);
 								if ($firstline) {
 									$startx = $this->x;
-									$tmparr = array_slice($chars, $j, $i);
+									$tmparr = array_slice($chars, $j, ($i - $j));
 									if ($rtlmode) {
 										$tmparr = $this->utf8Bidi($tmparr, $tmpstr, $this->tmprtl);
 									}
@@ -4458,7 +4458,7 @@ if (!class_exists('TCPDF', false)) {
 							$tmpstr = $this->UniArrSubString($uchars, $j, ($sep + $endspace));
 							if ($firstline) {
 								$startx = $this->x;
-								$tmparr = array_slice($chars, $j, ($sep + $endspace));
+								$tmparr = array_slice($chars, $j, (($sep + $endspace) - $j));
 								if ($rtlmode) {
 									$tmparr = $this->utf8Bidi($tmparr, $tmpstr, $this->tmprtl);
 								}
@@ -4539,7 +4539,7 @@ if (!class_exists('TCPDF', false)) {
 				$tmpstr = $this->UniArrSubString($uchars, $j, $nb);
 				if ($firstline) {
 					$startx = $this->x;
-					$tmparr = array_slice($chars, $j, $nb);
+					$tmparr = array_slice($chars, $j, ($nb - $j));
 					if ($rtlmode) {
 						$tmparr = $this->utf8Bidi($tmparr, $tmpstr, $this->tmprtl);
 					}

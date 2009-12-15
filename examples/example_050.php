@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_050.php
 // Begin       : 2009-04-09
-// Last Update : 2009-09-30
+// Last Update : 2009-12-15
 // 
 // Description : Example 050 for TCPDF class
 //               2D Barcodes
@@ -82,10 +82,10 @@ $style = array(
 	'bgcolor' => false, //array(255,255,255)
 );
 
-// write 2D Barcode
-$pdf->write2DBarcode('X', 'TEST', '', '', 30, 20, $style, 'N');
+// NOTE: 2D barcode algorithms must be implemented on 2dbarcode.php class file.
 
-// NOTE: This is just experimental. 2D barcodes must be implemented on 2dbarcode.php class file.
+// write TEST 2D Barcode
+$pdf->write2DBarcode('X', 'TEST', '', '', 30, 20, $style, 'N');
 
 // ---------------------------------------------------------
 
