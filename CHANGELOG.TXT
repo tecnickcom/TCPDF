@@ -1,3 +1,8 @@
+4.8.019 (2009-12-16)
+	- Bug item #2915684 "Image size" was fixed.
+	- Bug item #2914995 "Image jpeg quality" was fixed.
+	- The signature of the Image() method was changed (check the documentation for the $resize parameter).
+
 4.8.018 (2009-12-15)
 	- Bug item #2914352 "write error" was fixed.
 
