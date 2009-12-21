@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-12-16
+// Last Update : 2009-12-21
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.8.019
+// Version     : 4.8.020
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -128,7 +128,7 @@
  * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.8.019
+ * @version 4.8.020
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.8.019 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.8.020 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.8.019
+	* @version 4.8.020
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -13367,7 +13367,7 @@ if (!class_exists('TCPDF', false)) {
 									}
 									$pask = $next_pask;
 								}
-								if (($dom[$key]['value'] != 'td') AND ($dom[$key]['value'] != 'th')) {
+								if (($dom[$key]['value'] != 'tr') AND ($dom[$key]['value'] != 'td') AND ($dom[$key]['value'] != 'th')) {
 									$this->y += (($curfontsize - $fontsize) / $this->k);
 								}
 								$minstartliney = min($this->y, $minstartliney);
@@ -14759,7 +14759,7 @@ if (!class_exists('TCPDF', false)) {
 							// update row-spanned cells
 							if (isset($dom[($dom[$key]['parent'])]['rowspans'])) {
 								foreach ($dom[($dom[$key]['parent'])]['rowspans'] as $k => $trwsp) {
-									if (($trwsp['trid'] == $trkey) AND ($trwsp['mrowspan'] == 1) AND ($trwsp['endpage'] == $dom[$prevtrkey]['endpage'])) {
+									if (($trwsp['trid'] == $trkey) AND ($trwsp['mrowspan'] > 1) AND ($trwsp['endpage'] == $dom[$prevtrkey]['endpage'])) {
 										$dom[($dom[$key]['parent'])]['rowspans'][$k]['endy'] = $pgendy;
 										$dom[($dom[$key]['parent'])]['rowspans'][$k]['mrowspan'] = -1;
 									}
