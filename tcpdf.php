@@ -2,12 +2,12 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2009-12-21
+// Last Update : 2010-01-03
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.8.020
+// Version     : 4.8.021
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
-//  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
+//  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
 // 	
 // 	This program is free software: you can redistribute it and/or modify
 // 	it under the terms of the GNU Lesser General Public License as published by
@@ -125,10 +125,10 @@
  * @package com.tecnick.tcpdf
  * @abstract Class for generating PDF files on-the-fly without requiring external extensions.
  * @author Nicola Asuni
- * @copyright 2002-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
+ * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.8.020
+ * @version 4.8.021
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.8.020 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.8.021 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.8.020
+	* @version 4.8.021
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -16168,8 +16168,8 @@ if (!class_exists('TCPDF', false)) {
 					$this->setPageBuffer($p, $temppage);
 				}
 				// move pages
+				$this->Bookmark($toc_name, 0, 0, $page_first);
 				for ($i = 0; $i < $numpages; ++$i) {
-					$this->Bookmark($toc_name, 0, 0, $page_last);
 					$this->movePage($page_last, $page);
 				}
 			}

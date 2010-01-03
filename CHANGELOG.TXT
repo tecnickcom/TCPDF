@@ -1,3 +1,6 @@
+4.8.021 (2010-01-03)
+	- A Bug relative to Table Of Content index was fixed.
+
 4.8.020 (2009-12-21)
 	- Bug item #2918545 "Display problem of the first row of a table with larger font" was fixed.
 	- A Bug relative to table rowspan mode was fixed.
