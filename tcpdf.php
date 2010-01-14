@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-01-03
+// Last Update : 2010-01-14
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.8.021
+// Version     : 4.8.022
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -128,7 +128,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.8.021
+ * @version 4.8.022
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.8.021 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.8.022 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.8.021
+	* @version 4.8.022
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1381,7 +1381,7 @@ if (!class_exists('TCPDF', false)) {
 		 */
 		protected $form_obj_id = array();
 		
-		/*
+		/**
 		 * Deafult Javascript field properties. Possible values are described on official Javascript for Acrobat API reference. Annotation options can be directly specified using the 'aopt' entry.
 		 * @access protected
 		 * @since 4.8.000 (2009-09-07)
@@ -3522,7 +3522,7 @@ if (!class_exists('TCPDF', false)) {
 				$this->PageAnnots[$page] = array();
 			}
 			$this->PageAnnots[$page][] = array('x' => $x, 'y' => $y, 'w' => $w, 'h' => $h, 'txt' => $text, 'opt' => $opt, 'numspaces' => $spaces);
-			if (($opt['Subtype'] == 'FileAttachment') AND (!$this->empty_string($opt['FS'])) AND file_exists($opt['FS']) AND (!isset($this->embeddedfiles[basename($opt['FS'])]))) {
+			if ((($opt['Subtype'] == 'FileAttachment') OR ($opt['Subtype'] == 'Sound')) AND (!$this->empty_string($opt['FS'])) AND file_exists($opt['FS']) AND (!isset($this->embeddedfiles[basename($opt['FS'])]))) {
 				$this->embeddedfiles[basename($opt['FS'])] = array('file' => $opt['FS'], 'n' => (count($this->embeddedfiles) + $this->embedded_start_obj_id));
 			}
 			// Add widgets annotation's icons
@@ -5728,7 +5728,7 @@ if (!class_exists('TCPDF', false)) {
 
 		/**
 		* Output annotations objects for all pages.
-		* !!! THIS FUNCTION IS NOT YET COMPLETED !!!
+		* !!! THIS METHOD IS NOT YET COMPLETED !!!
 		* See section 12.5 of PDF 32000_2008 reference.
 		* @access protected
 		* @author Nicola Asuni
@@ -6102,15 +6102,14 @@ if (!class_exists('TCPDF', false)) {
 								break;
 							}
 							case 'sound': {
-								if (!isset($pl['opt']['sound'])) {
+								if (!isset($pl['opt']['fs'])) {
 									break;
 								}
-								$filename = basename($pl['opt']['sound']);
+								$filename = basename($pl['opt']['fs']);
 								if (isset($this->embeddedfiles[$filename]['n'])) {
-									$annots .= ' /Sound <</Type /Sound';
 									// ... TO BE COMPLETED ...
 									// /R /C /B /E /CO /CP
-									// $annots .= ' /F '.$this->_datastring($filename).' /EF <</F '.$this->embeddedfiles[$filename]['n'].' 0 R>> >>';
+									$annots .= ' /Sound <</Type /Filespec /F '.$this->_datastring($filename).' /EF <</F '.$this->embeddedfiles[$filename]['n'].' 0 R>> >>';
 									$iconsapp = array('Speaker', 'Mic');
 									if (isset($pl['opt']['name']) AND in_array($pl['opt']['name'], $iconsapp)) {
 										$annots .= ' /Name /'.$pl['opt']['name'];
@@ -8465,7 +8464,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 		}
 		
-		/*
+		/**
 		* Set a draw point.
 		* @param float $x Abscissa of point.
 		* @param float $y Ordinate of point.
@@ -8479,7 +8478,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->_out(sprintf('%.2F %.2F m', $x * $this->k, ($this->h - $y) * $this->k));
 		}
 		
-		/*
+		/**
 		* Draws a line from last draw point.
 		* @param float $x Abscissa of end point.
 		* @param float $y Ordinate of end point.
@@ -8510,7 +8509,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->_out(sprintf('%.2F %.2F %.2F %.2F re %s', $x * $this->k, ($this->h - $y) * $this->k, $w * $this->k, -$h * $this->k, $op));
 		}
 		
-		/*
+		/**
 		* Draws a Bezier curve from last draw point.
 		* The Bezier curve is a tangent to the line between the control points at either end of the curve.
 		* @param float $x1 Abscissa of control point 1.
@@ -9900,7 +9899,7 @@ if (!class_exists('TCPDF', false)) {
 		
 		// END OF BIDIRECTIONAL TEXT SECTION -------------------
 		
-		/*
+		/**
 		* Adds a bookmark.
 		* @param string $txt bookmark description.
 		* @param int $level bookmark level (minimum value is 0).
@@ -9932,7 +9931,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->outlines[] = array('t' => $txt, 'l' => $level, 'y' => $y, 'p' => $page);
 		}
 		
-		/*
+		/**
 		* Create a bookmark PDF string.
 		* @access protected
 		* @author Olivier Plathey, Nicola Asuni
@@ -10004,7 +10003,7 @@ if (!class_exists('TCPDF', false)) {
 		
 		// --- JAVASCRIPT ------------------------------------------------------
 		
-		/*
+		/**
 		* Adds a javascript
 		* @param string $script Javascript code
 		* @access public
@@ -10015,7 +10014,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->javascript .= $script;
 		}
 
-		/*
+		/**
 		* Adds a javascript object and return object ID
 		* @param string $script Javascript code
 		* @param boolean $onload if true executes this object when opening the document
@@ -10030,7 +10029,7 @@ if (!class_exists('TCPDF', false)) {
 			return $this->js_obj_id;
 		}
 
-		/*
+		/**
 		* Create a javascript PDF string.
 		* @access protected
 		* @author Johannes Güntert, Nicola Asuni
@@ -10089,7 +10088,7 @@ if (!class_exists('TCPDF', false)) {
 			}			
 		}
 		
-		/*
+		/**
 		* Convert color to javascript color.
 		* @param string $color color name or #RRGGBB
 		* @access protected
@@ -10107,7 +10106,7 @@ if (!class_exists('TCPDF', false)) {
 			return 'color.'.$color;
 		}
 		
-		/*
+		/**
 		* Adds a javascript form field.
 		* @param string $type field type
 		* @param string $name field name
@@ -10147,7 +10146,7 @@ if (!class_exists('TCPDF', false)) {
 
 		// --- FORM FIELDS -----------------------------------------------------
 
-		/*
+		/**
 		* Convert JavaScript form fields properties array to Annotation Properties array.
 		* @param array $prop javascript field properties. Possible values are described on official Javascript for Acrobat API reference.
 		* @return array of annotation properties
@@ -10512,7 +10511,7 @@ if (!class_exists('TCPDF', false)) {
 			return $opt;
 		}
 		
-		/*
+		/**
 		* Set default properties for form fields.
 		* @param array $prop javascript field properties. Possible values are described on official Javascript for Acrobat API reference.
 		* @access public
@@ -10523,7 +10522,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->default_form_prop = $prop;
 		}
 		
-		/*
+		/**
 		* Return the default properties for form fields.
 		* @return array $prop javascript field properties. Possible values are described on official Javascript for Acrobat API reference.
 		* @access public
@@ -10534,7 +10533,7 @@ if (!class_exists('TCPDF', false)) {
 			return $this->default_form_prop;
 		}
 		
-		/*
+		/**
 		* Creates a text field
 		* @param string $name field name
 		* @param float $w Width of the rectangle
@@ -10624,7 +10623,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 		}
 
-		/*
+		/**
 		* Creates a RadioButton field
 		* @param string $name field name
 		* @param int $w width
@@ -10712,7 +10711,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 		}
 		
-		/*
+		/**
 		* Creates a List-box field
 		* @param string $name field name
 		* @param int $w width
@@ -10772,7 +10771,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 		}
 		
-		/*
+		/**
 		* Creates a Combo-box field
 		* @param string $name field name
 		* @param int $w width
@@ -10833,7 +10832,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 		}
 		
-		/*
+		/**
 		* Creates a CheckBox field
 		* @param string $name field name
 		* @param int $w width
@@ -10902,7 +10901,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 		}
 		
-		/*
+		/**
 		* Creates a button field
 		* @param string $name field name
 		* @param int $w width
@@ -11061,7 +11060,7 @@ if (!class_exists('TCPDF', false)) {
 		
 		// --- END FORMS FIELDS ------------------------------------------------
 		
-		/*
+		/**
 		* Add certification signature (DocMDP or UR3)
 		* You can set only one signature type
 		* @access protected
@@ -11125,7 +11124,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->_out('/M '.$this->_datestring());
 		}
 		
-		/*
+		/**
 		* Set User's Rights for PDF Reader
 		* WARNING: This works only using the Adobe private key with the setSignature() method!.
 		* Check the PDF Reference 8.7.1 Transform Methods, 
@@ -11156,7 +11155,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 		}
 		
-		/*
+		/**
 		* Enable document signature (requires the OpenSSL Library).
 		* The digital signature improve document authenticity and integrity and allows o enable extra features on Acrobat Reader.
 		* @param mixed $signing_cert signing certificate (string or filename prefixed with 'file://')
@@ -11190,7 +11189,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->signature_data['info'] = $info;
 		}
 		
-		/*
+		/**
 		* Create a new page group.
 		* NOTE: call this function before calling AddPage()
 		* @param int $page starting group page (leave empty for next page).
@@ -11259,7 +11258,7 @@ if (!class_exists('TCPDF', false)) {
 			return $this->AliasNumPage;
 		}
 		
-		/*
+		/**
 		* Return the current page in the group.
 		* @return current page in the group
 		* @access public
@@ -11279,7 +11278,7 @@ if (!class_exists('TCPDF', false)) {
 			return $this->formatPageNumber($this->getGroupPageNo());
         }
 		
-		/*
+		/**
 		 * Return the alias of the current page group
          * If the current font is unicode type, the returned string is surrounded by additional curly braces.
 		 * (will be replaced by the total number of pages in this group).
@@ -11294,7 +11293,7 @@ if (!class_exists('TCPDF', false)) {
 			return $this->currpagegroup;
 		}
 		
-		/*
+		/**
 		 * Return the alias for the page number on the current page group
          * If the current font is unicode type, the returned string is surrounded by additional curly braces.
 		 * (will be replaced by the total number of pages in this group).
@@ -11342,7 +11341,7 @@ if (!class_exists('TCPDF', false)) {
 			return $this->formatPageNumber($this->PageNo());
         }
 
-        /*
+        /**
 		* Put visibility settings.
 		* @access protected
 		* @since 3.0.000 (2008-03-27)
@@ -11360,7 +11359,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->_out('endobj');
 		}
 		
-		/*
+		/**
 		* Set the visibility of the successive elements.
 		* This can be useful, for instance, to put a background 
 		* image or color that will show on screen but won't print.
@@ -11397,7 +11396,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->visibility = $v;
 		}
 		
-		/*
+		/**
 		* Add transparency parameters to the current extgstate
 		* @param array $params parameters
 		* @return the number of extgstates
@@ -11410,7 +11409,7 @@ if (!class_exists('TCPDF', false)) {
 			return $n;
 		}
 		
-		/*
+		/**
 		* Add an extgstate
 		* @param array $gs extgstate
 		* @access protected
@@ -11420,7 +11419,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->_out(sprintf('/GS%d gs', $gs));
 		}
 		
-		/*
+		/**
 		* Put extgstates for object transparency
 		* @param array $gs extgstate
 		* @access protected
@@ -11440,7 +11439,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 		}
 		
-		/*
+		/**
 		* Set alpha for stroking (CA) and non-stroking (ca) operations.
 		* @param float $alpha real value from 0 (transparent) to 1 (opaque)
 		* @param string $bm blend mode, one of the following: Normal, Multiply, Screen, Overlay, Darken, Lighten, ColorDodge, ColorBurn, HardLight, SoftLight, Difference, Exclusion, Hue, Saturation, Color, Luminosity
@@ -11452,7 +11451,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->setExtGState($gs);
 		}
 
-		/*
+		/**
 		* Set the default JPEG compression quality (1-100)
 		* @param int $quality JPEG quality, integer between 1 and 100
 		* @access public
@@ -11465,7 +11464,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->jpeg_quality = intval($quality);
 		}
 		
-		/*
+		/**
 		* Set the default number of columns in a row for HTML tables.
 		* @param int $cols number of columns
 		* @access public
@@ -11475,7 +11474,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->default_table_columns = intval($cols); 
 		}
 		
-		/*
+		/**
 		* Set the height of the cell (line height) respect the font height.
 		* @param int $h cell proportion respect font height (typical value = 1.25).
 		* @access public
@@ -11485,7 +11484,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->cell_height_ratio = $h; 
 		}
 		
-		/*
+		/**
 		* return the height of cell repect font height.
 		* @access public
 		* @since 4.0.012 (2008-07-24)
@@ -11494,7 +11493,7 @@ if (!class_exists('TCPDF', false)) {
 			return $this->cell_height_ratio; 
 		}
 		
-		/*
+		/**
 		* Set the PDF version (check PDF reference for valid values).
 		* Default value is 1.t
 		* @access public
@@ -11504,7 +11503,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->PDFVersion = $version;
 		}
 		
-		/*
+		/**
 		* Set the viewer preferences dictionary controlling the way the document is to be presented on the screen or in print.
 		* (see Section 8.1 of PDF reference, "Viewer Preferences").
 		* <ul>
@@ -15752,7 +15751,7 @@ if (!class_exists('TCPDF', false)) {
 			return false;
 		}
 
-        /**
+		/**
 		* Move a page to a previous position.
 		* @param int $frompage number of the source page
 		* @param int $topage number of the destination page (must be less than $frompage)

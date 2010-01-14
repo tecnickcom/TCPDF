@@ -1,3 +1,6 @@
+4.8.022 (2010-01-14)
+	- Source code documentation was fixed.
+
 4.8.021 (2010-01-03)
 	- A Bug relative to Table Of Content index was fixed.
 
