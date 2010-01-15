@@ -3837,11 +3837,10 @@ if (!class_exists('TCPDF', false)) {
 				if ($this->ColorFlag) {
 					$s .= 'q '.$this->TextColor.' ';
 				}
-				
+				// count number of spaces
+				$ns = substr_count($txt, ' ');
 				// Justification
 				if ($align == 'J') {
-					// count number of spaces
-					$ns = substr_count($txt, ' ');
 					if (($this->CurrentFont['type'] == 'TrueTypeUnicode') OR ($this->CurrentFont['type'] == 'cidfont0')) {
 						// get string width without spaces
 						$width = $this->GetStringWidth(str_replace(' ', '', $txt));
@@ -3904,7 +3903,7 @@ if (!class_exists('TCPDF', false)) {
 					$s .= ' Q';
 				}
 				if ($link) {
-					$this->Link($xdx, $this->y + (($h - $this->FontSize)/2), $width, $this->FontSize, $link, substr_count($txt, $this->getSpaceString()));
+					$this->Link($xdx, $this->y + (($h - $this->FontSize)/2), $width, $this->FontSize, $link, $ns);
 				}
 			}
 			// output cell
