@@ -4,7 +4,7 @@
 // Begin       : 2002-08-03
 // Last Update : 2010-01-15
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.8.023
+// Version     : 4.8.024
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -128,7 +128,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.8.023
+ * @version 4.8.024
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.8.023 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.8.024 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.8.023
+	* @version 4.8.024
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -3904,7 +3904,7 @@ if (!class_exists('TCPDF', false)) {
 					$s .= ' Q';
 				}
 				if ($link) {
-					$this->Link($xdx, $this->y + (($h - $this->FontSize)/2), $width, $this->FontSize, $link, substr_count($txt, chr(32)));
+					$this->Link($xdx, $this->y + (($h - $this->FontSize)/2), $width, $this->FontSize, $link, substr_count($txt, $this->getSpaceString()));
 				}
 			}
 			// output cell
@@ -13139,6 +13139,21 @@ if (!class_exists('TCPDF', false)) {
 		}
 		
 		/**
+		 * Returns the string used to find spaces
+		 * @return string
+		 * @access protected
+		 * @author Nicola Asuni
+		 * @since 4.8.024 (2010-01-15)
+		 */
+		protected function getSpaceString() {
+			$spacestr = chr(32);
+			if (($this->CurrentFont['type'] == 'TrueTypeUnicode') OR ($this->CurrentFont['type'] == 'cidfont0')) {
+				$spacestr = chr(0).chr(32);
+			}
+			return $spacestr;
+		}
+		
+		/**
 		 * Allows to preserve some HTML formatting (limited support).<br />
 		 * IMPORTANT: The HTML must be well formatted - try to clean-up it using an application like HTML-Tidy before submitting.
 		 * Supported tags are: a, b, blockquote, br, dd, del, div, dl, dt, em, font, h1, h2, h3, h4, h5, h6, hr, i, img, li, ol, p, pre, small, span, strong, sub, sup, table, tcpdf, td, th, thead, tr, tt, u, ul
@@ -13481,6 +13496,7 @@ if (!class_exists('TCPDF', false)) {
 								$pmidtemp = preg_replace('/[\\\][\)]/x', '\\#!#CP#!#', $pmidtemp);
 								// search spaces
 								if (preg_match_all('/\[\(([^\)]*)\)\]/x', $pmidtemp, $lnstring, PREG_PATTERN_ORDER)) {
+									$spacestr = $this->getSpaceString();
 									$maxkk = count($lnstring[1]) - 1;
 									for ($kk=0; $kk <= $maxkk; ++$kk) {
 										// restore special characters
@@ -13496,8 +13512,8 @@ if (!class_exists('TCPDF', false)) {
 											$tvalue = $lnstring[1][$kk];
 										}
 										// store number of spaces on the strings
-										$lnstring[2][$kk] = substr_count($lnstring[1][$kk], chr(32));
-										$lnstring[3][$kk] = substr_count($tvalue, chr(32));
+										$lnstring[2][$kk] = substr_count($lnstring[1][$kk], $spacestr);
+										$lnstring[3][$kk] = substr_count($tvalue, $spacestr);
 										// count total spaces on line
 										$no += $lnstring[2][$kk];
 										$ns += $lnstring[3][$kk];
@@ -13578,7 +13594,7 @@ if (!class_exists('TCPDF', false)) {
 													} else {
 														$tvalue = $lnstring[1][$strcount];
 													}
-													$ns += substr_count($tvalue, chr(32));
+													$ns += substr_count($tvalue, $spacestr);
 													++$strcount;
 												}
 												if ($this->isRTLTextDir()) {
@@ -14267,9 +14283,9 @@ if (!class_exists('TCPDF', false)) {
 						$xpos = $this->GetX();
 						if (isset($dom[($key - 1)]) AND ($dom[($key - 1)]['value'] == ' ')) {
 							if ($this->rtl) {
-								$xpos += $this->GetStringWidth(' ');
+								$xpos += $this->GetStringWidth(chr(32));
 							} else {
-								$xpos -= $this->GetStringWidth(' ');
+								$xpos -= $this->GetStringWidth(chr(32));
 							}
 						}
 						$imglink = '';
@@ -16059,7 +16075,7 @@ if (!class_exists('TCPDF', false)) {
 			$fontfamily = $this->FontFamily;
 			$fontstyle = $this->FontStyle;
 			$w = $this->w - $this->lMargin - $this->rMargin;
-			$spacer = $this->GetStringWidth(' ') * 4;
+			$spacer = $this->GetStringWidth(chr(32)) * 4;
 			$page_first = $this->getPage();
 			$lmargin = $this->lMargin;
 			$rmargin = $this->rMargin;
@@ -16116,7 +16132,7 @@ if (!class_exists('TCPDF', false)) {
 				} else {
 					$tw = $this->w - $this->rMargin - $this->x;
 				}
-				$fw = $tw - $numwidth - $this->GetStringWidth(' ');
+				$fw = $tw - $numwidth - $this->GetStringWidth(chr(32));
 				$numfills = floor($fw / $this->GetStringWidth($filler));
 				if ($numfills > 0) {
 					$rowfill = str_repeat($filler, $numfills);
