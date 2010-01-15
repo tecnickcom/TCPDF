@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-01-14
+// Last Update : 2010-01-15
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.8.022
+// Version     : 4.8.023
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -128,7 +128,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.8.022
+ * @version 4.8.023
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.8.022 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.8.023 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.8.022
+	* @version 4.8.023
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -3087,6 +3087,8 @@ if (!class_exists('TCPDF', false)) {
 				$prev_FontSizePt = $this->FontSizePt;
 				$this->SetFont($fontname, $fontstyle, $fontsize);
 			}
+			// convert UTF-8 array to Latin1 if required
+			$sa = $this->UTF8ArrToLatin1($sa);		
 			$w = 0;
 			foreach ($sa as $char) {
 				$w += $this->GetCharWidth($char);
@@ -3802,8 +3804,10 @@ if (!class_exists('TCPDF', false)) {
 				}
 			}
 			if ($txt != '') {
+				$txt2 = $this->_escapetext($txt);
 				// text lenght
-				$width = $this->GetStringWidth($txt);
+				$txwidth = $this->GetStringWidth($txt);
+				$width = $txwidth;
 				// ratio between cell lenght and text lenght
 				if ($width <= 0) {
 					$ratio = 1;
@@ -3833,7 +3837,7 @@ if (!class_exists('TCPDF', false)) {
 				if ($this->ColorFlag) {
 					$s .= 'q '.$this->TextColor.' ';
 				}
-				$txt2 = $this->_escapetext($txt);
+				
 				// Justification
 				if ($align == 'J') {
 					// count number of spaces
@@ -3847,8 +3851,9 @@ if (!class_exists('TCPDF', false)) {
 						$txt2 = str_replace(chr(0).' ', ') '.($spacewidth).' (', $txt2);
 					} else {
 						// get string width
-						$width = $this->GetStringWidth($txt);
+						$width = $txwidth;
 						$spacewidth = (($w - $width - (2 * $this->cMargin)) / ($ns?$ns:1)) * $this->k;
+						// set word spacing
 						$rs .= sprintf('BT %.3F Tw ET ', $spacewidth);
 					}
 					$width = $w - (2 * $this->cMargin);
@@ -7630,6 +7635,35 @@ if (!class_exists('TCPDF', false)) {
 				}
 			}
 			return $outstr;
+		}
+		
+		/**
+		 * Converts UTF-8 characters array to Latin1<br>
+		 * @param array $unicode array containing UTF-8 unicode values
+		 * @return array
+		 * @author Nicola Asuni
+		 * @access protected
+		 * @since 4.8.023 (2010-01-15)
+		 */
+		protected function UTF8ArrToLatin1($unicode) {
+			global $utf8tolatin;
+			if ((!$this->isunicode) OR ($this->CurrentFont['type'] == 'TrueTypeUnicode') OR ($this->CurrentFont['type'] == 'cidfont0')) {
+				return $unicode; // string is not in unicode
+			}
+			$outarr = array(); // array to be returned
+			foreach ($unicode as $char) {
+				if ($char < 256) {
+					$outarr[] = $char;
+				} elseif (array_key_exists($char, $utf8tolatin)) {
+					// map from UTF-8
+					$outarr[] = $utf8tolatin[$char];
+				} elseif ($char == 0xFFFD) {
+					// skip
+				} else {
+					$outarr[] = 63; // '?' character
+				}
+			}
+			return $outarr;
 		}
 
 		/**

@@ -1,3 +1,6 @@
+4.8.023 (2010-01-15)
+	- Bug item #2932470 "Some HTML entities breaks justification" was fixed.
+
 4.8.022 (2010-01-14)
 	- Source code documentation was fixed.
 
