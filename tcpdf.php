@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-01-18
+// Last Update : 2010-01-19
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.8.025
+// Version     : 4.8.026
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -128,7 +128,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.8.025
+ * @version 4.8.026
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.8.025 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.8.026 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.8.025
+	* @version 4.8.026
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -995,7 +995,7 @@ if (!class_exists('TCPDF', false)) {
 		
 		
 		/**
-		 * Array used to store footer lenght of each page.
+		 * Array used to store footer length of each page.
 		 * @access protected
 		 * @since 4.0.014 (2008-07-29)
 		 */
@@ -1172,7 +1172,7 @@ if (!class_exists('TCPDF', false)) {
 		protected $numpages = 0;
 
 		/**
-		 * Array containing page lenghts in bytes.
+		 * Array containing page lengths in bytes.
 		 * @access protected
 		 * @since 4.5.000 (2008-12-31)
 		 */
@@ -1193,7 +1193,7 @@ if (!class_exists('TCPDF', false)) {
 		protected $imagekeys = array();
 
 		/**
-		 * Lenght of the buffer in bytes.
+		 * Length of the buffer in bytes.
 		 * @access protected
 		 * @since 4.5.000 (2008-12-31)
 		 */
@@ -1249,11 +1249,11 @@ if (!class_exists('TCPDF', false)) {
 		protected $objcopy;
 
 		/**
-		 * Array used to store the lenghts of cache files
+		 * Array used to store the lengths of cache files
 		 * @access protected
 		 * @since 4.5.029 (2009-03-19)
 		 */
-		protected $cache_file_lenght = array();
+		protected $cache_file_length = array();
 
 		/**
 		 * Table header content to be repeated on each new page
@@ -1305,11 +1305,11 @@ if (!class_exists('TCPDF', false)) {
 		protected $signature_data = array();
 
 		/**
-		 * Signature max lenght
+		 * Signature max length
 		 * @access protected
 		 * @since 4.6.005 (2009-04-24)
 		 */
-		protected $signature_max_lenght = 11742;
+		protected $signature_max_length = 11742;
 
 		/**
 		 * Regular expression used to find blank characters used for word-wrapping.
@@ -2740,7 +2740,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 			// restore graphic settings
 			$this->setGraphicVars($gvars);
-			// calculate footer lenght
+			// calculate footer length
 			$this->footerlen[$this->page] = $this->pagelen[$this->page] - $this->footerpos[$this->page] + 1;
 		}
 
@@ -3805,10 +3805,10 @@ if (!class_exists('TCPDF', false)) {
 			}
 			if ($txt != '') {
 				$txt2 = $this->_escapetext($txt);
-				// text lenght
+				// text length
 				$txwidth = $this->GetStringWidth($txt);
 				$width = $txwidth;
-				// ratio between cell lenght and text lenght
+				// ratio between cell length and text length
 				if ($width <= 0) {
 					$ratio = 1;
 				} else {
@@ -4303,7 +4303,7 @@ if (!class_exists('TCPDF', false)) {
 			$j = 0; // current starting position
 			$sep = -1; // position of the last blank space
 			$shy = false; // true if the last blank is a soft hypen (SHY)
-			$l = 0; // current string lenght
+			$l = 0; // current string length
 			$nl = 0; //number of lines
 			$linebreak = false;
 			$pc = 0; // previous character
@@ -5389,7 +5389,7 @@ if (!class_exists('TCPDF', false)) {
 				$byte_range = array();
 				$byte_range[0] = 0;
 				$byte_range[1] = strpos($pdfdoc, $this->byterange_string) + $byterange_string_len + 10;
-				$byte_range[2] = $byte_range[1] + $this->signature_max_lenght + 2;
+				$byte_range[2] = $byte_range[1] + $this->signature_max_length + 2;
 				$byte_range[3] = strlen($pdfdoc) - $byte_range[2];
 				$pdfdoc = substr($pdfdoc, 0, $byte_range[1]).substr($pdfdoc, $byte_range[2]);
 				// replace the ByteRange
@@ -5402,8 +5402,8 @@ if (!class_exists('TCPDF', false)) {
 				if (!$f) {
 					$this->Error('Unable to create temporary file: '.$tempdoc);
 				}
-				$pdfdoc_lenght = strlen($pdfdoc);
-				fwrite($f, $pdfdoc, $pdfdoc_lenght);
+				$pdfdoc_length = strlen($pdfdoc);
+				fwrite($f, $pdfdoc, $pdfdoc_length);
 				fclose($f);
 				// get digital signature via openssl library
 				$tempsign = tempnam(K_PATH_CACHE, 'tmpsig_');
@@ -5414,7 +5414,7 @@ if (!class_exists('TCPDF', false)) {
 				}	
 				unlink($tempdoc);
 				// read signature
-				$signature = file_get_contents($tempsign, false, null, $pdfdoc_lenght);
+				$signature = file_get_contents($tempsign, false, null, $pdfdoc_length);
 				unlink($tempsign);
 				// extract signature
 				$signature = substr($signature, (strpos($signature, "%%EOF\n\n------") + 13));
@@ -5425,7 +5425,7 @@ if (!class_exists('TCPDF', false)) {
 				$signature = base64_decode(trim($signature));
 				// convert signature to hex
 				$signature = current(unpack('H*', $signature));
-				$signature = str_pad($signature, $this->signature_max_lenght, '0');
+				$signature = str_pad($signature, $this->signature_max_length, '0');
 				// Add signature to the document
 				$pdfdoc = substr($pdfdoc, 0, $byte_range[1]).'<'.$signature.'>'.substr($pdfdoc, ($byte_range[1]));
 				$this->diskcache = false;
@@ -5525,7 +5525,7 @@ if (!class_exists('TCPDF', false)) {
 					AND ($val != 'diskcache')
 					AND ($val != 'sign')
 					AND ($val != 'signature_data')
-					AND ($val != 'signature_max_lenght')
+					AND ($val != 'signature_max_length')
 					AND ($val != 'byterange_string')
 					)) {
 					if (!$preserve_objcopy OR ($val != 'objcopy')) {
@@ -8659,8 +8659,8 @@ if (!class_exists('TCPDF', false)) {
 			if ($border_style) {
 				$border_style2 = array();
 				foreach ($border_style as $line => $value) {
-					$lenght = strlen($line);
-					for ($i = 0; $i < $lenght; ++$i) {
+					$length = strlen($line);
+					for ($i = 0; $i < $length; ++$i) {
 						$border_style2[$line[$i]] = $value;
 					}
 				}
@@ -11108,7 +11108,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->_out('/Filter /Adobe.PPKLite');
 			$this->_out('/SubFilter /adbe.pkcs7.detached');
 			$this->_out($this->byterange_string);
-			$this->_out('/Contents<>'.str_repeat(' ', $this->signature_max_lenght));
+			$this->_out('/Contents<>'.str_repeat(' ', $this->signature_max_length));
 			$this->_out('/Reference');
 			$this->_out('[');
 			$this->_out('<<');
@@ -15578,11 +15578,11 @@ if (!class_exists('TCPDF', false)) {
 				fwrite($f, $data);
 				fclose($f);
 			}
-			// update file lenght (needed for transactions)
-			if (!isset($this->cache_file_lenght['_'.$filename])) {
-				$this->cache_file_lenght['_'.$filename] = strlen($data);
+			// update file length (needed for transactions)
+			if (!isset($this->cache_file_length['_'.$filename])) {
+				$this->cache_file_length['_'.$filename] = strlen($data);
 			} else {
-				$this->cache_file_lenght['_'.$filename] += strlen($data);
+				$this->cache_file_length['_'.$filename] += strlen($data);
 			}
 		}
 
@@ -16253,10 +16253,10 @@ if (!class_exists('TCPDF', false)) {
 			if (isset($this->objcopy)) {
 				if (isset($this->objcopy->diskcache) AND $this->objcopy->diskcache) {
 					// truncate files to previous values
-					foreach ($this->objcopy->cache_file_lenght as $file => $lenght) {
+					foreach ($this->objcopy->cache_file_length as $file => $length) {
 						$file = substr($file, 1);
 						$handle = fopen($file, 'r+');
-						ftruncate($handle, $lenght);
+						ftruncate($handle, $length);
 					}
 				}
 				$this->_destroy(true, true);
