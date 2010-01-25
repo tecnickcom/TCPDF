@@ -1,5 +1,8 @@
+4.8.027 (2010-01-25)
+	- Bug item #2938412 "Table related problems - thead, nobr, table width" was fixed.
+
 4.8.026 (2010-01-19)
-	- The misspelled word "lenght" was replaced with "length" is some variables and comments.
+	- The misspelled word "lenght" was replaced with "length" in some variables and comments.
 
 4.8.025 (2010-01-18)
 	- addExtGState() method was improved to reuse existing ExtGState objects.
