@@ -1,3 +1,6 @@
+4.8.028 (2010-01-26)
+	- Text alignment for RTL mode was fixed.
+
 4.8.027 (2010-01-25)
 	- Bug item #2938412 "Table related problems - thead, nobr, table width" was fixed.
 

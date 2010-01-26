@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-01-25
+// Last Update : 2010-01-26
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.8.027
+// Version     : 4.8.028
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -128,7 +128,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.8.027
+ * @version 4.8.028
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.8.027 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.8.028 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.8.027
+	* @version 4.8.028
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -2618,7 +2618,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->SetTextColor(0, 0, 0);
 			// header title
 			$this->SetFont($headerfont[0], 'B', $headerfont[2] + 1);
-			$this->SetX($header_x);			
+			$this->SetX($header_x);
 			$this->Cell(0, $cell_height, $headerdata['title'], 0, 1, '', 0, '', 0);
 			// header string
 			$this->SetFont($headerfont[0], $headerfont[1], $headerfont[2]);
@@ -3748,6 +3748,10 @@ if (!class_exists('TCPDF', false)) {
 		*/
 		protected function getCellCode($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=0, $link='', $stretch=0, $ignore_min_height=false) {
 			$txt = $this->removeSHY($txt);
+			if ($this->rtl) {
+				// remove right spaces
+				$txt = rtrim($txt);
+			}
 			$rs = ''; //string to be returned
 			if (!$ignore_min_height) {
 				$min_cell_height = $this->FontSize * $this->cell_height_ratio;
@@ -3856,7 +3860,7 @@ if (!class_exists('TCPDF', false)) {
 				// count number of spaces
 				$ns = substr_count($txt, ' ');
 				// Justification
-				if ($align == 'J') {
+				if (($align == 'J') AND ($ns > 0)) {
 					if (($this->CurrentFont['type'] == 'TrueTypeUnicode') OR ($this->CurrentFont['type'] == 'cidfont0')) {
 						// get string width without spaces
 						$width = $this->GetStringWidth(str_replace(' ', '', $txt));
@@ -3886,9 +3890,7 @@ if (!class_exists('TCPDF', false)) {
 						}
 						break;
 					}
-					case 'L':
-					case 'J':
-					default: {
+					case 'L': {
 						if ($this->rtl) {
 							$dx = $w - $width - $this->cMargin;
 						} else {
@@ -3896,12 +3898,16 @@ if (!class_exists('TCPDF', false)) {
 						}
 						break;
 					}
+					case 'J':
+					default: {
+						$dx = $this->cMargin;
+						break;
+					}
 				}
 				if ($this->rtl) {
 					$xdx = $this->x - $dx - $width;
 				} else {
 					$xdx = $this->x + $dx;
-					
 				}
 				$xdk = $xdx * $k;
 				// calculate approximate position of the font base line
