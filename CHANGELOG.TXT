@@ -1,3 +1,7 @@
+4.8.029 (2010-01-27)
+	- Bug item #2941057 "TOC Error in PDF File Output" was fixed. 
+	- Some text alignment cases were fixed.
+
 4.8.028 (2010-01-26)
 	- Text alignment for RTL mode was fixed.
 

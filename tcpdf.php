@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-01-26
+// Last Update : 2010-01-27
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.8.028
+// Version     : 4.8.029
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -128,7 +128,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.8.028
+ * @version 4.8.029
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.8.028 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.8.029 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.8.028
+	* @version 4.8.029
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -13523,7 +13523,7 @@ if (!class_exists('TCPDF', false)) {
 							} elseif (($plalign == 'J') AND ($plalign == $lalign)) {
 								// Justification
 								if ($this->isRTLTextDir()) {
-									$t_x = $this->lMargin - $this->endlinex;
+									$t_x = $this->lMargin - $this->endlinex + $this->cMargin;
 								}
 								$one_space_width = $this->GetStringWidth(chr(32));
 								$no = 0; // spaces without trim
@@ -13557,9 +13557,6 @@ if (!class_exists('TCPDF', false)) {
 										$ns += $lnstring[3][$kk];
 										$lnstring[4][$kk] = $no;
 										$lnstring[5][$kk] = $ns;
-									}
-									if ($this->isRTLTextDir()) {
-										$t_x = $this->lMargin - $this->endlinex - (($no - $ns - 1) * $one_space_width);
 									}
 									// calculate additional space to add to each space
 									$spacelen = $one_space_width;
@@ -13797,7 +13794,7 @@ if (!class_exists('TCPDF', false)) {
 							}
 							if (isset($dom[$key]['attribute']['nested']) AND ($dom[$key]['attribute']['nested'] == 'true')) {
 								// add margin for nested tables
-								$wtmp -= $this->cMargin; // DEBUG
+								$wtmp -= $this->cMargin;
 							}
 							// table width
 							if (isset($dom[$key]['width'])) {
@@ -14046,8 +14043,6 @@ if (!class_exists('TCPDF', false)) {
 						// HTML <a> Link
 						$strrest = $this->addHtmlLink($this->HREF['url'], $dom[$key]['value'], $wfill, true, $this->HREF['color'], $this->HREF['style']);
 					} else {
-						$ctmpmargin = $this->cMargin;
-						$this->cMargin = 0;
 						if ($this->rtl) {
 							$this->x -= $this->textindent;
 						} else {
@@ -14056,7 +14051,6 @@ if (!class_exists('TCPDF', false)) {
 						// ****** write only until the end of the line and get the rest ******
 						$strrest = $this->Write($this->lasth, $dom[$key]['value'], '', $wfill, '', false, 0, true, $firstblock);
 						$this->textindent = 0;
-						$this->cMargin = $ctmpmargin;
 					}
 					if (strlen($strrest) > 0) {
 						// store the remaining string on the previous $key position
@@ -14144,6 +14138,7 @@ if (!class_exists('TCPDF', false)) {
 						$tw += ($prevrMargin - $this->rMargin);
 					}
 					$mdiff = abs($tw - $linew);
+					$t_x = 0;
 					if ($plalign == 'C') {
 						if ($this->rtl) {
 							$t_x = -($mdiff / 2);
@@ -14156,8 +14151,11 @@ if (!class_exists('TCPDF', false)) {
 					} elseif (($plalign == 'L') AND ($this->rtl)) {
 						// left alignment on RTL document
 						$t_x = -$mdiff;
-					} else {
+					} elseif (($plalign == 'J') AND ($plalign == $lalign)) {
+						// Justification
 						$t_x = 0;
+					} else {
+						$t_x = -$this->cMargin;
 					}
 					if (($t_x != 0) OR ($yshift < 0)) {
 						// shift the line
@@ -16113,6 +16111,7 @@ if (!class_exists('TCPDF', false)) {
 
 		/**
 		* Output a Table of Content Index (TOC).
+		* After calling this method you have to call addPage() to add other content.
 		* You can override this method to achieve different styles.
 		* @param int $page page number where this TOC should be inserted (leave empty for current page).
 		* @param string $numbersfont set the font for page numbers (please use monospaced font for better alignment).
@@ -16257,7 +16256,6 @@ if (!class_exists('TCPDF', false)) {
 					$this->movePage($page_last, $page);
 				}
 			}
-			$this->SetFont($fontfamily, $fontstyle, $fontsize);
 		}
 
 		/**
