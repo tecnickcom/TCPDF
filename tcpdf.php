@@ -4,7 +4,7 @@
 // Begin       : 2002-08-03
 // Last Update : 2010-01-27
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.8.029
+// Version     : 4.8.030
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -128,7 +128,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.8.029
+ * @version 4.8.030
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.8.029 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.8.030 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.8.029
+	* @version 4.8.030
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -3748,10 +3748,6 @@ if (!class_exists('TCPDF', false)) {
 		*/
 		protected function getCellCode($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=0, $link='', $stretch=0, $ignore_min_height=false) {
 			$txt = $this->removeSHY($txt);
-			if ($this->rtl) {
-				// remove right spaces
-				$txt = rtrim($txt);
-			}
 			$rs = ''; //string to be returned
 			if (!$ignore_min_height) {
 				$min_cell_height = $this->FontSize * $this->cell_height_ratio;
@@ -4048,7 +4044,7 @@ if (!class_exists('TCPDF', false)) {
 				$nl = 1;
 			} else {
 				// ******* Write text
-				$nl = $this->Write($this->lasth, $txt, '', 0, $align, true, $stretch, false, false, $maxh);
+				$nl = $this->Write($this->lasth, $txt, '', 0, $align, true, $stretch, false, true, $maxh);
 			}
 			if ($autopadding) {
 				// add bottom padding
@@ -4368,6 +4364,9 @@ if (!class_exists('TCPDF', false)) {
 							$this->cMargin = 0;
 						}
 					}
+					if ($firstblock AND $this->isRTLTextDir()) {
+						$tmpstr = rtrim($tmpstr);
+					}
 					$this->Cell($w, $h, $tmpstr, 0, 1, $talign, $fill, $link, $stretch);
 					unset($tmpstr);
 					if ($firstline) {
@@ -4451,6 +4450,9 @@ if (!class_exists('TCPDF', false)) {
 										$this->cMargin = 0;
 									}
 								}
+								if ($firstblock AND $this->isRTLTextDir()) {
+									$tmpstr = rtrim($tmpstr);
+								}
 								$this->Cell($w, $h, $tmpstr, 0, 1, $align, $fill, $link, $stretch);
 								unset($tmpstr);
 								if ($firstline) {
@@ -4503,6 +4505,9 @@ if (!class_exists('TCPDF', false)) {
 								}
 							}
 							// print the line
+							if ($firstblock AND $this->isRTLTextDir()) {
+								$tmpstr = rtrim($tmpstr);
+							}
 							$this->Cell($w, $h, $shy_char_left.$tmpstr.$shy_char_right, 0, 1, $align, $fill, $link, $stretch);
 							unset($tmpstr);
 							if ($firstline) {
@@ -4582,6 +4587,9 @@ if (!class_exists('TCPDF', false)) {
 					if ($maxh == 0) {
 						$this->cMargin = 0;
 					}
+				}
+				if ($firstblock AND $this->isRTLTextDir()) {
+					$tmpstr = rtrim($tmpstr);
 				}
 				$this->Cell($w, $h, $tmpstr, 0, $ln, $align, $fill, $link, $stretch);
 				unset($tmpstr);
@@ -13558,6 +13566,9 @@ if (!class_exists('TCPDF', false)) {
 										$lnstring[4][$kk] = $no;
 										$lnstring[5][$kk] = $ns;
 									}
+									if ($this->isRTLTextDir()) {
+										$t_x = $this->lMargin - $this->endlinex + $this->cMargin - (($no - $ns) * $one_space_width);
+									}
 									// calculate additional space to add to each space
 									$spacelen = $one_space_width;
 									$spacewidth = ((($tw - $linew) + (($no - $ns) * $spacelen)) / ($ns?$ns:1)) * $this->k;
@@ -14151,11 +14162,6 @@ if (!class_exists('TCPDF', false)) {
 					} elseif (($plalign == 'L') AND ($this->rtl)) {
 						// left alignment on RTL document
 						$t_x = -$mdiff;
-					} elseif (($plalign == 'J') AND ($plalign == $lalign)) {
-						// Justification
-						$t_x = 0;
-					} else {
-						$t_x = -$this->cMargin;
 					}
 					if (($t_x != 0) OR ($yshift < 0)) {
 						// shift the line
