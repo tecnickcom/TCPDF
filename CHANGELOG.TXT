@@ -1,3 +1,7 @@
+4.8.032 (2010-02-04)
+	- A bug related to $maxh parameter on Write() and MultiCell() was fixed.
+	- Support for body tag was added.
+
 4.8.031 (2010-01-30)
 	- Bug item #2941589 "paragraph justify not working on some non-C locales" was fixed.
 
