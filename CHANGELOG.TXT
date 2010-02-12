@@ -1,3 +1,6 @@
+4.8.033 (2010-02-12)
+	- A bug related to protection mode with links was fixed.
+
 4.8.032 (2010-02-04)
 	- A bug related to $maxh parameter on Write() and MultiCell() was fixed.
 	- Support for body tag was added.

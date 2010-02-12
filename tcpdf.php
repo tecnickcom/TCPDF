@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-02-04
+// Last Update : 2010-02-12
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.8.032
+// Version     : 4.8.033
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -128,7 +128,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.8.032
+ * @version 4.8.033
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.8.032 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.8.033 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.8.032
+	* @version 4.8.033
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -5781,7 +5781,7 @@ if (!class_exists('TCPDF', false)) {
 							$annots = '<<';
 							$annots .= ' /Type /Annot';
 							$annots .= ' /Subtype /Widget';
-							$annots .= ' /T '.$this->_datastring($pl['txt']);
+							$annots .= ' /T '.$this->_dataannobjstring($pl['txt']);
 							$annots .= ' /FT /Btn';
 							$annots .= ' /Ff 49152';
 							$annots .= ' /Kids [';
@@ -5823,7 +5823,7 @@ if (!class_exists('TCPDF', false)) {
 						}
 						$annots .= ' /Contents '.$this->_textstring($pl['txt']);
 						$annots .= ' /P '.$this->page_obj_id[$n].' 0 R';
-						$annots .= ' /NM '.$this->_datastring(sprintf('%04u-%04u', $n, $key));
+						$annots .= ' /NM '.$this->_dataannobjstring(sprintf('%04u-%04u', $n, $key));
 						$annots .= ' /M '.$this->_datestring();
 						if (isset($pl['opt']['f'])) {
 							$val = 0;
@@ -6029,7 +6029,7 @@ if (!class_exists('TCPDF', false)) {
 							case 'link': {
 								if(is_string($pl['txt'])) {
 									// external URI link
-									$annots .= ' /A <</S /URI /URI '.$this->_datastring($this->unhtmlentities($pl['txt'])).'>>';
+									$annots .= ' /A <</S /URI /URI '.$this->_dataannobjstring($this->unhtmlentities($pl['txt'])).'>>';
 								} else {
 									// internal link
 									$l = $this->links[$pl['txt']];
@@ -6126,7 +6126,7 @@ if (!class_exists('TCPDF', false)) {
 								}
 								$filename = basename($pl['opt']['fs']);
 								if (isset($this->embeddedfiles[$filename]['n'])) {
-									$annots .= ' /FS <</Type /Filespec /F '.$this->_datastring($filename).' /EF <</F '.$this->embeddedfiles[$filename]['n'].' 0 R>> >>';
+									$annots .= ' /FS <</Type /Filespec /F '.$this->_dataannobjstring($filename).' /EF <</F '.$this->embeddedfiles[$filename]['n'].' 0 R>> >>';
 									$iconsapp = array('Graph', 'Paperclip', 'PushPin', 'Tag');
 									if (isset($pl['opt']['name']) AND in_array($pl['opt']['name'], $iconsapp)) {
 										$annots .= ' /Name /'.$pl['opt']['name'];
@@ -6144,7 +6144,7 @@ if (!class_exists('TCPDF', false)) {
 								if (isset($this->embeddedfiles[$filename]['n'])) {
 									// ... TO BE COMPLETED ...
 									// /R /C /B /E /CO /CP
-									$annots .= ' /Sound <</Type /Filespec /F '.$this->_datastring($filename).' /EF <</F '.$this->embeddedfiles[$filename]['n'].' 0 R>> >>';
+									$annots .= ' /Sound <</Type /Filespec /F '.$this->_dataannobjstring($filename).' /EF <</F '.$this->embeddedfiles[$filename]['n'].' 0 R>> >>';
 									$iconsapp = array('Speaker', 'Mic');
 									if (isset($pl['opt']['name']) AND in_array($pl['opt']['name'], $iconsapp)) {
 										$annots .= ' /Name /'.$pl['opt']['name'];
@@ -6243,13 +6243,13 @@ if (!class_exists('TCPDF', false)) {
 							 		$annots .= ' /Parent '.$this->radiobutton_groups[$n][$pl['txt']].' 0 R';
 							 	}
 							 	if (isset($pl['opt']['t']) AND is_string($pl['opt']['t'])) {
-									$annots .= ' /T '.$this->_datastring($pl['opt']['t']);
+									$annots .= ' /T '.$this->_dataannobjstring($pl['opt']['t']);
 								}
 								if (isset($pl['opt']['tu']) AND is_string($pl['opt']['tu'])) {
-									$annots .= ' /TU '.$this->_datastring($pl['opt']['tu']);
+									$annots .= ' /TU '.$this->_dataannobjstring($pl['opt']['tu']);
 								}
 								if (isset($pl['opt']['tm']) AND is_string($pl['opt']['tm'])) {
-									$annots .= ' /TM '.$this->_datastring($pl['opt']['tm']);
+									$annots .= ' /TM '.$this->_dataannobjstring($pl['opt']['tm']);
 								}
 								if (isset($pl['opt']['ff'])) {
 									if (is_array($pl['opt']['ff'])) {
@@ -7413,13 +7413,26 @@ if (!class_exists('TCPDF', false)) {
 		
 		/**
 		* Format a data string for meta information
-		* @param string $s date string to escape.
+		* @param string $s data string to escape.
 		* @return string escaped string.
 		* @access protected
 		*/
 		protected function _datastring($s) {
 			if ($this->encrypted) {
 				$s = $this->_RC4($this->_objectkey($this->n), $s);
+			}
+			return '('. $this->_escape($s).')';
+		}
+		
+		/**
+		* Format a data string for annotation objects
+		* @param string $s data string to escape.
+		* @return string escaped string.
+		* @access protected
+		*/
+		protected function _dataannobjstring($s) {
+			if ($this->encrypted) {
+				$s = $this->_RC4($this->_objectkey($this->annot_obj_id + 1), $s);
 			}
 			return '('. $this->_escape($s).')';
 		}
