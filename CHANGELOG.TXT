@@ -1,3 +1,6 @@
+4.8.034 (2010-02-17)
+	- Language files were updated.
+
 4.8.033 (2010-02-12)
 	- A bug related to protection mode with links was fixed.
 
