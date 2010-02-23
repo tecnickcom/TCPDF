@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_010.php
 // Begin       : 2008-03-04
-// Last Update : 2009-09-30
+// Last Update : 2010-02-23
 // 
 // Description : Example 010 for TCPDF class
 //               Text on multiple columns
@@ -68,10 +68,10 @@ class MYPDF extends TCPDF {
 			$this->SetRightMargin($this->w - $x - $this->colwidth);
 		}
 		$this->x = $x;
-		//$this->x = $x + $this->cMargin; // use this for html mode
 		if ($col > 0) {
 			$this->y = $this->y0;
 		}
+		$this->newline = true;
 	}
 	
 	//Method accepting or not automatic page break
@@ -105,12 +105,24 @@ class MYPDF extends TCPDF {
 		// store current margin values
 		$lMargin = $this->lMargin;
 		$rMargin = $this->rMargin;
+		
 		// get esternal file content
 		$txt = file_get_contents($file, false);
-		// Font
+		
+		// set font
 		$this->SetFont('times', '', 9);
-		// Output text in a column
-		$this->MultiCell($this->colwidth, 5, $txt, 0, 'J', 0, 1, '', '', true, 0, false);
+		
+		// set first column
+		$this->SetCol(0);
+		
+		// ------ HTML MODE ------
+		//$this->writeHTML($txt, true, false, true, false, 'J');
+		// ------ HTML MODE ------
+		
+		// ------ TEXT MODE ------
+		$this->Write(0, $txt, '', 0, 'J', true, 0, false, false, 0);
+		// ------ TEXT MODE ------
+		
 		$this->Ln();
 		// Go back to first column
 		$this->SetCol(0);

@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-02-17
+// Last Update : 2010-02-23
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.8.034
+// Version     : 4.8.035
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -128,7 +128,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.8.034
+ * @version 4.8.035
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.8.034 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.8.035 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.8.034
+	* @version 4.8.035
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -13353,57 +13353,77 @@ if (!class_exists('TCPDF', false)) {
 					if ((!$this->newline)
 						AND ($dom[$key]['value'] == 'img')
 						AND (isset($dom[$key]['attribute']['height']))
-						AND ($dom[$key]['attribute']['height'] > 0)) {
-						
+						AND ($dom[$key]['attribute']['height'] > 0)) {						
 						// get image height
 						$imgh = $this->getHTMLUnitToUnits($dom[$key]['attribute']['height'], $this->lasth, 'px');
-						if (!$this->InFooter) {
-							// check for page break
-							$this->checkPageBreak($imgh);
+						// check for automatic line break
+						$autolinebreak = false;
+						if (isset($dom[$key]['attribute']['width']) AND ($dom[$key]['attribute']['width'] > 0)) {
+							$imgw = $this->getHTMLUnitToUnits($dom[$key]['attribute']['width'], 1, 'px', false);
+							if (($this->rtl AND (($this->x - $imgw) < $this->lMargin)) 
+								OR (!$this->rtl AND (($this->x + $imgw) > ($this->w - $this->rMargin)))) {
+								// add automatic line break
+								$autolinebreak = true;
+								$this->Ln('', $cell);
+								// go back to evaluate this line break
+								--$key;
+							}
 						}
-						if ($this->page > $startlinepage) {
-							// fix line splitted over two pages
-							if (isset($this->footerlen[$startlinepage])) {
-								$curpos = $this->pagelen[$startlinepage] - $this->footerlen[$startlinepage];
-							}
-							// line to be moved one page forward
-							$pagebuff = $this->getPageBuffer($startlinepage);
-							$linebeg = substr($pagebuff, $startlinepos, ($curpos - $startlinepos));
-							$tstart = substr($pagebuff, 0, $startlinepos);
-							$tend = substr($this->getPageBuffer($startlinepage), $curpos);
-							// remove line from previous page
-							$this->setPageBuffer($startlinepage, $tstart.''.$tend);
-							$pagebuff = $this->getPageBuffer($this->page);
-							$tstart = substr($pagebuff, 0, $this->cntmrk[$this->page]);
-							$tend = substr($pagebuff, $this->cntmrk[$this->page]);
-							// add line start to current page
-							$yshift = $minstartliney - $this->y;
-							$try = sprintf('1 0 0 1 0 %.3F cm', ($yshift * $this->k));
-							$this->setPageBuffer($this->page, $tstart."\nq\n".$try."\n".$linebeg."\nQ\n".$tend);
-							// shift the annotations and links
-							if (isset($this->PageAnnots[$this->page])) {
-								$next_pask = count($this->PageAnnots[$this->page]);
-							} else {
-								$next_pask = 0;
-							}
-							if (isset($this->PageAnnots[$startlinepage])) {
-								foreach ($this->PageAnnots[$startlinepage] as $pak => $pac) {
-									if ($pak >= $pask) {
-										$this->PageAnnots[$this->page][] = $pac;
-										unset($this->PageAnnots[$startlinepage][$pak]);
-										$npak = count($this->PageAnnots[$this->page]) - 1;
-										$this->PageAnnots[$this->page][$npak]['y'] -= $yshift;										
-									}
+						if (!$autolinebreak) {
+							if (!$this->InFooter) {
+								$pre_y = $this->y;
+								// check for page break
+								$this->checkPageBreak($imgh);
+								$post_y = $this->y;
+								// check for multicolumn mode
+								if ($post_y < $pre_y) {
+									$startliney = $post_y;
 								}
-								
 							}
-							$pask = $next_pask;
-							$startlinepos = $this->cntmrk[$this->page];
-							$startlinepage = $this->page;
-							$startliney = $this->y;
+							if ($this->page > $startlinepage) {
+								// fix line splitted over two pages
+								if (isset($this->footerlen[$startlinepage])) {
+									$curpos = $this->pagelen[$startlinepage] - $this->footerlen[$startlinepage];
+								}
+								// line to be moved one page forward
+								$pagebuff = $this->getPageBuffer($startlinepage);
+								$linebeg = substr($pagebuff, $startlinepos, ($curpos - $startlinepos));
+								$tstart = substr($pagebuff, 0, $startlinepos);
+								$tend = substr($this->getPageBuffer($startlinepage), $curpos);
+								// remove line from previous page
+								$this->setPageBuffer($startlinepage, $tstart.''.$tend);
+								$pagebuff = $this->getPageBuffer($this->page);
+								$tstart = substr($pagebuff, 0, $this->cntmrk[$this->page]);
+								$tend = substr($pagebuff, $this->cntmrk[$this->page]);
+								// add line start to current page
+								$yshift = $minstartliney - $this->y;
+								$try = sprintf('1 0 0 1 0 %.3F cm', ($yshift * $this->k));
+								$this->setPageBuffer($this->page, $tstart."\nq\n".$try."\n".$linebeg."\nQ\n".$tend);
+								// shift the annotations and links
+								if (isset($this->PageAnnots[$this->page])) {
+									$next_pask = count($this->PageAnnots[$this->page]);
+								} else {
+									$next_pask = 0;
+								}
+								if (isset($this->PageAnnots[$startlinepage])) {
+									foreach ($this->PageAnnots[$startlinepage] as $pak => $pac) {
+										if ($pak >= $pask) {
+											$this->PageAnnots[$this->page][] = $pac;
+											unset($this->PageAnnots[$startlinepage][$pak]);
+											$npak = count($this->PageAnnots[$this->page]) - 1;
+											$this->PageAnnots[$this->page][$npak]['y'] -= $yshift;										
+										}
+									}
+					
+								}
+								$pask = $next_pask;
+								$startlinepos = $this->cntmrk[$this->page];
+								$startlinepage = $this->page;
+								$startliney = $this->y;
+							}
+							$this->y += (($curfontsize / $this->k) - $imgh);
+							$minstartliney = min($this->y, $minstartliney);
 						}
-						$this->y += (($curfontsize / $this->k) - $imgh);
-						$minstartliney = min($this->y, $minstartliney);	
 					} elseif (isset($dom[$key]['fontname']) OR isset($dom[$key]['fontstyle']) OR isset($dom[$key]['fontsize'])) {
 						// account for different font size
 						$pfontname = $curfontname;
@@ -13773,7 +13793,7 @@ if (!class_exists('TCPDF', false)) {
 						}
 					}
 					$this->newline = false;
-					$pbrk = $this->checkPageBreak($this->lasth);
+					$pbrk = $this->checkPageBreak($this->lasth);					
 					$this->SetFont($fontname, $fontstyle, $fontsize);
 					if ($wfill) {
 						$this->SetFillColorArray($this->bgcolor);
@@ -14051,10 +14071,15 @@ if (!class_exists('TCPDF', false)) {
 					}
 					if ($newline) {
 						if (!$this->premode) {
+							$prelen = strlen($dom[$key]['value']);
 							if ($this->isRTLTextDir()) {
 								$dom[$key]['value'] = rtrim($dom[$key]['value']);
 							} else {
 								$dom[$key]['value'] = ltrim($dom[$key]['value']);
+							}
+							$postlen = strlen($dom[$key]['value']);
+							if (($postlen == 0) AND ($prelen > 0)) {
+								$dom[$key]['trimmed_space'] = true;
 							}
 						}
 						$newline = false;
@@ -14349,11 +14374,12 @@ if (!class_exists('TCPDF', false)) {
 						$type = $this->getImageFileType($tag['attribute']['src']);
 						$prevy = $this->y;
 						$xpos = $this->GetX();
-						if (isset($dom[($key - 1)]) AND ($dom[($key - 1)]['value'] == ' ')) {
-							if ($this->rtl) {
-								$xpos += $this->GetStringWidth(chr(32));
-							} else {
+						// eliminate marker spaces
+						if (isset($dom[($key - 1)])) {
+							if (($dom[($key - 1)]['value'] == ' ') OR (isset($dom[($key - 1)]['trimmed_space']))) {
 								$xpos -= $this->GetStringWidth(chr(32));
+							} elseif ($this->rtl AND $dom[($key - 1)]['value'] == '  ') {
+								$xpos -= (2 * $this->GetStringWidth(chr(32)));
 							}
 						}
 						$imglink = '';
