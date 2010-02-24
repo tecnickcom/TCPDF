@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_008.php
 // Begin       : 2008-03-04
-// Last Update : 2009-09-30
+// Last Update : 2010-02-24
 // 
 // Description : Example 008 for TCPDF class
 //               Include external UTF-8 text file
@@ -82,7 +82,7 @@ $utf8text = file_get_contents('../cache/utf8test.txt', false);
 $pdf->SetFillColor(230, 240, 255, true);
 
 // write the text
-$pdf->Write(5,$utf8text, '', 1);
+$pdf->Write(5, $utf8text, '', 1);
 
 // ---------------------------------------------------------
 

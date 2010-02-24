@@ -1,3 +1,8 @@
+4.8.036 (2010-02-24)
+	- Automatic page break for HTML images was improved.
+	- Example 10 was updated.
+	- Japanese was removed from example 8 because the freeserif font doesn't contain japanese (you can display it using arialunicid0 font).
+
 4.8.035 (2010-02-23)
 	- Automatic page break for HTML images was added.
 	- Support for multicolumn HTML was added (example 10 was updated).

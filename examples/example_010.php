@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_010.php
 // Begin       : 2008-03-04
-// Last Update : 2010-02-23
+// Last Update : 2010-02-24
 // 
 // Description : Example 010 for TCPDF class
 //               Text on multiple columns
@@ -33,31 +33,50 @@
 require_once('../config/lang/eng.php');
 require_once('../tcpdf.php');
 
-// extend TCPF with custom functions
-class MYPDF extends TCPDF {
+
+/**
+* Extend TCPDF to work with multiple columns
+*/
+class MC_TCPDF extends TCPDF {
 	
-	//number of colums
+	/**
+	 * @var number of colums
+	 * @access protected
+	 */
 	protected $ncols = 3;
 	
-	// columns width
+	/**
+	 * @var columns width
+	 * @access protected
+	 */
 	protected $colwidth = 57;
 	
-	//Current column
+	/**
+	 * @var current column
+	 * @access protected
+	 */
 	protected $col = 0;
 	
-	//Ordinate of column start
-	protected $y0;
-		
-	//Set position at a given column
+	/**
+	 * @var y position of the beginning of column
+	 * @access protected
+	 */
+	protected $col_start_y;
+	
+	/**
+	 * Set position at a given column
+	 * @param $col column number (from 0 to $ncols-1)
+	 * @access public
+	 */
 	public function SetCol($col) {
 		$this->col = $col;
-		// space between columns
+		// set space between columns
 		if ($this->ncols > 1) {
 			$column_space = round((float)($this->w - $this->original_lMargin - $this->original_rMargin - ($this->ncols * $this->colwidth)) / ($this->ncols - 1));
 		} else {
 			$column_space = 0;
 		}
-		// X position of the current column
+		// set X position of the current column by case
 		if ($this->rtl) {
 			$x = $this->w - $this->original_rMargin - ($col * ($this->colwidth + $column_space));
 			$this->SetRightMargin($this->w - $x);
@@ -69,60 +88,69 @@ class MYPDF extends TCPDF {
 		}
 		$this->x = $x;
 		if ($col > 0) {
-			$this->y = $this->y0;
+			// set Y position for the column
+			$this->y = $this->col_start_y;
 		}
+		// fix for HTML mode
 		$this->newline = true;
 	}
 	
-	//Method accepting or not automatic page break
+	/**
+	 * Overwrites the AcceptPageBreak() method to switch between columns
+	 * @return boolean false
+	 * @access public
+	 */
 	public function AcceptPageBreak() {
 		if($this->col < ($this->ncols - 1)) {
-			//Go to next column
+			// go to next column
 			$this->SetCol($this->col + 1);
-			//Keep on page
-			return false;
 		} else {
+			// go back to first column on the new page
 			$this->AddPage();
-			//Go back to first column
 			$this->SetCol(0);
-			//Page break
-			return false;
 		}
+		// avoid page breaking from checkPageBreak()
+		return false;
 	}
 	
-	// Set chapter title
-	public function ChapterTitle($num, $label) {
+	/**
+	 * Set chapter title
+	 * @param int $num chapter number
+	 * @param string $title chapter title
+	 * @access public
+	 */
+	public function ChapterTitle($num, $title) {
 		$this->SetFont('helvetica', '', 14);
 		$this->SetFillColor(200, 220, 255);
-		$this->Cell(0, 6, 'Chapter '.$num.' : '.$label, 0, 1, '', 1);
+		$this->Cell(0, 6, 'Chapter '.$num.' : '.$title, 0, 1, '', 1);
 		$this->Ln(4);
-		// Save ordinate
-		$this->y0 = $this->GetY();
+		// save current Y position
+		$this->col_start_y = $this->GetY();
 	}
 	
-	// Print chapter body
-	public function ChapterBody($file) {
+	/**
+	 * Print chapter body
+	 * @param string $file name of the file containing the chapter body
+	 * @param boolean $mode if true the chapter body is in HTML, otherwise in simple text.
+	 * @access public
+	 */
+	public function ChapterBody($file, $mode=false) {
 		// store current margin values
 		$lMargin = $this->lMargin;
 		$rMargin = $this->rMargin;
-		
 		// get esternal file content
 		$txt = file_get_contents($file, false);
-		
 		// set font
 		$this->SetFont('times', '', 9);
-		
 		// set first column
 		$this->SetCol(0);
-		
-		// ------ HTML MODE ------
-		//$this->writeHTML($txt, true, false, true, false, 'J');
-		// ------ HTML MODE ------
-		
-		// ------ TEXT MODE ------
-		$this->Write(0, $txt, '', 0, 'J', true, 0, false, false, 0);
-		// ------ TEXT MODE ------
-		
+		if ($mode) {
+			// ------ HTML MODE ------
+			$this->writeHTML($txt, true, false, true, false, 'J');
+		} else {
+			// ------ TEXT MODE ------
+			$this->Write(0, $txt, '', 0, 'J', true, 0, false, false, 0);
+		}
 		$this->Ln();
 		// Go back to first column
 		$this->SetCol(0);
@@ -131,16 +159,26 @@ class MYPDF extends TCPDF {
 		$this->SetRightMargin($rMargin);
 	}
 	
-	//Add chapter
-	public function PrintChapter($num,$title,$file) {
+	/**
+	 * Print chapter
+	 * @param int $num chapter number
+	 * @param string $title chapter title
+	 * @param string $file name of the file containing the chapter body
+	 * @param boolean $mode if true the chapter body is in HTML, otherwise in simple text.
+	 * @access public
+	 */
+	public function PrintChapter($num, $title, $file, $mode=false) {
 		$this->AddPage();
-		$this->ChapterTitle($num,$title);
-		$this->ChapterBody($file);
+		$this->ChapterTitle($num, $title);
+		$this->ChapterBody($file, $mode);
 	}
 }
 
+// ---------------------------------------------------------
+// EXAMPLE
+// ---------------------------------------------------------
 // create new PDF document
-$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+$pdf = new MC_TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
 // set document information
 $pdf->SetCreator(PDF_CREATOR);
@@ -175,8 +213,11 @@ $pdf->setLanguageArray($l);
 
 // ---------------------------------------------------------
 
-$pdf->PrintChapter(1, 'A RUNAWAY REEF', '../cache/chapter_demo_1.txt');
-$pdf->PrintChapter(2, 'THE PROS AND CONS', '../cache/chapter_demo_2.txt');
+// print a text
+$pdf->PrintChapter(1, 'A RUNAWAY REEF', '../cache/chapter_demo_1.txt', false);
+
+// print an html text
+$pdf->PrintChapter(2, 'THE PROS AND CONS', '../cache/chapter_demo_2.txt', true);
 
 // ---------------------------------------------------------
 
