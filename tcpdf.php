@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-02-24
+// Last Update : 2010-03-10
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.8.036
+// Version     : 4.8.037
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -128,7 +128,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.8.036
+ * @version 4.8.037
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */ 
-	define('PDF_PRODUCER', 'TCPDF 4.8.036 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.8.037 (http://www.tcpdf.org)');
 	
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.8.036
+	* @version 4.8.037
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1480,12 +1480,12 @@ if (!class_exists('TCPDF', false)) {
 		protected $start_transaction_page = 0;
 		
 		/**
-		 * True when we are in thead
+		 * True when we are printing the thead section on a new page
 		 * @access protected
 		 * @since 4.8.027 (2010-01-25)
 		 */
 		protected $inthead = false;
-		
+				
 		//------------------------------------------------------------
 		// METHODS
 		//------------------------------------------------------------
@@ -12850,7 +12850,7 @@ if (!class_exists('TCPDF', false)) {
 					$dom[$key]['tag'] = true;
 					$dom[$key]['value'] = $tagname;
 					if ($element{0} == '/') {
-						// closing html tag
+						// *** closing html tag
 						$dom[$key]['opening'] = false;
 						$dom[$key]['parent'] = end($level);
 						array_pop($level);
@@ -12875,6 +12875,9 @@ if (!class_exists('TCPDF', false)) {
 							$key = $i;
 							// mark nested tables
 							$dom[($dom[$key]['parent'])]['content'] = str_replace('<table', '<table nested="true"', $dom[($dom[$key]['parent'])]['content']);
+							// remove thead sections from nested tables
+							$dom[($dom[$key]['parent'])]['content'] = str_replace('<thead>', '', $dom[($dom[$key]['parent'])]['content']);
+							$dom[($dom[$key]['parent'])]['content'] = str_replace('</thead>', '', $dom[($dom[$key]['parent'])]['content']);
 						}
 						// store header rows on a new table
 						if (($dom[$key]['value'] == 'tr') AND ($dom[($dom[$key]['parent'])]['thead'] === true)) {
@@ -12896,7 +12899,7 @@ if (!class_exists('TCPDF', false)) {
 							$dom[($dom[$key]['parent'])]['thead'] .= '</tablehead>';
 						}
 					} else {
-						// opening html tag
+						// *** opening html tag
 						$dom[$key]['opening'] = true;
 						$dom[$key]['parent'] = end($level);
 						if (substr($element, -1, 1) != '/') {
@@ -13013,7 +13016,7 @@ if (!class_exists('TCPDF', false)) {
 								$dom[$key]['fontstyle'] .= 'B';
 							}
 							if (isset($dom[$key]['style']['font-style']) AND (strtolower($dom[$key]['style']['font-style']{0}) == 'i')) {
-								$dom[$key]['fontstyle'] .= '"I';
+								$dom[$key]['fontstyle'] .= 'I';
 							}
 							// font color
 							if (isset($dom[$key]['style']['color']) AND (!$this->empty_string($dom[$key]['style']['color']))) {
@@ -13145,14 +13148,15 @@ if (!class_exists('TCPDF', false)) {
 						}
 						if (($dom[$key]['value'] == 'tr')) {
 							$dom[$key]['cols'] = 0;
-							// store the number of rows on table element
-							++$dom[($dom[$key]['parent'])]['rows'];
-							// store the TR elements IDs on table element
-							array_push($dom[($dom[$key]['parent'])]['trids'], $key);
 							if ($thead) {
 								$dom[$key]['thead'] = true;
+								// rows on thead block are printed as a separate table
 							} else {
 								$dom[$key]['thead'] = false;
+								// store the number of rows on table element
+								++$dom[($dom[$key]['parent'])]['rows'];
+								// store the TR elements IDs on table element
+								array_push($dom[($dom[$key]['parent'])]['trids'], $key);
 							}
 						}
 						if (($dom[$key]['value'] == 'th') OR ($dom[$key]['value'] == 'td')) {
@@ -13343,6 +13347,30 @@ if (!class_exists('TCPDF', false)) {
 						$this_method_vars['prev_lispacer'] = $prev_lispacer;
 						$this_method_vars['key'] = $key;
 						$this_method_vars['dom'] = $dom;
+					}
+				}
+				// print THEAD block
+				if (($dom[$key]['value'] == 'tr') AND isset($dom[$key]['thead']) AND $dom[$key]['thead']) {
+					while ( ($key < $maxel) AND (!(
+						($dom[$key]['tag'] AND $dom[$key]['opening'] AND ($dom[$key]['value'] == 'tr') AND (!isset($dom[$key]['thead']) OR !$dom[$key]['thead']))
+						OR ($dom[$key]['tag'] AND (!$dom[$key]['opening']) AND ($dom[$key]['value'] == 'table'))) )) {
+						// move $key index forward
+						++$key;
+					}
+					if (isset($dom[$dom[$key]['parent']]['thead']) AND !$this->empty_string($dom[$dom[$key]['parent']]['thead'])) {
+						// print table header (thead)
+						$this->writeHTML($this->thead, false, false, false, false, '');
+						if ($this->start_transaction_page == ($this->numpages - 1)) {
+							// restore previous object
+							$this->rollbackTransaction(true);
+							// restore previous values
+							foreach ($this_method_vars as $vkey => $vval) {
+								$$vkey = $vval;
+							}
+							$this->inthead = false;
+							// add a page
+							$this->AddPage();
+						}					
 					}
 				}
 				if ($dom[$key]['tag'] OR ($key == 0)) {
@@ -13846,12 +13874,11 @@ if (!class_exists('TCPDF', false)) {
 								$table_width = $wtmp;
 							}
 						}
-						// table content is handled in a special way
 						if (($dom[$key]['value'] == 'td') OR ($dom[$key]['value'] == 'th')) {
 							$trid = $dom[$key]['parent'];
 							$table_el = $dom[$trid]['parent'];
 							if (!isset($dom[$table_el]['cols'])) {
-								$dom[$table_el]['cols'] = $trid['cols'];
+								$dom[$table_el]['cols'] = $dom[$trid]['cols'];
 							}
 							$oldmargin = $this->cMargin;
 							if (isset($dom[($dom[$trid]['parent'])]['attribute']['cellpadding'])) {
@@ -13973,7 +14000,7 @@ if (!class_exists('TCPDF', false)) {
 							if (isset($dom[$parentid]['bgcolor']) AND ($dom[$parentid]['bgcolor'] !== false)) {
 								$dom[$trid]['cellpos'][($cellid - 1)]['bgcolor'] = $dom[$parentid]['bgcolor'];
 							}
-							$prevLastH = $this->lasth;
+							$prevLastH = $this->lasth;							
 							// ****** write the cell content ******							
 							$this->MultiCell($cellw, $cellh, $cell_content, false, $lalign, false, 2, '', '', true, 0, true);
 							$this->lasth = $prevLastH;
@@ -14258,12 +14285,16 @@ if (!class_exists('TCPDF', false)) {
 					$cp = 0;
 					$cs = 0;
 					$dom[$key]['rowspans'] = array();
-					if (!$this->empty_string($dom[$key]['thead'])) {
+					if (!isset($dom[$key]['attribute']['nested']) OR ($dom[$key]['attribute']['nested'] != 'true')) {
 						// set table header
-						$this->thead = $dom[$key]['thead'];
-						if (!isset($this->theadMargins) OR (empty($this->theadMargins))) {
-							$this->theadMargins = array();
-							$this->theadMargins['cmargin'] = $this->cMargin;
+						if (!$this->empty_string($dom[$key]['thead'])) {
+							// set table header
+							$this->thead = $dom[$key]['thead'];
+							if (!isset($this->theadMargins) OR (empty($this->theadMargins))) {
+								$this->theadMargins = array();
+								$this->theadMargins['cmargin'] = $this->cMargin;
+							}
+							$this->inthead = true;
 						}
 					}
 					if (isset($tag['attribute']['cellpadding'])) {
@@ -14280,6 +14311,11 @@ if (!class_exists('TCPDF', false)) {
 				case 'tr': {
 					// array of columns positions
 					$dom[$key]['cellpos'] = array();
+					if (isset($tag['thead']) AND $tag['thead']) {
+						$this->inthead = true;
+					} else {
+						$this->inthead = false;
+					}
 					break;
 				}
 				case 'hr': {
@@ -15014,9 +15050,11 @@ if (!class_exists('TCPDF', false)) {
 							$this->tMargin = $this->theadMargins['top'];
 							$this->pagedim[$this->page]['tm'] = $this->tMargin;
 						}
-						// reset table header
-						$this->thead = '';
-						$this->theadMargins = array();
+						if (!isset($table_el['attribute']['nested']) OR ($table_el['attribute']['nested'] != 'true')) {
+							// reset main table header
+							$this->thead = '';
+							$this->theadMargins = array();
+						}
 					}
 					break;
 				}

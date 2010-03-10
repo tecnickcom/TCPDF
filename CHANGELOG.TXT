@@ -1,3 +1,9 @@
+4.8.037 (2010-03-03)
+        - Bug item #2962068 was fixed.
+        - Bug item #2967017 "Problems with <thead> and pagebreaks" was fixed.
+        - Bug item #2967023 "table header lost with pagebreak" was fixed.
+        - Bug item #2967032 "Header lost with nested tables" was fixed.
+
 4.8.036 (2010-02-24)
 	- Automatic page break for HTML images was improved.
 	- Example 10 was updated.
