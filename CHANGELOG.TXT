@@ -1,3 +1,12 @@
+4.8.038 (2010-03-13)
+		- Various bugs related to page-break in HTML mode were fixed.
+        - Bug item #2968974 "Another <thead> pagebreak problem" was fixed.
+        - Bug item #2969276 "justification problem" was fixed.
+        - Bug item #2969289 "bug when using justified text and custom headers" was fixed.
+        - Images are now automatically resized to be contained on the page.
+        - Some HTML line alignments were fixed.
+        - Signature of AddPage() and SetMargins() methods were changed to include an option to set default page margins.
+
 4.8.037 (2010-03-03)
         - Bug item #2962068 was fixed.
         - Bug item #2967017 "Problems with <thead> and pagebreaks" was fixed.
