@@ -2,8 +2,8 @@
 //============================================================+
 // File name   : makefont.php
 // Begin       : 2004-12-31
-// Last Update : 2010-02-17
-// Version     : 1.2.005
+// Last Update : 2010-03-19
+// Version     : 1.2.006
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 // 	Copyright (C) 2008  Nicola Asuni - Tecnick.com S.r.l.
@@ -270,7 +270,7 @@ function ReadUFM($file, &$cidtogidmap) {
 				$cidtogidmap{(($cc * 2) + 1)} = chr($glyph & 0xFF);
 			}
 		}
-		if(($gn == '.notdef') AND (!isset($fm['MissingWidth']))) {
+		if((isset($gn) AND ($gn == '.notdef')) AND (!isset($fm['MissingWidth']))) {
 			$fm['MissingWidth'] = $w;
 		}
 		} elseif($code == 'FontName') {
