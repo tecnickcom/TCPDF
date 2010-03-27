@@ -3840,20 +3840,31 @@ if (!class_exists('TCPDF', false)) {
 						$txt2 = $this->_escape($txt2);
 						// ---- Fix for bug #2977340 "Incorrect Thai characters position arrangement" ----
 						// Symbols that could overlap on the font top (only works in LTR)
-						$overtop = array(3633, 3636, 3637, 3638, 3639, 3655, 3656, 3657, 3658, 3659, 3660, 3661, 3662); // Thai
+						$topchar = array(3611, 3613, 3615, 3650, 3651, 3652); // chars that extends on top
+						$btmchar = array(); // chars that extends on bottom
+						$topsym = array(3633, 3636, 3637, 3638, 3639, 3655, 3656, 3657, 3658, 3659, 3660, 3661, 3662); // symbols with top position
+						$btmsym = array(); // symbols with bottom position
 						$uniblock = array();
 						$numchars = count($unicode); // number of chars
 						$shift = 0;
-						$vh = (0.13 * $this->FontSize * $this->k); // vertical shift to avoid overlapping
+						$vh = (0.2 * $this->FontSize * $this->k); // vertical shift to avoid overlapping
 						// resolve overlapping conflicts by splitting the string in several parts
 						for ($i = 1; $i < $numchars; ++$i) {
 							$uniblock[] = $unicode[$i];
-							// check if symbols overlaps
-							if (in_array($unicode[$i], $overtop) AND in_array($unicode[($i - 1)], $overtop)) {
+							// check if symbols overlaps at top
+							if (in_array($unicode[$i], $topsym) AND (in_array($unicode[($i - 1)], $topsym) OR in_array($unicode[($i - 1)], $topchar))) {
 								// get postion on string
 								$overpos = strlen($this->_escape($this->arrUTF8ToUTF16BE($uniblock, false)));
 								$txt2 = substr($txt2, 0, ($overpos + $shift)).') Tj '.sprintf('%05.2F', $vh).' Ts ('.substr($txt2, ($overpos + $shift), 2).') Tj 0 Ts ('.substr($txt2, ($overpos + $shift + 2));
 								$shift += ($overpos + 26);
+								$uniblock = array();
+							}
+							// check if symbols overlaps at bottom
+							if (in_array($unicode[$i], $btmsym) AND (in_array($unicode[($i - 1)], $btmsym) OR in_array($unicode[($i - 1)], $btmchar))) {
+								// get postion on string
+								$overpos = strlen($this->_escape($this->arrUTF8ToUTF16BE($uniblock, false)));
+								$txt2 = substr($txt2, 0, ($overpos + $shift)).') Tj -'.sprintf('%05.2F', $vh).' Ts ('.substr($txt2, ($overpos + $shift), 2).') Tj 0 Ts ('.substr($txt2, ($overpos + $shift + 2));
+								$shift += ($overpos + 27);
 								$uniblock = array();
 							}
 						}
