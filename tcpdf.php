@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-03-20
+// Last Update : 2010-03-27
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.8.039
+// Version     : 4.9.000
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -43,7 +43,7 @@
 // 	* includes methods to publish some XHTML code, including forms;
 // 	* includes graphic (geometric) and transformation methods;
 // 	* includes Javascript and Forms support;
-// 	* includes a method to print various barcode formats: CODE 39, ANSI MH10.8M-1983, USD-3, 3 of 9, CODE 93, USS-93, Standard 2 of 5, Interleaved 2 of 5, CODE 128 A/B/C, 2 and 5 Digits UPC-Based Extention, EAN 8, EAN 13, UPC-A, UPC-E, MSI, POSTNET, PLANET, RMS4CC (Royal Mail 4-state Customer Code), CBC (Customer Bar Code), KIX (Klant index - Customer index), Intelligent Mail Barcode, Onecode, USPS-B-3200, CODABAR, CODE 11, PHARMACODE, PHARMACODE TWO-TRACKS;
+// 	* includes a method to print various barcode formats: CODE 39, ANSI MH10.8M-1983, USD-3, 3 of 9, CODE 93, USS-93, Standard 2 of 5, Interleaved 2 of 5, CODE 128 A/B/C, 2 and 5 Digits UPC-Based Extention, EAN 8, EAN 13, UPC-A, UPC-E, MSI, POSTNET, PLANET, RMS4CC (Royal Mail 4-state Customer Code), CBC (Customer Bar Code), KIX (Klant index - Customer index), Intelligent Mail Barcode, Onecode, USPS-B-3200, CODABAR, CODE 11, PHARMACODE, PHARMACODE TWO-TRACKS, QR-Code;
 // 	* includes methods to set Bookmarks and print a Table of Content;
 // 	* includes methods to move and delete pages;
 // 	* includes methods for automatic page header and footer management;
@@ -87,6 +87,7 @@
 // Kosmas Papachristos for some CSS improvements.
 // Marcel Partap for some fixes.
 // Won Kyu Park for several suggestions, fixes and patches.
+// Dominik Dzienia for QR-code support.
 // Anyone that has reported a bug or sent a suggestion.
 //============================================================+
 
@@ -128,7 +129,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.8.039
+ * @version 4.9.000
  */
 
 /**
@@ -152,14 +153,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 4.8.039 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.9.000 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.8.039
+	* @version 4.9.000
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -3405,12 +3406,12 @@ if (!class_exists('TCPDF', false)) {
 			if (isset($this->CurrentFont['desc']['Ascent']) AND ($this->CurrentFont['desc']['Ascent'] > 0)) {
 				$this->FontAscent = $this->CurrentFont['desc']['Ascent'] * $this->FontSize / 1000;
 			} else {
-				$this->FontAscent = 0.8 * $this->FontSize;
+				$this->FontAscent = 0.85 * $this->FontSize;
 			}
 			if (isset($this->CurrentFont['desc']['Descent']) AND ($this->CurrentFont['desc']['Descent'] > 0)) {
 				$this->FontDescent = - $this->CurrentFont['desc']['Descent'] * $this->FontSize / 1000;
 			} else {
-				$this->FontDescent = 0.2 * $this->FontSize;
+				$this->FontDescent = 0.15 * $this->FontSize;
 			}
 			if (($this->page > 0) AND (isset($this->CurrentFont['i']))) {
 				$this->_out(sprintf('BT /F%d %.2F Tf ET', $this->CurrentFont['i'], $this->FontSizePt));
@@ -3490,7 +3491,7 @@ if (!class_exists('TCPDF', false)) {
 		* @access public
 		* @since 4.0.018 (2008-08-06)
 		*/
-		public function Annotation($x='', $y='', $w, $h, $text, $opt=array('Subtype'=>'Text'), $spaces=0) {
+		public function Annotation($x, $y, $w, $h, $text, $opt=array('Subtype'=>'Text'), $spaces=0) {
 			if ($x === '') {
 				$x = $this->x;
 			}
@@ -3582,7 +3583,7 @@ if (!class_exists('TCPDF', false)) {
 				$this->offsets[$filedata['n']] = $this->bufferlen;
 				$this->_out($filedata['n'].' 0 obj');
 				$this->_out('<</Type /EmbeddedFile'.$filter.' /Length '.strlen($data).' >>');
-				$this->_putstream($data);
+				$this->_putstream($data, $filedata['n']);
 				$this->_out('endobj');
 			}
 		}
@@ -3703,7 +3704,6 @@ if (!class_exists('TCPDF', false)) {
 		* @see SetFont(), SetDrawColor(), SetFillColor(), SetTextColor(), SetLineWidth(), AddLink(), Ln(), MultiCell(), Write(), SetAutoPageBreak()
 		*/
 		public function Cell($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=0, $link='', $stretch=0, $ignore_min_height=false) {
-			//$min_cell_height = $this->FontAscent + $this->FontDescent;
 			$min_cell_height = $this->FontSize * $this->cell_height_ratio;
 			if ($h < $min_cell_height) {
 				$h = $min_cell_height;
@@ -3828,7 +3828,40 @@ if (!class_exists('TCPDF', false)) {
 				}
 			}
 			if ($txt != '') {
-				$txt2 = $this->_escapetext($txt);
+				$txt2 = $txt;
+				if ($this->isunicode) {
+					if (($this->CurrentFont['type'] == 'core') OR ($this->CurrentFont['type'] == 'TrueType') OR ($this->CurrentFont['type'] == 'Type1')) {
+						$txt2 = $this->UTF8ToLatin1($txt2);
+						$txt2 = $this->_escape($txt2);
+					} else {
+						$unicode = $this->UTF8StringToArray($txt); // array of UTF-8 unicode values
+						//Convert string to UTF-16BE and reverse RTL language
+						$txt2 = $this->utf8StrArrRev($unicode, '', false, $this->tmprtl);
+						$txt2 = $this->_escape($txt2);
+						// ---- Fix for bug #2977340 "Incorrect Thai characters position arrangement" ----
+						// Symbols that could overlap on the font top (only works in LTR)
+						$overtop = array(3633, 3636, 3637, 3638, 3639, 3655, 3656, 3657, 3658, 3659, 3660, 3661, 3662); // Thai
+						$uniblock = array();
+						$numchars = count($unicode); // number of chars
+						$shift = 0;
+						$vh = (0.13 * $this->FontSize * $this->k); // vertical shift to avoid overlapping
+						// resolve overlapping conflicts by splitting the string in several parts
+						for ($i = 1; $i < $numchars; ++$i) {
+							$uniblock[] = $unicode[$i];
+							// check if symbols overlaps
+							if (in_array($unicode[$i], $overtop) AND in_array($unicode[($i - 1)], $overtop)) {
+								// get postion on string
+								$overpos = strlen($this->_escape($this->arrUTF8ToUTF16BE($uniblock, false)));
+								$txt2 = substr($txt2, 0, ($overpos + $shift)).') Tj '.sprintf('%05.2F', $vh).' Ts ('.substr($txt2, ($overpos + $shift), 2).') Tj 0 Ts ('.substr($txt2, ($overpos + $shift + 2));
+								$shift += ($overpos + 26);
+								$uniblock = array();
+							}
+						}
+						// ---- END OF Fix for bug #2977340 "Incorrect Thai characters position arrangement" ----
+					}
+				} else {
+					$txt2 = $this->_escape($txt2);
+				}
 				// text length
 				$txwidth = $this->GetStringWidth($txt);
 				$width = $txwidth;
@@ -3914,9 +3947,8 @@ if (!class_exists('TCPDF', false)) {
 					$xdx = $this->x + $dx;
 				}
 				$xdk = $xdx * $k;
-				// calculate approximate position of the font base line
-				//$basefonty = $this->y + (($h + $this->FontAscent - $this->FontDescent)/2);
-				$basefonty = $this->y + ($h/2) + ($this->FontSize/3);
+				// get position of the font base line
+				$basefonty = $this->y + (($h + $this->FontAscent - $this->FontDescent) / 2);
 				// print text
 				$s .= sprintf('BT %.2F %.2F Td [(%s)] TJ ET', $xdk, (($this->h - $basefonty) * $k), $txt2);
 				if ($this->underline)  {
@@ -6227,7 +6259,7 @@ if (!class_exists('TCPDF', false)) {
 							 		}
 							 		if (isset($pl['opt']['mk']['ac'])) {
 							 			$annots .= ' /AC '.$pl['opt']['mk']['ca'].'';
-							 		}							 
+							 		}
 							 		if (isset($pl['opt']['mk']['i'])) {
 							 			$info = $this->getImageBuffer($pl['opt']['mk']['i']);
 							 			if ($info !== false) {
@@ -7535,11 +7567,16 @@ if (!class_exists('TCPDF', false)) {
 		/**
 		* Output a stream.
 		* @param string $s string to output.
+		* @param int $n object reference for encryption mode
 		* @access protected
 		*/
-		protected function _putstream($s) {
+		protected function _putstream($s, $n=0) {
 			if ($this->encrypted) {
-				$s = $this->_RC4($this->_objectkey($this->n), $s);
+				if ($n <= 0) {
+					// default to current object
+					$n = $this->n;
+				}
+				$s = $this->_RC4($this->_objectkey($n), $s);
 			}
 			$this->_out('stream');
 			$this->_out($s);
@@ -7733,7 +7770,7 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
-		 * Converts UTF-8 characters array to Latin1<br>
+		 * Converts UTF-8 characters array to array of Latin1 characters<br>
 		 * @param array $unicode array containing UTF-8 unicode values
 		 * @return array
 		 * @author Nicola Asuni
@@ -9445,17 +9482,34 @@ if (!class_exists('TCPDF', false)) {
 		// END GRAPHIC FUNCTIONS SECTION -----------------------
 
 		// BIDIRECTIONAL TEXT SECTION --------------------------
+
 		/**
 		 * Reverse the RLT substrings using the Bidirectional Algorithm (http://unicode.org/reports/tr9/).
 		 * @param string $str string to manipulate.
-		 * @param bool $forcertl if 'R' forces RTL, if 'L' forces LTR
+		 * @param bool $setbom  if true set the Byte Order Mark (BOM = 0xFEFF)
+		 * @param bool $forcertl if true forces RTL text direction
 		 * @return string
 		 * @access protected
 		 * @author Nicola Asuni
 		 * @since 2.1.000 (2008-01-08)
 		*/
 		protected function utf8StrRev($str, $setbom=false, $forcertl=false) {
-			return $this->arrUTF8ToUTF16BE($this->utf8Bidi($this->UTF8StringToArray($str), $str, $forcertl), $setbom);
+			return $this->utf8StrArrRev($this->UTF8StringToArray($str), $str, $setbom, $forcertl);
+		}
+
+		/**
+		 * Reverse the RLT substrings array using the Bidirectional Algorithm (http://unicode.org/reports/tr9/).
+		 * @param array $arr array of unicode values.
+		 * @param string $str string to manipulate (or empty value).
+		 * @param bool $setbom  if true set the Byte Order Mark (BOM = 0xFEFF)
+		 * @param bool $forcertl if true forces RTL text direction
+		 * @return string
+		 * @access protected
+		 * @author Nicola Asuni
+		 * @since 4.9.000 (2010-03-27)
+		*/
+		protected function utf8StrArrRev($arr, $str='', $setbom=false, $forcertl=false) {
+			return $this->arrUTF8ToUTF16BE($this->utf8Bidi($arr, $str, $forcertl), $setbom);
 		}
 
 		/**
@@ -9463,7 +9517,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @param array $ta array of characters composing the string.
 		 * @param string $str string to process
 		 * @param bool $forcertl if 'R' forces RTL, if 'L' forces LTR
-		 * @return string
+		 * @return array of unicode chars
 		 * @author Nicola Asuni
 		 * @access protected
 		 * @since 2.4.000 (2008-03-06)
@@ -9962,7 +10016,7 @@ if (!class_exists('TCPDF', false)) {
 					} // end if AL (Arabic Letter)
 				} // end for each char
 				/*
-				 * Combining characters that can occur with Shadda (0651 HEX, 1617 DEC) are placed in UE586-UE594.
+				 * Combining characters that can occur with Arabic Shadda (0651 HEX, 1617 DEC) are replaced.
 				 * Putting the combining mark and shadda in the same glyph allows us to avoid the two marks overlapping each other in an illegible manner.
 				 */
 				$cw = &$this->CurrentFont['cw'];
@@ -11657,6 +11711,205 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
+		* Paints color transition registration bars
+		* @param float $x abscissa of the top left corner of the rectangle.
+		* @param float $y ordinate of the top left corner of the rectangle.
+		* @param float $w width of the rectangle.
+		* @param float $h height of the rectangle.
+		* @param boolean $transition if true prints tcolor transitions to white.
+		* @param boolean $vertical if true prints bar vertically.
+		* @param string $colors colors to print, one letter per color separated by comma (for example 'A,W,R,G,B,C,M,Y,K'): A=black, W=white, R=red, G=green, B=blue, C=cyan, M=magenta, Y=yellow, K=black.
+		* @author Nicola Asuni
+		* @since 4.9.000 (2010-03-26)
+		* @access public
+		*/
+		public function colorRegistrationBar($x, $y, $w, $h, $transition=true, $vertical=false, $colors='A,R,G,B,C,M,Y,K') {
+			$bars = explode(',', $colors);
+			$numbars = count($bars); // number of bars to print
+			// set bar measures
+			if ($vertical) {
+				$coords = array(0, 0, 0, 1);
+				$wb = $w / $numbars; // bar width
+				$hb = $h; // bar height
+				$xd = $wb; // delta x
+				$yd = 0; // delta y
+			} else {
+				$coords = array(1, 0, 0, 0);
+				$wb = $w; // bar width
+				$hb = $h / $numbars; // bar height
+				$xd = 0; // delta x
+				$yd = $hb; // delta y
+			}
+			$xb = $x;
+			$yb = $y;
+			foreach ($bars as $col) {
+				switch ($col) {
+					// set transition colors
+					case 'A': { // BLACK
+						$col_a = array(255);
+						$col_b = array(0);
+						break;
+					}
+					case 'W': { // WHITE
+						$col_a = array(0);
+						$col_b = array(255);
+						break;
+					}
+					case 'R': { // R
+						$col_a = array(255,255,255);
+						$col_b = array(255,0,0);
+						break;
+					}
+					case 'G': { // G
+						$col_a = array(255,255,255);
+						$col_b = array(0,255,0);
+						break;
+					}
+					case 'B': { // B
+						$col_a = array(255,255,255);
+						$col_b = array(0,0,255);
+						break;
+					}
+					case 'C': { // C
+						$col_a = array(0,0,0,0);
+						$col_b = array(100,0,0,0);
+						break;
+					}
+					case 'M': { // M
+						$col_a = array(0,0,0,0);
+						$col_b = array(0,100,0,0);
+						break;
+					}
+					case 'Y': { // Y
+						$col_a = array(0,0,0,0);
+						$col_b = array(0,0,100,0);
+						break;
+					}
+					case 'K': { // K
+						$col_a = array(0,0,0,0);
+						$col_b = array(0,0,0,100);
+						break;
+					}
+					default: { // GRAY
+						$col_a = array(255);
+						$col_b = array(0);
+						break;
+					}
+				}
+				if ($transition) {
+					// color gradient
+					$this->LinearGradient($xb, $yb, $wb, $hb, $col_a, $col_b, $coords);
+				} else {
+					// color rectangle
+					$this->SetFillColorArray($col_b);
+					$this->Rect($xb, $yb, $wb, $hb, 'F', array());
+				}
+				$xb += $xd;
+				$yb += $yd;
+			}
+		}
+
+		/**
+		* Paints crop mark
+		* @param float $x abscissa of the crop mark center.
+		* @param float $y ordinate of the crop mark center.
+		* @param float $w width of the crop mark.
+		* @param float $h height of the crop mark.
+		* @param string $type type of crop mark, one sybol per type separated by comma: A = top left, B = top right, C = bottom left, D = bottom right.
+		* @param array $color crop mark color (default black).
+		* @author Nicola Asuni
+		* @since 4.9.000 (2010-03-26)
+		* @access public
+		*/
+		public function cropMark($x, $y, $w, $h, $type='A,B,C,D', $color=array(0,0,0)) {
+			$this->SetLineStyle(array('width' => (0.5 / $this->k), 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => $color));
+			$crops = explode(',', $type);
+			$numcrops = count($crops); // number of crop marks to print
+			$dw = $w / 4; // horizontal space to leave before the intersection point
+			$dh = $h / 4; // vertical space to leave before the intersection point
+			foreach ($crops as $crop) {
+				switch ($crop) {
+					case 'A': {
+						$x1 = $x;
+						$y1 = $y - $h;
+						$x2 = $x;
+						$y2 = $y - $dh;
+						$x3 = $x - $w;
+						$y3 = $y;
+						$x4 = $x - $dw;
+						$y4 = $y;
+						break;
+					}
+					case 'B': {
+						$x1 = $x;
+						$y1 = $y - $h;
+						$x2 = $x;
+						$y2 = $y - $dh;
+						$x3 = $x + $dw;
+						$y3 = $y;
+						$x4 = $x + $w;
+						$y4 = $y;
+						break;
+					}
+					case 'C': {
+						$x1 = $x - $w;
+						$y1 = $y;
+						$x2 = $x - $dw;
+						$y2 = $y;
+						$x3 = $x;
+						$y3 = $y + $dh;
+						$x4 = $x;
+						$y4 = $y + $h;
+						break;
+					}
+					case 'D': {
+						$x1 = $x + $dw;
+						$y1 = $y;
+						$x2 = $x + $w;
+						$y2 = $y;
+						$x3 = $x;
+						$y3 = $y + $dh;
+						$x4 = $x;
+						$y4 = $y + $h;
+						break;
+					}
+				}
+				$this->Line($x1, $y1, $x2, $y2);
+				$this->Line($x3, $y3, $x4, $y4);
+			}
+		}
+
+		/**
+		* Paints a registration mark
+		* @param float $x abscissa of the registration mark center.
+		* @param float $y ordinate of the registration mark center.
+		* @param float $r radius of the crop mark.
+		* @param boolean $double if true print two concentric crop marks.
+		* @param array $cola crop mark color (default black).
+		* @param array $colb second crop mark color.
+		* @author Nicola Asuni
+		* @since 4.9.000 (2010-03-26)
+		* @access public
+		*/
+		public function registrationMark($x, $y, $r, $double=false, $cola=array(0,0,0), $colb=array(255,255,255)) {
+			$line_style = array('width' => (0.5 / $this->k), 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => $cola);
+			$this->SetFillColorArray($cola);
+			$this->PieSector($x, $y, $r, 90, 180, 'F');
+			$this->PieSector($x, $y, $r, 270, 360, 'F');
+			$this->Circle($x, $y, $r, 0, 360, 'C', $line_style, array(), 8);
+			if ($double) {
+				$r2 = $r * 0.5;
+				$this->SetFillColorArray($colb);
+				$this->PieSector($x, $y, $r2, 90, 180, 'F');
+				$this->PieSector($x, $y, $r2, 270, 360, 'F');
+				$this->SetFillColorArray($cola);
+				$this->PieSector($x, $y, $r2, 0, 90, 'F');
+				$this->PieSector($x, $y, $r2, 180, 270, 'F');
+				$this->Circle($x, $y, $r2, 0, 360, 'C', $line_style, array(), 8);
+			}
+		}
+
+		/**
 		* Paints a linear colour gradient.
 		* @param float $x abscissa of the top left corner of the rectangle.
 		* @param float $y ordinate of the top left corner of the rectangle.
@@ -11805,8 +12058,8 @@ if (!class_exists('TCPDF', false)) {
 		/**
 		* Output gradient.
 		* @param int $type type of gradient.
-		* @param array $col1 first color (RGB components).
-		* @param array $col2 second color (RGB components).
+		* @param array $col1 first color array (GRAY, RGB or CMYK)
+		* @param array $col2 second color array (GRAY, RGB or CMYK) - must be the same color type as $col1
 		* @param array $coords array of coordinates.
 		* @author Andreas Würmser, Nicola Asuni
 		* @since 3.1.000 (2008-06-09)
@@ -11815,14 +12068,25 @@ if (!class_exists('TCPDF', false)) {
 		protected function Gradient($type, $col1, $col2, $coords) {
 			$n = count($this->gradients) + 1;
 			$this->gradients[$n]['type'] = $type;
-			if (!isset($col1[1])) {
-				$col1[1]=$col1[2]=$col1[0];
+			switch(count($col1)) {
+				case 4: { // CMYK
+					$this->gradients[$n]['col1'] = sprintf('%.3F %.3F %.3F %.3F', $col1[0]/100, $col1[1]/100, $col1[2]/100, $col1[3]/100);
+					$this->gradients[$n]['col2'] = sprintf('%.3F %.3F %.3F %.3F', $col2[0]/100, $col2[1]/100, $col2[2]/100, $col2[3]/100);
+					$this->gradients[$n]['colspace'] = 'DeviceCMYK';
+					break;
+				}
+				case 3: { // RGB
+					$this->gradients[$n]['col1'] = sprintf('%.3F %.3F %.3F', $col1[0]/255, $col1[1]/255, $col1[2]/255);
+					$this->gradients[$n]['col2'] = sprintf('%.3F %.3F %.3F', $col2[0]/255, $col2[1]/255, $col2[2]/255);
+					$this->gradients[$n]['colspace'] = 'DeviceRGB';
+					break;
+				}
+				case 1: { // Gray scale
+					$this->gradients[$n]['col1'] = sprintf('%.3F', $col1[0]/255);
+					$this->gradients[$n]['col2'] = sprintf('%.3F', $col2[0]/255);
+					$this->gradients[$n]['colspace'] = 'DeviceGray';
+				}
 			}
-			$this->gradients[$n]['col1'] = sprintf('%.3F %.3F %.3F', ($col1[0]/255), ($col1[1]/255), ($col1[2]/255));
-			if (!isset($col2[1])) {
-				$col2[1] = $col2[2] = $col2[0];
-			}
-			$this->gradients[$n]['col2'] = sprintf('%.3F %.3F %.3F', ($col2[0]/255), ($col2[1]/255), ($col2[2]/255));
 			$this->gradients[$n]['coords'] = $coords;
 			//paint the gradient
 			$this->_out('/Sh'.$n.' sh');
@@ -11853,7 +12117,11 @@ if (!class_exists('TCPDF', false)) {
 				$this->_newobj();
 				$this->_out('<<');
 				$this->_out('/ShadingType '.$grad['type']);
-				$this->_out('/ColorSpace /DeviceRGB');
+				if (isset($grad['colspace'])) {
+					$this->_out('/ColorSpace /'.$grad['colspace']);
+				} else {
+					$this->_out('/ColorSpace /DeviceRGB');
+				}
 				if ($grad['type'] == 2) {
 					$this->_out(sprintf('/Coords [%.3F %.3F %.3F %.3F]', $grad['coords'][0], $grad['coords'][1], $grad['coords'][2], $grad['coords'][3]));
 					$this->_out('/Function '.$f1.' 0 R');
@@ -12163,8 +12431,7 @@ if (!class_exists('TCPDF', false)) {
 					case 'w':
 					case 'M':
 					case 'd':
-					case 'n':
-					case 'v': {
+					case 'n': {
 						$this->_out($line);
 						break;
 					}
@@ -12281,7 +12548,7 @@ if (!class_exists('TCPDF', false)) {
 		/**
 	 	 * Print a Linear Barcode.
 	 	 * @param string $code code to print
-	 	 * @param string $type type of barcode.
+	 	 * @param string $type type of barcode (see barcodes.php for supported formats).
 		 * @param int $x x position in user units
 		 * @param int $y y position in user units
 		 * @param int $w width in user units
@@ -12539,7 +12806,7 @@ if (!class_exists('TCPDF', false)) {
 		/**
 	 	 * Print 2D Barcode.
 	 	 * @param string $code code to print
-	 	 * @param string $type type of barcode.
+	 	 * @param string $type type of barcode (see 2dbarcodes.php for supported formats).
 		 * @param int $x x position in user units
 		 * @param int $y y position in user units
 		 * @param int $w width in user units
@@ -12888,6 +13155,7 @@ if (!class_exists('TCPDF', false)) {
 			$dom[$key]['fontname'] = $this->FontFamily;
 			$dom[$key]['fontstyle'] = $this->FontStyle;
 			$dom[$key]['fontsize'] = $this->FontSizePt;
+			$dom[$key]['line-height'] = $this->cell_height_ratio;
 			$dom[$key]['bgcolor'] = false;
 			$dom[$key]['fgcolor'] = $this->fgcolor;
 			$dom[$key]['align'] = '';
@@ -12927,6 +13195,7 @@ if (!class_exists('TCPDF', false)) {
 						$dom[$key]['fontname'] = $dom[($dom[($dom[$key]['parent'])]['parent'])]['fontname'];
 						$dom[$key]['fontstyle'] = $dom[($dom[($dom[$key]['parent'])]['parent'])]['fontstyle'];
 						$dom[$key]['fontsize'] = $dom[($dom[($dom[$key]['parent'])]['parent'])]['fontsize'];
+						$dom[$key]['line-height'] = $dom[($dom[($dom[$key]['parent'])]['parent'])]['line-height'];
 						$dom[$key]['bgcolor'] = $dom[($dom[($dom[$key]['parent'])]['parent'])]['bgcolor'];
 						$dom[$key]['fgcolor'] = $dom[($dom[($dom[$key]['parent'])]['parent'])]['fgcolor'];
 						$dom[$key]['align'] = $dom[($dom[($dom[$key]['parent'])]['parent'])]['align'];
@@ -12986,6 +13255,7 @@ if (!class_exists('TCPDF', false)) {
 							$dom[$key]['fontname'] = $dom[$parentkey]['fontname'];
 							$dom[$key]['fontstyle'] = $dom[$parentkey]['fontstyle'];
 							$dom[$key]['fontsize'] = $dom[$parentkey]['fontsize'];
+							$dom[$key]['line-height'] = $dom[$parentkey]['line-height'];
 							$dom[$key]['bgcolor'] = $dom[$parentkey]['bgcolor'];
 							$dom[$key]['fgcolor'] = $dom[$parentkey]['fgcolor'];
 							$dom[$key]['align'] = $dom[$parentkey]['align'];
@@ -13078,6 +13348,23 @@ if (!class_exists('TCPDF', false)) {
 									}
 									default: {
 										$dom[$key]['fontsize'] = $this->getHTMLUnitToUnits($fsize, $dom[$parentkey]['fontsize'], 'pt', true);
+									}
+								}
+							}
+							// line-height
+							if (isset($dom[$key]['style']['line-height'])) {
+								$lineheight = trim($dom[$key]['style']['line-height']);
+								switch ($lineheight) {
+									// A normal line height. This is default
+									case 'normal': {
+										$dom[$key]['line-height'] = $dom[0]['line-height'];
+										break;
+									}
+									default: {
+										if (is_numeric($lineheight)) {
+											$lineheight = $lineheight * 100;
+										}
+										$dom[$key]['line-height'] = $this->getHTMLUnitToUnits($lineheight, 1, '%', true);
 									}
 								}
 							}
@@ -13357,6 +13644,7 @@ if (!class_exists('TCPDF', false)) {
 				$this->listindent = $this->GetStringWidth('0000');
 			}
 			// save previous states
+			$prev_cell_height_ratio = $this->cell_height_ratio;
 			$prev_listnum = $this->listnum;
 			$prev_listordered = $this->listordered;
 			$prev_listcount = $this->listcount;
@@ -13376,11 +13664,13 @@ if (!class_exists('TCPDF', false)) {
 				if ($dom[$key]['tag'] AND isset($dom[$key]['attribute']['pagebreak'])) {
 					// check for pagebreak
 					if (($dom[$key]['attribute']['pagebreak'] == 'true') OR ($dom[$key]['attribute']['pagebreak'] == 'left') OR ($dom[$key]['attribute']['pagebreak'] == 'right')) {
-						$this->AddPage();
+						// add a page (or trig AcceptPageBreak() for multicolumn mode)
+						$this->checkPageBreak($this->PageBreakTrigger + 1);
 					}
 					if ((($dom[$key]['attribute']['pagebreak'] == 'left') AND (((!$this->rtl) AND (($this->page % 2) == 0)) OR (($this->rtl) AND (($this->page % 2) != 0))))
 						OR (($dom[$key]['attribute']['pagebreak'] == 'right') AND (((!$this->rtl) AND (($this->page % 2) != 0)) OR (($this->rtl) AND (($this->page % 2) == 0))))) {
-						$this->AddPage();
+						// add a page (or trig AcceptPageBreak() for multicolumn mode)
+						$this->checkPageBreak($this->PageBreakTrigger + 1);
 					}
 				}
 				if ($dom[$key]['tag'] AND $dom[$key]['opening'] AND isset($dom[$key]['attribute']['nobr']) AND ($dom[$key]['attribute']['nobr'] == 'true')) {
@@ -13416,6 +13706,7 @@ if (!class_exists('TCPDF', false)) {
 						$this_method_vars['lalign'] = $lalign;
 						$this_method_vars['plalign'] = $plalign;
 						$this_method_vars['w'] = $w;
+						$this_method_vars['prev_cell_height_ratio'] = $prev_cell_height_ratio;
 						$this_method_vars['prev_listnum'] = $prev_listnum;
 						$this_method_vars['prev_listordered'] = $prev_listordered;
 						$this_method_vars['prev_listcount'] = $prev_listcount;
@@ -13438,8 +13729,8 @@ if (!class_exists('TCPDF', false)) {
 							foreach ($this_method_vars as $vkey => $vval) {
 								$$vkey = $vval;
 							}
-							// add a page
-							$this->AddPage();
+							// add a page (or trig AcceptPageBreak() for multicolumn mode)
+							$this->checkPageBreak($this->PageBreakTrigger + 1);
 							$this->start_transaction_page = $this->page;
 						}
 					}
@@ -13451,6 +13742,11 @@ if (!class_exists('TCPDF', false)) {
 					}
 				}
 				if ($dom[$key]['tag'] OR ($key == 0)) {
+					if (isset($dom[$key]['line-height'])) {
+						// set line height
+						$this->cell_height_ratio = $dom[$key]['line-height'];
+						$this->lasth = $this->FontSize * $this->cell_height_ratio;
+					}
 					if ((($dom[$key]['value'] == 'table') OR ($dom[$key]['value'] == 'tr')) AND (isset($dom[$key]['align']))) {
 						$dom[$key]['align'] = ($this->rtl) ? 'R' : 'L';
 					}
@@ -14273,8 +14569,8 @@ if (!class_exists('TCPDF', false)) {
 						foreach ($this_method_vars as $vkey => $vval) {
 							$$vkey = $vval;
 						}
-						// add a page
-						$this->AddPage();
+						// add a page (or trig AcceptPageBreak() for multicolumn mode)
+						$this->checkPageBreak($this->PageBreakTrigger + 1);
 						$undo = true; // avoid infinite loop
 					} else {
 						$undo = false;
@@ -14378,6 +14674,7 @@ if (!class_exists('TCPDF', false)) {
 				$this->rMargin = $this->pagedim[$this->page]['orm'];
 			}
 			// restore previous list state
+			$this->cell_height_ratio = $prev_cell_height_ratio;
 			$this->listnum = $prev_listnum;
 			$this->listordered = $prev_listordered;
 			$this->listcount = $prev_listcount;
@@ -14928,11 +15225,13 @@ if (!class_exists('TCPDF', false)) {
 				$pba = $dom[$key]['attribute']['pagebreakafter'];
 				// check for pagebreak
 				if (($pba == 'true') OR ($pba == 'left') OR ($pba == 'right')) {
-					$this->AddPage();
+					// add a page (or trig AcceptPageBreak() for multicolumn mode)
+					$this->checkPageBreak($this->PageBreakTrigger + 1);
 				}
 				if ((($pba == 'left') AND (((!$this->rtl) AND (($this->page % 2) == 0)) OR (($this->rtl) AND (($this->page % 2) != 0))))
 					OR (($pba == 'right') AND (((!$this->rtl) AND (($this->page % 2) != 0)) OR (($this->rtl) AND (($this->page % 2) == 0))))) {
-					$this->AddPage();
+					// add a page (or trig AcceptPageBreak() for multicolumn mode)
+					$this->checkPageBreak($this->PageBreakTrigger + 1);
 				}
 			}
 		}
@@ -15334,7 +15633,6 @@ if (!class_exists('TCPDF', false)) {
 				case '!' :
 				case '#' :
 				case 'disc' :
-				case 'disc' :
 				case 'circle' :
 				case 'square' :
 				case '1':
@@ -15445,7 +15743,7 @@ if (!class_exists('TCPDF', false)) {
         }
 
         /**
-		* convert html string containing value and unit of measure to user's units or points.
+		* Convert HTML string containing value and unit of measure to user's units or points.
 		* @param string $htmlval string containing values and unit
 		* @param string $refsize reference value in points
 		* @param string $defaultunit default unit (can be one of the following: %, em, ex, px, in, mm, pc, pt).

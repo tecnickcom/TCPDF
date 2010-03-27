@@ -1,3 +1,16 @@
+4.9.000 (2010-03-27)
+		- QR Code (2D barcode) support was added (see example n. 50).
+		- The following methods were added to print crop and registration marks (see example n. 56): colorRegistrationBar(), cropMark(), registrationMark().
+		- Limited support for CSS line-height property was added.
+		- Gradient method now supports Gray, RGB and CMYK space color.
+		- Example n. 51 was updated.
+		- Vertical alignment of font inside cell was fixed.
+		- Support for multiple Thai diacritics was added.
+		- Bug item #2974929 "Duplicate case values" was fixed.
+		- Bug item #2976729 "File attachment not working with security" was fixed.
+
+--------------------------------------------------------------------------------
+
 4.8.039 (2010-03-20)
 		- Problems related to custom locale settings were fixed.
 		- Problems related to HTML on Header and Footer were fixed.

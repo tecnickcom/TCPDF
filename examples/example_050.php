@@ -2,13 +2,13 @@
 //============================================================+
 // File name   : example_050.php
 // Begin       : 2009-04-09
-// Last Update : 2009-12-15
-// 
+// Last Update : 2010-03-23
+//
 // Description : Example 050 for TCPDF class
 //               2D Barcodes
-// 
+//
 // Author: Nicola Asuni
-// 
+//
 // (c) Copyright:
 //               Nicola Asuni
 //               Tecnick.com s.r.l.
@@ -34,7 +34,7 @@ require_once('../config/lang/eng.php');
 require_once('../tcpdf.php');
 
 // create new PDF document
-$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false); 
+$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
 // set document information
 $pdf->SetCreator(PDF_CREATOR);
@@ -62,10 +62,10 @@ $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
 //set image scale factor
-$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO); 
+$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 //set some language-dependent strings
-$pdf->setLanguageArray($l); 
+$pdf->setLanguageArray($l);
 
 // ---------------------------------------------------------
 
@@ -87,12 +87,48 @@ $style = array(
 // write TEST 2D Barcode
 $pdf->write2DBarcode('X', 'TEST', '', '', 30, 20, $style, 'N');
 
+// ---
+
+$pdf->Ln();
+$pdf->Cell(0, 0, ' ', 0, 1);
+
+$style = array(
+	'border' => false,
+	'padding' => 1,
+	'fgcolor' => array(0,0,0),
+	'bgcolor' => false, //array(255,255,255)
+);
+
+// QRCODE,L : QR-CODE Low error correction
+$pdf->Cell(0, 0, 'QRCODE L', 0, 1);
+$pdf->write2DBarcode('www.tcpdf.org', 'QRCODE,L', '', '', 30, 30, $style, 'N');
+
+$pdf->Ln();
+
+// QRCODE,M : QR-CODE Medium error correction
+$pdf->Cell(0, 0, 'QRCODE M', 0, 1);
+$pdf->write2DBarcode('www.tcpdf.org', 'QRCODE,M', '', '', 30, 30, $style, 'N');
+
+$pdf->Ln();
+
+// QRCODE,Q : QR-CODE Better error correction
+$pdf->Cell(0, 0, 'QRCODE Q', 0, 1);
+$pdf->write2DBarcode('www.tcpdf.org', 'QRCODE,Q', '', '', 30, 30, $style, 'N');
+
+$pdf->Ln();
+
+// QRCODE,H : QR-CODE Best error correction
+$pdf->Cell(0, 0, 'QRCODE H', 0, 1);
+$pdf->write2DBarcode('www.tcpdf.org', 'QRCODE,H', '', '', 30, 30, $style, 'N');
+
+$pdf->Ln();
+
 // ---------------------------------------------------------
 
 //Close and output PDF document
 $pdf->Output('example_050.pdf', 'I');
 
 //============================================================+
-// END OF FILE                                                 
+// END OF FILE
 //============================================================+
 ?>

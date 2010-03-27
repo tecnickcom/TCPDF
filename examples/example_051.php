@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_051.php
 // Begin       : 2009-04-16
-// Last Update : 2009-09-30
+// Last Update : 2010-03-22
 // 
 // Description : Example 051 for TCPDF class
 //               Full page background
@@ -38,12 +38,15 @@ require_once('../tcpdf.php');
 class MYPDF extends TCPDF {
 	//Page header
 	public function Header() {
-		// Full background image
+		// full background image
+		// store current auto-page-break status
+		$bMargin = $this->getBreakMargin();
 		$auto_page_break = $this->AutoPageBreak;
 		$this->SetAutoPageBreak(false, 0);
 		$img_file = K_PATH_IMAGES.'image_demo.jpg';
-		$this->Image($img_file, $x=0, $y=0, $w=210, $h=297, $type='', $link='', $align='', $resize=false, $dpi=300, $palign='', $ismask=false, $imgmask=false, $border=0);
-		$this->SetAutoPageBreak($auto_page_break);
+		$this->Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
+		// restore auto-page-break status
+		$this->SetAutoPageBreak($auto_page_break, $bMargin);
 	}
 }
 
