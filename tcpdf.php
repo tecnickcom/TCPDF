@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-03-27
+// Last Update : 2010-03-28
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.9.000
+// Version     : 4.9.001
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -129,7 +129,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.9.000
+ * @version 4.9.001
  */
 
 /**
@@ -153,14 +153,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 4.9.000 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.9.001 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.9.000
+	* @version 4.9.001
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1481,11 +1481,46 @@ if (!class_exists('TCPDF', false)) {
 		protected $start_transaction_page = 0;
 
 		/**
+		 * Store Y position when startTransaction() is called.
+		 * @access protected
+		 * @since 4.9.001 (2010-03-28)
+		 */
+		protected $start_transaction_y = 0;
+
+		/**
 		 * True when we are printing the thead section on a new page
 		 * @access protected
 		 * @since 4.8.027 (2010-01-25)
 		 */
 		protected $inthead = false;
+
+		/**
+		 * Array of column measures (width, space, starting Y position)
+		 * @access protected
+		 * @since 4.9.001 (2010-03-28)
+		 */
+		protected $columns = array();
+
+		/**
+		 * Number of colums
+		 * @access protected
+		 * @since 4.9.001 (2010-03-28)
+		 */
+		protected $num_columns = 0;
+
+		/**
+		 * Current column number
+		 * @access protected
+		 * @since 4.9.001 (2010-03-28)
+		 */
+		protected $current_column = 0;
+
+		/**
+		 * Starting page for columns
+		 * @access protected
+		 * @since 4.9.001 (2010-03-28)
+		 */
+		protected $column_start_page = 0;
 
 		//------------------------------------------------------------
 		// METHODS
@@ -3643,6 +3678,20 @@ if (!class_exists('TCPDF', false)) {
 		* @see SetAutoPageBreak()
 		*/
 		public function AcceptPageBreak() {
+			if ($this->num_columns > 0) {
+				// multi column mode
+				if($this->current_column < ($this->num_columns - 1)) {
+					// go to next column
+					$this->selectColumn($this->current_column + 1);
+				} else {
+					// add a new page
+					$this->AddPage();
+					// set first column
+					$this->selectColumn(0);
+				}
+				// avoid page breaking from checkPageBreak()
+				return false;
+			}
 			return $this->AutoPageBreak;
 		}
 
@@ -3832,47 +3881,39 @@ if (!class_exists('TCPDF', false)) {
 				if ($this->isunicode) {
 					if (($this->CurrentFont['type'] == 'core') OR ($this->CurrentFont['type'] == 'TrueType') OR ($this->CurrentFont['type'] == 'Type1')) {
 						$txt2 = $this->UTF8ToLatin1($txt2);
-						$txt2 = $this->_escape($txt2);
 					} else {
 						$unicode = $this->UTF8StringToArray($txt); // array of UTF-8 unicode values
-						//Convert string to UTF-16BE and reverse RTL language
-						$txt2 = $this->utf8StrArrRev($unicode, '', false, $this->tmprtl);
-						$txt2 = $this->_escape($txt2);
+						$unicode = $this->utf8Bidi($unicode, '', $this->tmprtl);
 						// ---- Fix for bug #2977340 "Incorrect Thai characters position arrangement" ----
+						// NOTE: this doesn't work with HTML justification
 						// Symbols that could overlap on the font top (only works in LTR)
 						$topchar = array(3611, 3613, 3615, 3650, 3651, 3652); // chars that extends on top
-						$btmchar = array(); // chars that extends on bottom
 						$topsym = array(3633, 3636, 3637, 3638, 3639, 3655, 3656, 3657, 3658, 3659, 3660, 3661, 3662); // symbols with top position
-						$btmsym = array(); // symbols with bottom position
-						$uniblock = array();
 						$numchars = count($unicode); // number of chars
-						$shift = 0;
-						$vh = (0.2 * $this->FontSize * $this->k); // vertical shift to avoid overlapping
+						$unik = 0;
+						$uniblock = array();
+						$uniblock[$unik] = array();
+						$uniblock[$unik][] = $unicode[0];
 						// resolve overlapping conflicts by splitting the string in several parts
 						for ($i = 1; $i < $numchars; ++$i) {
-							$uniblock[] = $unicode[$i];
 							// check if symbols overlaps at top
 							if (in_array($unicode[$i], $topsym) AND (in_array($unicode[($i - 1)], $topsym) OR in_array($unicode[($i - 1)], $topchar))) {
-								// get postion on string
-								$overpos = strlen($this->_escape($this->arrUTF8ToUTF16BE($uniblock, false)));
-								$txt2 = substr($txt2, 0, ($overpos + $shift)).') Tj '.sprintf('%05.2F', $vh).' Ts ('.substr($txt2, ($overpos + $shift), 2).') Tj 0 Ts ('.substr($txt2, ($overpos + $shift + 2));
-								$shift += ($overpos + 26);
-								$uniblock = array();
-							}
-							// check if symbols overlaps at bottom
-							if (in_array($unicode[$i], $btmsym) AND (in_array($unicode[($i - 1)], $btmsym) OR in_array($unicode[($i - 1)], $btmchar))) {
-								// get postion on string
-								$overpos = strlen($this->_escape($this->arrUTF8ToUTF16BE($uniblock, false)));
-								$txt2 = substr($txt2, 0, ($overpos + $shift)).') Tj -'.sprintf('%05.2F', $vh).' Ts ('.substr($txt2, ($overpos + $shift), 2).') Tj 0 Ts ('.substr($txt2, ($overpos + $shift + 2));
-								$shift += ($overpos + 27);
-								$uniblock = array();
+								// move symbols to another array
+								++$unik;
+								$uniblock[$unik] = array();
+								$uniblock[$unik][] = $unicode[$i];
+								++$unik;
+								$uniblock[$unik] = array();
+								$unicode[$i] = 8203; // Unicode Character 'ZERO WIDTH SPACE' (U+200B)
+							} else {
+								$uniblock[$unik][] = $unicode[$i];
 							}
 						}
-						// ---- END OF Fix for bug #2977340 "Incorrect Thai characters position arrangement" ----
+						// ---- END OF Fix for bug #2977340
+						$txt2 = $this->arrUTF8ToUTF16BE($unicode, false);
 					}
-				} else {
-					$txt2 = $this->_escape($txt2);
 				}
+				$txt2 = $this->_escape($txt2);
 				// text length
 				$txwidth = $this->GetStringWidth($txt);
 				$width = $txwidth;
@@ -3908,14 +3949,16 @@ if (!class_exists('TCPDF', false)) {
 				// count number of spaces
 				$ns = substr_count($txt, ' ');
 				// Justification
+				$spacewidth = 0;
 				if (($align == 'J') AND ($ns > 0)) {
 					if (($this->CurrentFont['type'] == 'TrueTypeUnicode') OR ($this->CurrentFont['type'] == 'cidfont0')) {
-						// get string width without spaces
-						$width = $this->GetStringWidth(str_replace(' ', '', $txt));
-						// calculate average space width
-						$spacewidth = -1000 * ($w - $width - (2 * $this->cMargin)) / ($ns?$ns:1) / $this->FontSize;
-						// set word position to be used with TJ operator
-						$txt2 = str_replace(chr(0).' ', ') '.sprintf('%.3F', $spacewidth).' (', $txt2);
+							// get string width without spaces
+							$width = $this->GetStringWidth(str_replace(' ', '', $txt));
+							// calculate average space width
+							$spacewidth = -1000 * ($w - $width - (2 * $this->cMargin)) / ($ns?$ns:1) / $this->FontSize;
+							// set word position to be used with TJ operator
+							$txt2 = str_replace(chr(0).chr(32), ') '.sprintf('%.3F', $spacewidth).' (', $txt2);
+							$unicode_justification = true;
 					} else {
 						// get string width
 						$width = $txwidth;
@@ -3925,6 +3968,8 @@ if (!class_exists('TCPDF', false)) {
 					}
 					$width = $w - (2 * $this->cMargin);
 				}
+				// replace carriage return characters
+				$txt2 = str_replace("\r", ' ', $txt2);
 				switch ($align) {
 					case 'C': {
 						$dx = ($w - $width) / 2;
@@ -3962,6 +4007,27 @@ if (!class_exists('TCPDF', false)) {
 				$basefonty = $this->y + (($h + $this->FontAscent - $this->FontDescent) / 2);
 				// print text
 				$s .= sprintf('BT %.2F %.2F Td [(%s)] TJ ET', $xdk, (($this->h - $basefonty) * $k), $txt2);
+				if (isset($uniblock)) {
+					// print overlapping characters as separate string
+					$xshift = 0; // horizontal shift
+					$ty = (($this->h - $basefonty + (0.2 * $this->FontSize)) * $k);
+					$spw = (($w - $txwidth - (2 * $this->cMargin)) / ($ns?$ns:1));
+					foreach ($uniblock as $uk => $uniarr) {
+						if (($uk % 2) == 0) {
+							// x space to skip
+							if ($spacewidth != 0) {
+								// justification shift
+								$xshift += (count(array_keys($uniarr, 32)) * $spw);
+							}
+							$xshift += $this->GetArrStringWidth($uniarr); // + shift justification
+						} else {
+							// character to print
+							$topchr = $this->arrUTF8ToUTF16BE($uniarr, false);
+							$topchr = $this->_escape($topchr);
+							$s .= sprintf(' BT %.2F %.2F Td [(%s)] TJ ET', ($xdk + ($xshift * $k)), $ty, $topchr);
+						}
+					}
+				}
 				if ($this->underline)  {
 					$s .= ' '.$this->_dounderlinew($xdx, $basefonty, $width);
 				}
@@ -5317,7 +5383,10 @@ if (!class_exists('TCPDF', false)) {
 		* @see Cell()
 		*/
 		public function Ln($h='', $cell=false) {
-			//Line feed; default value is last cell height
+			if (($this->num_columns > 0) AND ($this->y == $this->columns[$this->current_column]['y'])) {
+				// revove vertical space from the top of the column
+				return;
+			}
 			if ($cell) {
 				$cellmargin = $this->cMargin;
 			} else {
@@ -13733,7 +13802,7 @@ if (!class_exists('TCPDF', false)) {
 						$this->inthead = true;
 						// print table header (thead)
 						$this->writeHTML($this->thead, false, false, false, false, '');
-						if (($this->start_transaction_page == ($this->numpages - 1)) OR ($this->checkPageBreak($this->lasth, '', false))) {
+						if (($this->start_transaction_page == ($this->numpages - 1)) OR ($this->y < $this->start_transaction_y) OR ($this->checkPageBreak($this->lasth, '', false))) {
 							// restore previous object
 							$this->rollbackTransaction(true);
 							// restore previous values
@@ -13741,8 +13810,13 @@ if (!class_exists('TCPDF', false)) {
 								$$vkey = $vval;
 							}
 							// add a page (or trig AcceptPageBreak() for multicolumn mode)
-							$this->checkPageBreak($this->PageBreakTrigger + 1);
+							$pre_y = $this->y;
+							if ((!$this->checkPageBreak($this->PageBreakTrigger + 1)) AND ($this->y < $pre_y)) {
+								// fix for multicolumn mode
+								$startliney = $this->y;
+							}
 							$this->start_transaction_page = $this->page;
+							$this->start_transaction_y = $this-y;
 						}
 					}
 					// move $key index forward to skip THEAD block
@@ -14035,7 +14109,11 @@ if (!class_exists('TCPDF', false)) {
 									}
 									// calculate additional space to add to each space
 									$spacelen = $one_space_width;
-									$spacewidth = ((($tw - $linew) + (($no - $ns) * $spacelen)) / ($ns?$ns:1)) * $this->k;
+									if ($this->isRTLTextDir()) {
+										$spacewidth = ((($tw - $linew) + (($no - $ns + 1) * $spacelen)) / ($ns?$ns:1)) * $this->k;
+									} else {
+										$spacewidth = ((($tw - $linew) + (($no - $ns) * $spacelen)) / ($ns?$ns:1)) * $this->k;
+									}
 									$spacewidthu = -1000 * (($tw - $linew) + ($no * $spacelen)) / ($ns?$ns:1) / $this->FontSize;
 									$nsmax = $ns;
 									$ns = 0;
@@ -14573,7 +14651,7 @@ if (!class_exists('TCPDF', false)) {
 				}
 				++$key;
 				if (isset($dom[$key]['tag']) AND $dom[$key]['tag'] AND (!isset($dom[$key]['opening']) OR !$dom[$key]['opening']) AND isset($dom[($dom[$key]['parent'])]['attribute']['nobr']) AND ($dom[($dom[$key]['parent'])]['attribute']['nobr'] == 'true')) {
-					if ((!$undo) AND ($this->start_transaction_page == ($this->numpages - 1))) {
+					if ( (!$undo) AND (($this->start_transaction_page == ($this->numpages - 1)) OR ($this->y < $this->start_transaction_y))) {
 						// restore previous object
 						$this->rollbackTransaction(true);
 						// restore previous values
@@ -14581,7 +14659,10 @@ if (!class_exists('TCPDF', false)) {
 							$$vkey = $vval;
 						}
 						// add a page (or trig AcceptPageBreak() for multicolumn mode)
-						$this->checkPageBreak($this->PageBreakTrigger + 1);
+						$pre_y = $this->y;
+						if ((!$this->checkPageBreak($this->PageBreakTrigger + 1)) AND ($this->y < $pre_y)) {
+							$startliney = $this->y;
+						}
 						$undo = true; // avoid infinite loop
 					} else {
 						$undo = false;
@@ -14616,7 +14697,7 @@ if (!class_exists('TCPDF', false)) {
 					$pmid = substr($this->getPageBuffer($startlinepage), $startlinepos);
 					$pend = '';
 				}
-				if ((isset($plalign) AND ((($plalign == 'C') OR ($plalign == 'J') OR (($plalign == 'R') AND (!$this->rtl)) OR (($plalign == 'L') AND ($this->rtl))))) OR ($yshift < 0)) {
+				if ((isset($plalign) AND ((($plalign == 'C') OR (($plalign == 'R') AND (!$this->rtl)) OR (($plalign == 'L') AND ($this->rtl))))) OR ($yshift < 0)) {
 					// calculate shifting amount
 					$tw = $w;
 					if ($this->lMargin != $prevlMargin) {
@@ -14737,7 +14818,8 @@ if (!class_exists('TCPDF', false)) {
 					}
 					if ($this->checkPageBreak(((2 * $cp) + (2 * $cs) + $this->lasth), '', false)) {
 						$this->inthead = true;
-						$this->AddPage();
+						// add a page (or trig AcceptPageBreak() for multicolumn mode)
+						$this->checkPageBreak($this->PageBreakTrigger + 1);
 					}
 					break;
 				}
@@ -15589,11 +15671,13 @@ if (!class_exists('TCPDF', false)) {
 				$pba = $dom[($dom[$key]['parent'])]['attribute']['pagebreakafter'];
 				// check for pagebreak
 				if (($pba == 'true') OR ($pba == 'left') OR ($pba == 'right')) {
-					$this->AddPage();
+					// add a page (or trig AcceptPageBreak() for multicolumn mode)
+					$this->checkPageBreak($this->PageBreakTrigger + 1);
 				}
 				if ((($pba == 'left') AND (((!$this->rtl) AND (($this->page % 2) == 0)) OR (($this->rtl) AND (($this->page % 2) != 0))))
 					OR (($pba == 'right') AND (((!$this->rtl) AND (($this->page % 2) != 0)) OR (($this->rtl) AND (($this->page % 2) == 0))))) {
-					$this->AddPage();
+					// add a page (or trig AcceptPageBreak() for multicolumn mode)
+					$this->checkPageBreak($this->PageBreakTrigger + 1);
 				}
 			}
 			$this->tmprtl = false;
@@ -16779,8 +16863,9 @@ if (!class_exists('TCPDF', false)) {
 				// remove previous copy
 				$this->commitTransaction();
 			}
-			// record current page number
+			// record current page number and Y position
 			$this->start_transaction_page = $this->page;
+			$this->start_transaction_y = $this->y;
 			// clone current object
 			$this->objcopy = $this->objclone($this);
 		}
@@ -16862,6 +16947,95 @@ if (!class_exists('TCPDF', false)) {
 			$offset = ($offset > 0)?($length - $offset):abs($offset);
 			$pos = strpos(strrev($haystack), strrev($needle), $offset);
 			return ($pos === false)?false:($length - $pos - strlen($needle));
+		}
+
+		// --- MULTI COLUMNS METHODS -----------------------
+
+		/**
+		 * Set multiple columns of the same size
+		 * @param int $numcols number of columns (set to zero to disable columns mode)
+		 * @param int $width column width
+		 * @param int $y column starting Y position (leave empty for current Y position)
+		 * @access public
+	 	 * @since 4.9.001 (2010-03-28)
+		 */
+		public function setEqualColumns($numcols=0, $width=0, $y='') {
+			$this->columns = array();
+			if ($numcols < 2) {
+				$numcols = 0;
+			} else {
+				// maximum column width
+				$maxwidth = ($this->w - $this->original_lMargin - $this->original_rMargin) / $numcols;
+				if ($width > $maxwidth) {
+					$width = $maxwidth;
+				}
+				if ($this->empty_string($y)) {
+					$y = $this->y;
+				}
+				// space between columns
+				$space = (($this->w - $this->original_lMargin - $this->original_rMargin - ($numcols * $width)) / ($numcols - 1));
+				// fill the columns array (with, space, starting Y position)
+				for ($i = 0; $i < $numcols; ++$i) {
+					$this->columns[$i] = array('w' => $width, 's' => $space, 'y' => $y);
+				}
+			}
+			$this->num_columns = $numcols;
+			$this->current_column = 0;
+			$this->column_start_page = $this->page;
+		}
+
+		/**
+		 * Set columns array.
+		 * Each column is represented by and array with the following keys: (w = width, s = space between columns, y = column top position).
+		 * @param array $columns
+		 * @access public
+	 	 * @since 4.9.001 (2010-03-28)
+		 */
+		public function setColumnsArray($columns) {
+			$this->columns = $columns;
+			$this->num_columns = count($columns);
+			$this->current_column = 0;
+			$this->column_start_page = $this->page;
+		}
+
+		/**
+		 * Set position at a given column
+		 * @param int $col column number (from 0 to getNumberOfColumns()-1); empty string = current column.
+		 * @access public
+	 	 * @since 4.9.001 (2010-03-28)
+		 */
+		public function selectColumn($col='') {
+			if (is_string($col)) {
+				$col = $this->current_column;
+			}
+			if ($col != $this->current_column) {
+				// move pointer at column top
+				if ($this->column_start_page == $this->page) {
+					$this->y = $this->columns[$col]['y'];
+				} else {
+					$this->y = $this->tMargin;
+				}
+			}
+			// set space between columns
+			if ($this->num_columns > 1) {
+				$column_space = $this->columns[$col]['s'];
+			} else {
+				$column_space = 0;
+			}
+			// set X position of the current column by case
+			if ($this->rtl) {
+				$x = $this->w - $this->original_rMargin - ($col * ($this->columns[$col]['w'] + $column_space));
+				$this->SetRightMargin($this->w - $x);
+				$this->SetLeftMargin($x - $this->column_width);
+			} else {
+				$x = $this->original_lMargin + ($col * ($this->columns[$col]['w'] + $column_space));
+				$this->SetLeftMargin($x);
+				$this->SetRightMargin($this->w - $x - $this->columns[$col]['w']);
+			}
+			$this->x = $x;
+			$this->current_column = $col;
+			// fix for HTML mode
+			$this->newline = true;
 		}
 
 	} // END OF TCPDF CLASS

@@ -1,3 +1,9 @@
+4.9.001 (2010-03-28)
+		- QR Code minor bug was fixed.
+		- Multicolumn mode was added (see the new example n. 10).
+		- The following methods were added: setEqualColumns(), setColumnsArray(), selectColumn().
+		- Thai diacritics support were changed (note that this is incompatible with html justification).
+
 4.9.000 (2010-03-27)
 		- QR Code (2D barcode) support was added (see example n. 50).
 		- The following methods were added to print crop and registration marks (see example n. 56): colorRegistrationBar(), cropMark(), registrationMark().

@@ -243,6 +243,10 @@
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$cntmrk">TCPDF::$cntmrk</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Array used to store content positions inside the pages buffer.</dd>
 							<dt><b>$ColorFlag</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$ColorFlag">TCPDF::$ColorFlag</a></dd>
+							<dt><b>$columns</b></dt>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$columns">TCPDF::$columns</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Array of column measures (width, space, starting Y position)</dd>
+							<dt><b>$column_start_page</b></dt>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$column_start_page">TCPDF::$column_start_page</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Starting page for columns</dd>
 							<dt><b>$compress</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$compress">TCPDF::$compress</a></dd>
 							<dt><b>$CoreFonts</b></dt>
@@ -255,6 +259,8 @@
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$CurOrientation">TCPDF::$CurOrientation</a></dd>
 							<dt><b>$CurrentFont</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$CurrentFont">TCPDF::$CurrentFont</a></dd>
+							<dt><b>$current_column</b></dt>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$current_column">TCPDF::$current_column</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Current column number</dd>
 							<dt><b>$currpagegroup</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$currpagegroup">TCPDF::$currpagegroup</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Contains the alias of the current page group</dd>
 							<dt><b>$curr_annot_obj_id</b></dt>
@@ -973,6 +979,8 @@
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$numimages">TCPDF::$numimages</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Counts the number of pages.</dd>
 							<dt><b>$numpages</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$numpages">TCPDF::$numpages</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Counts the number of pages.</dd>
+							<dt><b>$num_columns</b></dt>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$num_columns">TCPDF::$num_columns</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Number of colums</dd>
 							<dt><b>$n_js</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$n_js">TCPDF::$n_js</a><br>&nbsp;&nbsp;&nbsp;&nbsp;javascript counter</dd>
 							<dt><b>$n_ocg_print</b></dt>
@@ -1279,6 +1287,8 @@
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$spot_colors">TCPDF::$spot_colors</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Array of Spot colors</dd>
 							<dt><b>$start_transaction_page</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$start_transaction_page">TCPDF::$start_transaction_page</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Store page number when startTransaction() is called.</dd>
+							<dt><b>$start_transaction_y</b></dt>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$start_transaction_y">TCPDF::$start_transaction_y</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Store Y position when startTransaction() is called.</dd>
 							<dt><b>$state</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$state">TCPDF::$state</a></dd>
 							<dt><b>$structured</b></dt>
@@ -1293,6 +1303,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodScaleXY">TCPDF::ScaleXY()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Vertical and horizontal proportional Scaling.</dd>
 							<dt><b>ScaleY</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodScaleY">TCPDF::ScaleY()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Vertical Scaling.</dd>
+							<dt><b>selectColumn</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodselectColumn">TCPDF::selectColumn()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set position at a given column</dd>
 							<dt><b>setAlpha</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetAlpha">TCPDF::setAlpha()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set alpha for stroking (CA) and non-stroking (ca) operations.</dd>
 							<dt><b>SetAuthor</b></dt>
@@ -1300,11 +1312,11 @@
 							<dt><b>SetAutoPageBreak</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodSetAutoPageBreak">TCPDF::SetAutoPageBreak()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Enables or disables the automatic page breaking mode. When enabling, the second parameter is the distance from the bottom of the page that defines the triggering limit. By default, the mode is on and the margin is 2 cm.</dd>
 							<dt><b>setBarcode</b></dt>
-				<dd>in file 2dbarcodes.php, method <a href="com-tecnick-tcpdf/TCPDF2DBarcode.html#methodsetBarcode">TCPDF2DBarcode::setBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set the barcode.</dd>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetBarcode">TCPDF::setBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set document barcode.</dd>
 							<dt><b>setBarcode</b></dt>
 				<dd>in file barcodes.php, method <a href="com-tecnick-tcpdf/TCPDFBarcode.html#methodsetBarcode">TCPDFBarcode::setBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set the barcode.</dd>
 							<dt><b>setBarcode</b></dt>
-				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetBarcode">TCPDF::setBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set document barcode.</dd>
+				<dd>in file 2dbarcodes.php, method <a href="com-tecnick-tcpdf/TCPDF2DBarcode.html#methodsetBarcode">TCPDF2DBarcode::setBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set the barcode.</dd>
 							<dt><b>SetBooklet</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodSetBooklet">TCPDF::SetBooklet()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set the booklet mode for double-sided pages.</dd>
 							<dt><b>setBuffer</b></dt>
@@ -1313,6 +1325,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetCellHeightRatio">TCPDF::setCellHeightRatio()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set the height of the cell (line height) respect the font height.</dd>
 							<dt><b>SetCellPadding</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodSetCellPadding">TCPDF::SetCellPadding()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set the internal Cell padding.</dd>
+							<dt><b>setColumnsArray</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetColumnsArray">TCPDF::setColumnsArray()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set columns array.</dd>
 							<dt><b>SetCompression</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodSetCompression">TCPDF::SetCompression()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Activates or deactivates page compression. When activated, the internal representation of each page is compressed, which leads to a compression ratio of about 2 for the resulting document. Compression is on by default.</dd>
 							<dt><b>setContentMark</b></dt>
@@ -1331,6 +1345,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodSetDrawColorArray">TCPDF::SetDrawColorArray()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Defines the color used for all drawing operations (lines, rectangles and cell borders).</dd>
 							<dt><b>SetDrawSpotColor</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodSetDrawSpotColor">TCPDF::SetDrawSpotColor()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Defines the spot color used for all drawing operations (lines, rectangles and cell borders).</dd>
+							<dt><b>setEqualColumns</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetEqualColumns">TCPDF::setEqualColumns()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set multiple columns of the same size</dd>
 							<dt><b>setExtGState</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetExtGState">TCPDF::setExtGState()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Add an extgstate</dd>
 							<dt><b>SetFillColor</b></dt>
@@ -1816,7 +1832,7 @@
 	<a href="elementindex.html#top">top</a><br>
         <div class="credit">
 		    <hr />
-		    Documentation generated on Sat, 27 Mar 2010 19:29:43 +0100 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
+		    Documentation generated on Sun, 28 Mar 2010 22:22:39 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
 	      </div>
       </td></tr></table>
     </td>
