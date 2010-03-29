@@ -1,3 +1,11 @@
+4.9.002 (2010-03-29)
+		- Patch #2978349 "$ignore_min_height is ignored in function Cell()" was applied.
+		- Bug #2978607 "2D Barcodes are wrong" was fixed.
+		- A problem with HTML block tags was fixed.
+		- Artificial italic for CID-0 fonts was added.
+		- Several multicolumn bugs were fixed.
+		- Support for HTML tables on multicolumn was added.
+
 4.9.001 (2010-03-28)
 		- QR Code minor bug was fixed.
 		- Multicolumn mode was added (see the new example n. 10).

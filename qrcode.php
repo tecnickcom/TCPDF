@@ -2,8 +2,8 @@
 //============================================================+
 // File name   : qrcode.php
 // Begin       : 2010-03-22
-// Last Update : 2010-03-28
-// Version     : 1.0.001
+// Last Update : 2010-03-29
+// Version     : 1.0.002
 // License     : GNU LGPL v.3 (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //
@@ -87,7 +87,7 @@
  * @copyright 2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 1.0.000
+ * @version 1.0.002
  */
 
 // definitions
@@ -303,7 +303,7 @@ if (!class_exists('QRcode', false)) {
 	 * @copyright 2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 	 * @link http://www.tcpdf.org
 	 * @license http://www.gnu.org/copyleft/lesser.html LGPL
-	 * @version 1.0.000
+	 * @version 1.0.002
 	 */
 	class QRcode {
 
@@ -702,6 +702,7 @@ if (!class_exists('QRcode', false)) {
 		 */
 		protected function binarize($frame) {
 			$len = count($frame);
+			// the frame is square (width = height)
 			foreach ($frame as &$frameLine) {
 				for ($i=0; $i<$len; $i++) {
 					$frameLine[$i] = (ord($frameLine[$i])&1)?'1':'0';
@@ -2844,7 +2845,7 @@ if (!class_exists('QRcode', false)) {
 			$PRIM     =& $rs['prim']; // primitive element, index form
 			$IPRIM    =& $rs['iprim']; // prim-th root of 1, index form
 			$PAD      =& $rs['pad']; // the number of pad symbols in a block
-			$A0       =& $rs['$NN'];
+			$A0       =& $NN;
 			$parity = array_fill(0, $NROOTS, 0);
 			for ($i=0; $i < ($NN - $NROOTS - $PAD); $i++) {
 				$feedback = $INDEX_OF[$data[$i] ^ $parity[0]];

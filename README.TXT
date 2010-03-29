@@ -8,8 +8,8 @@ http://sourceforge.net/donate/index.php?group_id=128076
 ------------------------------------------------------------
 
 Name: TCPDF
-Version: 4.9.001
-Release date: 2010-03-28
+Version: 4.9.002
+Release date: 2010-03-29
 Author:	Nicola Asuni
 	
 Copyright (c) 2001-2010:
@@ -42,6 +42,7 @@ Main Features:
 // 	* includes methods to set Bookmarks and print a Table of Content;
 // 	* includes methods to move and delete pages;
 // 	* includes methods for automatic page header and footer management;
+//  * supports multi-column mode;
 // 	* supports automatic page break;
 // 	* supports automatic page numbering and page groups;
 // 	* supports automatic line break and text justification;

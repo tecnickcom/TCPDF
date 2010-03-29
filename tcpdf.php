@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-03-28
+// Last Update : 2010-03-29
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.9.001
+// Version     : 4.9.002
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -47,6 +47,7 @@
 // 	* includes methods to set Bookmarks and print a Table of Content;
 // 	* includes methods to move and delete pages;
 // 	* includes methods for automatic page header and footer management;
+//  * supports multi-column mode;
 // 	* supports automatic page break;
 // 	* supports automatic page numbering and page groups;
 // 	* supports automatic line break and text justification;
@@ -109,6 +110,7 @@
 * <li>includes methods to set Bookmarks and print a Table of Content;</li>
 * <li>includes methods to move and delete pages;</li>
 * <li>includes methods for automatic page header and footer management;</li>
+* <li>supports multi-column mode;</li>
 * <li>supports automatic page break;</li>
 * <li>supports automatic page numbering and page groups;</li>
 * <li>supports automatic line break and text justification;</li>
@@ -129,7 +131,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.9.001
+ * @version 4.9.002
  */
 
 /**
@@ -153,14 +155,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 4.9.001 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.9.002 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.9.001
+	* @version 4.9.002
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -2801,6 +2803,10 @@ if (!class_exists('TCPDF', false)) {
 	 	 * @since 4.5.030 (2009-03-25)
 		 */
 		protected function setTableHeader() {
+			if ($this->num_columns > 1) {
+				// multi column mode
+				return;
+			}
 			if (isset($this->theadMargins['top'])) {
 				// restore the original top-margin
 				$this->tMargin = $this->theadMargins['top'];
@@ -2826,6 +2832,8 @@ if (!class_exists('TCPDF', false)) {
 				$this->lMargin = $prev_lMargin;
 				$this->rMargin = $prev_rMargin;
 			}
+			// print table header (if any)
+
 		}
 
 		/**
@@ -3361,8 +3369,19 @@ if (!class_exists('TCPDF', false)) {
 				// register CID font (all styles at once)
 				$styles = array('' => '', 'B' => ',Bold', 'I' => ',Italic', 'BI' => ',BoldItalic');
 				$sname = $name.$styles[$bistyle];
-				if ((strpos($bistyle, 'B') !== false) AND (isset($desc['StemV'])) AND ($desc['StemV'] == 70)) {
-					$desc['StemV'] = 120;
+				if (strpos($bistyle, 'B') !== false) {
+					if (isset($desc['StemV'])) {
+						$desc['StemV'] *= 2;
+					} else {
+						$desc['StemV'] = 120;
+					}
+				}
+				if (strpos($bistyle, 'I') !== false) {
+					if (isset($desc['ItalicAngle'])) {
+						$desc['ItalicAngle'] -= 11;
+					} else {
+						$desc['ItalicAngle'] = -11;
+					}
 				}
 			} elseif ($type == 'core') {
 				$name = $this->CoreFonts[$fontkey];
@@ -3678,7 +3697,7 @@ if (!class_exists('TCPDF', false)) {
 		* @see SetAutoPageBreak()
 		*/
 		public function AcceptPageBreak() {
-			if ($this->num_columns > 0) {
+			if ($this->num_columns > 1) {
 				// multi column mode
 				if($this->current_column < ($this->num_columns - 1)) {
 					// go to next column
@@ -3753,9 +3772,11 @@ if (!class_exists('TCPDF', false)) {
 		* @see SetFont(), SetDrawColor(), SetFillColor(), SetTextColor(), SetLineWidth(), AddLink(), Ln(), MultiCell(), Write(), SetAutoPageBreak()
 		*/
 		public function Cell($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=0, $link='', $stretch=0, $ignore_min_height=false) {
-			$min_cell_height = $this->FontSize * $this->cell_height_ratio;
-			if ($h < $min_cell_height) {
-				$h = $min_cell_height;
+			if (!$ignore_min_height) {
+				$min_cell_height = $this->FontSize * $this->cell_height_ratio;
+				if ($h < $min_cell_height) {
+					$h = $min_cell_height;
+				}
 			}
 			$this->checkPageBreak($h);
 			$this->_out($this->getCellCode($w, $h, $txt, $border, $ln, $align, $fill, $link, $stretch, $ignore_min_height));
@@ -5383,7 +5404,7 @@ if (!class_exists('TCPDF', false)) {
 		* @see Cell()
 		*/
 		public function Ln($h='', $cell=false) {
-			if (($this->num_columns > 0) AND ($this->y == $this->columns[$this->current_column]['y'])) {
+			if (($this->num_columns > 0) AND (($this->current_column > 0) OR ($this->page > $this->column_start_page)) AND ($this->y == $this->columns[$this->current_column]['y'])) {
 				// revove vertical space from the top of the column
 				return;
 			}
@@ -12234,7 +12255,7 @@ if (!class_exists('TCPDF', false)) {
 		* @since 3.1.000 (2008-06-09)
 		* @access protected
 		*/
-		protected function _outarc($x1, $y1, $x2, $y2, $x3, $y3 ) {
+		protected function _outarc($x1, $y1, $x2, $y2, $x3, $y3) {
 			$h = $this->h;
 			$this->_out(sprintf('%.2F %.2F %.2F %.2F %.2F %.2F c', $x1*$this->k, ($h-$y1)*$this->k, $x2*$this->k, ($h-$y2)*$this->k, $x3*$this->k, ($h-$y3)*$this->k));
 		}
@@ -13816,7 +13837,7 @@ if (!class_exists('TCPDF', false)) {
 								$startliney = $this->y;
 							}
 							$this->start_transaction_page = $this->page;
-							$this->start_transaction_y = $this-y;
+							$this->start_transaction_y = $this->y;
 						}
 					}
 					// move $key index forward to skip THEAD block
@@ -14109,11 +14130,7 @@ if (!class_exists('TCPDF', false)) {
 									}
 									// calculate additional space to add to each space
 									$spacelen = $one_space_width;
-									if ($this->isRTLTextDir()) {
-										$spacewidth = ((($tw - $linew) + (($no - $ns + 1) * $spacelen)) / ($ns?$ns:1)) * $this->k;
-									} else {
-										$spacewidth = ((($tw - $linew) + (($no - $ns) * $spacelen)) / ($ns?$ns:1)) * $this->k;
-									}
+									$spacewidth = ((($tw - $linew + $this->cMargin) + (($no - $ns) * $spacelen)) / ($ns?$ns:1)) * $this->k;
 									$spacewidthu = -1000 * (($tw - $linew) + ($no * $spacelen)) / ($ns?$ns:1) / $this->FontSize;
 									$nsmax = $ns;
 									$ns = 0;
@@ -14350,6 +14367,7 @@ if (!class_exists('TCPDF', false)) {
 						// get text indentation (if any)
 						if (isset($dom[$key]['text-indent']) AND in_array($dom[$key]['value'], array('blockquote','dd','div','dt','h1','h2','h3','h4','h5','h6','li','ol','p','ul','table','tr','td'))) {
 							$this->textindent = $dom[$key]['text-indent'];
+							$this->newline = true;
 						}
 						if ($dom[$key]['value'] == 'table') {
 							// available page width
@@ -15345,11 +15363,11 @@ if (!class_exists('TCPDF', false)) {
 			switch($tag['value']) {
 				case 'tr': {
 					$table_el = $dom[($dom[$key]['parent'])]['parent'];
-					if(!isset($parent['endy'])) {
+					if (!isset($parent['endy'])) {
 						$dom[($dom[$key]['parent'])]['endy'] = $this->y;
 						$parent['endy'] = $this->y;
 					}
-					if(!isset($parent['endpage'])) {
+					if (!isset($parent['endpage'])) {
 						$dom[($dom[$key]['parent'])]['endpage'] = $this->page;
 						$parent['endpage'] = $this->page;
 					}
@@ -15383,20 +15401,24 @@ if (!class_exists('TCPDF', false)) {
 							}
 						}
 					}
-					$this->setPage($dom[($dom[$key]['parent'])]['endpage']);
-					$this->y = $dom[($dom[$key]['parent'])]['endy'];
-					if (isset($dom[$table_el]['attribute']['cellspacing'])) {
-						$cellspacing = $this->getHTMLUnitToUnits($dom[$table_el]['attribute']['cellspacing'], 1, 'px');
-						$this->y += $cellspacing;
-					}
-					$this->Ln(0, $cell);
-					$this->x = $parent['startx'];
-					// account for booklet mode
-					if ($this->page > $parent['startpage']) {
-						if (($this->rtl) AND ($this->pagedim[$this->page]['orm'] != $this->pagedim[$parent['startpage']]['orm'])) {
-							$this->x -= ($this->pagedim[$this->page]['orm'] - $this->pagedim[$parent['startpage']]['orm']);
-						} elseif ((!$this->rtl) AND ($this->pagedim[$this->page]['olm'] != $this->pagedim[$parent['startpage']]['olm'])) {
-							$this->x += ($this->pagedim[$this->page]['olm'] - $this->pagedim[$parent['startpage']]['olm']);
+					if (($this->num_columns > 1) AND ($dom[($dom[$key]['parent'])]['endy'] >= ($this->PageBreakTrigger - $this->lasth)) AND ($this->y < $dom[($dom[$key]['parent'])]['endy'])) {
+						$this->Ln(0, $cell);
+					} else {
+						$this->setPage($dom[($dom[$key]['parent'])]['endpage']);
+						$this->y = $dom[($dom[$key]['parent'])]['endy'];
+						if (isset($dom[$table_el]['attribute']['cellspacing'])) {
+							$cellspacing = $this->getHTMLUnitToUnits($dom[$table_el]['attribute']['cellspacing'], 1, 'px');
+							$this->y += $cellspacing;
+						}
+						$this->Ln(0, $cell);
+						$this->x = $parent['startx'];
+						// account for booklet mode
+						if ($this->page > $parent['startpage']) {
+							if (($this->rtl) AND ($this->pagedim[$this->page]['orm'] != $this->pagedim[$parent['startpage']]['orm'])) {
+								$this->x -= ($this->pagedim[$this->page]['orm'] - $this->pagedim[$parent['startpage']]['orm']);
+							} elseif ((!$this->rtl) AND ($this->pagedim[$this->page]['olm'] != $this->pagedim[$parent['startpage']]['olm'])) {
+								$this->x += ($this->pagedim[$this->page]['olm'] - $this->pagedim[$parent['startpage']]['olm']);
+							}
 						}
 					}
 					break;
@@ -17007,35 +17029,38 @@ if (!class_exists('TCPDF', false)) {
 		public function selectColumn($col='') {
 			if (is_string($col)) {
 				$col = $this->current_column;
+			} elseif($col >= $this->num_columns) {
+				$col = 0;
 			}
-			if ($col != $this->current_column) {
-				// move pointer at column top
-				if ($this->column_start_page == $this->page) {
-					$this->y = $this->columns[$col]['y'];
-				} else {
-					$this->y = $this->tMargin;
-				}
-			}
-			// set space between columns
 			if ($this->num_columns > 1) {
-				$column_space = $this->columns[$col]['s'];
-			} else {
-				$column_space = 0;
+				if ($col != $this->current_column) {
+					// move pointer at column top on the first page
+					if ($this->column_start_page == $this->page) {
+						$this->y = $this->columns[$col]['y'];
+					} else {
+						$this->y = $this->tMargin;
+					}
+				}
+				// set X position of the current column by case
+				if ($this->rtl) {
+					$x = $this->w - $this->original_rMargin - ($col * ($this->columns[$col]['w'] + $this->columns[$col]['s']));
+					$this->SetRightMargin($this->w - $x);
+					$this->SetLeftMargin($x - $this->columns[$col]['w']);
+				} else {
+					$x = $this->original_lMargin + ($col * ($this->columns[$col]['w'] + $this->columns[$col]['s']));
+					$this->SetLeftMargin($x);
+					$this->SetRightMargin($this->w - $x - $this->columns[$col]['w']);
+				}
+				$this->x = $x;
 			}
-			// set X position of the current column by case
-			if ($this->rtl) {
-				$x = $this->w - $this->original_rMargin - ($col * ($this->columns[$col]['w'] + $column_space));
-				$this->SetRightMargin($this->w - $x);
-				$this->SetLeftMargin($x - $this->column_width);
-			} else {
-				$x = $this->original_lMargin + ($col * ($this->columns[$col]['w'] + $column_space));
-				$this->SetLeftMargin($x);
-				$this->SetRightMargin($this->w - $x - $this->columns[$col]['w']);
-			}
-			$this->x = $x;
 			$this->current_column = $col;
 			// fix for HTML mode
 			$this->newline = true;
+			// print HTML table header (if any)
+			if (!$this->empty_string($this->thead) AND (!$this->inthead)) {
+				// print table header
+				$this->writeHTML($this->thead, false, false, false, false, '');
+			}
 		}
 
 	} // END OF TCPDF CLASS
