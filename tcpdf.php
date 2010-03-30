@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-03-29
+// Last Update : 2010-03-30
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.9.002
+// Version     : 4.9.003
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -131,7 +131,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.9.002
+ * @version 4.9.003
  */
 
 /**
@@ -155,14 +155,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 4.9.002 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.9.003 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.9.002
+	* @version 4.9.003
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -3473,6 +3473,48 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
+		* Return the font descent value
+		* @param string $font font name
+		* @param string $style font style
+		* @param float $size The size (in points)
+		* @return int font descent
+		* @access public
+		* @since 4.9.003 (2010-03-30)
+		*/
+		public function getFontDescent($font, $style='', $size=0) {
+			//Set font size in points
+			$sizek = $size / $this->k;
+			$fontdata = $this->AddFont($font, $style);
+			if (isset($fontdata['desc']['Descent']) AND ($fontdata['desc']['Descent'] > 0)) {
+				$descent = - $fontdata['desc']['Descent'] * $sizek / 1000;
+			} else {
+				$descent = 0.15 * $sizek;
+			}
+			return $descent;
+		}
+
+		/**
+		* Return the font ascent value
+		* @param string $font font name
+		* @param string $style font style
+		* @param float $size The size (in points)
+		* @return int font ascent
+		* @access public
+		* @since 4.9.003 (2010-03-30)
+		*/
+		public function getFontAscent($font, $style='', $size=0) {
+			//Set font size in points
+			$sizek = $size / $this->k;
+			$fontdata = $this->AddFont($font, $style);
+			if (isset($fontdata['desc']['Ascent']) AND ($fontdata['desc']['Ascent'] > 0)) {
+				$ascent = $fontdata['desc']['Ascent'] * $sizek / 1000;
+			} else {
+				$ascent = 0.85 * $sizek;
+			}
+			return $ascent;
+		}
+		
+		/**
 		* Defines the default monospaced font.
 		* @param string $font Font name.
 		* @access public
@@ -5404,7 +5446,7 @@ if (!class_exists('TCPDF', false)) {
 		* @see Cell()
 		*/
 		public function Ln($h='', $cell=false) {
-			if (($this->num_columns > 0) AND (($this->current_column > 0) OR ($this->page > $this->column_start_page)) AND ($this->y == $this->columns[$this->current_column]['y'])) {
+			if (($this->num_columns > 0) AND ($this->y == $this->columns[$this->current_column]['y']) AND isset($this->columns[$this->current_column]['x']) AND ($this->x == $this->columns[$this->current_column]['x'])) {
 				// revove vertical space from the top of the column
 				return;
 			}
@@ -13175,6 +13217,8 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 3.2.000 (2008-06-20)
 		 */
 		protected function getHtmlDomArray($html) {
+			// define block tags
+			$blocktags = array('blockquote','br','dd','dl','div','dt','h1','h2','h3','h4','h5','h6','hr','li','ol','p','ul','tcpdf');
 			// remove all unsupported tags (the line below lists all supported tags)
 			$html = strip_tags($html, '<marker/><a><b><blockquote><body><br><br/><dd><del><div><dl><dt><em><font><form><h1><h2><h3><h4><h5><h6><hr><i><img><input><label><li><ol><option><p><pre><select><small><span><strong><sub><sup><table><tablehead><tcpdf><td><textarea><th><thead><tr><tt><u><ul>');
 			//replace some blank characters
@@ -13251,6 +13295,7 @@ if (!class_exists('TCPDF', false)) {
 			$dom[$key] = array();
 			// set first void element
 			$dom[$key]['tag'] = false;
+			$dom[$key]['block'] = false;
 			$dom[$key]['value'] = '';
 			$dom[$key]['parent'] = 0;
 			$dom[$key]['fontname'] = $this->FontFamily;
@@ -13288,6 +13333,11 @@ if (!class_exists('TCPDF', false)) {
 					}
 					$dom[$key]['tag'] = true;
 					$dom[$key]['value'] = $tagname;
+					if (in_array($dom[$key]['value'], $blocktags)) { 
+						$dom[$key]['block'] = true;
+					} else {
+						$dom[$key]['block'] = false;
+					}
 					if ($element{0} == '/') {
 						// *** closing html tag
 						$dom[$key]['opening'] = false;
@@ -13650,6 +13700,7 @@ if (!class_exists('TCPDF', false)) {
 				} else {
 					// text
 					$dom[$key]['tag'] = false;
+					$dom[$key]['block'] = false;
 					$dom[$key]['value'] = stripslashes($this->unhtmlentities($element));
 					$dom[$key]['parent'] = end($level);
 				}
@@ -13707,7 +13758,6 @@ if (!class_exists('TCPDF', false)) {
 			$this_method_vars = array();
 			$undo = false;
 			$fontaligned = false;
-			$blocktags = array('blockquote','br','dd','div','dt','h1','h2','h3','h4','h5','h6','hr','li','ol','p','ul','tcpdf');
 			$this->premode = false;
 			if (isset($this->PageAnnots[$this->page])) {
 				$pask = count($this->PageAnnots[$this->page]);
@@ -13958,7 +14008,7 @@ if (!class_exists('TCPDF', false)) {
 									$tstart = substr($pagebuff, 0, $this->cntmrk[$this->page]);
 									$tend = substr($pagebuff, $this->cntmrk[$this->page]);
 									// add line start to current page
-									$yshift = $minstartliney - $this->y;
+									$yshift = $minstartliney - $this->y;									
 									$try = sprintf('1 0 0 1 0 %.3F cm', ($yshift * $this->k));
 									$this->setPageBuffer($this->page, $tstart."\nq\n".$try."\n".$linebeg."\nQ\n".$tend);
 									// shift the annotations and links
@@ -13982,10 +14032,12 @@ if (!class_exists('TCPDF', false)) {
 									$startlinepage = $this->page;
 									$startliney = $this->y;
 								}
-								if (($dom[$key]['value'] != 'tr') AND ($dom[$key]['value'] != 'td') AND ($dom[$key]['value'] != 'th')) {
+								if ((!$dom[$key]['block']) AND ($dom[$key]['value'] != 'tr') AND ($dom[$key]['value'] != 'td') AND ($dom[$key]['value'] != 'th')) {
 									$this->y += (($curfontsize - $fontsize) / $this->k);
 								}
-								$minstartliney = min($this->y, $minstartliney);
+								if (!$dom[$key]['block']) {
+									$minstartliney = min($this->y, $minstartliney);
+								}
 								$fontaligned = true;
 							}
 							$this->SetFont($fontname, $fontstyle, $fontsize);
@@ -13995,7 +14047,7 @@ if (!class_exists('TCPDF', false)) {
 							$curfontsize = $fontsize;
 						}
 					}
-					if (($plalign == 'J') AND (in_array($dom[$key]['value'], $blocktags))) {
+					if (($plalign == 'J') AND $dom[$key]['block']) {
 						$plalign = '';
 					}
 					// get current position on page buffer
@@ -14809,6 +14861,25 @@ if (!class_exists('TCPDF', false)) {
 			} else {
 				$this->tmprtl = false;
 			}
+			if ($tag['block']) {
+				// calculate vertical space for block tags
+				$hb = '';
+				if (isset($tag['fontsize'])) {
+					$cur_h = ($tag['fontsize'] / $this->k) * $this->cell_height_ratio;
+					if (isset($parent['fontsize'])) {
+						$pre_h = (($parent['fontsize'] / $this->k) * $this->cell_height_ratio);
+					} else {
+						$pre_h = $this->FontSize * $this->cell_height_ratio;
+					}
+					if ($this->htmlvspace == 0) {
+						$hb = $cur_h + $pre_h;
+					} elseif ($cur_h > $this->htmlvspace) {
+						$hb = $cur_h + ($this->htmlvspace / 2);
+					} else {
+						$hb = $cur_h + $pre_h;
+					}
+				}
+			}
 			//Opening tag
 			switch($tag['value']) {
 				case 'table': {
@@ -15069,7 +15140,7 @@ if (!class_exists('TCPDF', false)) {
 					} else {
 						$this->lMargin += $this->listindent;
 					}
-					$this->addHTMLVertSpace(2, $cell, '', $firstorlast, $tag['value'], false);
+					$this->addHTMLVertSpace(1, $cell, $hb, $firstorlast, $tag['value'], false);
 					break;
 				}
 				case 'br': {
@@ -15081,7 +15152,7 @@ if (!class_exists('TCPDF', false)) {
 					break;
 				}
 				case 'p': {
-					$this->addHTMLVertSpace(2, $cell, '', $firstorlast, $tag['value'], false);
+					$this->addHTMLVertSpace(1, $cell, $hb, $firstorlast, $tag['value'], false);
 					break;
 				}
 				case 'pre': {
@@ -15103,7 +15174,7 @@ if (!class_exists('TCPDF', false)) {
 				case 'h4':
 				case 'h5':
 				case 'h6': {
-					$this->addHTMLVertSpace(1, $cell, ($tag['fontsize'] * 1.5) / $this->k, $firstorlast, $tag['value'], false);
+					$this->addHTMLVertSpace(1, $cell, 3*$hb/4, $firstorlast, $tag['value'], false);
 					break;
 				}
 				// Form fields (since 4.8.000 - 2009-09-07)
@@ -15359,6 +15430,15 @@ if (!class_exists('TCPDF', false)) {
 			$parent = $dom[($dom[$key]['parent'])];
 			$firstorlast = ((!isset($dom[($key + 1)])) OR ((!isset($dom[($key + 2)])) AND ($dom[($key + 1)]['value'] == 'marker')));
 			$in_table_head = false;
+			if ($tag['block']) {
+				// calculate vertical space for block tags
+				if (isset($parent['fontsize'])) {
+					$pre_h = (($parent['fontsize'] / $this->k) * $this->cell_height_ratio);
+				} else {
+					$pre_h = $this->FontSize * $this->cell_height_ratio;
+				}
+				$hb = 2 * $pre_h;
+			}
 			//Closing tag
 			switch($tag['value']) {
 				case 'tr': {
@@ -15614,11 +15694,11 @@ if (!class_exists('TCPDF', false)) {
 					} else {
 						$this->lMargin -= $this->listindent;
 					}
-					$this->addHTMLVertSpace(2, $cell, '', $firstorlast, $tag['value'], true);
+					$this->addHTMLVertSpace(1, $cell, $hb, $firstorlast, $tag['value'], true);
 					break;
 				}
 				case 'p': {
-					$this->addHTMLVertSpace(2, $cell, '', $firstorlast, $tag['value'], true);
+					$this->addHTMLVertSpace(1, $cell, $hb, $firstorlast, $tag['value'], true);
 					break;
 				}
 				case 'pre': {
@@ -15630,7 +15710,7 @@ if (!class_exists('TCPDF', false)) {
 					--$this->listnum;
 					if ($this->listnum <= 0) {
 						$this->listnum = 0;
-						$this->addHTMLVertSpace(2, $cell, '', $firstorlast, $tag['value'], true);
+						$this->addHTMLVertSpace(1, $cell, $hb, $firstorlast, $tag['value'], true);
 					}
 					break;
 				}
@@ -15660,7 +15740,7 @@ if (!class_exists('TCPDF', false)) {
 					}
 					if ($this->listnum <= 0) {
 						$this->listnum = 0;
-						$this->addHTMLVertSpace(2, $cell, '', $firstorlast, $tag['value'], true);
+						$this->addHTMLVertSpace(1, $cell, $hb, $firstorlast, $tag['value'], true);
 					}
 					$this->lasth = $this->FontSize * $this->cell_height_ratio;
 					break;
@@ -15676,7 +15756,7 @@ if (!class_exists('TCPDF', false)) {
 				case 'h4':
 				case 'h5':
 				case 'h6': {
-					$this->addHTMLVertSpace(1, $cell, ($parent['fontsize'] * 1.5) / $this->k, $firstorlast, $tag['value'], true);
+					$this->addHTMLVertSpace(1, $cell, 3*$hb/4, $firstorlast, $tag['value'], true);
 					break;
 				}
 				// Form fields (since 4.8.000 - 2009-09-07)
@@ -17051,6 +17131,7 @@ if (!class_exists('TCPDF', false)) {
 					$this->SetLeftMargin($x);
 					$this->SetRightMargin($this->w - $x - $this->columns[$col]['w']);
 				}
+				$this->columns[$col]['x'] = $x;
 				$this->x = $x;
 			}
 			$this->current_column = $col;

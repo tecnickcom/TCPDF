@@ -2,8 +2,8 @@
 //============================================================+
 // File name   : qrcode.php
 // Begin       : 2010-03-22
-// Last Update : 2010-03-29
-// Version     : 1.0.002
+// Last Update : 2010-03-30
+// Version     : 1.0.003
 // License     : GNU LGPL v.3 (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //
@@ -87,7 +87,7 @@
  * @copyright 2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 1.0.002
+ * @version 1.0.003
  */
 
 // definitions
@@ -1579,7 +1579,7 @@ if (!class_exists('QRcode', false)) {
 			$words = (int)($inputitem['size'] / 2);
 			$inputitem['bstream'] = array();
 			$inputitem['bstream'] = $this->appendNum($inputitem['bstream'], 4, 0x02);
-			$inputitem['bstream'] = $this->appendNum(v, $this->lengthIndicator(QR_MODE_AN, $version), $inputitem['size']);
+			$inputitem['bstream'] = $this->appendNum($inputitem['bstream'], $this->lengthIndicator(QR_MODE_AN, $version), $inputitem['size']); //DEBUG
 			for ($i=0; $i < $words; ++$i) {
 				$val  = (int)$this->lookAnTable(ord($inputitem['data'][$i*2  ])) * 45;
 				$val += (int)$this->lookAnTable(ord($inputitem['data'][$i*2+1]));

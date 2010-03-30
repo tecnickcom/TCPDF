@@ -1,3 +1,8 @@
+4.9.003 (2010-03-30)
+		- Problem of first <br /> on multiple columns was fixed.
+		- HTML line alignment was fixed.
+		- A QR-code bug was fixed.
+
 4.9.002 (2010-03-29)
 		- Patch #2978349 "$ignore_min_height is ignored in function Cell()" was applied.
 		- Bug #2978607 "2D Barcodes are wrong" was fixed.
