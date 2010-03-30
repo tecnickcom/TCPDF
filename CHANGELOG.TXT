@@ -1,3 +1,6 @@
+4.9.004 (2010-03-31)
+		- Patch #979681 "GetCharWidth - default character width" was applied (bugfix).
+
 4.9.003 (2010-03-30)
 		- Problem of first <br /> on multiple columns was fixed.
 		- HTML line alignment was fixed.
