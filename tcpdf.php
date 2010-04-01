@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-03-31
+// Last Update : 2010-04-01
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.9.004
+// Version     : 4.9.005
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -131,7 +131,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.9.004
+ * @version 4.9.005
  */
 
 /**
@@ -155,14 +155,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 4.9.004 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.9.005 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.9.004
+	* @version 4.9.005
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -3289,7 +3289,7 @@ if (!class_exists('TCPDF', false)) {
 				unset($cw);
 			}
 			// get specified font directory (if any)
-			$fontdir = '';
+			$fontdir = false;
 			if (!$this->empty_string($fontfile)) {
 				$fontdir = dirname($fontfile);
 				if ($this->empty_string($fontdir) OR ($fontdir == '.')) {
@@ -3304,13 +3304,13 @@ if (!class_exists('TCPDF', false)) {
 				$fontfile1 = str_replace(' ', '', $family).strtolower($style).'.php';
 				$fontfile2 = str_replace(' ', '', $family).'.php';
 				// search files on various directories
-				if (file_exists($fontdir.$fontfile1)) {
+				if (($fontdir !== false) AND file_exists($fontdir.$fontfile1)) {
 					$fontfile = $fontdir.$fontfile1;
 				} elseif (file_exists($this->_getfontpath().$fontfile1)) {
 					$fontfile = $this->_getfontpath().$fontfile1;
 				} elseif (file_exists($fontfile1)) {
 					$fontfile = $fontfile1;
-				} elseif (file_exists($fontdir.$fontfile2)) {
+				} elseif (($fontdir !== false) AND file_exists($fontdir.$fontfile2)) {
 					$fontfile = $fontdir.$fontfile2;
 				} elseif (file_exists($this->_getfontpath().$fontfile2)) {
 					$fontfile = $this->_getfontpath().$fontfile2;
@@ -3513,7 +3513,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 			return $ascent;
 		}
-		
+
 		/**
 		* Defines the default monospaced font.
 		* @param string $font Font name.
@@ -3947,32 +3947,34 @@ if (!class_exists('TCPDF', false)) {
 					} else {
 						$unicode = $this->UTF8StringToArray($txt); // array of UTF-8 unicode values
 						$unicode = $this->utf8Bidi($unicode, '', $this->tmprtl);
-						// ---- Fix for bug #2977340 "Incorrect Thai characters position arrangement" ----
-						// NOTE: this doesn't work with HTML justification
-						// Symbols that could overlap on the font top (only works in LTR)
-						$topchar = array(3611, 3613, 3615, 3650, 3651, 3652); // chars that extends on top
-						$topsym = array(3633, 3636, 3637, 3638, 3639, 3655, 3656, 3657, 3658, 3659, 3660, 3661, 3662); // symbols with top position
-						$numchars = count($unicode); // number of chars
-						$unik = 0;
-						$uniblock = array();
-						$uniblock[$unik] = array();
-						$uniblock[$unik][] = $unicode[0];
-						// resolve overlapping conflicts by splitting the string in several parts
-						for ($i = 1; $i < $numchars; ++$i) {
-							// check if symbols overlaps at top
-							if (in_array($unicode[$i], $topsym) AND (in_array($unicode[($i - 1)], $topsym) OR in_array($unicode[($i - 1)], $topchar))) {
-								// move symbols to another array
-								++$unik;
-								$uniblock[$unik] = array();
-								$uniblock[$unik][] = $unicode[$i];
-								++$unik;
-								$uniblock[$unik] = array();
-								$unicode[$i] = 8203; // Unicode Character 'ZERO WIDTH SPACE' (U+200B)
-							} else {
-								$uniblock[$unik][] = $unicode[$i];
+						if (defined('K_THAI_TOPCHARS') AND (K_THAI_TOPCHARS == true)) {
+							// ---- Fix for bug #2977340 "Incorrect Thai characters position arrangement" ----
+							// NOTE: this doesn't work with HTML justification
+							// Symbols that could overlap on the font top (only works in LTR)
+							$topchar = array(3611, 3613, 3615, 3650, 3651, 3652); // chars that extends on top
+							$topsym = array(3633, 3636, 3637, 3638, 3639, 3655, 3656, 3657, 3658, 3659, 3660, 3661, 3662); // symbols with top position
+							$numchars = count($unicode); // number of chars
+							$unik = 0;
+							$uniblock = array();
+							$uniblock[$unik] = array();
+							$uniblock[$unik][] = $unicode[0];
+							// resolve overlapping conflicts by splitting the string in several parts
+							for ($i = 1; $i < $numchars; ++$i) {
+								// check if symbols overlaps at top
+								if (in_array($unicode[$i], $topsym) AND (in_array($unicode[($i - 1)], $topsym) OR in_array($unicode[($i - 1)], $topchar))) {
+									// move symbols to another array
+									++$unik;
+									$uniblock[$unik] = array();
+									$uniblock[$unik][] = $unicode[$i];
+									++$unik;
+									$uniblock[$unik] = array();
+									$unicode[$i] = 8203; // Unicode Character 'ZERO WIDTH SPACE' (U+200B)
+								} else {
+									$uniblock[$unik][] = $unicode[$i];
+								}
 							}
+							// ---- END OF Fix for bug #2977340
 						}
-						// ---- END OF Fix for bug #2977340
 						$txt2 = $this->arrUTF8ToUTF16BE($unicode, false);
 					}
 				}
@@ -5768,7 +5770,7 @@ if (!class_exists('TCPDF', false)) {
 					AND ($val != 'signature_max_length')
 					AND ($val != 'byterange_string')
 					)) {
-					if (!$preserve_objcopy OR ($val != 'objcopy')) {
+					if ((!$preserve_objcopy OR ($val != 'objcopy')) AND isset($this->$val)) {
 						unset($this->$val);
 					}
 				}
@@ -6030,7 +6032,7 @@ if (!class_exists('TCPDF', false)) {
 							$annots .= ' /FT /'.$pl['opt']['ft'];
 							$formfield = true;
 						}
-						$annots .= ' /Contents '.$this->_textstring($pl['txt']);
+						$annots .= ' /Contents '.$this->_textannobjstring($pl['txt']);
 						$annots .= ' /P '.$this->page_obj_id[$n].' 0 R';
 						$annots .= ' /NM '.$this->_dataannobjstring(sprintf('%04u-%04u', $n, $key));
 						$annots .= ' /M '.$this->_datestring();
@@ -6182,19 +6184,19 @@ if (!class_exists('TCPDF', false)) {
 						if (in_array(strtolower($pl['opt']['subtype']), $markups)) {
 							// this is a markup type
 							if (isset($pl['opt']['t']) AND is_string($pl['opt']['t'])) {
-								$annots .= ' /T '.$this->_textstring($pl['opt']['t']);
+								$annots .= ' /T '.$this->_textannobjstring($pl['opt']['t']);
 							}
 							//$annots .= ' /Popup ';
 							if (isset($pl['opt']['ca'])) {
 								$annots .= ' /CA '.sprintf('%.4F', floatval($pl['opt']['ca']));
 							}
 							if (isset($pl['opt']['rc'])) {
-								$annots .= ' /RC '.$this->_textstring($pl['opt']['rc']);
+								$annots .= ' /RC '.$this->_textannobjstring($pl['opt']['rc']);
 							}
 							$annots .= ' /CreationDate '.$this->_datestring();
 							//$annots .= ' /IRT ';
 							if (isset($pl['opt']['subj'])) {
-								$annots .= ' /Subj '.$this->_textstring($pl['opt']['subj']);
+								$annots .= ' /Subj '.$this->_textannobjstring($pl['opt']['subj']);
 							}
 							//$annots .= ' /RT ';
 							//$annots .= ' /IT ';
@@ -6262,10 +6264,10 @@ if (!class_exists('TCPDF', false)) {
 									$annots .= ' /Q '.intval($pl['opt']['q']);
 								}
 								if (isset($pl['opt']['rc'])) {
-									$annots .= ' /RC '.$this->_textstring($pl['opt']['rc']);
+									$annots .= ' /RC '.$this->_textannobjstring($pl['opt']['rc']);
 								}
 								if (isset($pl['opt']['ds'])) {
-									$annots .= ' /DS '.$this->_textstring($pl['opt']['ds']);
+									$annots .= ' /DS '.$this->_textannobjstring($pl['opt']['ds']);
 								}
 								if (isset($pl['opt']['cl']) AND is_array($pl['opt']['cl'])) {
 									$annots .= ' /CL [';
@@ -6485,7 +6487,7 @@ if (!class_exists('TCPDF', false)) {
 											$annots .= ' '.$optval;
 										}
 									} else {
-										$annots .= ' '.$this->_textstring($pl['opt']['v']);
+										$annots .= ' '.$this->_textannobjstring($pl['opt']['v']);
 									}
 								}
 								if (isset($pl['opt']['dv'])) {
@@ -6498,7 +6500,7 @@ if (!class_exists('TCPDF', false)) {
 											$annots .= ' '.$optval;
 										}
 									} else {
-										$annots .= ' '.$this->_textstring($pl['opt']['dv']);
+										$annots .= ' '.$this->_textannobjstring($pl['opt']['dv']);
 									}
 								}
 								if (isset($pl['opt']['rv'])) {
@@ -6511,7 +6513,7 @@ if (!class_exists('TCPDF', false)) {
 											$annots .= ' '.$optval;
 										}
 									} else {
-										$annots .= ' '.$this->_textstring($pl['opt']['rv']);
+										$annots .= ' '.$this->_textannobjstring($pl['opt']['rv']);
 									}
 								}
 								if (isset($pl['opt']['a']) AND !empty($pl['opt']['a'])) {
@@ -6530,9 +6532,9 @@ if (!class_exists('TCPDF', false)) {
 						 			$annots .= ' /Opt [';
 						 			foreach($pl['opt']['opt'] AS $copt) {
 						 				if (is_array($copt)) {
-						 					$annots .= ' ['.$this->_textstring($copt[0]).' '.$this->_textstring($copt[1]).']';
+						 					$annots .= ' ['.$this->_textannobjstring($copt[0]).' '.$this->_textannobjstring($copt[1]).']';
 						 				} else {
-						 					$annots .= ' '.$this->_textstring($copt);
+						 					$annots .= ' '.$this->_textannobjstring($copt);
 						 				}
 						 			}
 						 			$annots .= ']';
@@ -6637,7 +6639,7 @@ if (!class_exists('TCPDF', false)) {
 				$file = strtolower($file);
 				$fontfile = '';
 				// search files on various directories
-				if (file_exists($fontdir.$file)) {
+				if (($fontdir !== false) AND file_exists($fontdir.$file)) {
 					$fontfile = $fontdir.$file;
 				} elseif (file_exists($this->_getfontpath().$file)) {
 					$fontfile = $this->_getfontpath().$file;
@@ -6899,7 +6901,7 @@ if (!class_exists('TCPDF', false)) {
 				}
 				$this->_out('/'.$key.' '.$value.'');
 			}
-			$fontdir = '';
+			$fontdir = false;
 			if (!$this->empty_string($font['file'])) {
 				// A stream containing a TrueType font
 				$this->_out('/FontFile2 '.$this->FontFiles[$font['file']]['n'].' 0 R');
@@ -6916,7 +6918,7 @@ if (!class_exists('TCPDF', false)) {
 				// search and get ctg font file to embedd
 				$fontfile = '';
 				// search files on various directories
-				if (file_exists($fontdir.$ctgfile)) {
+				if (($fontdir !== false) AND file_exists($fontdir.$ctgfile)) {
 					$fontfile = $fontdir.$ctgfile;
 				} elseif (file_exists($this->_getfontpath().$ctgfile)) {
 					$fontfile = $this->_getfontpath().$ctgfile;
@@ -7687,6 +7689,20 @@ if (!class_exists('TCPDF', false)) {
 				$s = $this->UTF8ToUTF16BE($s, true);
 			}
 			return $this->_datastring($s);
+		}
+
+		/**
+		* Format a UTF-8 text string for meta information on annotations
+		* @param string $s string to escape.
+		* @return string escaped string.
+		* @access protected
+		*/
+		protected function _textannobjstring($s) {
+			if ($this->isunicode) {
+				//Convert string to UTF-16BE
+				$s = $this->UTF8ToUTF16BE($s, true);
+			}
+			return $this->_dataannobjstring($s);
 		}
 
 		/**
@@ -13218,7 +13234,7 @@ if (!class_exists('TCPDF', false)) {
 		 */
 		protected function getHtmlDomArray($html) {
 			// define block tags
-			$blocktags = array('blockquote','br','dd','dl','div','dt','h1','h2','h3','h4','h5','h6','hr','li','ol','p','ul','tcpdf');
+			$blocktags = array('blockquote','br','dd','dl','div','dt','h1','h2','h3','h4','h5','h6','hr','li','ol','p','ul','tcpdf','table','tr','td');
 			// remove all unsupported tags (the line below lists all supported tags)
 			$html = strip_tags($html, '<marker/><a><b><blockquote><body><br><br/><dd><del><div><dl><dt><em><font><form><h1><h2><h3><h4><h5><h6><hr><i><img><input><label><li><ol><option><p><pre><select><small><span><strong><sub><sup><table><tablehead><tcpdf><td><textarea><th><thead><tr><tt><u><ul>');
 			//replace some blank characters
@@ -13333,7 +13349,7 @@ if (!class_exists('TCPDF', false)) {
 					}
 					$dom[$key]['tag'] = true;
 					$dom[$key]['value'] = $tagname;
-					if (in_array($dom[$key]['value'], $blocktags)) { 
+					if (in_array($dom[$key]['value'], $blocktags)) {
 						$dom[$key]['block'] = true;
 					} else {
 						$dom[$key]['block'] = false;
@@ -13746,9 +13762,12 @@ if (!class_exists('TCPDF', false)) {
 			$curfontname = $this->FontFamily;
 			$curfontstyle = $this->FontStyle;
 			$curfontsize = $this->FontSizePt;
+			$curfontascent = $this->getFontAscent($curfontname, $curfontstyle, $curfontsize);
+			$curfontdescent = $this->getFontDescent($curfontname, $curfontstyle, $curfontsize);
 			$this->newline = true;
 			$startlinepage = $this->page;
 			$minstartliney = $this->y;
+			$maxbottomliney = 0;
 			$startlinex = $this->x;
 			$startliney = $this->y;
 			$yshift = 0;
@@ -13844,7 +13863,10 @@ if (!class_exists('TCPDF', false)) {
 						$this_method_vars['curfontname'] = $curfontname;
 						$this_method_vars['curfontstyle'] = $curfontstyle;
 						$this_method_vars['curfontsize'] = $curfontsize;
+						$this_method_vars['curfontascent'] = $curfontascent;
+						$this_method_vars['curfontdescent'] = $curfontdescent;
 						$this_method_vars['minstartliney'] = $minstartliney;
+						$this_method_vars['maxbottomliney'] = $maxbottomliney;
 						$this_method_vars['yshift'] = $yshift;
 						$this_method_vars['startlinepage'] = $startlinepage;
 						$this_method_vars['startlinepos'] = $startlinepos;
@@ -13975,7 +13997,7 @@ if (!class_exists('TCPDF', false)) {
 								$startlinepage = $this->page;
 								$startliney = $this->y;
 							}
-							$this->y += (($curfontsize / $this->k) - $imgh);
+							$this->y += ((($curfontsize * $this->cell_height_ratio / $this->k) + $curfontascent - $curfontdescent) / 2) - $imgh;
 							$minstartliney = min($this->y, $minstartliney);
 						}
 					} elseif (isset($dom[$key]['fontname']) OR isset($dom[$key]['fontstyle']) OR isset($dom[$key]['fontsize'])) {
@@ -13986,6 +14008,8 @@ if (!class_exists('TCPDF', false)) {
 						$fontname = isset($dom[$key]['fontname']) ? $dom[$key]['fontname'] : $curfontname;
 						$fontstyle = isset($dom[$key]['fontstyle']) ? $dom[$key]['fontstyle'] : $curfontstyle;
 						$fontsize = isset($dom[$key]['fontsize']) ? $dom[$key]['fontsize'] : $curfontsize;
+						$fontascent = $this->getFontAscent($fontname, $fontstyle, $fontsize);
+						$fontdescent = $this->getFontDescent($fontname, $fontstyle, $fontsize);
 						if (($fontname != $curfontname) OR ($fontstyle != $curfontstyle) OR ($fontsize != $curfontsize)) {
 							if (is_numeric($fontsize) AND ($fontsize > 0)
 								AND is_numeric($curfontsize) AND ($curfontsize > 0)
@@ -14008,7 +14032,7 @@ if (!class_exists('TCPDF', false)) {
 									$tstart = substr($pagebuff, 0, $this->cntmrk[$this->page]);
 									$tend = substr($pagebuff, $this->cntmrk[$this->page]);
 									// add line start to current page
-									$yshift = $minstartliney - $this->y;									
+									$yshift = $minstartliney - $this->y;
 									$try = sprintf('1 0 0 1 0 %.3F cm', ($yshift * $this->k));
 									$this->setPageBuffer($this->page, $tstart."\nq\n".$try."\n".$linebeg."\nQ\n".$tend);
 									// shift the annotations and links
@@ -14032,11 +14056,10 @@ if (!class_exists('TCPDF', false)) {
 									$startlinepage = $this->page;
 									$startliney = $this->y;
 								}
-								if ((!$dom[$key]['block']) AND ($dom[$key]['value'] != 'tr') AND ($dom[$key]['value'] != 'td') AND ($dom[$key]['value'] != 'th')) {
-									$this->y += (($curfontsize - $fontsize) / $this->k);
-								}
 								if (!$dom[$key]['block']) {
+									$this->y += ((($curfontsize - $fontsize) * $this->cell_height_ratio / $this->k) + $curfontascent - $fontascent - $curfontdescent + $fontdescent) / 2;
 									$minstartliney = min($this->y, $minstartliney);
+									$maxbottomliney = max(($this->y + (($fontsize * $this->cell_height_ratio) / $this->k)), $maxbottomliney);
 								}
 								$fontaligned = true;
 							}
@@ -14045,6 +14068,8 @@ if (!class_exists('TCPDF', false)) {
 							$curfontname = $fontname;
 							$curfontstyle = $fontstyle;
 							$curfontsize = $fontsize;
+							$curfontascent = $fontascent;
+							$curfontdescent = $fontdescent;
 						}
 					}
 					if (($plalign == 'J') AND $dom[$key]['block']) {
@@ -14384,6 +14409,7 @@ if (!class_exists('TCPDF', false)) {
 					$startlinex = $this->x;
 					$startliney = $this->y;
 					$minstartliney = $startliney;
+					$maxbottomliney = ($startliney + ($this->FontSize * $this->cell_height_ratio));
 					$startlinepage = $this->page;
 					if (isset($endlinepos) AND (!$pbrk)) {
 						$startlinepos = $endlinepos;
@@ -14417,7 +14443,7 @@ if (!class_exists('TCPDF', false)) {
 				if ($dom[$key]['tag']) {
 					if ($dom[$key]['opening']) {
 						// get text indentation (if any)
-						if (isset($dom[$key]['text-indent']) AND in_array($dom[$key]['value'], array('blockquote','dd','div','dt','h1','h2','h3','h4','h5','h6','li','ol','p','ul','table','tr','td'))) {
+						if (isset($dom[$key]['text-indent']) AND $dom[$key]['block']) {
 							$this->textindent = $dom[$key]['text-indent'];
 							$this->newline = true;
 						}
@@ -14621,7 +14647,7 @@ if (!class_exists('TCPDF', false)) {
 						}
 					} else {
 						// closing tag
-						$this->closeHTMLTagHandler($dom, $key, $cell);
+						$this->closeHTMLTagHandler($dom, $key, $cell, $maxbottomliney);
 					}
 				} elseif (strlen($dom[$key]['value']) > 0) {
 					// print list-item
@@ -14633,8 +14659,11 @@ if (!class_exists('TCPDF', false)) {
 						$this->SetFont($curfontname, $curfontstyle, $curfontsize);
 						$this->lasth = $this->FontSize * $this->cell_height_ratio;
 						if (is_numeric($pfontsize) AND ($pfontsize > 0) AND is_numeric($curfontsize) AND ($curfontsize > 0) AND ($pfontsize != $curfontsize)) {
-							$this->y += (($pfontsize - $curfontsize) / $this->k);
+							$pfontascent = $this->getFontAscent($pfontname, $pfontstyle, $pfontsize);
+							$pfontdescent = $this->getFontDescent($pfontname, $pfontstyle, $pfontsize);
+							$this->y += ((($pfontsize - $curfontsize) * $this->cell_height_ratio / $this->k) + $pfontascent - $curfontascent - $pfontdescent + $curfontdescent) / 2;
 							$minstartliney = min($this->y, $minstartliney);
+							$maxbottomliney = max(($this->y + (($pfontsize * $this->cell_height_ratio) / $this->k)), $maxbottomliney);
 						}
 					}
 					// text
@@ -14841,6 +14870,9 @@ if (!class_exists('TCPDF', false)) {
 			$this->listordered = $prev_listordered;
 			$this->listcount = $prev_listcount;
 			$this->lispacer = $prev_lispacer;
+			if ($this->y < $maxbottomliney) {
+				$this->y = $maxbottomliney;
+			}
 			unset($dom);
 		}
 
@@ -14848,10 +14880,12 @@ if (!class_exists('TCPDF', false)) {
 		 * Process opening tags.
 		 * @param array $dom html dom array
 		 * @param int $key current element id
+		 * @param int $minstartliney minimum y value of current line
+		 * @param int $maxbottomliney maximum y value of current line
 		 * @param boolean $cell if true add the default cMargin space to each new line (default false).
 		 * @access protected
 		 */
-		protected function openHTMLTagHandler(&$dom, $key, $cell=false) {
+		protected function openHTMLTagHandler(&$dom, $key, $cell) {
 			$tag = $dom[$key];
 			$parent = $dom[($dom[$key]['parent'])];
 			$firstorlast = ($key == 1);
@@ -15422,10 +15456,12 @@ if (!class_exists('TCPDF', false)) {
 		 * Process closing tags.
 		 * @param array $dom html dom array
 		 * @param int $key current element id
+		 * @param int $minstartliney minimum y value of current line
+		 * @param int $maxbottomliney maximum y value of current line
 		 * @param boolean $cell if true add the default cMargin space to each new line (default false).
 		 * @access protected
 		 */
-		protected function closeHTMLTagHandler(&$dom, $key, $cell=false) {
+		protected function closeHTMLTagHandler(&$dom, $key, $cell, $maxbottomliney=0) {
 			$tag = $dom[$key];
 			$parent = $dom[($dom[$key]['parent'])];
 			$firstorlast = ((!isset($dom[($key + 1)])) OR ((!isset($dom[($key + 2)])) AND ($dom[($key + 1)]['value'] == 'marker')));
@@ -15437,7 +15473,10 @@ if (!class_exists('TCPDF', false)) {
 				} else {
 					$pre_h = $this->FontSize * $this->cell_height_ratio;
 				}
-				$hb = 2 * $pre_h;
+				$hb = $pre_h;
+				if ($this->y < $maxbottomliney) {
+					$hb += ($maxbottomliney - $this->y);
+				}
 			}
 			//Closing tag
 			switch($tag['value']) {

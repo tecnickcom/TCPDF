@@ -1,3 +1,10 @@
+4.9.005 (2010-04-01)
+		- Bug# 2980354 "Wrong File attachment description with security" was fixed.
+		- Several problems with HTML line alignment were fixed.
+		- The constant K_THAI_TOPCHAR was added on configuration file to enable/disable the special procedure used to avoid the overlappind of symbols on Thai language.
+		- A problem with font name directory was fixed.
+		- A bug on _destroy() method was fixed.
+
 4.9.004 (2010-03-31)
 		- Patch #979681 "GetCharWidth - default character width" was applied (bugfix).
 
