@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tcpdf_config.php
 // Begin       : 2004-06-11
-// Last Update : 2010-04-01
+// Last Update : 2010-04-02
 //
 // Description : Configuration file for TCPDF.
 //
@@ -230,6 +230,12 @@ if (!defined('K_TCPDF_EXTERNAL_CONFIG')) {
 	 * set to true to enable the special procedure used to avoid the overlappind of symbols on Thai language
 	 */
 	define('K_THAI_TOPCHARS', true);
+
+	/**
+	 * if true allows to call TCPDF methods using HTML syntax
+	 * IMPORTANT: For security reason, disable this feature if you are printing user HTML content.
+	 */
+	define('K_TCPDF_CALLS_IN_HTML', true);
 }
 
 //============================================================+

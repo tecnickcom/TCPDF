@@ -843,6 +843,8 @@
 				<dd>in file unicode_data.php, constant <a href="com-tecnick-tcpdf/_unicode_data.php.html#defineK_RLO">K_RLO</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Right-to-Left Override</dd>
 							<dt><b>K_SMALL_RATIO</b></dt>
 				<dd>in file tcpdf_config.php, constant <a href="com-tecnick-tcpdf/_config---tcpdf_config.php.html#defineK_SMALL_RATIO">K_SMALL_RATIO</a><br>&nbsp;&nbsp;&nbsp;&nbsp;reduction factor for small font</dd>
+							<dt><b>K_TCPDF_CALLS_IN_HTML</b></dt>
+				<dd>in file tcpdf_config.php, constant <a href="com-tecnick-tcpdf/_config---tcpdf_config.php.html#defineK_TCPDF_CALLS_IN_HTML">K_TCPDF_CALLS_IN_HTML</a><br>&nbsp;&nbsp;&nbsp;&nbsp;if true allows to call TCPDF methods using HTML syntax  IMPORTANT: For security reason, disable this feature if you are printing user HTML content.</dd>
 							<dt><b>K_THAI_TOPCHARS</b></dt>
 				<dd>in file tcpdf_config.php, constant <a href="com-tecnick-tcpdf/_config---tcpdf_config.php.html#defineK_THAI_TOPCHARS">K_THAI_TOPCHARS</a><br>&nbsp;&nbsp;&nbsp;&nbsp;set to true to enable the special procedure used to avoid the overlappind of symbols on Thai language</dd>
 							<dt><b>K_TITLE_MAGNIFICATION</b></dt>
@@ -1311,6 +1313,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodScaleY">TCPDF::ScaleY()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Vertical Scaling.</dd>
 							<dt><b>selectColumn</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodselectColumn">TCPDF::selectColumn()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set position at a given column</dd>
+							<dt><b>serializeTCPDFtagParameters</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodserializeTCPDFtagParameters">TCPDF::serializeTCPDFtagParameters()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Serialize an array of parameters to be used with TCPDF tag in HTML code.</dd>
 							<dt><b>setAlpha</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetAlpha">TCPDF::setAlpha()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set alpha for stroking (CA) and non-stroking (ca) operations.</dd>
 							<dt><b>SetAuthor</b></dt>
@@ -1320,9 +1324,9 @@
 							<dt><b>setBarcode</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetBarcode">TCPDF::setBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set document barcode.</dd>
 							<dt><b>setBarcode</b></dt>
-				<dd>in file barcodes.php, method <a href="com-tecnick-tcpdf/TCPDFBarcode.html#methodsetBarcode">TCPDFBarcode::setBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set the barcode.</dd>
-							<dt><b>setBarcode</b></dt>
 				<dd>in file 2dbarcodes.php, method <a href="com-tecnick-tcpdf/TCPDF2DBarcode.html#methodsetBarcode">TCPDF2DBarcode::setBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set the barcode.</dd>
+							<dt><b>setBarcode</b></dt>
+				<dd>in file barcodes.php, method <a href="com-tecnick-tcpdf/TCPDFBarcode.html#methodsetBarcode">TCPDFBarcode::setBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set the barcode.</dd>
 							<dt><b>SetBooklet</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodSetBooklet">TCPDF::SetBooklet()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set the booklet mode for double-sided pages.</dd>
 							<dt><b>setBuffer</b></dt>
@@ -1430,7 +1434,7 @@
 							<dt><b>setPageFormat</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetPageFormat">TCPDF::setPageFormat()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set the page format</dd>
 							<dt><b>setPageMark</b></dt>
-				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetPageMark">TCPDF::setPageMark()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set start-writing mark on current page for multicell borders and fills.</dd>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetPageMark">TCPDF::setPageMark()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set start-writing mark on current page stream used to put borders and fills.</dd>
 							<dt><b>setPageOrientation</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetPageOrientation">TCPDF::setPageOrientation()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set page orientation.</dd>
 							<dt><b>setPageUnit</b></dt>
@@ -1840,7 +1844,7 @@
 	<a href="elementindex.html#top">top</a><br>
         <div class="credit">
 		    <hr />
-		    Documentation generated on Thu, 01 Apr 2010 20:40:04 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
+		    Documentation generated on Fri, 02 Apr 2010 15:30:04 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
 	      </div>
       </td></tr></table>
     </td>

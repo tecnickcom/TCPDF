@@ -1,3 +1,7 @@
+4.9.006 (2010-04-02)
+		- The constant K_TCPDF_CALLS_IN_HTML was added on configuration file to enable/disable the ability to call TCPDF methods in HTML.
+		- The usage of tcpdf tag in HTML mode was changed to remove the possible security flaw offered by the eval() function. See the new example n. 49 for further information.
+
 4.9.005 (2010-04-01)
 		- Bug# 2980354 "Wrong File attachment description with security" was fixed.
 		- Several problems with HTML line alignment were fixed.

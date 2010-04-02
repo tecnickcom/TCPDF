@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-04-01
+// Last Update : 2010-04-02
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.9.005
+// Version     : 4.9.006
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -131,7 +131,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.9.005
+ * @version 4.9.006
  */
 
 /**
@@ -155,14 +155,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 4.9.005 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.9.006 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.9.005
+	* @version 4.9.006
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -2504,7 +2504,8 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
-	 	 * Set start-writing mark on current page for multicell borders and fills.
+	 	 * Set start-writing mark on current page stream used to put borders and fills.
+	 	 * Borders and fills are always created after content and inserted on the position marked by this method.
 	 	 * This function must be called after calling Image() function for a background image.
 	 	 * Background images must be always inserted before calling Multicell() or WriteHTMLCell() or WriteHTML() functions.
 	 	 * @access public
@@ -15419,19 +15420,22 @@ if (!class_exists('TCPDF', false)) {
 					break;
 				}
 				case 'tcpdf': {
-					// NOT HTML: used to call TCPDF methods
-					if (isset($tag['attribute']['method'])) {
-						$tcpdf_method = $tag['attribute']['method'];
-						if (method_exists($this, $tcpdf_method)) {
-							if (isset($tag['attribute']['params']) AND (!empty($tag['attribute']['params']))) {
-								eval('$params = array('.$this->unhtmlentities($tag['attribute']['params']).');');
-								call_user_func_array(array($this, $tcpdf_method), $params);
-							} else {
-								$this->$tcpdf_method();
+					if (defined('K_TCPDF_CALLS_IN_HTML') AND (K_TCPDF_CALLS_IN_HTML === true)) {
+						// Special tag used to call TCPDF methods
+						if (isset($tag['attribute']['method'])) {
+							$tcpdf_method = $tag['attribute']['method'];
+							if (method_exists($this, $tcpdf_method)) {
+								if (isset($tag['attribute']['params']) AND (!empty($tag['attribute']['params']))) {
+									$params = unserialize(urldecode($tag['attribute']['params']));
+									call_user_func_array(array($this, $tcpdf_method), $params);
+								} else {
+									$this->$tcpdf_method();
+								}
+								$this->newline = true;
 							}
-							$this->newline = true;
 						}
 					}
+					break;
 				}
 				default: {
 					break;
@@ -17181,6 +17185,17 @@ if (!class_exists('TCPDF', false)) {
 				// print table header
 				$this->writeHTML($this->thead, false, false, false, false, '');
 			}
+		}
+
+		/**
+		 * Serialize an array of parameters to be used with TCPDF tag in HTML code.
+		 * @param array $pararray parameters array
+		 * @return sting containing serialized data
+		 * @access public
+	 	 * @since 4.9.006 (2010-04-02)
+		 */
+		public function serializeTCPDFtagParameters($pararray) {
+			return urlencode(serialize($pararray));
 		}
 
 	} // END OF TCPDF CLASS
