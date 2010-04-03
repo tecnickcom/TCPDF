@@ -44,7 +44,7 @@ echo '<'.'?'.'xml version="1.0" encoding="UTF-8"'.'?'.'>';
 <li>Page Groups: [<a href="example_023.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Object Visibility: [<a href="example_024.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Object Transparency: [<a href="example_025.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
-<li>Text Clipping: [<a href="example_026.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
+<li>Text Rendering Modes and Text Clipping: [<a href="example_026.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Barcodes: [<a href="example_027.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Multiple page formats: [<a href="example_028.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Set PDF viewer display preferences: [<a href="example_029.php" title="PDF [new window]" target="_blank">PDF</a>]</li>

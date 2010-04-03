@@ -1,3 +1,9 @@
+4.9.008 (2010-04-03)
+		- Additional line space after table header was removed.
+		- Support for HTML lists in multicolumn mode was added.
+		- The method setTextRenderingMode() was added to set text rendering modes (see the example n. 26).
+		- The following HTML attributes were added to set text rendering modes (see the example n. 26): stroke, strokecolor, fill.
+
 4.9.007 (2010-04-03)
 		- Font Descent computation was fixed (patch #2981441).
 
