@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-04-02
+// Last Update : 2010-04-03
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.9.006
+// Version     : 4.9.007
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -131,7 +131,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.9.006
+ * @version 4.9.007
  */
 
 /**
@@ -155,14 +155,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 4.9.006 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.9.007 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.9.006
+	* @version 4.9.007
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -2518,6 +2518,7 @@ if (!class_exists('TCPDF', false)) {
 
 		/**
 	 	 * Set start-writing mark on selected page.
+	 	 * Borders and fills are always created after content and inserted on the position marked by this method.
 	 	 * @param int $page page number (default is the current page)
 	 	 * @access protected
 	 	 * @since 4.6.021 (2009-07-20)
@@ -3463,7 +3464,7 @@ if (!class_exists('TCPDF', false)) {
 			} else {
 				$this->FontAscent = 0.85 * $this->FontSize;
 			}
-			if (isset($this->CurrentFont['desc']['Descent']) AND ($this->CurrentFont['desc']['Descent'] > 0)) {
+			if (isset($this->CurrentFont['desc']['Descent']) AND ($this->CurrentFont['desc']['Descent'] <= 0)) {
 				$this->FontDescent = - $this->CurrentFont['desc']['Descent'] * $this->FontSize / 1000;
 			} else {
 				$this->FontDescent = 0.15 * $this->FontSize;
@@ -3486,7 +3487,7 @@ if (!class_exists('TCPDF', false)) {
 			//Set font size in points
 			$sizek = $size / $this->k;
 			$fontdata = $this->AddFont($font, $style);
-			if (isset($fontdata['desc']['Descent']) AND ($fontdata['desc']['Descent'] > 0)) {
+			if (isset($fontdata['desc']['Descent']) AND ($fontdata['desc']['Descent'] <= 0)) {
 				$descent = - $fontdata['desc']['Descent'] * $sizek / 1000;
 			} else {
 				$descent = 0.15 * $sizek;

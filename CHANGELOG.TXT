@@ -1,6 +1,9 @@
+4.9.007 (2010-04-03)
+		- Font Descent computation was fixed (patch #2981441).
+
 4.9.006 (2010-04-02)
 		- The constant K_TCPDF_CALLS_IN_HTML was added on configuration file to enable/disable the ability to call TCPDF methods in HTML.
-		- The usage of tcpdf tag in HTML mode was changed to remove the possible security flaw offered by the eval() function. See the new example n. 49 for further information.
+		- The usage of tcpdf tag in HTML mode was changed to remove the possible security flaw offered by the eval() function (thanks to Matthias Hecker for spotting this security problem). See the new example n. 49 for further information.
 
 4.9.005 (2010-04-01)
 		- Bug# 2980354 "Wrong File attachment description with security" was fixed.
