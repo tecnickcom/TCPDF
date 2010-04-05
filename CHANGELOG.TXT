@@ -1,3 +1,6 @@
+4.9.009 (2010-04-05)
+		- Text() method was fixed for backward compatibility.
+
 4.9.008 (2010-04-03)
 		- Additional line space after table header was removed.
 		- Support for HTML lists in multicolumn mode was added.

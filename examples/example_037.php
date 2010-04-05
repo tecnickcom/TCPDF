@@ -2,13 +2,13 @@
 //============================================================+
 // File name   : example_037.php
 // Begin       : 2008-09-12
-// Last Update : 2009-09-30
-// 
+// Last Update : 2010-04-05
+//
 // Description : Example 037 for TCPDF class
 //               Spot colors
-// 
+//
 // Author: Nicola Asuni
-// 
+//
 // (c) Copyright:
 //               Nicola Asuni
 //               Tecnick.com s.r.l.
@@ -34,7 +34,7 @@ require_once('../config/lang/eng.php');
 require_once('../tcpdf.php');
 
 // create new PDF document
-$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false); 
+$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
 // set document information
 $pdf->SetCreator(PDF_CREATOR);
@@ -62,10 +62,10 @@ $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
 //set image scale factor
-$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO); 
+$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 //set some language-dependent strings
-$pdf->setLanguageArray($l); 
+$pdf->setLanguageArray($l);
 
 // ---------------------------------------------------------
 
@@ -103,85 +103,85 @@ $starty = 30;
 // print some spot colors
 $pdf->SetFillSpotColor('Pantone 116 C', 100);
 $pdf->Rect(30, $starty, 20, 6, 'DF');
-$pdf->Text(53, $starty + 4, 'Pantone 116 C');
+$pdf->Text(53, $starty + 1, 'Pantone 116 C');
 
 $starty += 8;
 
 $pdf->SetFillSpotColor('HKS 16 K', 100);
 $pdf->Rect(30, $starty, 20, 6, 'DF');
-$pdf->Text(53, $starty + 4, 'HKS 16 K');
+$pdf->Text(53, $starty + 1, 'HKS 16 K');
 
 $starty += 8;
 
 $pdf->SetFillSpotColor('Pantone 505 C', 100);
 $pdf->Rect(30, $starty, 20, 6, 'DF');
-$pdf->Text(53, $starty + 4, 'Pantone 505 C');
+$pdf->Text(53, $starty + 1, 'Pantone 505 C');
 
 $starty += 8;
 
 $pdf->SetFillSpotColor('Pantone 440 C', 100);
 $pdf->Rect(30, $starty, 20, 6, 'DF');
-$pdf->Text(53, $starty + 4, 'Pantone 440 C');
+$pdf->Text(53, $starty + 1, 'Pantone 440 C');
 
 $starty += 8;
 
 $pdf->SetFillSpotColor('Pantone 288 C', 100);
 $pdf->Rect(30, $starty, 20, 6, 'DF');
-$pdf->Text(53, $starty + 4, 'Pantone 288 C');
+$pdf->Text(53, $starty + 1, 'Pantone 288 C');
 
 $starty += 8;
 
 $pdf->SetFillSpotColor('Pantone 289 C', 100);
 $pdf->Rect(30, $starty, 20, 6, 'DF');
-$pdf->Text(53, $starty + 4, 'Pantone 289 C');
+$pdf->Text(53, $starty + 1, 'Pantone 289 C');
 
 $starty += 8;
 
 $pdf->SetFillSpotColor('Pantone 356 C', 100);
 $pdf->Rect(30, $starty, 20, 6, 'DF');
-$pdf->Text(53, $starty + 4, 'Pantone 356 C');
+$pdf->Text(53, $starty + 1, 'Pantone 356 C');
 
 $starty += 8;
 
 $pdf->SetFillSpotColor('Pantone 567 C', 100);
 $pdf->Rect(30, $starty, 20, 6, 'DF');
-$pdf->Text(53, $starty + 4, 'Pantone 567 C');
+$pdf->Text(53, $starty + 1, 'Pantone 567 C');
 
 $starty += 8;
 
 $pdf->SetFillSpotColor('Pantone 9060 C', 100);
 $pdf->Rect(30, $starty, 20, 6, 'DF');
-$pdf->Text(53, $starty + 4, 'Pantone 9060 C');
+$pdf->Text(53, $starty + 1, 'Pantone 9060 C');
 
 $starty += 8;
 
 $pdf->SetFillSpotColor('Pantone 420 C', 100);
 $pdf->Rect(30, $starty, 20, 6, 'DF');
-$pdf->Text(53, $starty + 4, 'Pantone 420 C');
+$pdf->Text(53, $starty + 1, 'Pantone 420 C');
 
 $starty += 8;
 
 $pdf->SetFillSpotColor('Pantone 422 C', 100);
 $pdf->Rect(30, $starty, 20, 6, 'DF');
-$pdf->Text(53, $starty + 4, 'Pantone 422 C');
+$pdf->Text(53, $starty + 1, 'Pantone 422 C');
 
 $starty += 8;
 
 $pdf->SetFillSpotColor('Pantone 433 C', 100);
 $pdf->Rect(30, $starty, 20, 6, 'DF');
-$pdf->Text(53, $starty + 4, 'Pantone 433 C');
+$pdf->Text(53, $starty + 1, 'Pantone 433 C');
 
 $starty += 8;
 
 $pdf->SetFillSpotColor('Pantone 601 C', 100);
 $pdf->Rect(30, $starty, 20, 6, 'DF');
-$pdf->Text(53, $starty + 4, 'Pantone 601 C');
+$pdf->Text(53, $starty + 1, 'Pantone 601 C');
 
 $starty += 8;
 
 $pdf->SetFillSpotColor('Pantone 659 C', 100);
 $pdf->Rect(30, $starty, 20, 6, 'DF');
-$pdf->Text(53, $starty + 4, 'Pantone 659 C');
+$pdf->Text(53, $starty + 1, 'Pantone 659 C');
 
 // ---------------------------------------------------------
 
@@ -189,6 +189,6 @@ $pdf->Text(53, $starty + 4, 'Pantone 659 C');
 $pdf->Output('example_037.pdf', 'I');
 
 //============================================================+
-// END OF FILE                                                 
+// END OF FILE
 //============================================================+
 ?>

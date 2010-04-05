@@ -2,13 +2,13 @@
 //============================================================+
 // File name   : example_025.php
 // Begin       : 2008-03-04
-// Last Update : 2009-09-30
-// 
+// Last Update : 2010-04-05
+//
 // Description : Example 025 for TCPDF class
 //               Object Transparency
-// 
+//
 // Author: Nicola Asuni
-// 
+//
 // (c) Copyright:
 //               Nicola Asuni
 //               Tecnick.com s.r.l.
@@ -34,7 +34,7 @@ require_once('../config/lang/eng.php');
 require_once('../tcpdf.php');
 
 // create new PDF document
-$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false); 
+$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
 // set document information
 $pdf->SetCreator(PDF_CREATOR);
@@ -62,10 +62,10 @@ $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
 //set image scale factor
-$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO); 
+$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 //set some language-dependent strings
-$pdf->setLanguageArray($l); 
+$pdf->setLanguageArray($l);
 
 // ---------------------------------------------------------
 
@@ -76,14 +76,14 @@ $pdf->SetFont('helvetica', 'BI', 8);
 $pdf->AddPage();
 
 /*
- * setAlpha() gives transparency support. You can set the 
- * alpha channel from 0 (fully transparent) to 1 (fully 
- * opaque). It applies to all elements (text, drawings, 
+ * setAlpha() gives transparency support. You can set the
+ * alpha channel from 0 (fully transparent) to 1 (fully
+ * opaque). It applies to all elements (text, drawings,
  * images).
  */
- 
+
 $pdf->SetLineWidth(1.5);
-    
+
 // draw opaque red square
 $pdf->SetFillColor(255, 0, 0);
 $pdf->Rect(30, 60, 40, 40, 'DF');
@@ -102,7 +102,7 @@ $pdf->Image('../images/image_demo.jpg', 50, 80, 40, 40, '', 'http://www.tcpdf.or
 $pdf->SetAlpha(1);
 
 // print name
-$pdf->Text(55,85,'TRANSPARENCY');
+$pdf->Text(55, 82, 'TRANSPARENCY');
 
 // ---------------------------------------------------------
 
@@ -110,6 +110,6 @@ $pdf->Text(55,85,'TRANSPARENCY');
 $pdf->Output('example_025.pdf', 'I');
 
 //============================================================+
-// END OF FILE                                                 
+// END OF FILE
 //============================================================+
 ?>

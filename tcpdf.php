@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-04-03
+// Last Update : 2010-04-05
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.9.008
+// Version     : 4.9.009
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -131,7 +131,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.9.008
+ * @version 4.9.009
  */
 
 /**
@@ -155,14 +155,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 4.9.008 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.9.009 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.9.008
+	* @version 4.9.009
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -3719,25 +3719,25 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
-		* DEPRECATED! Prints a character string.
+		* Prints a text cell at the specified position.
 		* The origin is on the left of the first charcter, on the baseline.
 		* This method allows to place a string precisely on the page.
-		* @param float $x Abscissa of the origin
-		* @param float $y Ordinate of the origin
+		* @param float $x Abscissa of the cell origin
+		* @param float $y Ordinate of the cell origin
 		* @param string $txt String to print
 		* @param int $stroke outline size in user units (false = disable)
 		* @param boolean $clip if true activate clipping mode (you must call StartTransform() before this function and StopTransform() to stop the clipping tranformation).
 		* @param boolean $fill if true fills the text
 		* @access public
 		* @since 1.0
-		* @deprecated deprecated since version 4.3.005 (2008-11-25)
 		* @see Cell(), Write(), MultiCell(), WriteHTML(), WriteHTMLCell()
 		*/
 		public function Text($x, $y, $txt, $stroke=false, $clip=false, $fill=true) {
 			$textrendermode = $this->textrendermode;
 			$textstrokewidth = $this->textstrokewidth;
-			$this->setTextRenderingMode($fill, $stroke, $clip);
-			$this->Write(0, $txt, '', 0, '', false, 0, false, false, 0);
+			$this->setTextRenderingMode($stroke, $fill, $clip);
+			$this->SetXY($x, $y);
+			$this->Cell(0, 0, $txt, 0, 0, '', 0, '', 0, false);
 			// restore previous rendering mode
 			$this->textrendermode = $textrendermode;
 			$this->textstrokewidth = $textstrokewidth;

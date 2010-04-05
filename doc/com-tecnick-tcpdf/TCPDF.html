@@ -80,7 +80,7 @@ Source Location: /tcpdf.php<br /><br />
                 
 <h4>Version:</h4>
 <ul>
-  <li>4.9.008</li>
+  <li>4.9.009</li>
 </ul>
 
         
@@ -662,7 +662,7 @@ This is a PHP class for generating PDF documents without requiring external exte
     <td><b>author:</b>&nbsp;&nbsp;</td><td>Nicola Asuni - info@tecnick.com</td>
   </tr>
   <tr>
-    <td><b>version:</b>&nbsp;&nbsp;</td><td>4.9.008</td>
+    <td><b>version:</b>&nbsp;&nbsp;</td><td>4.9.009</td>
   </tr>
   <tr>
     <td><b>link:</b>&nbsp;&nbsp;</td><td><a href="http://www.tcpdf.org">http://www.tcpdf.org</a></td>
@@ -18261,7 +18261,7 @@ $reverse = true])</code>
   </div>
   <hr />
 	<a name="methodText"></a>
-	<h3>method Text <span class="smalllinenumber">[line 3736]</span></h3>
+	<h3>method Text <span class="smalllinenumber">[line 3735]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -18276,15 +18276,12 @@ $fill = true])</code>
     </td></tr></table>
     </td></tr></table><br />
 	
-		DEPRECATED! Prints a character string.<br /><br /><p>The origin is on the left of the first charcter, on the baseline.  This method allows to place a string precisely on the page.</p><br /><br /><br />
+		Prints a text cell at the specified position.<br /><br /><p>The origin is on the left of the first charcter, on the baseline.  This method allows to place a string precisely on the page.</p><br /><br /><br />
 <h4>Tags:</h4>
 <div class="tags">
 <table border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td><b>see:</b>&nbsp;&nbsp;</td><td><a href="../com-tecnick-tcpdf/TCPDF.html#methodCell">TCPDF::Cell()</a>, <a href="../com-tecnick-tcpdf/TCPDF.html#methodWrite">TCPDF::Write()</a>, <a href="../com-tecnick-tcpdf/TCPDF.html#methodMultiCell">TCPDF::MultiCell()</a>, WriteHTML(), WriteHTMLCell()</td>
-  </tr>
-  <tr>
-    <td><b>deprecated:</b>&nbsp;&nbsp;</td><td>deprecated since version 4.3.005 (2008-11-25)</td>
   </tr>
   <tr>
     <td><b>since:</b>&nbsp;&nbsp;</td><td>1.0</td>
@@ -18303,12 +18300,12 @@ $fill = true])</code>
           <tr>
         <td class="type">float&nbsp;&nbsp;</td>
         <td><b>$x</b>&nbsp;&nbsp;</td>
-        <td>Abscissa of the origin</td>
+        <td>Abscissa of the cell origin</td>
       </tr>
           <tr>
         <td class="type">float&nbsp;&nbsp;</td>
         <td><b>$y</b>&nbsp;&nbsp;</td>
-        <td>Ordinate of the origin</td>
+        <td>Ordinate of the cell origin</td>
       </tr>
           <tr>
         <td class="type">string&nbsp;&nbsp;</td>
@@ -22218,7 +22215,7 @@ $file)</code>
 
         <div class="credit">
 		    <hr />
-		    Documentation generated on Sat, 03 Apr 2010 18:46:40 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
+		    Documentation generated on Mon, 05 Apr 2010 20:45:29 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
 	      </div>
       </td></tr></table>
     </td>
