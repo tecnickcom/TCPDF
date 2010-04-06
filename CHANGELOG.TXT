@@ -1,3 +1,8 @@
+4.9.010 (2010-04-06)
+		- Signature of Cell() method now includes a new parameters for vertical alignment (see example n. 57).
+		- Text() method was extended to include all Cell() parameters.
+		- HTML line alignment procedure was changed to fix some bugs.
+
 4.9.009 (2010-04-05)
 		- Text() method was fixed for backward compatibility.
 
