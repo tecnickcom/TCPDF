@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_057.php
 // Begin       : 2010-04-03
-// Last Update : 2010-04-06
+// Last Update : 2010-04-07
 //
 // Description : Example 057 for TCPDF class
 //               Cell vertical alignments
@@ -70,32 +70,53 @@ $pdf->setLanguageArray($l);
 // ---------------------------------------------------------
 
 // set font
-$pdf->SetFont('helvetica', '', 14);
+$pdf->SetFont('helvetica', '', 11);
 
 // add a page
 $pdf->AddPage();
 
+$pdf->SetLineWidth(0.7);
+
 $pdf->setCellHeightRatio(3);
 
-$pdf->SetXY(17, 50);
+$pdf->SetXY(15, 50);
 
-$pdf->Cell(35, 0, 'Cell Top', 1, $ln=0, 'C', 0, '', 0, false, 'T');
-$pdf->Cell(35, 0, 'Font Top', 1, $ln=0, 'C', 0, '', 0, false, 'A');
-$pdf->Cell(35, 0, 'Font Baseline', 1, $ln=0, 'C', 0, '', 0, false, 'L');
-$pdf->Cell(35, 0, 'Font Bottom', 1, $ln=0, 'C', 0, '', 0, false, 'D');
-$pdf->Cell(35, 0, 'Cell Bottom', 1, $ln=0, 'C', 0, '', 0, false, 'B');
-
-
-
-$pdf->SetXY(30, 70);
-
-$pdf->Cell(50, 0, 'Text Top', 1, $ln=0, 'C', 0, '', 0, false, 'T', 'T');
-$pdf->Cell(50, 0, 'Text Center', 1, $ln=0, 'C', 0, '', 0, false, 'T', 'M');
-$pdf->Cell(50, 0, 'Text Bottom', 1, $ln=0, 'C', 0, '', 0, false, 'T', 'B');
+// text on center
+$pdf->Cell(30, 0, 'Top-Center', 1, $ln=0, 'C', 0, '', 0, false, 'T', 'C');
+$pdf->Cell(30, 0, 'Center-Center', 1, $ln=0, 'C', 0, '', 0, false, 'C', 'C');
+$pdf->Cell(30, 0, 'Bottom-Center', 1, $ln=0, 'C', 0, '', 0, false, 'B', 'C');
+$pdf->Cell(30, 0, 'Ascent-Center', 1, $ln=0, 'C', 0, '', 0, false, 'A', 'C');
+$pdf->Cell(30, 0, 'Baseline-Center', 1, $ln=0, 'C', 0, '', 0, false, 'L', 'C');
+$pdf->Cell(30, 0, 'Descent-Center', 1, $ln=0, 'C', 0, '', 0, false, 'D', 'C');
 
 
+$pdf->SetXY(15, 80);
+
+// text on top
+$pdf->Cell(30, 0, 'Top-Top', 1, $ln=0, 'C', 0, '', 0, false, 'T', 'T');
+$pdf->Cell(30, 0, 'Center-Top', 1, $ln=0, 'C', 0, '', 0, false, 'C', 'T');
+$pdf->Cell(30, 0, 'Bottom-Top', 1, $ln=0, 'C', 0, '', 0, false, 'B', 'T');
+$pdf->Cell(30, 0, 'Ascent-Top', 1, $ln=0, 'C', 0, '', 0, false, 'A', 'T');
+$pdf->Cell(30, 0, 'Baseline-Top', 1, $ln=0, 'C', 0, '', 0, false, 'L', 'T');
+$pdf->Cell(30, 0, 'Descent-Top', 1, $ln=0, 'C', 0, '', 0, false, 'D', 'T');
+
+
+$pdf->SetXY(15, 110);
+
+// text on bottom
+$pdf->Cell(30, 0, 'Top-Bottom', 1, $ln=0, 'C', 0, '', 0, false, 'T', 'B');
+$pdf->Cell(30, 0, 'Center-Bottom', 1, $ln=0, 'C', 0, '', 0, false, 'C', 'B');
+$pdf->Cell(30, 0, 'Bottom-Bottom', 1, $ln=0, 'C', 0, '', 0, false, 'B', 'B');
+$pdf->Cell(30, 0, 'Ascent-Bottom', 1, $ln=0, 'C', 0, '', 0, false, 'A', 'B');
+$pdf->Cell(30, 0, 'Baseline-Bottom', 1, $ln=0, 'C', 0, '', 0, false, 'L', 'B');
+$pdf->Cell(30, 0, 'Descent-Bottom', 1, $ln=0, 'C', 0, '', 0, false, 'D', 'B');
+
+
+// draw some reference lines
 $linestyle = array('width' => 0.1, 'cap' => 'butt', 'join' => 'miter', 'dash' => '', 'phase' => 0, 'color' => array(255, 0, 0));
 $pdf->Line(15, 50, 195, 50, $linestyle);
+$pdf->Line(15, 80, 195, 80, $linestyle);
+$pdf->Line(15, 110, 195, 110, $linestyle);
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

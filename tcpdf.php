@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-04-06
+// Last Update : 2010-04-07
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.9.010
+// Version     : 4.9.011
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -35,31 +35,26 @@
 //
 // Main features:
 //  * no external libraries are required for the basic functions;
-// 	* supports all ISO page formats;
-// 	* supports custom page formats, margins and units of measure;
-// 	* supports UTF-8 Unicode and Right-To-Left languages;
-// 	* supports TrueTypeUnicode, OpenTypeUnicode, TrueType, OpenType, Type1 and CID-0 fonts;
-// 	* supports document encryption;
-// 	* includes methods to publish some XHTML code, including forms;
-// 	* includes graphic (geometric) and transformation methods;
-// 	* includes Javascript and Forms support;
-// 	* includes a method to print various barcode formats: CODE 39, ANSI MH10.8M-1983, USD-3, 3 of 9, CODE 93, USS-93, Standard 2 of 5, Interleaved 2 of 5, CODE 128 A/B/C, 2 and 5 Digits UPC-Based Extention, EAN 8, EAN 13, UPC-A, UPC-E, MSI, POSTNET, PLANET, RMS4CC (Royal Mail 4-state Customer Code), CBC (Customer Bar Code), KIX (Klant index - Customer index), Intelligent Mail Barcode, Onecode, USPS-B-3200, CODABAR, CODE 11, PHARMACODE, PHARMACODE TWO-TRACKS, QR-Code;
-// 	* includes methods to set Bookmarks and print a Table of Content;
-// 	* includes methods to move and delete pages;
-// 	* includes methods for automatic page header and footer management;
-//  * supports multi-column mode;
-// 	* supports automatic page break;
-// 	* supports automatic page numbering and page groups;
-// 	* supports automatic line break and text justification;
-// 	* supports JPEG and PNG images natively, all images supported by GD (GD, GD2, GD2PART, GIF, JPEG, PNG, BMP, XBM, XPM) and all images supported via ImagMagick (http://www.imagemagick.org/www/formats.html)
-// 	* supports stroke and clipping mode for text;
-// 	* supports clipping masks;
-// 	* supports Grayscale, RGB, CMYK, Spot Colors and Transparencies;
-// 	* supports several annotations, including links, text and file attachments;
-// 	* supports page compression (requires zlib extension);
-//  * supports text hyphenation.
-//  * supports transactions to UNDO commands.
-//  * supports signature certifications.
+//  * all ISO page formats, custom page formats, custom margins and units of measure;
+//  * UTF-8 Unicode and Right-To-Left languages;
+//  * TrueTypeUnicode, OpenTypeUnicode, TrueType, OpenType, Type1 and CID-0 fonts;
+//  * methods to publish some XHTML code, Javascript and Forms;
+//  * images, graphic (geometric figures) and transformation methods;
+//  * supports JPEG and PNG images natively, all images supported by GD (GD, GD2, GD2PART, GIF, JPEG, PNG, BMP, XBM, XPM) and all images supported via ImagMagick (http://www.imagemagick.org/www/formats.html)
+//  * 1D and 2D barcodes: CODE 39, ANSI MH10.8M-1983, USD-3, 3 of 9, CODE 93, USS-93, Standard 2 of 5, Interleaved 2 of 5, CODE 128 A/B/C, 2 and 5 Digits UPC-Based Extention, EAN 8, EAN 13, UPC-A, UPC-E, MSI, POSTNET, PLANET, RMS4CC (Royal Mail 4-state Customer Code), CBC (Customer Bar Code), KIX (Klant index - Customer index), Intelligent Mail Barcode, Onecode, USPS-B-3200, CODABAR, CODE 11, PHARMACODE, PHARMACODE TWO-TRACKS, QR-Code;
+//  * Grayscale, RGB, CMYK, Spot Colors and Transparencies;
+//  * automatic page header and footer management;
+//  * document encryption and digital signature certifications;
+//  * transactions to UNDO commands;
+//  * PDF annotations, including links, text and file attachments;
+//  * text rendering modes (fill, stroke and clipping);
+//  * multiple columns mode;
+//  * bookmarks and table of content;
+//  * text hyphenation;
+//  * automatic page break, line break and text alignments including justification;
+//  * automatic page numbering and page groups;
+//  * move and delete pages;
+//  * page compression (requires php-zlib extension);
 //
 // -----------------------------------------------------------
 // THANKS TO:
@@ -97,32 +92,27 @@
  * TCPDF project (http://www.tcpdf.org) was originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * <h3>TCPDF main features are:</h3>
  * <ul>
-* <li>no external libraries are required for the basic functions;</li>
-* <li>supports all ISO page formats;</li>
-* <li>supports custom page formats, margins and units of measure;</li>
-* <li>supports UTF-8 Unicode and Right-To-Left languages;</li>
-* <li>supports TrueTypeUnicode, OpenTypeUnicode, TrueType, OpenType, Type1 and CID-0 fonts;</li>
-* <li>supports document encryption;</li>
-* <li>includes methods to publish some XHTML code, including forms;</li>
-* <li>includes graphic (geometric) and transformation methods;</li>
-* <li>includes Javascript and Forms support;</li>
-* <li>includes a method to print various barcode formats: CODE 39, ANSI MH10.8M-1983, USD-3, 3 of 9, CODE 93, USS-93, Standard 2 of 5, Interleaved 2 of 5, CODE 128 A/B/C, 2 and 5 Digits UPC-Based Extention, EAN 8, EAN 13, UPC-A, UPC-E, MSI, POSTNET, PLANET, RMS4CC (Royal Mail 4-state Customer Code), CBC (Customer Bar Code), KIX (Klant index - Customer index), Intelligent Mail Barcode, Onecode, USPS-B-3200, CODABAR, CODE 11, PHARMACODE, PHARMACODE TWO-TRACKS</li>
-* <li>includes methods to set Bookmarks and print a Table of Content;</li>
-* <li>includes methods to move and delete pages;</li>
-* <li>includes methods for automatic page header and footer management;</li>
-* <li>supports multi-column mode;</li>
-* <li>supports automatic page break;</li>
-* <li>supports automatic page numbering and page groups;</li>
-* <li>supports automatic line break and text justification;</li>
-* <li>supports JPEG and PNG images natively, all images supported by GD (GD, GD2, GD2PART, GIF, JPEG, PNG, BMP, XBM, XPM) and all images supported via ImagMagick (http://www.imagemagick.org/www/formats.html)</li>
-* <li>supports stroke and clipping mode for text;</li>
-* <li>supports clipping masks;</li>
-* <li>supports Grayscale, RGB, CMYK, Spot Colors and Transparencies;</li>
-* <li>supports several annotations, including links, text and file attachments;</li>
-* <li>supports page compression (requires zlib extension);</li>
-* <li>supports text hyphenation.</li>
-* <li>supports transactions to UNDO commands.</li>
-* <li>supports signature certifications.</li>
+ * <li>no external libraries are required for the basic functions;</li>
+ * <li>all ISO page formats, custom page formats, custom margins and units of measure;</li>
+ * <li>UTF-8 Unicode and Right-To-Left languages;</li>
+ * <li>TrueTypeUnicode, OpenTypeUnicode, TrueType, OpenType, Type1 and CID-0 fonts;</li>
+ * <li>methods to publish some XHTML code, Javascript and Forms;</li>
+ * <li>images, graphic (geometric figures) and transformation methods;
+ * <li>supports JPEG and PNG images natively, all images supported by GD (GD, GD2, GD2PART, GIF, JPEG, PNG, BMP, XBM, XPM) and all images supported via ImagMagick (http://www.imagemagick.org/www/formats.html)</li>
+ * <li>1D and 2D barcodes: CODE 39, ANSI MH10.8M-1983, USD-3, 3 of 9, CODE 93, USS-93, Standard 2 of 5, Interleaved 2 of 5, CODE 128 A/B/C, 2 and 5 Digits UPC-Based Extention, EAN 8, EAN 13, UPC-A, UPC-E, MSI, POSTNET, PLANET, RMS4CC (Royal Mail 4-state Customer Code), CBC (Customer Bar Code), KIX (Klant index - Customer index), Intelligent Mail Barcode, Onecode, USPS-B-3200, CODABAR, CODE 11, PHARMACODE, PHARMACODE TWO-TRACKS, QR-Code;</li>
+ * <li>Grayscale, RGB, CMYK, Spot Colors and Transparencies;</li>
+ * <li>automatic page header and footer management;</li>
+ * <li>document encryption and digital signature certifications;</li>
+ * <li>transactions to UNDO commands;</li>
+ * <li>PDF annotations, including links, text and file attachments;</li>
+ * <li>text rendering modes (fill, stroke and clipping);</li>
+ * <li>multiple columns mode;</li>
+ * <li>bookmarks and table of content;</li>
+ * <li>text hyphenation;</li>
+ * <li>automatic page break, line break and text alignments including justification;</li>
+ * <li>automatic page numbering and page groups;</li>
+ * <li>move and delete pages;</li>
+ * <li>page compression (requires php-zlib extension);</li>
  * </ul>
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
@@ -131,7 +121,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.9.010
+ * @version 4.9.011
  */
 
 /**
@@ -155,14 +145,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 4.9.010 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.9.011 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.9.010
+	* @version 4.9.011
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -3832,7 +3822,7 @@ if (!class_exists('TCPDF', false)) {
 		* @param mixed $link URL or identifier returned by AddLink().
 		* @param int $stretch stretch carachter mode: <ul><li>0 = disabled</li><li>1 = horizontal scaling only if necessary</li><li>2 = forced horizontal scaling</li><li>3 = character spacing only if necessary</li><li>4 = forced character spacing</li></ul>
 		* @param boolean $ignore_min_height if true ignore automatic minimum height value.
-		* @param string $calign cell vertical alignment relative to the specified Y value. Possible values are:<ul><li>T : cell top</li><li>A : font top</li><li>L : font baseline</li><li>D : font bottom</li><li>B : cell bottom</li></ul>
+		* @param string $calign cell vertical alignment relative to the specified Y value. Possible values are:<ul><li>T : cell top</li><li>C : center</li><li>B : cell bottom</li><li>A : font top</li><li>L : font baseline</li><li>D : font bottom</li></ul>
 		* @param string $valign text vertical alignment inside the cell. Possible values are:<ul><li>T : top</li><li>C : center</li><li>B : bottom</li></ul>
 		* @access public
 		* @since 1.0
@@ -3887,7 +3877,7 @@ if (!class_exists('TCPDF', false)) {
 		* @param mixed $link URL or identifier returned by AddLink().
 		* @param int $stretch stretch carachter mode: <ul><li>0 = disabled</li><li>1 = horizontal scaling only if necessary</li><li>2 = forced horizontal scaling</li><li>3 = character spacing only if necessary</li><li>4 = forced character spacing</li></ul>
 		* @param boolean $ignore_min_height if true ignore automatic minimum height value.
-		* @param string $calign cell vertical alignment relative to the specified Y value. Possible values are:<ul><li>T : cell top</li><li>A : font top</li><li>L : font baseline</li><li>D : font bottom</li><li>B : cell bottom</li></ul>
+		* @param string $calign cell vertical alignment relative to the specified Y value. Possible values are:<ul><li>T : cell top</li><li>C : center</li><li>B : cell bottom</li><li>A : font top</li><li>L : font baseline</li><li>D : font bottom</li></ul>
 		* @param string $valign text vertical alignment inside the cell. Possible values are:<ul><li>T : top</li><li>C : center</li><li>B : bottom</li></ul>
 		* @access protected
 		* @since 1.0
@@ -3909,22 +3899,78 @@ if (!class_exists('TCPDF', false)) {
 			switch ($calign) {
 				case 'A': {
 					// font top
-					$y -= (($h - $this->FontAscent - $this->FontDescent) / 2);
+					switch ($valign) {
+						case 'T': {
+							// top
+							$y -= ($this->LineWidth / 2);
+							break;
+						}
+						case 'B': {
+							// bottom
+							$y -= ($h - $this->FontAscent - $this->FontDescent - ($this->LineWidth / 2));
+							break;
+						}
+						default:
+						case 'M': {
+							// center
+							$y -= (($h - $this->FontAscent - $this->FontDescent) / 2);
+							break;
+						}
+					}
 					break;
 				}
 				case 'L': {
 					// font baseline
-					$y -= (($h + $this->FontAscent - $this->FontDescent) / 2);
+					switch ($valign) {
+						case 'T': {
+							// top
+							$y -= ($this->FontAscent + ($this->LineWidth / 2));
+							break;
+						}
+						case 'B': {
+							// bottom
+							$y -= ($h - $this->FontDescent - ($this->LineWidth / 2));
+							break;
+						}
+						default:
+						case 'M': {
+							// center
+							$y -= (($h + $this->FontAscent - $this->FontDescent) / 2);
+							break;
+						}
+					}
 					break;
 				}
 				case 'D': {
 					// font bottom
-					$y -= (($h + $this->FontAscent + $this->FontDescent) / 2);
+					switch ($valign) {
+						case 'T': {
+							// top
+							$y -= ($this->FontAscent + $this->FontDescent + ($this->LineWidth / 2));
+							break;
+						}
+						case 'B': {
+							// bottom
+							$y -= ($h - ($this->LineWidth / 2));
+							break;
+						}
+						default:
+						case 'M': {
+							// center
+							$y -= (($h + $this->FontAscent + $this->FontDescent) / 2);
+							break;
+						}
+					}
 					break;
 				}
 				case 'B': {
 					// cell bottom
 					$y -= $h;
+					break;
+				}
+				case 'C': {
+					// cell center
+					$y -= ($h / 2);
 					break;
 				}
 				default:
@@ -3937,12 +3983,12 @@ if (!class_exists('TCPDF', false)) {
 			switch ($valign) {
 				case 'T': {
 					// top
-					$basefonty = $y + $this->FontAscent + $this->LineWidth;
+					$basefonty = $y + $this->FontAscent + ($this->LineWidth / 2);
 					break;
 				}
 				case 'B': {
 					// bottom
-					$basefonty = $y + $h - $this->FontDescent - $this->LineWidth;
+					$basefonty = $y + $h - $this->FontDescent - ($this->LineWidth / 2);
 					break;
 				}
 				default:

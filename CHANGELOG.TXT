@@ -1,3 +1,6 @@
+4.9.011 (2010-04-07)
+		- Vertical alignments for Cell() method were improved (see example n. 57).
+
 4.9.010 (2010-04-06)
 		- Signature of Cell() method now includes a new parameters for vertical alignment (see example n. 57).
 		- Text() method was extended to include all Cell() parameters.

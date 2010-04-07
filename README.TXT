@@ -8,8 +8,8 @@ http://sourceforge.net/donate/index.php?group_id=128076
 ------------------------------------------------------------
 
 Name: TCPDF
-Version: 4.9.010
-Release date: 2010-04-06
+Version: 4.9.011
+Release date: 2010-04-07
 Author:	Nicola Asuni
 	
 Copyright (c) 2001-2010:
@@ -30,31 +30,27 @@ Description:
 	
 Main Features:
 //  * no external libraries are required for the basic functions;
-// 	* supports all ISO page formats;
-// 	* supports custom page formats, margins and units of measure;
-// 	* supports UTF-8 Unicode and Right-To-Left languages;
-// 	* supports TrueTypeUnicode, OpenTypeUnicode, TrueType, OpenType, Type1 and CID-0 fonts;
-// 	* supports document encryption;
-// 	* includes methods to publish some XHTML code, including forms;
-// 	* includes graphic (geometric) and transformation methods;
-// 	* includes Javascript and Forms support;
-// 	* includes a method to print various barcode formats: CODE 39, ANSI MH10.8M-1983, USD-3, 3 of 9, CODE 93, USS-93, Standard 2 of 5, Interleaved 2 of 5, CODE 128 A/B/C, 2 and 5 Digits UPC-Based Extention, EAN 8, EAN 13, UPC-A, UPC-E, MSI, POSTNET, PLANET, RMS4CC (Royal Mail 4-state Customer Code), CBC (Customer Bar Code), KIX (Klant index - Customer index), Intelligent Mail Barcode, Onecode, USPS-B-3200, CODABAR, CODE 11, PHARMACODE, PHARMACODE TWO-TRACKS, QR-Code;
-// 	* includes methods to set Bookmarks and print a Table of Content;
-// 	* includes methods to move and delete pages;
-// 	* includes methods for automatic page header and footer management;
-//  * supports multi-column mode;
-// 	* supports automatic page break;
-// 	* supports automatic page numbering and page groups;
-// 	* supports automatic line break and text justification;
-// 	* supports JPEG and PNG images natively, all images supported by GD (GD, GD2, GD2PART, GIF, JPEG, PNG, BMP, XBM, XPM) and all images supported via ImagMagick (http://www.imagemagick.org/www/formats.html)
-// 	* supports stroke and clipping mode for text;
-// 	* supports clipping masks;
-// 	* supports Grayscale, RGB, CMYK, Spot Colors and Transparencies;
-// 	* supports several annotations, including links, text and file attachments;
-// 	* supports page compression (requires zlib extension);
-//  * supports text hyphenation.
-//  * supports transactions to UNDO commands.
-//  * supports signature certifications.
+//  * all ISO page formats, custom page formats, custom margins and units of measure;
+//  * UTF-8 Unicode and Right-To-Left languages;
+//  * TrueTypeUnicode, OpenTypeUnicode, TrueType, OpenType, Type1 and CID-0 fonts;
+//  * methods to publish some XHTML code, Javascript and Forms;
+//  * images, graphic (geometric figures) and transformation methods;
+//  * supports JPEG and PNG images natively, all images supported by GD (GD, GD2, GD2PART, GIF, JPEG, PNG, BMP, XBM, XPM) and all images supported via ImagMagick (http://www.imagemagick.org/www/formats.html)
+//  * 1D and 2D barcodes: CODE 39, ANSI MH10.8M-1983, USD-3, 3 of 9, CODE 93, USS-93, Standard 2 of 5, Interleaved 2 of 5, CODE 128 A/B/C, 2 and 5 Digits UPC-Based Extention, EAN 8, EAN 13, UPC-A, UPC-E, MSI, POSTNET, PLANET, RMS4CC (Royal Mail 4-state Customer Code), CBC (Customer Bar Code), KIX (Klant index - Customer index), Intelligent Mail Barcode, Onecode, USPS-B-3200, CODABAR, CODE 11, PHARMACODE, PHARMACODE TWO-TRACKS, QR-Code;
+//  * Grayscale, RGB, CMYK, Spot Colors and Transparencies;
+//  * automatic page header and footer management;
+//  * document encryption and digital signature certifications;
+//  * transactions to UNDO commands;
+//  * PDF annotations, including links, text and file attachments;
+//  * text rendering modes (fill, stroke and clipping);
+//  * multiple columns mode;
+//  * bookmarks and table of content;
+//  * text hyphenation;
+//  * automatic page break, line break and text alignments including justification;
+//  * automatic page numbering and page groups;
+//  * move and delete pages;
+//  * page compression (requires php-zlib extension);
+
 
 Installation (full instructions on http://www.tcpdf.org):
 	1. copy the folder on your Web server
