@@ -80,7 +80,7 @@ Source Location: /tcpdf.php<br /><br />
                 
 <h4>Version:</h4>
 <ul>
-  <li>4.9.011</li>
+  <li>4.9.012</li>
 </ul>
 
         
@@ -374,6 +374,7 @@ Source Location: /tcpdf.php<br /><br />
     <li><a href="../com-tecnick-tcpdf/TCPDF.html#methodgetHeaderMargin">getHeaderMargin</a></li>
     <li><a href="../com-tecnick-tcpdf/TCPDF.html#methodgetHtmlDomArray">getHtmlDomArray</a></li>
     <li><a href="../com-tecnick-tcpdf/TCPDF.html#methodgetHTMLUnitToUnits">getHTMLUnitToUnits</a></li>
+    <li><a href="../com-tecnick-tcpdf/TCPDF.html#methodgetHyphenPatternsFromTEX">getHyphenPatternsFromTEX</a></li>
     <li><a href="../com-tecnick-tcpdf/TCPDF.html#methodgetImageBuffer">getImageBuffer</a></li>
     <li><a href="../com-tecnick-tcpdf/TCPDF.html#methodgetImageFileType">getImageFileType</a></li>
     <li><a href="../com-tecnick-tcpdf/TCPDF.html#methodgetImageRBX">getImageRBX</a></li>
@@ -405,6 +406,8 @@ Source Location: /tcpdf.php<br /><br />
     <li><a href="../com-tecnick-tcpdf/TCPDF.html#methodget_mqr">get_mqr</a></li>
     <li><a href="../com-tecnick-tcpdf/TCPDF.html#methodGradient">Gradient</a></li>
     <li><a href="../com-tecnick-tcpdf/TCPDF.html#methodHeader">Header</a></li>
+    <li><a href="../com-tecnick-tcpdf/TCPDF.html#methodhyphenateText">hyphenateText</a></li>
+    <li><a href="../com-tecnick-tcpdf/TCPDF.html#methodhyphenateWord">hyphenateWord</a></li>
     <li><a href="../com-tecnick-tcpdf/TCPDF.html#methodImage">Image</a></li>
     <li><a href="../com-tecnick-tcpdf/TCPDF.html#methodImageEps">ImageEps</a></li>
     <li><a href="../com-tecnick-tcpdf/TCPDF.html#methodImagePngAlpha">ImagePngAlpha</a></li>
@@ -662,7 +665,7 @@ This is a PHP class for generating PDF documents without requiring external exte
     <td><b>author:</b>&nbsp;&nbsp;</td><td>Nicola Asuni - info@tecnick.com</td>
   </tr>
   <tr>
-    <td><b>version:</b>&nbsp;&nbsp;</td><td>4.9.011</td>
+    <td><b>version:</b>&nbsp;&nbsp;</td><td>4.9.012</td>
   </tr>
   <tr>
     <td><b>link:</b>&nbsp;&nbsp;</td><td><a href="http://www.tcpdf.org">http://www.tcpdf.org</a></td>
@@ -10014,6 +10017,51 @@ $point)</code>
         <div class="top">[ <a href="#top">Top</a> ]</div>
   </div>
   <hr />
+	<a name="methodgetHyphenPatternsFromTEX"></a>
+	<h3>method getHyphenPatternsFromTEX <span class="smalllinenumber">[line 17545]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array getHyphenPatternsFromTEX(
+string
+$file)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Returns an array of hyphenation patterns.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>of hyphenation patterns</td>
+  </tr>
+  <tr>
+    <td><b>author:</b>&nbsp;&nbsp;</td><td>Nicola Asuni</td>
+  </tr>
+  <tr>
+    <td><b>since:</b>&nbsp;&nbsp;</td><td>4.9.012 (2010-04-12)</td>
+  </tr>
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>public</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$file</b>&nbsp;&nbsp;</td>
+        <td>TEX file containing hypenation patterns. TEX pattrns can be downloaded from http://www.ctan.org/tex-archive/language/hyph-utf8/tex/generic/hyph-utf8/patterns/</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
 	<a name="methodgetImageBuffer"></a>
 	<h3>method getImageBuffer <span class="smalllinenumber">[line 16711]</span></h3>
 	<div class="function">
@@ -11152,6 +11200,168 @@ $coords)</code>
 <br /><br />
 
 	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodhyphenateText"></a>
+	<h3>method hyphenateText <span class="smalllinenumber">[line 17584]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array hyphenateText(
+string
+$text, mixed
+$patterns, [array
+$dictionary = array()], [int
+$leftmin = 1], [int
+$rightmin = 2], [int
+$charmin = 1], [int
+$charmax = 8])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Returns text with soft hyphens.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>text with soft hyphens</td>
+  </tr>
+  <tr>
+    <td><b>author:</b>&nbsp;&nbsp;</td><td>Nicola Asuni</td>
+  </tr>
+  <tr>
+    <td><b>since:</b>&nbsp;&nbsp;</td><td>4.9.012 (2010-04-12)</td>
+  </tr>
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>public</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$text</b>&nbsp;&nbsp;</td>
+        <td>text to process</td>
+      </tr>
+          <tr>
+        <td class="type">mixed&nbsp;&nbsp;</td>
+        <td><b>$patterns</b>&nbsp;&nbsp;</td>
+        <td>Array of hypenation patterns or a TEX file containing hypenation patterns. TEX pattrns can be downloaded from http://www.ctan.org/tex-archive/language/hyph-utf8/tex/generic/hyph-utf8/patterns/</td>
+      </tr>
+          <tr>
+        <td class="type">array&nbsp;&nbsp;</td>
+        <td><b>$dictionary</b>&nbsp;&nbsp;</td>
+        <td>Array of words to be returned without applying the hyphenation algoritm.</td>
+      </tr>
+          <tr>
+        <td class="type">int&nbsp;&nbsp;</td>
+        <td><b>$leftmin</b>&nbsp;&nbsp;</td>
+        <td>Minimum number of character to leave on the left of the word without applying the hyphens.</td>
+      </tr>
+          <tr>
+        <td class="type">int&nbsp;&nbsp;</td>
+        <td><b>$rightmin</b>&nbsp;&nbsp;</td>
+        <td>Minimum number of character to leave on the right of the word without applying the hyphens.</td>
+      </tr>
+          <tr>
+        <td class="type">int&nbsp;&nbsp;</td>
+        <td><b>$charmin</b>&nbsp;&nbsp;</td>
+        <td>Minimum word lenght to apply the hyphenation algoritm.</td>
+      </tr>
+          <tr>
+        <td class="type">int&nbsp;&nbsp;</td>
+        <td><b>$charmax</b>&nbsp;&nbsp;</td>
+        <td>Maximum lenght of broken piece of word.</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodhyphenateWord"></a>
+	<h3>method hyphenateWord <span class="smalllinenumber">[line 17475]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array hyphenateWord(
+array
+$word, array
+$patterns, [array
+$dictionary = array()], [int
+$leftmin = 1], [int
+$rightmin = 2], [int
+$charmin = 1], [int
+$charmax = 8])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Returns an array of chars containing soft hyphens.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>text with soft hyphens</td>
+  </tr>
+  <tr>
+    <td><b>author:</b>&nbsp;&nbsp;</td><td>Nicola Asuni</td>
+  </tr>
+  <tr>
+    <td><b>since:</b>&nbsp;&nbsp;</td><td>4.9.012 (2010-04-12)</td>
+  </tr>
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>protected</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">array&nbsp;&nbsp;</td>
+        <td><b>$word</b>&nbsp;&nbsp;</td>
+        <td>array of chars</td>
+      </tr>
+          <tr>
+        <td class="type">array&nbsp;&nbsp;</td>
+        <td><b>$patterns</b>&nbsp;&nbsp;</td>
+        <td>Array of hypenation patterns.</td>
+      </tr>
+          <tr>
+        <td class="type">array&nbsp;&nbsp;</td>
+        <td><b>$dictionary</b>&nbsp;&nbsp;</td>
+        <td>Array of words to be returned without applying the hyphenation algoritm.</td>
+      </tr>
+          <tr>
+        <td class="type">int&nbsp;&nbsp;</td>
+        <td><b>$leftmin</b>&nbsp;&nbsp;</td>
+        <td>Minimum number of character to leave on the left of the word without applying the hyphens.</td>
+      </tr>
+          <tr>
+        <td class="type">int&nbsp;&nbsp;</td>
+        <td><b>$rightmin</b>&nbsp;&nbsp;</td>
+        <td>Minimum number of character to leave on the right of the word without applying the hyphens.</td>
+      </tr>
+          <tr>
+        <td class="type">int&nbsp;&nbsp;</td>
+        <td><b>$charmin</b>&nbsp;&nbsp;</td>
+        <td>Minimum word lenght to apply the hyphenation algoritm.</td>
+      </tr>
+          <tr>
+        <td class="type">int&nbsp;&nbsp;</td>
+        <td><b>$charmax</b>&nbsp;&nbsp;</td>
+        <td>Maximum lenght of broken piece of word.</td>
+      </tr>
+        </table>
+    </div><br />
         <div class="top">[ <a href="#top">Top</a> ]</div>
   </div>
   <hr />
@@ -22281,7 +22491,7 @@ $file)</code>
 
         <div class="credit">
 		    <hr />
-		    Documentation generated on Wed, 07 Apr 2010 10:00:56 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
+		    Documentation generated on Mon, 12 Apr 2010 17:23:01 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
 	      </div>
       </td></tr></table>
     </td>

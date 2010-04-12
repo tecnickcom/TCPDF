@@ -1,87 +1,90 @@
+4.9.012 (2010-04-12)
+	- The hyphenateText() method was added to automatically hyphenate text (see example n. 46).
+
 4.9.011 (2010-04-07)
-		- Vertical alignments for Cell() method were improved (see example n. 57).
+	- Vertical alignments for Cell() method were improved (see example n. 57).
 
 4.9.010 (2010-04-06)
-		- Signature of Cell() method now includes a new parameters for vertical alignment (see example n. 57).
-		- Text() method was extended to include all Cell() parameters.
-		- HTML line alignment procedure was changed to fix some bugs.
+	- Signature of Cell() method now includes new parameters for vertical alignment (see example n. 57).
+	- Text() method was extended to include all Cell() parameters.
+	- HTML line alignment procedure was changed to fix some bugs.
 
 4.9.009 (2010-04-05)
-		- Text() method was fixed for backward compatibility.
+	- Text() method was fixed for backward compatibility.
 
 4.9.008 (2010-04-03)
-		- Additional line space after table header was removed.
-		- Support for HTML lists in multicolumn mode was added.
-		- The method setTextRenderingMode() was added to set text rendering modes (see the example n. 26).
-		- The following HTML attributes were added to set text rendering modes (see the example n. 26): stroke, strokecolor, fill.
+	- Additional line space after table header was removed.
+	- Support for HTML lists in multicolumn mode was added.
+	- The method setTextRenderingMode() was added to set text rendering modes (see the example n. 26).
+	- The following HTML attributes were added to set text rendering modes (see the example n. 26): stroke, strokecolor, fill.
 
 4.9.007 (2010-04-03)
-		- Font Descent computation was fixed (patch #2981441).
+	- Font Descent computation was fixed (patch #2981441).
 
 4.9.006 (2010-04-02)
-		- The constant K_TCPDF_CALLS_IN_HTML was added on configuration file to enable/disable the ability to call TCPDF methods in HTML.
-		- The usage of tcpdf tag in HTML mode was changed to remove the possible security flaw offered by the eval() function (thanks to Matthias Hecker for spotting this security problem). See the new example n. 49 for further information.
+	- The constant K_TCPDF_CALLS_IN_HTML was added on configuration file to enable/disable the ability to call TCPDF methods in HTML.
+	- The usage of tcpdf tag in HTML mode was changed to remove the possible security flaw offered by the eval() function (thanks to Matthias Hecker for spotting this security problem). See the new example n. 49 for further information.
 
 4.9.005 (2010-04-01)
-		- Bug# 2980354 "Wrong File attachment description with security" was fixed.
-		- Several problems with HTML line alignment were fixed.
-		- The constant K_THAI_TOPCHAR was added on configuration file to enable/disable the special procedure used to avoid the overlappind of symbols on Thai language.
-		- A problem with font name directory was fixed.
-		- A bug on _destroy() method was fixed.
+	- Bug# 2980354 "Wrong File attachment description with security" was fixed.
+	- Several problems with HTML line alignment were fixed.
+	- The constant K_THAI_TOPCHAR was added on configuration file to enable/disable the special procedure used to avoid the overlappind of symbols on Thai language.
+	- A problem with font name directory was fixed.
+	- A bug on _destroy() method was fixed.
 
 4.9.004 (2010-03-31)
-		- Patch #979681 "GetCharWidth - default character width" was applied (bugfix).
+	- Patch #979681 "GetCharWidth - default character width" was applied (bugfix).
 
 4.9.003 (2010-03-30)
-		- Problem of first <br /> on multiple columns was fixed.
-		- HTML line alignment was fixed.
-		- A QR-code bug was fixed.
+	- Problem of first <br /> on multiple columns was fixed.
+	- HTML line alignment was fixed.
+	- A QR-code bug was fixed.
 
 4.9.002 (2010-03-29)
-		- Patch #2978349 "$ignore_min_height is ignored in function Cell()" was applied.
-		- Bug #2978607 "2D Barcodes are wrong" was fixed.
-		- A problem with HTML block tags was fixed.
-		- Artificial italic for CID-0 fonts was added.
-		- Several multicolumn bugs were fixed.
-		- Support for HTML tables on multicolumn was added.
+	- Patch #2978349 "$ignore_min_height is ignored in function Cell()" was applied.
+	- Bug #2978607 "2D Barcodes are wrong" was fixed.
+	- A problem with HTML block tags was fixed.
+	- Artificial italic for CID-0 fonts was added.
+	- Several multicolumn bugs were fixed.
+	- Support for HTML tables on multicolumn was added.
 
 4.9.001 (2010-03-28)
-		- QR Code minor bug was fixed.
-		- Multicolumn mode was added (see the new example n. 10).
-		- The following methods were added: setEqualColumns(), setColumnsArray(), selectColumn().
-		- Thai diacritics support were changed (note that this is incompatible with html justification).
+	- QR Code minor bug was fixed.
+	- Multicolumn mode was added (see the new example n. 10).
+	- The following methods were added: setEqualColumns(), setColumnsArray(), selectColumn().
+	- Thai diacritics support were changed (note that this is incompatible with html justification).
 
 4.9.000 (2010-03-27)
-		- QR Code (2D barcode) support was added (see example n. 50).
-		- The following methods were added to print crop and registration marks (see example n. 56): colorRegistrationBar(), cropMark(), registrationMark().
-		- Limited support for CSS line-height property was added.
-		- Gradient method now supports Gray, RGB and CMYK space color.
-		- Example n. 51 was updated.
-		- Vertical alignment of font inside cell was fixed.
-		- Support for multiple Thai diacritics was added.
-		- Bug item #2974929 "Duplicate case values" was fixed.
-		- Bug item #2976729 "File attachment not working with security" was fixed.
+	- QR Code (2D barcode) support was added (see example n. 50).
+	- The following methods were added to print crop and registration marks (see example n. 56): colorRegistrationBar(), cropMark(), registrationMark().
+	- Limited support for CSS line-height property was added.
+	- Gradient method now supports Gray, RGB and CMYK space color.
+	- Example n. 51 was updated.
+	- Vertical alignment of font inside cell was fixed.
+	- Support for multiple Thai diacritics was added.
+	- Bug item #2974929 "Duplicate case values" was fixed.
+	- Bug item #2976729 "File attachment not working with security" was fixed.
 
 --------------------------------------------------------------------------------
 
 4.8.039 (2010-03-20)
-		- Problems related to custom locale settings were fixed.
-		- Problems related to HTML on Header and Footer were fixed.
+	- Problems related to custom locale settings were fixed.
+	- Problems related to HTML on Header and Footer were fixed.
 
 4.8.038 (2010-03-13)
-		- Various bugs related to page-break in HTML mode were fixed.
-        - Bug item #2968974 "Another <thead> pagebreak problem" was fixed.
-        - Bug item #2969276 "justification problem" was fixed.
-        - Bug item #2969289 "bug when using justified text and custom headers" was fixed.
-        - Images are now automatically resized to be contained on the page.
-        - Some HTML line alignments were fixed.
-        - Signature of AddPage() and SetMargins() methods were changed to include an option to set default page margins.
+	- Various bugs related to page-break in HTML mode were fixed.
+	- Bug item #2968974 "Another <thead> pagebreak problem" was fixed.
+	- Bug item #2969276 "justification problem" was fixed.
+	- Bug item #2969289 "bug when using justified text and custom headers" was fixed.
+	- Images are now automatically resized to be contained on the page.
+	- Some HTML line alignments were fixed.
+	- Signature of AddPage() and SetMargins() methods were changed to include an option to set default page margins.
 
 4.8.037 (2010-03-03)
-        - Bug item #2962068 was fixed.
-        - Bug item #2967017 "Problems with <thead> and pagebreaks" was fixed.
-        - Bug item #2967023 "table header lost with pagebreak" was fixed.
-        - Bug item #2967032 "Header lost with nested tables" was fixed.
+	- Bug item #2962068 was fixed.
+	- Bug item #2967017 "Problems with <thead> and pagebreaks" was fixed.
+	- Bug item #2967023 "table header lost with pagebreak" was fixed.
+	- Bug item #2967032 "Header lost with nested tables" was fixed.
 
 4.8.036 (2010-02-24)
 	- Automatic page break for HTML images was improved.
