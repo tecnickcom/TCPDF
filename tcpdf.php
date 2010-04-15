@@ -15241,9 +15241,9 @@ if (!class_exists('TCPDF', false)) {
 							$ih = $this->getHTMLUnitToUnits($tag['attribute']['height'], 1, 'px', false);
 						}
 						if (($type == 'eps') OR ($type == 'ai')) {
-							$this->ImageEps($tag['attribute']['src'], $xpos, $this->GetY(), $iw, $ih, $imglink, true, $align, '', $border);
+							$this->ImageEps($tag['attribute']['src'], $xpos, $this->y, $iw, $ih, $imglink, true, $align, '', $border, true);
 						} else {
-							$this->Image($tag['attribute']['src'], $xpos, $this->GetY(), $iw, $ih, '', $imglink, $align, false, 300, '', false, false, $border, false, false);
+							$this->Image($tag['attribute']['src'], $xpos, $this->y, $iw, $ih, '', $imglink, $align, false, 300, '', false, false, $border, false, false, true);
 						}
 						switch($align) {
 							case 'T': {
