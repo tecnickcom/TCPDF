@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-04-12
+// Last Update : 2010-04-15
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.9.012
+// Version     : 4.9.013
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -121,7 +121,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.9.012
+ * @version 4.9.013
  */
 
 /**
@@ -145,14 +145,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 4.9.012 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.9.013 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.9.012
+	* @version 4.9.013
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -4986,8 +4986,8 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
-		 * Returns the unicode caracter specified by UTF-8 code
-		 * @param int $c UTF-8 code
+		 * Returns the unicode caracter specified by UTF-8 value
+		 * @param int $c UTF-8 value
 		 * @return Returns the specified character.
 		 * @author Miguel Perez, Nicola Asuni
 		 * @access public
@@ -5058,11 +5058,12 @@ if (!class_exists('TCPDF', false)) {
 		 * @param mixed $border Indicates if borders must be drawn around the image. The value can be either a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul>or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul>
 		 * @param boolean $fitbox If true scale image dimensions proportionally to fit within the ($w, $h) box.
 		 * @param boolean $hidden if true do not display the image.
+		 * @param boolean $fitonpage if true the image is resized to not exceed page dimensions.
 		 * @return image information
 		 * @access public
 		 * @since 1.1
 		 */
-		public function Image($file, $x='', $y='', $w=0, $h=0, $type='', $link='', $align='', $resize=false, $dpi=300, $palign='', $ismask=false, $imgmask=false, $border=0, $fitbox=false, $hidden=false) {
+		public function Image($file, $x='', $y='', $w=0, $h=0, $type='', $link='', $align='', $resize=false, $dpi=300, $palign='', $ismask=false, $imgmask=false, $border=0, $fitbox=false, $hidden=false, $fitonpage=false) {
 			if ($x === '') {
 				$x = $this->x;
 			}
@@ -5098,32 +5099,27 @@ if (!class_exists('TCPDF', false)) {
 					$w = $h * $pixw / $pixh;
 				}
 			}
-			// resize image proportionally to be contained on a single page
-			if ($h > $this->h) {
-				$h = $this->h;
-				$w = $h * $pixw / $pixh;
-			}
-			if ($w > $this->w) {
-				$w = $this->w;
-				$h = $w * $pixh / $pixw;
-			}
 			// Check whether we need a new page first as this does not fit
 			$prev_x = $this->x;
 			if ($this->checkPageBreak($h, $y)) {
-				// resize image to vertically fit the available space
-				$h = $this->PageBreakTrigger - $y;
-				$w = $h * $pixw / $pixh;
-				$y = $this->GetY();// + $this->cMargin;
+				$y = $this->y;
 				if ($this->rtl) {
 					$x += ($prev_x - $this->x);
 				} else {
 					$x += ($this->x - $prev_x);
 				}
 			}
-			// resize image proportionally to be contained on a single page
-			if (($x + $w) > $this->w) {
-				$w = $this->w - $x;
-				$h = $w * $pixh / $pixw;
+			// resize image to be contained on a single page
+			if ($fitonpage) {
+				$ratio_wh = $w / $h;
+				if (($y + $h) > $this->PageBreakTrigger) {
+					$h = $this->PageBreakTrigger - $y;
+					$w = $h * $ratio_wh;
+				}
+				if (($x + $w) > ($this->w - $this->rMargin)) {
+					$w = $this->w - $this->rMargin - $x;
+					$h = $w / $ratio_wh;
+				}
 			}
 			// calculate new minimum dimensions in pixels
 			$neww = round($w * $this->k * $dpi / $this->dpi);
@@ -5626,7 +5622,6 @@ if (!class_exists('TCPDF', false)) {
 		 * @see SetY(), GetX(), SetX()
 		 */
 		public function GetY() {
-			//Get y position
 			return $this->y;
 		}
 
@@ -5639,7 +5634,6 @@ if (!class_exists('TCPDF', false)) {
 		 * @see GetX(), GetY(), SetY(), SetXY()
 		 */
 		public function SetX($x) {
-			//Set x position
 			if ($this->rtl) {
 				if ($x >= 0) {
 					$this->x = $this->w - $x;
@@ -5702,8 +5696,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @see SetX(), SetY()
 		 */
 		public function SetXY($x, $y) {
-			//Set x and y positions
-			$this->SetY($y);
+			$this->SetY($y, false);
 			$this->SetX($x);
 		}
 
@@ -6063,7 +6056,7 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
-		 * Output referencees to page annotations
+		 * Output references to page annotations
 		 * @param int $n page number
 		 * @access protected
 		 * @author Nicola Asuni
@@ -7313,7 +7306,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 			if (!$this->empty_string($this->keywords)) {
 				// Keywords associated with the document.
-				$this->_out('/Keywords '.$this->_textstring($this->keywords));
+				$this->_out('/Keywords '.$this->_textstring($this->keywords.' TCPDF'));
 			}
 			if (!$this->empty_string($this->creator)) {
 				// If the document was converted to PDF from another format, the name of the conforming product that created the original document from which it was converted.
@@ -7321,7 +7314,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 			if (defined('PDF_PRODUCER')) {
 				// If the document was converted to PDF from another format, the name of the conforming product that converted it to PDF.
-				$this->_out('/Producer '.$this->_textstring(PDF_PRODUCER));
+				$this->_out('/Producer '.$this->_textstring(PDF_PRODUCER.' (TCPDF)'));
 			} else {
 				// default producer
 				$this->_out('/Producer '.$this->_textstring('TCPDF'));
@@ -7885,7 +7878,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 		}
 
-		 /**
+		/**
 		 * Converts UTF-8 strings to codepoints array.<br>
 		 * Invalid byte sequences will be replaced with 0xFFFD (replacement character)<br>
 		 * Based on: http://www.faqs.org/rfcs/rfc3629.html
@@ -12194,8 +12187,8 @@ if (!class_exists('TCPDF', false)) {
 		 * @param float $y ordinate of the top left corner of the rectangle.
 		 * @param float $w width of the rectangle.
 		 * @param float $h height of the rectangle.
-		 * @param array $col1 first color (RGB components).
-		 * @param array $col2 second color (RGB components).
+		 * @param array $col1 first color (Grayscale, RGB or CMYK components).
+		 * @param array $col2 second color (Grayscale, RGB or CMYK components).
 		 * @param array $coords array of the form (x1, y1, x2, y2) which defines the gradient vector (see linear_gradient_coords.jpg). The default value is from left to right (x1=0, y1=0, x2=1, y2=0).
 		 * @author Andreas Würmser, Nicola Asuni
 		 * @since 3.1.000 (2008-06-09)
@@ -12212,8 +12205,8 @@ if (!class_exists('TCPDF', false)) {
 		 * @param float $y ordinate of the top left corner of the rectangle.
 		 * @param float $w width of the rectangle.
 		 * @param float $h height of the rectangle.
-		 * @param array $col1 first color (RGB components).
-		 * @param array $col2 second color (RGB components).
+		 * @param array $col1 first color (Grayscale, RGB or CMYK components).
+		 * @param array $col2 second color (Grayscale, RGB or CMYK components).
 		 * @param array $coords array of the form (fx, fy, cx, cy, r) where (fx, fy) is the starting point of the gradient with color1, (cx, cy) is the center of the circle with color2, and r is the radius of the circle (see radial_gradient_coords.jpg). (fx, fy) should be inside the circle, otherwise some areas will not be defined.
 		 * @author Andreas Würmser, Nicola Asuni
 		 * @since 3.1.000 (2008-06-09)
@@ -16286,8 +16279,8 @@ if (!class_exists('TCPDF', false)) {
 				$number -= 100;
 			}
 			while ($number >= 90) {
-			$roman .= 'XC';
-			$number -= 90;
+				$roman .= 'XC';
+				$number -= 90;
 			}
 			while ($number >= 50) {
 				$roman .= 'L';
@@ -16298,8 +16291,8 @@ if (!class_exists('TCPDF', false)) {
 				$number -= 40;
 			}
 			while ($number >= 10) {
-			$roman .= 'X';
-			$number -= 10;
+				$roman .= 'X';
+				$number -= 10;
 			}
 			while ($number >= 9) {
 				$roman .= 'IX';
@@ -16310,8 +16303,8 @@ if (!class_exists('TCPDF', false)) {
 				$number -= 5;
 			}
 			while ($number >= 4) {
-			$roman .= 'IV';
-			$number -= 4;
+				$roman .= 'IV';
+				$number -= 4;
 			}
 			while ($number >= 1) {
 				$roman .= 'I';
@@ -17309,6 +17302,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->columns = array();
 			if ($numcols < 2) {
 				$numcols = 0;
+				$this->columns = array();
 			} else {
 				// maximum column width
 				$maxwidth = ($this->w - $this->original_lMargin - $this->original_rMargin) / $numcols;
@@ -17570,7 +17564,7 @@ if (!class_exists('TCPDF', false)) {
 		/**
 		 * Returns text with soft hyphens.
 		 * @param string $text text to process
-		 * @param mixed $patterns Array of hypenation patterns or a TEX file containing hypenation patterns. TEX pattrns can be downloaded from http://www.ctan.org/tex-archive/language/hyph-utf8/tex/generic/hyph-utf8/patterns/
+		 * @param mixed $patterns Array of hypenation patterns or a TEX file containing hypenation patterns. TEX patterns can be downloaded from http://www.ctan.org/tex-archive/language/hyph-utf8/tex/generic/hyph-utf8/patterns/
 		 * @param array $dictionary Array of words to be returned without applying the hyphenation algoritm.
 		 * @param int $leftmin Minimum number of character to leave on the left of the word without applying the hyphens.
 		 * @param int $rightmin Minimum number of character to leave on the right of the word without applying the hyphens.

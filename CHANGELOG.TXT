@@ -1,3 +1,6 @@
+4.9.013 (2010-04-15)
+	- Image() method was fixed and improved; $fitonpage parameter was added.
+
 4.9.012 (2010-04-12)
 	- The hyphenateText() method was added to automatically hyphenate text (see example n. 46).
 
