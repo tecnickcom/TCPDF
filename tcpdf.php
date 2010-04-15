@@ -12520,11 +12520,12 @@ if (!class_exists('TCPDF', false)) {
 		 * @param string $align Indicates the alignment of the pointer next to image insertion relative to image height. The value can be:<ul><li>T: top-right for LTR or top-left for RTL</li><li>M: middle-right for LTR or middle-left for RTL</li><li>B: bottom-right for LTR or bottom-left for RTL</li><li>N: next line</li></ul>
 		 * @param string $palign Allows to center or align the image on the current line. Possible values are:<ul><li>L : left align</li><li>C : center</li><li>R : right align</li><li>'' : empty string : left for LTR or right for RTL</li></ul>
 		 * @param mixed $border Indicates if borders must be drawn around the image. The value can be either a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul>or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul>
+		 * @param boolean $fitonpage if true the image is resized to not exceed page dimensions.
 		 * @author Valentin Schmidt, Nicola Asuni
 		 * @since 3.1.000 (2008-06-09)
 		 * @access public
 		 */
-		public function ImageEps($file, $x='', $y='', $w=0, $h=0, $link='', $useBoundingBox=true, $align='', $palign='', $border=0) {
+		public function ImageEps($file, $x='', $y='', $w=0, $h=0, $link='', $useBoundingBox=true, $align='', $palign='', $border=0, $fitonpage=false) {
 			if ($x === '') {
 				$x = $this->x;
 			}
@@ -12585,35 +12586,27 @@ if (!class_exists('TCPDF', false)) {
 			} elseif ($h <= 0) {
 				$h = ($y2 - $y1) / $k * ($w / (($x2 - $x1) / $k));
 			}
-			// get image proportions
-			$woh = $w / $h;
-			$how = $h / $w;
-			// resize image proportionally to be contained on a single page
-			if ($h > $this->h) {
-				$h = $this->h;
-				$w = $h * $woh;
-			}
-			if ($w > $this->w) {
-				$w = $this->w;
-				$h = $w * $how;
-			}
 			// Check whether we need a new page first as this does not fit
 			$prev_x = $this->x;
 			if ($this->checkPageBreak($h, $y)) {
-				// resize image to vertically fit the available space
-				$h = $this->PageBreakTrigger - $y;
-				$w = $h * $woh;
-				$y = $this->GetY();// + $this->cMargin;
+				$y = $this->y;
 				if ($this->rtl) {
 					$x += ($prev_x - $this->x);
 				} else {
 					$x += ($this->x - $prev_x);
 				}
 			}
-			// resize image proportionally to be contained on a single page
-			if (($x + $w) > $this->w) {
-				$w = $this->w - $x;
-				$h = $w * $how;
+			// resize image to be contained on a single page
+			if ($fitonpage) {
+				$ratio_wh = $w / $h;
+				if (($y + $h) > $this->PageBreakTrigger) {
+					$h = $this->PageBreakTrigger - $y;
+					$w = $h * $ratio_wh;
+				}
+				if (($x + $w) > ($this->w - $this->rMargin)) {
+					$w = $this->w - $this->rMargin - $x;
+					$h = $w / $ratio_wh;
+				}
 			}
 			// set scaling factors
 			$scale_x = $w / (($x2 - $x1) / $k);
