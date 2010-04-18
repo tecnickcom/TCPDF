@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-04-15
+// Last Update : 2010-04-18
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.9.013
+// Version     : 4.9.014
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -121,7 +121,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.9.013
+ * @version 4.9.014
  */
 
 /**
@@ -145,14 +145,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 4.9.013 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.9.014 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.9.013
+	* @version 4.9.014
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -14143,6 +14143,7 @@ if (!class_exists('TCPDF', false)) {
 							}
 							$this->y += ((($curfontsize * $this->cell_height_ratio / $this->k) + $curfontascent - $curfontdescent) / 2) - $imgh;
 							$minstartliney = min($this->y, $minstartliney);
+							$maxbottomliney = ($startliney + ($this->FontSize * $this->cell_height_ratio));
 						}
 					} elseif (isset($dom[$key]['fontname']) OR isset($dom[$key]['fontstyle']) OR isset($dom[$key]['fontsize'])) {
 						// account for different font size
@@ -14809,6 +14810,7 @@ if (!class_exists('TCPDF', false)) {
 						$this->SetFont($pfontname, $pfontstyle, $pfontsize);
 						$this->lasth = $this->FontSize * $this->cell_height_ratio;
 						$minstartliney = $this->y;
+						$maxbottomliney = ($startliney + ($this->FontSize * $this->cell_height_ratio));
 						$this->putHtmlListBullet($this->listnum, $this->lispacer, $pfontsize);
 						$this->SetFont($curfontname, $curfontstyle, $curfontsize);
 						$this->lasth = $this->FontSize * $this->cell_height_ratio;

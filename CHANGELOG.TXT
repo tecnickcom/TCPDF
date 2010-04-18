@@ -1,3 +1,6 @@
+4.9.014 (2010-04-18)
+	- Bug item #2988845 was fixed.
+
 4.9.013 (2010-04-15)
 	- Image() and ImageEPS() methods were fixed and improved; $fitonpage parameter was added.
 
