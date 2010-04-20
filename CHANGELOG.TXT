@@ -1,3 +1,9 @@
+4.9.016 (2010-04-20)
+	- An error on htmlcolors.php was fixed.
+	- getImageFileType() method was improved.
+	- GIF images with transparency are now better supported.
+	- Automatic page orientation was improved.
+
 4.9.015 (2010-04-20)
 	- A new method copyPage() was added to clone pages (see example n. 44).
 	- Support for text overline was added.

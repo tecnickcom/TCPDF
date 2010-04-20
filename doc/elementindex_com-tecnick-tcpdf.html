@@ -216,12 +216,16 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_putxobjectdict">TCPDF::_putxobjectdict()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Output object dictionary for images.</dd>
 							<dt><b>_RC4</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_RC4">TCPDF::_RC4()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns the input text exrypted using RC4 algorithm and the specified key.</dd>
+							<dt><b>_setGDImageTransparency</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_setGDImageTransparency">TCPDF::_setGDImageTransparency()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set the transparency for the given GD image.</dd>
 							<dt><b>_textannobjstring</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_textannobjstring">TCPDF::_textannobjstring()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Format a UTF-8 text string for meta information on annotations</dd>
 							<dt><b>_textstring</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_textstring">TCPDF::_textstring()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Format a text string for meta information</dd>
 							<dt><b>_toJPEG</b></dt>
-				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_toJPEG">TCPDF::_toJPEG()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Convert the loaded php image to a JPEG and then return a structure for the PDF creator.</dd>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_toJPEG">TCPDF::_toJPEG()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Convert the loaded image to a JPEG and then return a structure for the PDF creator.</dd>
+							<dt><b>_toPNG</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_toPNG">TCPDF::_toPNG()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Convert the loaded image to a PNG and then return a structure for the PDF creator.</dd>
 							<dt><b>_Uvalue</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_Uvalue">TCPDF::_Uvalue()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Compute U value (used for RC4 encryption)</dd>
 							<dt><b>__construct</b></dt>
@@ -777,7 +781,7 @@
 							<dt><b>getImageBuffer</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetImageBuffer">TCPDF::getImageBuffer()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Get image buffer content.</dd>
 							<dt><b>getImageFileType</b></dt>
-				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetImageFileType">TCPDF::getImageFileType()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Return the image type given the file name and path</dd>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetImageFileType">TCPDF::getImageFileType()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Return the image type given the file name or array returned by getimagesize() function.</dd>
 							<dt><b>getImageRBX</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetImageRBX">TCPDF::getImageRBX()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Return the right-bottom (or left-bottom for RTL) corner X coordinate of last inserted image</dd>
 							<dt><b>getImageRBY</b></dt>
@@ -1897,7 +1901,7 @@
 	<a href="elementindex_com-tecnick-tcpdf.html#top">top</a><br>
         <div class="credit">
 		    <hr />
-		    Documentation generated on Tue, 20 Apr 2010 12:13:31 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
+		    Documentation generated on Tue, 20 Apr 2010 16:21:17 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
 	      </div>
       </td></tr></table>
     </td>

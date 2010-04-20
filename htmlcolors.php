@@ -2,8 +2,8 @@
 //============================================================+
 // File name   : htmlcolors.php
 // Begin       : 2002-04-09
-// Last Update : 2009-09-06
-// Version     : 1.0.003
+// Last Update : 2010-04-20
+// Version     : 1.0.004
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
@@ -113,8 +113,8 @@ $webcolor = array (
 'greenyellow' => 'adff2f',
 'honeydew' => 'f0fff0',
 'hotpink' => 'ff69b4',
-'indianred ' => 'cd5c5c',
-'indigo ' => '4b0082',
+'indianred' => 'cd5c5c',
+'indigo' => '4b0082',
 'ivory' => 'fffff0',
 'khaki' => 'f0e68c',
 'lavender' => 'e6e6fa',

@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-04-19
+// Last Update : 2010-04-20
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.9.015
+// Version     : 4.9.016
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -121,7 +121,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.9.015
+ * @version 4.9.016
  */
 
 /**
@@ -145,14 +145,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 4.9.015 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.9.016 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.9.015
+	* @version 4.9.016
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1824,17 +1824,28 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 3.0.015 (2008-06-06)
 		 */
 		public function setPageOrientation($orientation, $autopagebreak='', $bottommargin='') {
-			$orientation = strtoupper($orientation);
-			if (($orientation == 'P') OR ($orientation == 'PORTRAIT')) {
-				$this->CurOrientation = 'P';
-				$this->wPt = $this->fwPt;
-				$this->hPt = $this->fhPt;
-			} elseif (($orientation == 'L') OR ($orientation == 'LANDSCAPE')) {
-				$this->CurOrientation = 'L';
+			if ($this->fwPt > $this->fhPt) {
+				// landscape
+				$default_orientation = 'L';
+			} else {
+				// portrait
+				$default_orientation = 'P';
+			}
+			$valid_orientations = array('P', 'L');
+			if (empty($orientation)) {
+				$orientation = $default_orientation;
+			} else {
+				$orientation = $orientation{0};
+				$orientation = strtoupper($orientation);
+			}
+			if (in_array($orientation, $valid_orientations) AND ($orientation != $default_orientation)) {
+				$this->CurOrientation = $orientation;
 				$this->wPt = $this->fhPt;
 				$this->hPt = $this->fwPt;
 			} else {
-				$this->Error('Incorrect orientation: '.$orientation);
+				$this->CurOrientation = $default_orientation;
+				$this->wPt = $this->fwPt;
+				$this->hPt = $this->fhPt;
 			}
 			$this->w = $this->wPt / $this->k;
 			$this->h = $this->hPt / $this->k;
@@ -5031,20 +5042,27 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
-		 * Return the image type given the file name and path
+		 * Return the image type given the file name or array returned by getimagesize() function.
 		 * @param string $imgfile image file name
+		 * @param array $iminfo array of image information returned by getimagesize() function.
 		 * @return string image type
 		 * @since 4.8.017 (2009-11-27)
 		 */
-		public function getImageFileType($imgfile) {
-			$type = ''; // default type
+		public function getImageFileType($imgfile, $iminfo=array()) {
+			if (isset($iminfo['mime']) AND !empty($iminfo['mime'])) {
+				$mime = explode('/', $iminfo['mime']);
+				if ((count($mime) > 1) AND ($mime[0] == 'image') AND (!empty($mime[1]))) {
+					return trim($mime[1]);
+				}
+			}
+			$type = '';
 			$fileinfo = pathinfo($imgfile);
 			if (isset($fileinfo['extension']) AND (!$this->empty_string($fileinfo['extension']))) {
-				$type = strtolower($fileinfo['extension']);
+				$type = strtolower(trim($fileinfo['extension']));
 			}
 			if ($type == 'jpg') {
 				$type = 'jpeg';
-			}
+			}	
 			return $type;
 		}
 
@@ -5164,7 +5182,7 @@ if (!class_exists('TCPDF', false)) {
 			if ($newimage) {
 				//First use of image, get info
 				if ($type == '') {
-					$type = $this->getImageFileType($file);
+					$type = $this->getImageFileType($file, $imsize);
 				}
 				$mqr = $this->get_mqr();
 				$this->set_mqr(false);
@@ -5186,10 +5204,21 @@ if (!class_exists('TCPDF', false)) {
 						$img = $gdfunction($file);
 						if ($resize) {
 							$imgr = imagecreatetruecolor($neww, $newh);
+							if (($type == 'gif') OR ($type == 'png')) {
+								$imgr = $this->_setGDImageTransparency($imgr, $img);
+							}
 							imagecopyresampled($imgr, $img, 0, 0, 0, 0, $neww, $newh, $pixw, $pixh);
-							$info = $this->_toJPEG($imgr);
+							if (($type == 'gif') OR ($type == 'png')) {
+								$info = $this->_toPNG($imgr);
+							} else {
+								$info = $this->_toJPEG($imgr);
+							}
 						} else {
-							$info = $this->_toJPEG($img);
+							if (($type == 'gif') OR ($type == 'png')) {
+								$info = $this->_toPNG($img);
+							} else {
+								$info = $this->_toJPEG($img);
+							}
 						}
 					} elseif (extension_loaded('imagick')) {
 						// ImageMagick library
@@ -5339,7 +5368,7 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
-		 * Convert the loaded php image to a JPEG and then return a structure for the PDF creator.
+		 * Convert the loaded image to a JPEG and then return a structure for the PDF creator.
 		 * This function requires GD library and write access to the directory defined on K_PATH_CACHE constant.
 		 * @param string $file Image file name.
 		 * @param image $image Image object.
@@ -5354,6 +5383,48 @@ if (!class_exists('TCPDF', false)) {
 			// tidy up by removing temporary image
 			unlink($tempname);
 			return $retvars;
+		}
+
+		/**
+		 * Convert the loaded image to a PNG and then return a structure for the PDF creator.
+		 * This function requires GD library and write access to the directory defined on K_PATH_CACHE constant.
+		 * @param string $file Image file name.
+		 * @param image $image Image object.
+		 * return image PNG image object.
+		 * @access protected
+		 * @since 4.9.016 (2010-04-20)
+		 */
+		protected function _toPNG($image) {
+			$tempname = tempnam(K_PATH_CACHE, 'jpg_');
+			imagepng($image, $tempname);
+			imagedestroy($image);
+			$retvars = $this->_parsepng($tempname);
+			// tidy up by removing temporary image
+			unlink($tempname);
+			return $retvars;
+		}
+
+		/**
+		 * Set the transparency for the given GD image.
+		 * @param image $new_image GD image object
+		 * @param image $image GD image object.
+		 * return GD image object.
+		 * @access protected
+		 * @since 4.9.016 (2010-04-20)
+		 */
+		protected function _setGDImageTransparency($new_image, $image) { // DEBUG
+			// transparency index
+			$tid = imagecolortransparent($image);
+			// default transparency color
+			$tcol = array('red' => 255, 'green' => 255, 'blue' => 255);
+			if ($tid >= 0) {
+				// get the colors for the transparency index
+				$tcol = imagecolorsforindex($image, $tid);
+			}
+			$tid = imagecolorallocate($new_image, $tcol['red'], $tcol['green'], $tcol['blue']);
+			imagefill($new_image, 0, 0, $tid);
+			imagecolortransparent($new_image, $tid);
+			return $new_image;
 		}
 
 		/**
