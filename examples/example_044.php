@@ -2,13 +2,13 @@
 //============================================================+
 // File name   : example_044.php
 // Begin       : 2009-01-02
-// Last Update : 2009-09-30
-// 
+// Last Update : 2010-04-20
+//
 // Description : Example 044 for TCPDF class
-//               Move and delete pages
-// 
+//               Move, copy and delete pages
+//
 // Author: Nicola Asuni
-// 
+//
 // (c) Copyright:
 //               Nicola Asuni
 //               Tecnick.com s.r.l.
@@ -22,7 +22,7 @@
 /**
  * Creates an example PDF TEST document using TCPDF
  * @package com.tecnick.tcpdf
- * @abstract TCPDF - Example: Move and delete pages
+ * @abstract TCPDF - Example: Move, copy and delete pages
  * @author Nicola Asuni
  * @copyright 2004-2008 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://tcpdf.org
@@ -62,10 +62,10 @@ $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
 //set image scale factor
-$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO); 
+$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 //set some language-dependent strings
-$pdf->setLanguageArray($l); 
+$pdf->setLanguageArray($l);
 
 // ---------------------------------------------------------
 
@@ -106,6 +106,9 @@ $pdf->deletePage(6);
 $pdf->AddPage();
 $pdf->Cell(0, 10, 'PAGE H', 0, 1, 'L');
 
+// copy the second page
+$pdf->copyPage(2);
+
 // NOTE: to insert a page to a previous position, you can add a new page to the end of document and then move it using movePage().
 
 // ---------------------------------------------------------
@@ -114,6 +117,6 @@ $pdf->Cell(0, 10, 'PAGE H', 0, 1, 'L');
 $pdf->Output('example_044.pdf', 'I');
 
 //============================================================+
-// END OF FILE                                                 
+// END OF FILE
 //============================================================+
 ?>

@@ -1,3 +1,9 @@
+4.9.015 (2010-04-20)
+	- A new method copyPage() was added to clone pages (see example n. 44).
+	- Support for text overline was added.
+	- Underline and linethrough methods were fixed.
+	- Bug #2989058 "SHY character causes unnecessary word-wrapping" was fixed.
+
 4.9.014 (2010-04-18)
 	- Bug item #2988845 was fixed.
 
