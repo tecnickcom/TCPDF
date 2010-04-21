@@ -1,3 +1,6 @@
+4.9.018 (2010-04-21)
+	- Bug item #2990356 "Current font size not respected with more than two HTML <p>" was fixed.
+
 4.9.017 (2010-04-21)
 	- Bug item #2990224 "Different behaviour for equivalent HTML strings" was fixed.
 	- Bug item #2990314 "Dash is not appearing with SHY character" was fixed.

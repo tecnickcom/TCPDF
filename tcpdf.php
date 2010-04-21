@@ -4,7 +4,7 @@
 // Begin       : 2002-08-03
 // Last Update : 2010-04-21
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.9.017
+// Version     : 4.9.018
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -121,7 +121,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.9.017
+ * @version 4.9.018
  */
 
 /**
@@ -145,14 +145,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 4.9.017 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.9.018 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.9.017
+	* @version 4.9.018
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -14681,7 +14681,7 @@ if (!class_exists('TCPDF', false)) {
 					$startlinex = $this->x;
 					$startliney = $this->y;
 					$minstartliney = $startliney;
-					$maxbottomliney = ($startliney + ($this->FontSize * $this->cell_height_ratio));
+					$maxbottomliney = ($this->y + (($fontsize * $this->cell_height_ratio) / $this->k));
 					$startlinepage = $this->page;
 					if (isset($endlinepos) AND (!$pbrk)) {
 						$startlinepos = $endlinepos;
@@ -15153,8 +15153,6 @@ if (!class_exists('TCPDF', false)) {
 		 * Process opening tags.
 		 * @param array $dom html dom array
 		 * @param int $key current element id
-		 * @param int $minstartliney minimum y value of current line
-		 * @param int $maxbottomliney maximum y value of current line
 		 * @param boolean $cell if true add the default cMargin space to each new line (default false).
 		 * @access protected
 		 */
@@ -15172,13 +15170,6 @@ if (!class_exists('TCPDF', false)) {
 				$hbz = 0; // distance from y to line bottom
 				$hb = 0; // vertical space between block tags
 				// calculate vertical space for block tags
-				if ($this->htmlvspace <= 0) {
-					if (isset($parent['fontsize'])) {
-						$hbz = (($parent['fontsize'] / $this->k) * $this->cell_height_ratio);
-					} else {
-						$hbz = $this->FontSize * $this->cell_height_ratio;
-					}
-				}
 				if (isset($this->tagvspaces[$tag['value']][0]['h']) AND ($this->tagvspaces[$tag['value']][0]['h'] >= 0)) {
 					$cur_h = $this->tagvspaces[$tag['value']][0]['h'];
 				} elseif (isset($tag['fontsize'])) {
@@ -15194,6 +15185,13 @@ if (!class_exists('TCPDF', false)) {
 					$n = 1;
 				}
 				$hb = ($n * $cur_h);
+				if (($this->htmlvspace <= 0) AND ($n > 0)) {
+					if (isset($parent['fontsize'])) {
+						$hbz = (($parent['fontsize'] / $this->k) * $this->cell_height_ratio);
+					} else {
+						$hbz = $this->FontSize * $this->cell_height_ratio;
+					}
+				}
 			}
 			//Opening tag
 			switch($tag['value']) {
@@ -15758,9 +15756,8 @@ if (!class_exists('TCPDF', false)) {
 		 * Process closing tags.
 		 * @param array $dom html dom array
 		 * @param int $key current element id
-		 * @param int $minstartliney minimum y value of current line
-		 * @param int $maxbottomliney maximum y value of current line
 		 * @param boolean $cell if true add the default cMargin space to each new line (default false).
+		 * @param int $maxbottomliney maximum y value of current line
 		 * @access protected
 		 */
 		protected function closeHTMLTagHandler(&$dom, $key, $cell, $maxbottomliney=0) {
