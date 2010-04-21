@@ -1,3 +1,7 @@
+4.9.017 (2010-04-21)
+	- Bug item #2990224 "Different behaviour for equivalent HTML strings" was fixed.
+	- Bug item #2990314 "Dash is not appearing with SHY character" was fixed.
+
 4.9.016 (2010-04-20)
 	- An error on htmlcolors.php was fixed.
 	- getImageFileType() method was improved.

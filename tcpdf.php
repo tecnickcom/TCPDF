@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-04-20
+// Last Update : 2010-04-21
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 4.9.016
+// Version     : 4.9.017
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -121,7 +121,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 4.9.016
+ * @version 4.9.017
  */
 
 /**
@@ -145,14 +145,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 4.9.016 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 4.9.017 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 4.9.016
+	* @version 4.9.017
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -4669,7 +4669,6 @@ if (!class_exists('TCPDF', false)) {
 				if (($maxh > 0) AND ($this->y >= $maxy) ) {
 					break;
 				}
-				$shy = false;
 				//Get the current character
 				$c = $chars[$i];
 				if ($c == 10) { // 10 = "\n" = new line
@@ -4755,7 +4754,7 @@ if (!class_exists('TCPDF', false)) {
 					} else {
 						$l += $this->GetCharWidth($c);
 					}
-					if (($l > $wmax) OR ($shy AND (($l + $tmp_shy_replacement_width) > $wmax)) ) {
+					if (($l > $wmax) OR (($c == 173) AND (($l + $tmp_shy_replacement_width) > $wmax)) ) {
 						// we have reached the end of column
 						if ($sep == -1) {
 							// check if the line was already started
@@ -5062,7 +5061,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 			if ($type == 'jpg') {
 				$type = 'jpeg';
-			}	
+			}
 			return $type;
 		}
 
@@ -5412,7 +5411,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @access protected
 		 * @since 4.9.016 (2010-04-20)
 		 */
-		protected function _setGDImageTransparency($new_image, $image) { // DEBUG
+		protected function _setGDImageTransparency($new_image, $image) {
 			// transparency index
 			$tid = imagecolortransparent($image);
 			// default transparency color
@@ -14274,8 +14273,8 @@ if (!class_exists('TCPDF', false)) {
 						$fontascent = $this->getFontAscent($fontname, $fontstyle, $fontsize);
 						$fontdescent = $this->getFontDescent($fontname, $fontstyle, $fontsize);
 						if (($fontname != $curfontname) OR ($fontstyle != $curfontstyle) OR ($fontsize != $curfontsize)) {
-							if (is_numeric($fontsize) AND ($fontsize > 0)
-								AND is_numeric($curfontsize) AND ($curfontsize > 0)
+							if (is_numeric($fontsize) AND ($fontsize >= 0)
+								AND is_numeric($curfontsize) AND ($curfontsize >= 0)
 								AND ($fontsize != $curfontsize) AND (!$this->newline)
 								AND ($key < ($maxel - 1))
 								) {
