@@ -62,7 +62,7 @@ echo '<'.'?'.'xml version="1.0" encoding="UTF-8"'.'?'.'>';
 <li>File attachment: [<a href="example_041.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Image with Alpha Channel Transparency: [<a href="example_042.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Disk caching: [<a href="example_043.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
-<li>Move and delete page: [<a href="example_044.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
+<li>Move, Copy and Delete page: [<a href="example_044.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Table Of Content with Bookmarks: [<a href="example_045.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Text hyphenation: [<a href="example_046.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Transactions and UNDO: [<a href="example_047.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
@@ -76,6 +76,7 @@ echo '<'.'?'.'xml version="1.0" encoding="UTF-8"'.'?'.'>';
 <li>Font Dump: [<a href="example_055.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Crop Marks and Registration Marks: [<a href="example_056.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Cell vertical alignments: [<a href="example_057.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
+<li>SVG Image: [<a href="example_058.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 </ol>
 
 </body>

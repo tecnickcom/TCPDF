@@ -1,3 +1,21 @@
+5.0.000 (2010-05-05)
+	- Method ImageSVG() was added to embedd SVG images (see example n. 58). Note that not all SVG images are supported.
+	- Method setRasterizeVectorImages() was added to enable/disable rasterization for vector images via ImageMagick library.
+	- Method RoundedRectXY() was added.
+	- Method PieSectorXY() was added.
+	- Gradient() method is now public and support new features.
+	- Shading to transparency is now supported.
+	- Image alignments were fixed.
+	- Support for dynamic images were improved.
+	- PDF_IMAGE_SCALE_RATIO has been changed to 1.25 for better compatibility with SVG.
+	- RAW and RAW2 modes were added to 2D Barcodes (see example n. 50).
+	- Automatic padding feature was added on barcodes (see examples n. 27 and 50).
+	- Bug #2995003 "Reproduced thead bug" was fixed.
+	- The Output() method now accepts FI and FD destinations to save the document on server before sending it to the client.
+	- Ellipse() method was improved and fixed (see page 2 of example n. 12).
+	
+--------------------------------------------------------------------------------
+
 4.9.018 (2010-04-21)
 	- Bug item #2990356 "Current font size not respected with more than two HTML <p>" was fixed.
 

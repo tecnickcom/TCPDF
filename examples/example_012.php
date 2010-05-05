@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_012.php
 // Begin       : 2008-03-04
-// Last Update : 2010-04-05
+// Last Update : 2010-05-04
 //
 // Description : Example 012 for TCPDF class
 //               Graphic Functions
@@ -24,7 +24,7 @@
  * @package com.tecnick.tcpdf
  * @abstract TCPDF - Example: Graphic Functions
  * @author Nicola Asuni
- * @copyright 2004-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
+ * @copyright 2004-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
  * @since 2008-03-04
@@ -165,6 +165,36 @@ $pdf->Arrow($x0=200, $y0=280, $x1=185, $y1=266, $head_style=0, $arm_size=5, $arm
 $pdf->Arrow($x0=200, $y0=280, $x1=190, $y1=263, $head_style=1, $arm_size=5, $arm_angle=15);
 $pdf->Arrow($x0=200, $y0=280, $x1=195, $y1=261, $head_style=2, $arm_size=5, $arm_angle=15);
 $pdf->Arrow($x0=200, $y0=280, $x1=200, $y1=260, $head_style=3, $arm_size=5, $arm_angle=15);
+
+// - . - . - . - . - . - . - . - . - . - . - . - . - . - . -
+
+// ellipse
+
+// add a page
+$pdf->AddPage();
+
+// center of ellipse
+$xc=100;
+$yc=100;
+
+// X Y axis
+$pdf->SetDrawColor(200, 200, 200);
+$pdf->Line($xc-50, $yc, $xc+50, $yc);
+$pdf->Line($xc, $yc-50, $xc, $yc+50);
+
+// ellipse axis
+$pdf->SetDrawColor(200, 220, 255);
+$pdf->Line($xc-50, $yc-50, $xc+50, $yc+50);
+$pdf->Line($xc-50, $yc+50, $xc+50, $yc-50);
+
+// ellipse
+$pdf->SetDrawColor(200, 255, 200);
+$pdf->Ellipse($xc, $yc, $rx=30, $ry=15, $angle=45, $astart=0, $afinish=360, $style='D', $line_style=array(), $fill_color=array(), $nc=2);
+
+// ellipse arc
+$pdf->SetDrawColor(255, 0, 0);
+$pdf->Ellipse($xc, $yc, $rx=30, $ry=15, $angle=45, $astart=45, $afinish=90, $style='D', $line_style=array(), $fill_color=array(), $nc=2);
+
 
 // ---------------------------------------------------------
 

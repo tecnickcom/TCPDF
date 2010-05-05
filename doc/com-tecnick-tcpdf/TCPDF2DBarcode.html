@@ -80,7 +80,7 @@ Source Location: /2dbarcodes.php<br /><br />
                 
 <h4>Version:</h4>
 <ul>
-  <li>1.0.001</li>
+  <li>1.0.003</li>
 </ul>
 
         
@@ -128,7 +128,7 @@ PHP class to creates array representations for 2D barcodes to be used with TCPDF
     <td><b>author:</b>&nbsp;&nbsp;</td><td>Nicola Asuni</td>
   </tr>
   <tr>
-    <td><b>version:</b>&nbsp;&nbsp;</td><td>1.0.001</td>
+    <td><b>version:</b>&nbsp;&nbsp;</td><td>1.0.003</td>
   </tr>
   <tr>
     <td><b>link:</b>&nbsp;&nbsp;</td><td><a href="http://www.tcpdf.org">http://www.tcpdf.org</a></td>
@@ -150,7 +150,7 @@ PHP class to creates array representations for 2D barcodes to be used with TCPDF
 <div class="tags">
 	<a name="var$barcode_array"></a>
 	<p></p>
-	<h4>$barcode_array = <span class="value"></span></h4>
+	<h4>$barcode_array = <span class="value">&nbsp;false</span></h4>
 	<p>[line 68]</p>
   <br /><br />
 <h4>Tags:</h4>
@@ -218,7 +218,7 @@ $type)</code>
           <tr>
         <td class="type">string&nbsp;&nbsp;</td>
         <td><b>$type</b>&nbsp;&nbsp;</td>
-        <td>type of barcode: <ul><li>TEST</li><li>QRCODE : QR-CODE Low error correction</li><li>QRCODE,L : QR-CODE Low error correction</li><li>QRCODE,M : QR-CODE Medium error correction</li><li>QRCODE,Q : QR-CODE Better error correction</li><li>QRCODE,H : QR-CODE Best error correction</li></ul></td>
+        <td>type of barcode: <ul><li>RAW2: raw mode - array rows are surrounded by square parenthesis.</li><li>QRCODE : QR-CODE Low error correction</li><li>QRCODE,L : QR-CODE Low error correction</li><li>QRCODE,M : QR-CODE Medium error correction</li><li>QRCODE,Q : QR-CODE Better error correction</li><li>QRCODE,H : QR-CODE Best error correction</li></ul></td>
       </tr>
         </table>
     </div><br />
@@ -285,7 +285,7 @@ $type)</code>
           <tr>
         <td class="type">string&nbsp;&nbsp;</td>
         <td><b>$type</b>&nbsp;&nbsp;</td>
-        <td>type of barcode: <ul><li>TEST</li><li>QRCODE : QR-CODE Low error correction</li><li>QRCODE,L : QR-CODE Low error correction</li><li>QRCODE,M : QR-CODE Medium error correction</li><li>QRCODE,Q : QR-CODE Better error correction</li><li>QRCODE,H : QR-CODE Best error correction</li></ul></td>
+        <td>type of barcode: <ul><li>RAW: raw mode - comma-separad list of array rows</li><li>RAW2: raw mode - array rows are surrounded by square parenthesis.</li><li>QRCODE : QR-CODE Low error correction</li><li>QRCODE,L : QR-CODE Low error correction</li><li>QRCODE,M : QR-CODE Medium error correction</li><li>QRCODE,Q : QR-CODE Better error correction</li><li>QRCODE,H : QR-CODE Best error correction</li></ul></td>
       </tr>
         </table>
     </div><br />
@@ -296,7 +296,7 @@ $type)</code>
 
         <div class="credit">
 		    <hr />
-		    Documentation generated on Wed, 21 Apr 2010 16:32:47 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
+		    Documentation generated on Wed, 05 May 2010 11:56:12 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
 	      </div>
       </td></tr></table>
     </td>
