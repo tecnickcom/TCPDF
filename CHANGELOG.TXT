@@ -1,3 +1,8 @@
+5.0.001 (2010-05-06)
+	- Protected method _putstream was re-added for backward compatibility.
+	- The following method were added to display HTML Table Of Content (see example n. 59):
+		addTOCPage(), endTOCPage(), addHTMLTOC().
+
 5.0.000 (2010-05-05)
 	- Method ImageSVG() was added to embedd SVG images (see example n. 58). Note that not all SVG images are supported.
 	- Method setRasterizeVectorImages() was added to enable/disable rasterization for vector images via ImageMagick library.

@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_045.php
 // Begin       : 2008-03-04
-// Last Update : 2010-01-27
+// Last Update : 2010-05-06
 // 
 // Description : Example 045 for TCPDF class
 //               Bookmarks and Table of Content
@@ -106,7 +106,7 @@ for ($i = 2; $i < 12; $i++) {
 // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 // add a new page for TOC
-$pdf->AddPage();
+$pdf->addTOCPage();
 
 // write the TOC title
 $pdf->SetFont('times', 'B', 16);
@@ -118,7 +118,8 @@ $pdf->SetFont('dejavusans', '', 12);
 // add table of content at page 1
 $pdf->addTOC(1, 'courier', '.', 'INDEX');
 
-// IMPORTANT: After calling this method you have to call addPage() to add other content.
+// end of TOC page
+$pdf->endTOCPage();
 
 // ---------------------------------------------------------
 

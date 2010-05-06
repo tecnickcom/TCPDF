@@ -77,6 +77,7 @@ echo '<'.'?'.'xml version="1.0" encoding="UTF-8"'.'?'.'>';
 <li>Crop Marks and Registration Marks: [<a href="example_056.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Cell vertical alignments: [<a href="example_057.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>SVG Image: [<a href="example_058.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
+<li>Table Of Content with HTML templates: [<a href="example_059.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 </ol>
 
 </body>

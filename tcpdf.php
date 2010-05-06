@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-05-05
+// Last Update : 2010-05-06
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 5.0.000
+// Version     : 5.0.001
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -122,7 +122,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.0.000
+ * @version 5.0.001
  */
 
 /**
@@ -146,14 +146,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.0.000 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.0.001 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.0.000
+	* @version 5.0.001
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1553,6 +1553,12 @@ if (!class_exists('TCPDF', false)) {
 		protected $pdfunit = 'mm';
 
 		/**
+		 * @var true when we are on TOC (Table Of Content) page
+		 * @access protected
+		 */
+		protected $tocpage = false;
+
+		/**
 		 * @var If true convert vector images (SVG, EPS) to raster image using GD or ImageMagick library.
 		 * @access protected
 		 * @since 5.0.000 (2010-04-26)
@@ -2616,16 +2622,39 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
+		 * Adds a new TOC (Table Of Content) page to the document.
+		 * @param string $orientation page orientation.
+		 * @param boolean $keepmargins if true overwrites the default page margins with the current margins
+		 * @access public
+		 * @since 5.0.001 (2010-05-06)
+		 * @see AddPage(), startPage(), endPage(), endTOCPage()
+		 */
+		public function addTOCPage($orientation='', $format='', $keepmargins=false) {
+			$this->AddPage($orientation, $format, $keepmargins, true);
+		}
+
+		/**
+		 * Terminate the current TOC (Table Of Content) page
+		 * @access public
+		 * @since 5.0.001 (2010-05-06)
+		 * @see AddPage(), startPage(), endPage(), addTOCPage()
+		 */
+		public function endTOCPage() {
+			$this->endPage(true);
+		}
+
+		/**
 		 * Adds a new page to the document. If a page is already present, the Footer() method is called first to output the footer (if enabled). Then the page is added, the current position set to the top-left corner according to the left and top margins (or top-right if in RTL mode), and Header() is called to display the header (if enabled).
 		 * The origin of the coordinate system is at the top-left corner (or top-right for RTL) and increasing ordinates go downwards.
 		 * @param string $orientation page orientation. Possible values are (case insensitive):<ul><li>P or PORTRAIT (default)</li><li>L or LANDSCAPE</li></ul>
 		 * @param mixed $format The format used for pages. It can be either one of the following values (case insensitive) or a custom format in the form of a two-element array containing the width and the height (expressed in the unit given by unit).<ul><li>4A0</li><li>2A0</li><li>A0</li><li>A1</li><li>A2</li><li>A3</li><li>A4 (default)</li><li>A5</li><li>A6</li><li>A7</li><li>A8</li><li>A9</li><li>A10</li><li>B0</li><li>B1</li><li>B2</li><li>B3</li><li>B4</li><li>B5</li><li>B6</li><li>B7</li><li>B8</li><li>B9</li><li>B10</li><li>C0</li><li>C1</li><li>C2</li><li>C3</li><li>C4</li><li>C5</li><li>C6</li><li>C7</li><li>C8</li><li>C9</li><li>C10</li><li>RA0</li><li>RA1</li><li>RA2</li><li>RA3</li><li>RA4</li><li>SRA0</li><li>SRA1</li><li>SRA2</li><li>SRA3</li><li>SRA4</li><li>LETTER</li><li>LEGAL</li><li>EXECUTIVE</li><li>FOLIO</li></ul>
 		 * @param boolean $keepmargins if true overwrites the default page margins with the current margins
+		 * @param boolean $tocpage if true set the tocpage state to true (the added page will be used to display Table Of Content).
 		 * @access public
 		 * @since 1.0
-		 * @see startPage(), endPage()
+		 * @see startPage(), endPage(), addTOCPage(), endTOCPage()
 		 */
-		public function AddPage($orientation='', $format='', $keepmargins=false) {
+		public function AddPage($orientation='', $format='', $keepmargins=false, $tocpage=false) {
 			if (!isset($this->original_lMargin) OR $keepmargins) {
 				$this->original_lMargin = $this->lMargin;
 			}
@@ -2635,16 +2664,17 @@ if (!class_exists('TCPDF', false)) {
 			// terminate previous page
 			$this->endPage();
 			// start new page
-			$this->startPage($orientation, $format);
+			$this->startPage($orientation, $format, $tocpage);
 		}
 
 		/**
 		 * Terminate the current page
-		 * @access protected
+		 * @param boolean $tocpage if true set the tocpage state to false (end the page used to display Table Of Content).
+		 * @access public
 		 * @since 4.2.010 (2008-11-14)
-		 * @see startPage(), AddPage()
+		 * @see AddPage(), startPage(), addTOCPage(), endTOCPage()
 		 */
-		protected function endPage() {
+		public function endPage($tocpage=false) {
 			// check if page is already closed
 			if (($this->page == 0) OR ($this->numpages > $this->page) OR (!$this->pageopen[$this->page])) {
 				return;
@@ -2657,6 +2687,9 @@ if (!class_exists('TCPDF', false)) {
 			// mark page as closed
 			$this->pageopen[$this->page] = false;
 			$this->InFooter = false;
+			if ($tocpage) {
+				$this->tocpage = false;
+			}
 		}
 
 		/**
@@ -2664,11 +2697,15 @@ if (!class_exists('TCPDF', false)) {
 		 * The origin of the coordinate system is at the top-left corner and increasing ordinates go downwards.
 		 * @param string $orientation page orientation. Possible values are (case insensitive):<ul><li>P or PORTRAIT (default)</li><li>L or LANDSCAPE</li></ul>
 		 * @param mixed $format The format used for pages. It can be either one of the following values (case insensitive) or a custom format in the form of a two-element array containing the width and the height (expressed in the unit given by unit).<ul><li>4A0</li><li>2A0</li><li>A0</li><li>A1</li><li>A2</li><li>A3</li><li>A4 (default)</li><li>A5</li><li>A6</li><li>A7</li><li>A8</li><li>A9</li><li>A10</li><li>B0</li><li>B1</li><li>B2</li><li>B3</li><li>B4</li><li>B5</li><li>B6</li><li>B7</li><li>B8</li><li>B9</li><li>B10</li><li>C0</li><li>C1</li><li>C2</li><li>C3</li><li>C4</li><li>C5</li><li>C6</li><li>C7</li><li>C8</li><li>C9</li><li>C10</li><li>RA0</li><li>RA1</li><li>RA2</li><li>RA3</li><li>RA4</li><li>SRA0</li><li>SRA1</li><li>SRA2</li><li>SRA3</li><li>SRA4</li><li>LETTER</li><li>LEGAL</li><li>EXECUTIVE</li><li>FOLIO</li></ul>
-		 * @access protected
+		 * @param boolean $tocpage if true set the tocpage state to true (the added page will be used to display Table of Content).
+		 * @access public
 		 * @since 4.2.010 (2008-11-14)
-		 * @see endPage(), AddPage()
+		 * @see AddPage(), endPage(), addTOCPage(), endTOCPage()
 		 */
-		protected function startPage($orientation='', $format='') {
+		public function startPage($orientation='', $format='', $tocpage=false) {
+			if ($tocpage) {
+				$this->tocpage = true;
+			}
 			if ($this->numpages > $this->page) {
 				// this page has been already added
 				$this->setPage($this->page + 1);
@@ -8188,6 +8225,16 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
+		 * Output a stream.
+		 * @param string $s string to output.
+		 * @param int $n object reference for encryption mode
+		 * @access protected
+		 */
+		protected function _putstream($s, $n=0) {
+			$this->_out($this->_getstream($s, $n));
+		}
+
+		/**
 		 * Output a string to the document.
 		 * @param string $s string to output.
 		 * @access protected
@@ -10596,7 +10643,7 @@ if (!class_exists('TCPDF', false)) {
 			if (empty($page)) {
 				$page = $this->PageNo();
 			}
-			$this->outlines[] = array('t' => $txt, 'l' => $level, 'y' => $y, 'p' => $page);
+			$this->outlines[] = array('t' => strip_tags($txt), 'l' => $level, 'y' => $y, 'p' => $page);
 		}
 
 		/**
@@ -11987,7 +12034,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @param int $num page number
 		 * @access protected
 		 * @since 4.5.001 (2009-01-04)
-		 * @see addTOC()
+		 * @see addTOC(), addHTMLTOC()
 		 */
 		protected function formatTOCPageNumber($num) {
 			return number_format((float)$num, 0, '', '.');
@@ -17486,7 +17533,8 @@ if (!class_exists('TCPDF', false)) {
 
 		/**
 		 * Output a Table of Content Index (TOC).
-		 * After calling this method you have to call addPage() to add other content.
+		 * Before calling this method you have to open the page using the addTOCPage() method.
+		 * After calling this method you have to call endTOCPage() to close the TOC page.
 		 * You can override this method to achieve different styles.
 		 * @param int $page page number where this TOC should be inserted (leave empty for current page).
 		 * @param string $numbersfont set the font for page numbers (please use monospaced font for better alignment).
@@ -17495,6 +17543,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @access public
 		 * @author Nicola Asuni
 		 * @since 4.5.000 (2009-01-02)
+		 * @see addTOCPage(), endTOCPage(), addHTMLTOC()
 		 */
 		public function addTOC($page='', $numbersfont='', $filler='.', $toc_name='TOC') {
 			$fontsize = $this->FontSizePt;
@@ -17611,6 +17660,109 @@ if (!class_exists('TCPDF', false)) {
 						} else {
 							$ns = $sfill.' '.$ns;
 							$nu = $sfillu.' '.$nu;
+						}
+						$nu = $this->UTF8ToUTF16BE($nu, false);
+						$temppage = str_replace($alias_au, $nu, $temppage);
+						if ($this->isunicode) {
+							$temppage = str_replace($alias_bu, $nu, $temppage);
+							$temppage = str_replace($alias_cu, $nu, $temppage);
+							$temppage = str_replace($alias_b, $ns, $temppage);
+							$temppage = str_replace($alias_c, $ns, $temppage);
+						}
+						$temppage = str_replace($alias_a, $ns, $temppage);
+					}
+					// save changes
+					$this->setPageBuffer($p, $temppage);
+				}
+				// move pages
+				$this->Bookmark($toc_name, 0, 0, $page_first);
+				for ($i = 0; $i < $numpages; ++$i) {
+					$this->movePage($page_last, $page);
+				}
+			}
+		}
+
+		/**
+		 * Output a Table Of Content Index (TOC) using HTML templates.
+		 * Before calling this method you have to open the page using the addTOCPage() method.
+		 * After calling this method you have to call endTOCPage() to close the TOC page.
+		 * @param int $page page number where this TOC should be inserted (leave empty for current page).
+		 * @param string $toc_name name to use for TOC bookmark.
+		 * @param array $templates array of html templates. Use: #TOC_DESCRIPTION# for bookmark title, #TOC_PAGE_NUMBER# for page number.
+		 * @parma boolean $correct_align if true correct the number alignment (numbers must be in monospaced font like courier and right aligned on LTR, or left aligned on RTL)
+		 * @access public
+		 * @author Nicola Asuni
+		 * @since 5.0.001 (2010-05-06)
+		 * @see addTOCPage(), endTOCPage(), addTOC()
+		 */
+		public function addHTMLTOC($page='', $toc_name='TOC', $templates=array(), $correct_align=true) {
+			$prev_htmlLinkColorArray = $this->htmlLinkColorArray;
+			$prev_htmlLinkFontStyle = $this->htmlLinkFontStyle;
+			// set new style for link
+			$this->htmlLinkColorArray = array();
+			$this->htmlLinkFontStyle = '';
+			$page_first = $this->getPage();
+			foreach ($this->outlines as $key => $outline) {
+				if ($this->empty_string($page)) {
+					$pagenum = $outline['p'];
+				} else {
+					// placemark to be replaced with the correct number
+					$pagenum = '{#'.($outline['p']).'}';
+					if (($this->CurrentFont['type'] == 'TrueTypeUnicode') OR ($this->CurrentFont['type'] == 'cidfont0')) {
+						$pagenum = '{'.$pagenum.'}';
+					}
+				}
+				// get HTML template
+				$row = $templates[$outline['l']];
+				// replace templates with current values
+				$row = str_replace('#TOC_DESCRIPTION#', $outline['t'], $row);
+				$row = str_replace('#TOC_PAGE_NUMBER#', $pagenum, $row);
+				// add link to page
+				$row = '<a href="#'.$outline['p'].'">'.$row.'</a>';
+				// write bookmark entry
+				$this->writeHTML($row, false, false, true, false, '');
+			}
+			// restore link styles
+			$this->htmlLinkColorArray = $prev_htmlLinkColorArray;
+			$this->htmlLinkFontStyle = $prev_htmlLinkFontStyle;
+			// move TOC page and replace numbers
+			$page_last = $this->getPage();
+			$numpages = $page_last - $page_first + 1;
+			if (!$this->empty_string($page)) {
+				for ($p = $page_first; $p <= $page_last; ++$p) {
+					// get page data
+					$temppage = $this->getPageBuffer($p);
+					for ($n = 1; $n <= $this->numpages; ++$n) {
+						// update page numbers
+						$k = '{#'.$n.'}';
+						$ku = '{'.$k.'}';
+						$alias_a = $this->_escape($k);
+						$alias_au = $this->_escape('{'.$k.'}');
+						if ($this->isunicode) {
+							$alias_b = $this->_escape($this->UTF8ToLatin1($k));
+							$alias_bu = $this->_escape($this->UTF8ToLatin1($ku));
+							$alias_c = $this->_escape($this->utf8StrRev($k, false, $this->tmprtl));
+							$alias_cu = $this->_escape($this->utf8StrRev($ku, false, $this->tmprtl));
+						}
+						if ($n >= $page) {
+							$np = $n + $numpages;
+						} else {
+							$np = $n;
+						}
+						$ns = $this->formatTOCPageNumber($np);
+						$nu = $ns;
+						if ($correct_align) {
+							$sdiff = strlen($k) - strlen($ns);
+							$sdiffu = strlen($ku) - strlen($ns);
+							$sfill = str_repeat(' ', $sdiff);
+							$sfillu = str_repeat(' ', $sdiffu);
+							if ($this->rtl) {
+								$ns = $ns.$sfill;
+								$nu = $nu.$sfillu;
+							} else {
+								$ns = $sfill.$ns;
+								$nu = $sfillu.$nu;
+							}
 						}
 						$nu = $this->UTF8ToUTF16BE($nu, false);
 						$temppage = str_replace($alias_au, $nu, $temppage);

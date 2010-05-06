@@ -105,6 +105,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodAddFont">TCPDF::AddFont()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Imports a TrueType, Type1, core, or CID0 font and makes it available.</dd>
 							<dt><b>addHtmlLink</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodaddHtmlLink">TCPDF::addHtmlLink()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Output anchor link.</dd>
+							<dt><b>addHTMLTOC</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodaddHTMLTOC">TCPDF::addHTMLTOC()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Output a Table Of Content Index (TOC) using HTML templates.</dd>
 							<dt><b>addHTMLVertSpace</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodaddHTMLVertSpace">TCPDF::addHTMLVertSpace()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Add vertical spaces if needed.</dd>
 							<dt><b>addJavascriptObject</b></dt>
@@ -117,6 +119,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodAddSpotColor">TCPDF::AddSpotColor()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Defines a new spot color.</dd>
 							<dt><b>addTOC</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodaddTOC">TCPDF::addTOC()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Output a Table of Content Index (TOC).</dd>
+							<dt><b>addTOCPage</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodaddTOCPage">TCPDF::addTOCPage()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Adds a new TOC (Table Of Content) page to the document.</dd>
 							<dt><b>AliasNbPages</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodAliasNbPages">TCPDF::AliasNbPages()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Defines an alias for the total number of pages.</dd>
 							<dt><b>AliasNumPage</b></dt>
@@ -427,6 +431,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodendPage">TCPDF::endPage()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Terminate the current page</dd>
 							<dt><b>endSVGElementHandler</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodendSVGElementHandler">TCPDF::endSVGElementHandler()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Sets the closing SVG element handler function for the XML parser.</dd>
+							<dt><b>endTOCPage</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodendTOCPage">TCPDF::endTOCPage()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Terminate the current TOC (Table Of Content) page</dd>
 							<dt><b>Error</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodError">TCPDF::Error()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;This method is automatically called in case of fatal error; it simply outputs the message and halts the execution. An inherited class may override it to customize the error handling but should always halt the script, or the resulting document would probably be invalid.</dd>
 							<dt><b>estimateBitsMode8</b></dt>
@@ -1615,6 +1621,8 @@
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$tMargin">TCPDF::$tMargin</a></dd>
 							<dt><b>$tmprtl</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$tmprtl">TCPDF::$tmprtl</a></dd>
+							<dt><b>$tocpage</b></dt>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$tocpage">TCPDF::$tocpage</a></dd>
 							<dt><b>$transfmatrix</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$transfmatrix">TCPDF::$transfmatrix</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Array of transformation matrix</dd>
 							<dt><b>$transfmatrix_key</b></dt>
@@ -1897,6 +1905,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_putsignature">TCPDF::_putsignature()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Add certification signature (DocMDP or UR3)</dd>
 							<dt><b>_putspotcolors</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_putspotcolors">TCPDF::_putspotcolors()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Output Spot Colors Resources.</dd>
+							<dt><b>_putstream</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_putstream">TCPDF::_putstream()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Output a stream.</dd>
 							<dt><b>_puttrailer</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_puttrailer">TCPDF::_puttrailer()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Output trailer.</dd>
 							<dt><b>_puttruetypeunicode</b></dt>
@@ -1918,13 +1928,13 @@
 							<dt><b>_Uvalue</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_Uvalue">TCPDF::_Uvalue()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Compute U value (used for RC4 encryption)</dd>
 							<dt><b>__construct</b></dt>
-				<dd>in file qrcode.php, method <a href="com-tecnick-tcpdf/QRcode.html#method__construct">QRcode::__construct()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;This is the class constructor.</dd>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method__construct">TCPDF::__construct()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;This is the class constructor.</dd>
 							<dt><b>__construct</b></dt>
 				<dd>in file barcodes.php, method <a href="com-tecnick-tcpdf/TCPDFBarcode.html#method__construct">TCPDFBarcode::__construct()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;This is the class constructor.</dd>
 							<dt><b>__construct</b></dt>
 				<dd>in file 2dbarcodes.php, method <a href="com-tecnick-tcpdf/TCPDF2DBarcode.html#method__construct">TCPDF2DBarcode::__construct()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;This is the class constructor.</dd>
 							<dt><b>__construct</b></dt>
-				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method__construct">TCPDF::__construct()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;This is the class constructor.</dd>
+				<dd>in file qrcode.php, method <a href="com-tecnick-tcpdf/QRcode.html#method__construct">QRcode::__construct()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;This is the class constructor.</dd>
 							<dt><b>__destruct</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method__destruct">TCPDF::__destruct()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Default destructor.</dd>
 					</dl>
@@ -1932,7 +1942,7 @@
 	<a href="elementindex.html#top">top</a><br>
         <div class="credit">
 		    <hr />
-		    Documentation generated on Wed, 05 May 2010 11:56:12 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
+		    Documentation generated on Thu, 06 May 2010 12:39:33 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
 	      </div>
       </td></tr></table>
     </td>
