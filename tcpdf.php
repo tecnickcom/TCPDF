@@ -4,7 +4,7 @@
 // Begin       : 2002-08-03
 // Last Update : 2010-05-06
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 5.0.001
+// Version     : 5.0.002
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -122,7 +122,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.0.001
+ * @version 5.0.002
  */
 
 /**
@@ -146,14 +146,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.0.001 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.0.002 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.0.001
+	* @version 5.0.002
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -10643,7 +10643,7 @@ if (!class_exists('TCPDF', false)) {
 			if (empty($page)) {
 				$page = $this->PageNo();
 			}
-			$this->outlines[] = array('t' => strip_tags($txt), 'l' => $level, 'y' => $y, 'p' => $page);
+			$this->outlines[] = array('t' => $txt, 'l' => $level, 'y' => $y, 'p' => $page);
 		}
 
 		/**
@@ -10694,7 +10694,13 @@ if (!class_exists('TCPDF', false)) {
 			$n = $this->n + 1;
 			foreach ($this->outlines as $i => $o) {
 				$this->_newobj();
-				$out = '<</Title '.$this->_textstring($o['t']);
+				// covert HTML title to string
+				$nltags = '/<br[\s]?\/>|<\/(blockquote|dd|dl|div|dt|h1|h2|h3|h4|h5|h6|hr|li|ol|p|pre|ul|tcpdf|table|tr|td)>/si';
+				$title = preg_replace($nltags, "\n", $o['t']);
+				$title = preg_replace("/[\r]+/si", '', $title);
+				$title = preg_replace("/[\n]+/si", "\n", $title);
+				$title = strip_tags(trim($title));
+				$out = '<</Title '.$this->_textstring($title);
 				$out .= ' /Parent '.($n + $o['parent']).' 0 R';
 				if (isset($o['prev'])) {
 					$out .= ' /Prev '.($n + $o['prev']).' 0 R';
@@ -15287,7 +15293,7 @@ if (!class_exists('TCPDF', false)) {
 					}
 					if (!empty($this->HREF) AND (isset($this->HREF['url']))) {
 						// HTML <a> Link
-						$strrest = $this->addHtmlLink($this->HREF['url'], trim($dom[$key]['value']), $wfill, true, $this->HREF['color'], $this->HREF['style'], true);
+						$strrest = $this->addHtmlLink($this->HREF['url'], $dom[$key]['value'], $wfill, true, $this->HREF['color'], $this->HREF['style'], true);
 					} else {
 						// ****** write only until the end of the line and get the rest ******
 						$strrest = $this->Write($this->lasth, $dom[$key]['value'], '', $wfill, '', false, 0, true, $firstblock, 0);

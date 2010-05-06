@@ -1,3 +1,7 @@
+5.0.002 (2010-05-06)
+	- Bookmark() and related methods were fixed to accept HTML code.
+	- A problem on HTML links was fixed.
+
 5.0.001 (2010-05-06)
 	- Protected method _putstream was re-added for backward compatibility.
 	- The following method were added to display HTML Table Of Content (see example n. 59):
