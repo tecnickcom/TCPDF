@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-05-06
+// Last Update : 2010-05-07
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 5.0.002
+// Version     : 5.0.003
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -122,7 +122,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.0.002
+ * @version 5.0.003
  */
 
 /**
@@ -146,14 +146,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.0.002 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.0.003 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.0.002
+	* @version 5.0.003
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -2885,7 +2885,7 @@ if (!class_exists('TCPDF', false)) {
 			$headerfont = $this->getHeaderFont();
 			$headerdata = $this->getHeaderData();
 			if (($headerdata['logo']) AND ($headerdata['logo'] != K_BLANK_IMAGE)) {
-				$this->Image(K_PATH_IMAGES.$headerdata['logo'], $this->GetX(), $this->getHeaderMargin(), $headerdata['logo_width']);
+				$this->Image(K_PATH_IMAGES.$headerdata['logo'], '', '', $headerdata['logo_width']);
 				$imgy = $this->getImageRBY();
 			} else {
 				$imgy = $this->GetY();
@@ -5361,8 +5361,11 @@ if (!class_exists('TCPDF', false)) {
 					$h = $this->PageBreakTrigger - $y;
 					$w = $h * $ratio_wh;
 				}
-				if (($x + $w) > ($this->w - $this->rMargin)) {
+				if ((!$this->rtl) AND (($x + $w) > ($this->w - $this->rMargin))) {
 					$w = $this->w - $this->rMargin - $x;
+					$h = $w / $ratio_wh;
+				} elseif (($this->rtl) AND (($x - $w) < ($this->lMargin))) {
+					$w = $x - $this->lMargin;
 					$h = $w / $ratio_wh;
 				}
 			}
@@ -5500,18 +5503,18 @@ if (!class_exists('TCPDF', false)) {
 				if ($palign == 'L') {
 					$ximg = $this->lMargin;
 				} elseif ($palign == 'C') {
-					$ximg = ($this->w - $w) / 2;
+					$ximg = ($this->w + $this->lMargin - $this->rMargin - $w) / 2;
 				} elseif ($palign == 'R') {
 					$ximg = $this->w - $this->rMargin - $w;
 				} else {
-					$ximg = $this->w - $x - $w;
+					$ximg = $x - $w;
 				}
 				$this->img_rb_x = $ximg;
 			} else {
 				if ($palign == 'L') {
 					$ximg = $this->lMargin;
 				} elseif ($palign == 'C') {
-					$ximg = ($this->w - $w) / 2;
+					$ximg = ($this->w + $this->lMargin - $this->rMargin - $w) / 2;
 				} elseif ($palign == 'R') {
 					$ximg = $this->w - $this->rMargin - $w;
 				} else {
@@ -13021,8 +13024,11 @@ if (!class_exists('TCPDF', false)) {
 					$h = $this->PageBreakTrigger - $y;
 					$w = $h * $ratio_wh;
 				}
-				if (($x + $w) > ($this->w - $this->rMargin)) {
+				if ((!$this->rtl) AND (($x + $w) > ($this->w - $this->rMargin))) {
 					$w = $this->w - $this->rMargin - $x;
+					$h = $w / $ratio_wh;
+				} elseif (($this->rtl) AND (($x - $w) < ($this->lMargin))) {
+					$w = $x - $this->lMargin;
 					$h = $w / $ratio_wh;
 				}
 			}
@@ -13036,18 +13042,18 @@ if (!class_exists('TCPDF', false)) {
 				if ($palign == 'L') {
 					$ximg = $this->lMargin;
 				} elseif ($palign == 'C') {
-					$ximg = ($this->w - $w) / 2;
+					$ximg = ($this->w + $this->lMargin - $this->rMargin - $w) / 2;
 				} elseif ($palign == 'R') {
 					$ximg = $this->w - $this->rMargin - $w;
 				} else {
-					$ximg = $this->w - $x - $w;
+					$ximg = $x - $w;
 				}
 				$this->img_rb_x = $ximg;
 			} else {
 				if ($palign == 'L') {
 					$ximg = $this->lMargin;
 				} elseif ($palign == 'C') {
-					$ximg = ($this->w - $w) / 2;
+					$ximg = ($this->w + $this->lMargin - $this->rMargin - $w) / 2;
 				} elseif ($palign == 'R') {
 					$ximg = $this->w - $this->rMargin - $w;
 				} else {
@@ -13235,14 +13241,14 @@ if (!class_exists('TCPDF', false)) {
 		 * @param int $w width in user units
 		 * @param int $h height in user units
 		 * @param float $xres width of the smallest bar in user units
-		 * @param array $style array of options:<ul><li>string $style['position'] barcode position inside the specified width: L = left (default for LTR); C = center; R = right (default for RTL); S = stretch</li><li>boolean $style['border'] if true prints a border around the barcode</li><li>int $style['padding'] padding to leave around the barcode in user units (set to 'auto' for automatic padding)</li><li>array $style['fgcolor'] color array for bars and text</li><li>mixed $style['bgcolor'] color array for background or false for transparent</li><li>boolean $style["text"] boolean if true prints text below the barcode</li><li>string $style['font'] font name for text</li><li>int $style['fontsize'] font size for text</li><li>int $style['stretchtext']: 0 = disabled; 1 = horizontal scaling only if necessary; 2 = forced horizontal scaling; 3 = character spacing only if necessary; 4 = forced character spacing</li></ul>
+		 * @param array $style array of options:<ul><li>boolean $style['border'] if true prints a border around the barcode</li><li>int $style['padding'] padding to leave around the barcode in user units (set to 'auto' for automatic padding)</li><li>array $style['fgcolor'] color array for bars and text</li><li>mixed $style['bgcolor'] color array for background or false for transparent</li><li>boolean $style["text"] boolean if true prints text below the barcode</li><li>string $style['font'] font name for text</li><li>int $style['fontsize'] font size for text</li><li>int $style['stretchtext']: 0 = disabled; 1 = horizontal scaling only if necessary; 2 = forced horizontal scaling; 3 = character spacing only if necessary; 4 = forced character spacing</li><li>string $style['position'] barcode position on the page: L = left margin; C = center; R = right margin; S = stretch</li></ul>
 		 * @param string $align Indicates the alignment of the pointer next to barcode insertion relative to barcode height. The value can be:<ul><li>T: top-right for LTR or top-left for RTL</li><li>M: middle-right for LTR or middle-left for RTL</li><li>B: bottom-right for LTR or bottom-left for RTL</li><li>N: next line</li></ul>
 		 * @author Nicola Asuni
 		 * @since 3.1.000 (2008-06-09)
 		 * @access public
 		 */
 		public function write1DBarcode($code, $type, $x='', $y='', $w='', $h='', $xres=0.4, $style='', $align='') {
-			if ($this->empty_string($code)) {
+			if ($this->empty_string(trim($code))) {
 				return;
 			}
 			require_once(dirname(__FILE__).'/barcodes.php');
@@ -13287,27 +13293,24 @@ if (!class_exists('TCPDF', false)) {
 			// set foreground color
 			$this->SetDrawColorArray($style['fgcolor']);
 			$this->SetTextColorArray($style['fgcolor']);
-			if ($this->empty_string($w) OR ($w <= 0)) {
+			if ($x === '') {
+				$x = $this->x;
+			}
+			if ($y === '') {
+				$y = $this->y;
+			}
+			if (($w === '') OR ($w <= 0)) {
 				if ($this->rtl) {
 					$w = $this->x - $this->lMargin;
 				} else {
 					$w = $this->w - $this->rMargin - $this->x;
 				}
 			}
-			if ($this->empty_string($x)) {
-				$x = $this->GetX();
-			}
-			if ($this->rtl) {
-				$x = $this->w - $x;
-			}
-			if ($this->empty_string($y)) {
-				$y = $this->GetY();
+			if (($h === '') OR ($h <= 0)) {
+				$h = $w / 3;
 			}
 			if ($this->empty_string($xres)) {
 				$xres = 0.4;
-			}
-			if ($this->empty_string($h) OR ($h <= 0)) {
-				$h = $w / 3;
 			}
 			// padding
 			if (!isset($style['padding'])) {
@@ -13317,54 +13320,52 @@ if (!class_exists('TCPDF', false)) {
 			}
 			$fbw = ($arrcode['maxw'] * $xres) + (2 * $style['padding']);
 			$extraspace = ($this->cell_height_ratio * $fontsize / $this->k) + (2 * $style['padding']);
-			$prev_x = $this->x;
 			// maximum bar height
 			$barh = $h;
 			$h += $extraspace;
+			// Check whether we need a new page first as this does not fit
+			$prev_x = $this->x;
 			if ($this->checkPageBreak($h, $y)) {
-				$y = $this->GetY() + $this->cMargin;
+				$y = $this->y;
 				if ($this->rtl) {
 					$x += ($prev_x - $this->x);
 				} else {
 					$x += ($this->x - $prev_x);
 				}
 			}
-			switch ($style['position']) {
-				case 'L': { // left
-					if ($this->rtl) {
-						$xpos = $x - $w;
-					} else {
-						$xpos = $x;
-					}
-					break;
-				}
-				case 'C': { // center
-					$xdiff = (($w - $fbw) / 2);
-					if ($this->rtl) {
-						$xpos = $x - $w + $xdiff;
-					} else {
-						$xpos = $x + $xdiff;
-					}
-					break;
-				}
-				case 'R': { // right
-					if ($this->rtl) {
-						$xpos = $x - $fbw;
-					} else {
-						$xpos = $x + $w - $fbw;
-					}
-					break;
-				}
-				case 'S': { // stretch
+			// set alignment
+			$this->img_rb_y = $y + $h;
+			// set alignment
+			if ($this->rtl) {
+				if ($style['position'] == 'L') {
+					$xpos = $this->lMargin;
+				} elseif ($style['position'] == 'C') {
+					$xpos = ($this->w + $this->lMargin - $this->rMargin - $fbw) / 2;
+				} elseif ($style['position'] == 'R') {
+					$xpos = $this->w - $this->rMargin - $fbw;
+				} elseif ($style['position'] == 'S') {
 					$fbw = $w;
 					$xres = ($w - (2 * $style['padding'])) / $arrcode['maxw'];
-					if ($this->rtl) {
-						$xpos = $x - $w;
-					} else {
-						$xpos = $x;
-					}
-					break;
+					$xpos = $x - $w;
+				} else {
+					$xpos = $x - $fbw;
 				}
+				$this->img_rb_x = $xpos;
+			} else {
+				if ($style['position'] == 'L') {
+					$xpos = $this->lMargin;
+				} elseif ($style['position'] == 'C') {
+					$xpos = ($this->w + $this->lMargin - $this->rMargin - $fbw) / 2;
+				} elseif ($style['position'] == 'R') {
+					$xpos = $this->w - $this->rMargin - $fbw;
+				} elseif ($style['position'] == 'S') {
+					$fbw = $w;
+					$xres = ($w - (2 * $style['padding'])) / $arrcode['maxw'];
+					$xpos = $x;
+				} else {
+					$xpos = $x;
+				}
+				$this->img_rb_x = $xpos + $fbw;
 			}
 			$xpos_rect = $xpos;
 			$xpos = $xpos_rect + $style['padding'];
@@ -13379,16 +13380,14 @@ if (!class_exists('TCPDF', false)) {
 				$this->Rect($xpos_rect, $y, $fbw, $h, 'D');
 			}
 			// print bars
-			if ($arrcode !== false) {
-				foreach ($arrcode['bcode'] as $k => $v) {
-					$bw = ($v['w'] * $xres);
-					if ($v['t']) {
-						// draw a vertical bar
-						$ypos = $y + $style['padding'] + ($v['p'] * $barh / $arrcode['maxh']);
-						$this->Rect($xpos, $ypos, $bw, ($v['h'] * $barh  / $arrcode['maxh']), 'F', array(), $style['fgcolor']);
-					}
-					$xpos += $bw;
+			foreach ($arrcode['bcode'] as $k => $v) {
+				$bw = ($v['w'] * $xres);
+				if ($v['t']) {
+					// draw a vertical bar
+					$ypos = $y + $style['padding'] + ($v['p'] * $barh / $arrcode['maxh']);
+					$this->Rect($xpos, $ypos, $bw, ($v['h'] * $barh  / $arrcode['maxh']), 'F', array(), $style['fgcolor']);
 				}
+				$xpos += $bw;
 			}
 			// print text
 			if ($style['text']) {
@@ -13401,15 +13400,6 @@ if (!class_exists('TCPDF', false)) {
 			$this->rtl = $tempRTL;
 			// restore previous settings
 			$this->setGraphicVars($gvars);
-			// set bottomcoordinates
-			$this->img_rb_y = $y + $h;
-			if ($this->rtl) {
-				// set left side coordinate
-				$this->img_rb_x = ($this->w - $x - $w);
-			} else {
-				// set right side coordinate
-				$this->img_rb_x = $x + $w;
-			}
 			// set pointer to align the successive text/objects
 			switch($align) {
 				case 'T':{
@@ -13435,6 +13425,7 @@ if (!class_exists('TCPDF', false)) {
 					break;
 				}
 			}
+			$this->endlinex = $this->img_rb_x;
 		}
 
 		/**
@@ -13496,14 +13487,14 @@ if (!class_exists('TCPDF', false)) {
 		 * @param int $y y position in user units
 		 * @param int $w width in user units
 		 * @param int $h height in user units
-		 * @param array $style array of options:<ul><li>boolean $style['border'] if true prints a border around the barcode</li><li>int $style['padding'] padding to leave around the barcode in user units (set to 'auto' for automatic padding)</li><li>array $style['fgcolor'] color array for bars and text</li><li>mixed $style['bgcolor'] color array for background or false for transparent</li></ul>
+		 * @param array $style array of options:<ul><li>boolean $style['border'] if true prints a border around the barcode</li><li>int $style['padding'] padding to leave around the barcode in user units (set to 'auto' for automatic padding)</li><li>array $style['fgcolor'] color array for bars and text</li><li>mixed $style['bgcolor'] color array for background or false for transparent</li><li>string $style['position'] barcode position on the page: L = left margin; C = center; R = right margin; S = stretch</li></ul>
 		 * @param string $align Indicates the alignment of the pointer next to barcode insertion relative to barcode height. The value can be:<ul><li>T: top-right for LTR or top-left for RTL</li><li>M: middle-right for LTR or middle-left for RTL</li><li>B: bottom-right for LTR or bottom-left for RTL</li><li>N: next line</li></ul>
 		 * @author Nicola Asuni
 		 * @since 4.5.037 (2009-04-07)
 		 * @access public
 		 */
 		public function write2DBarcode($code, $type, $x='', $y='', $w='', $h='', $style='', $align='') {
-			if ($this->empty_string($code)) {
+			if ($this->empty_string(trim($code))) {
 				return;
 			}
 			require_once(dirname(__FILE__).'/2dbarcodes.php');
@@ -13527,34 +13518,21 @@ if (!class_exists('TCPDF', false)) {
 			}
 			// set foreground color
 			$this->SetDrawColorArray($style['fgcolor']);
-			if ($this->empty_string($x)) {
-				$x = $this->GetX();
+			if ($x === '') {
+				$x = $this->x;
 			}
-			if ($this->rtl) {
-				$x = $this->w - $x;
+			if ($y === '') {
+				$y = $this->y;
 			}
-			if ($this->empty_string($y)) {
-				$y = $this->GetY();
-			}
-			if ($this->empty_string($w) OR ($w <= 0)) {
+			if (($w === '') OR ($w <= 0)) {
 				if ($this->rtl) {
-					$w = $x - $this->lMargin;
+					$w = $this->x - $this->lMargin;
 				} else {
-					$w = $this->w - $this->rMargin - $x;
+					$w = $this->w - $this->rMargin - $this->x;
 				}
 			}
-			if ($this->empty_string($h) OR ($h <= 0)) {
-				// 2d barcodes are square by default
+			if (($h === '') OR ($h <= 0)) {
 				$h = $w;
-			}
-			$prev_x = $this->x;
-			if ($this->checkPageBreak($h, $y)) {
-				$y = $this->GetY() + $this->cMargin;
-				if ($this->rtl) {
-					$x += ($prev_x - $this->x);
-				} else {
-					$x += ($this->x - $prev_x);
-				}
 			}
 			// padding
 			if (!isset($style['padding'])) {
@@ -13565,57 +13543,76 @@ if (!class_exists('TCPDF', false)) {
 			// calculate barcode size (excluding padding)
 			$bw = $w - (2 * $style['padding']);
 			$bh = $h - (2 * $style['padding']);
-			// calculate starting coordinates
-			if ($this->rtl) {
-				$xpos = $x - $w;
-			} else {
-				$xpos = $x;
+			// Check whether we need a new page first as this does not fit
+			$prev_x = $this->x;
+			if ($this->checkPageBreak($h, $y)) {
+				$y = $this->y;
+				if ($this->rtl) {
+					$x += ($prev_x - $this->x);
+				} else {
+					$x += ($this->x - $prev_x);
+				}
 			}
-			$xpos += $style['padding'];
-			$ypos = $y + $style['padding'];
+			// set alignment
+			$this->img_rb_y = $y + $h;
+			// set alignment
+			if ($this->rtl) {
+				if ($style['position'] == 'L') {
+					$xpos = $this->lMargin;
+				} elseif ($style['position'] == 'C') {
+					$xpos = ($this->w + $this->lMargin - $this->rMargin - $w) / 2;
+				} elseif ($style['position'] == 'R') {
+					$xpos = $this->w - $this->rMargin - $w;
+				} else {
+					$xpos = $x - $w;
+				}
+				$this->img_rb_x = $xpos;
+			} else {
+				if ($style['position'] == 'L') {
+					$xpos = $this->lMargin;
+				} elseif ($style['position'] == 'C') {
+					$xpos = ($this->w + $this->lMargin - $this->rMargin - $w) / 2;
+				} elseif ($style['position'] == 'R') {
+					$xpos = $this->w - $this->rMargin - $w;
+				} else {
+					$xpos = $x;
+				}
+				$this->img_rb_x = $xpos + $w;
+			}
+			$xstart = $xpos + $style['padding'];
+			$ystart = $y + $style['padding'];
 			// barcode is always printed in LTR direction
 			$tempRTL = $this->rtl;
 			$this->rtl = false;
 			// print background color
 			if ($style['bgcolor']) {
-				$this->Rect($x, $y, $w, $h, $style['border'] ? 'DF' : 'F', '', $style['bgcolor']);
+				$this->Rect($xpos, $y, $w, $h, $style['border'] ? 'DF' : 'F', '', $style['bgcolor']);
 			} elseif ($style['border']) {
-				$this->Rect($x, $y, $w, $h, 'D');
+				$this->Rect($xpos, $y, $w, $h, 'D');
 			}
 			// print barcode cells
-			if ($arrcode !== false) {
-				$rows = $arrcode['num_rows'];
-				$cols = $arrcode['num_cols'];
-				// calculate dimension of single barcode cell
-				$cw = $bw / $cols;
-				$ch = $bh / $rows;
-				// for each row
-				for ($r = 0; $r < $rows; ++$r) {
-					$xr = $xpos;
-					// for each column
-					for ($c = 0; $c < $cols; ++$c) {
-						if ($arrcode['bcode'][$r][$c] == 1) {
-							// draw a single barcode cell
-							$this->Rect($xr, $ypos, $cw, $ch, 'F', array(), $style['fgcolor']);
-						}
-						$xr += $cw;
+			$rows = $arrcode['num_rows'];
+			$cols = $arrcode['num_cols'];
+			// calculate dimension of single barcode cell unit
+			$cw = $bw / $cols;
+			$ch = $bh / $rows;
+			// for each row
+			for ($r = 0; $r < $rows; ++$r) {
+				$xr = $xstart;
+				// for each column
+				for ($c = 0; $c < $cols; ++$c) {
+					if ($arrcode['bcode'][$r][$c] == 1) {
+						// draw a single barcode cell
+						$this->Rect($xr, $ystart, $cw, $ch, 'F', array(), $style['fgcolor']);
 					}
-					$ypos += $ch;
+					$xr += $cw;
 				}
+				$ystart += $ch;
 			}
 			// restore original direction
 			$this->rtl = $tempRTL;
 			// restore previous settings
 			$this->setGraphicVars($gvars);
-			// set bottomcoordinates
-			$this->img_rb_y = $y + $h;
-			if ($this->rtl) {
-				// set left side coordinate
-				$this->img_rb_x = ($this->w - $x - $w);
-			} else {
-				// set right side coordinate
-				$this->img_rb_x = $x + $w;
-			}
 			// set pointer to align the successive text/objects
 			switch($align) {
 				case 'T':{
@@ -13641,6 +13638,7 @@ if (!class_exists('TCPDF', false)) {
 					break;
 				}
 			}
+			$this->endlinex = $this->img_rb_x;
 		}
 
 		/**
@@ -15648,13 +15646,13 @@ if (!class_exists('TCPDF', false)) {
 							}
 						}
 						$prevy = $this->y;
-						$xpos = $this->GetX();
+						$xpos = $this->x;
 						// eliminate marker spaces
 						if (isset($dom[($key - 1)])) {
 							if (($dom[($key - 1)]['value'] == ' ') OR (isset($dom[($key - 1)]['trimmed_space']))) {
 								$xpos -= $this->GetStringWidth(chr(32));
 							} elseif ($this->rtl AND $dom[($key - 1)]['value'] == '  ') {
-								$xpos -= (2 * $this->GetStringWidth(chr(32)));
+								$xpos += (2 * $this->GetStringWidth(chr(32)));
 							}
 						}
 						$imglink = '';
@@ -18443,8 +18441,11 @@ if (!class_exists('TCPDF', false)) {
 					$h = $this->PageBreakTrigger - $y;
 					$w = $h * $ratio_wh;
 				}
-				if (($x + $w) > ($this->w - $this->rMargin)) {
+				if ((!$this->rtl) AND (($x + $w) > ($this->w - $this->rMargin))) {
 					$w = $this->w - $this->rMargin - $x;
+					$h = $w / $ratio_wh;
+				} elseif (($this->rtl) AND (($x - $w) < ($this->lMargin))) {
+					$w = $x - $this->lMargin;
 					$h = $w / $ratio_wh;
 				}
 			}
@@ -18455,18 +18456,18 @@ if (!class_exists('TCPDF', false)) {
 				if ($palign == 'L') {
 					$ximg = $this->lMargin;
 				} elseif ($palign == 'C') {
-					$ximg = ($this->w - $w) / 2;
+					$ximg = ($this->w + $this->lMargin - $this->rMargin - $w) / 2;
 				} elseif ($palign == 'R') {
 					$ximg = $this->w - $this->rMargin - $w;
 				} else {
-					$ximg = $this->w - $x - $w;
+					$ximg = $x - $w;
 				}
 				$this->img_rb_x = $ximg;
 			} else {
 				if ($palign == 'L') {
 					$ximg = $this->lMargin;
 				} elseif ($palign == 'C') {
-					$ximg = ($this->w - $w) / 2;
+					$ximg = ($this->w + $this->lMargin - $this->rMargin - $w) / 2;
 				} elseif ($palign == 'R') {
 					$ximg = $this->w - $this->rMargin - $w;
 				} else {

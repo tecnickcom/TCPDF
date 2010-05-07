@@ -1,3 +1,7 @@
+5.0.003 (2010-05-07)
+	- Horizontal alignment was fixed for images and barcodes. Now the X coordinate is always relative to the left margin. Use GetAbsX() instead of GetX() to get the X relative to left margin.
+	- Header() method was changed to account for new image alignment rules.
+
 5.0.002 (2010-05-06)
 	- Bookmark() and related methods were fixed to accept HTML code.
 	- A problem on HTML links was fixed.
