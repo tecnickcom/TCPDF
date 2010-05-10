@@ -1,3 +1,6 @@
+5.0.004 (2010-05-10)
+	- HTML line alignment when using sub and sup tags was fixed.
+
 5.0.003 (2010-05-07)
 	- Horizontal alignment was fixed for images and barcodes. Now the X coordinate is always relative to the left margin. Use GetAbsX() instead of GetX() to get the X relative to left margin.
 	- Header() method was changed to account for new image alignment rules.
