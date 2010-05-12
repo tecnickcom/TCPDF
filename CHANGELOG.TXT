@@ -1,3 +1,8 @@
+5.0.005 (2010-05-12)
+	- WARNING: The logic of permissions on the SetProtection() method has been inverted and extended (see example 16). Now you have to specify the features you want to block.
+	- SetProtection() method was extended to support RSA and AES 128 encryption and public-keys (see example 16).
+	- Bug #2999489 "setEqualColumns() and TOC uses wrong columns" was fixed (see the example 10).
+
 5.0.004 (2010-05-10)
 	- HTML line alignment when using sub and sup tags was fixed.
 

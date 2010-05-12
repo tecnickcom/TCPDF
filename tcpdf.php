@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-05-10
+// Last Update : 2010-05-12
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 5.0.004
+// Version     : 5.0.005
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -122,7 +122,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.0.004
+ * @version 5.0.005
  */
 
 /**
@@ -146,14 +146,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.0.004 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.0.005 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.0.004
+	* @version 5.0.005
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -751,59 +751,39 @@ if (!class_exists('TCPDF', false)) {
 		protected $encrypted;
 
 		/**
-		 * U entry in pdf document
+		 * Array containing encryption settings
 		 * @access protected
-		 * @since 2.0.000 (2008-01-02)
+		 * @since 5.0.005 (2010-05-11)
 		 */
-		protected $Uvalue;
-
-		/**
-		 * O entry in pdf document
-		 * @access protected
-		 * @since 2.0.000 (2008-01-02)
-		 */
-		protected $Ovalue;
-
-		/**
-		 * P entry in pdf document
-		 * @access protected
-		 * @since 2.0.000 (2008-01-02)
-		 */
-		protected $Pvalue;
-
-		/**
-		 * encryption object id
-		 * @access protected
-		 * @since 2.0.000 (2008-01-02)
-		 */
-		protected $enc_obj_id;
+		protected $encryptdata = array();
 
 		/**
 		 * last RC4 key encrypted (cached for optimisation)
 		 * @access protected
 		 * @since 2.0.000 (2008-01-02)
 		 */
-		protected $last_rc4_key;
+		protected $last_enc_key;
 
 		/**
 		 * last RC4 computed key
 		 * @access protected
 		 * @since 2.0.000 (2008-01-02)
 		 */
-		protected $last_rc4_key_c;
+		protected $last_enc_key_c;
 
 		/**
-		 * RC4 padding
+		 * Encryption padding
 		 * @access protected
 		 */
-		protected $padding = "\x28\xBF\x4E\x5E\x4E\x75\x8A\x41\x64\x00\x4E\x56\xFF\xFA\x01\x08\x2E\x2E\x00\xB6\xD0\x68\x3E\x80\x2F\x0C\xA9\xFE\x64\x53\x69\x7A";
-
+		protected $enc_padding = "\x28\xBF\x4E\x5E\x4E\x75\x8A\x41\x64\x00\x4E\x56\xFF\xFA\x01\x08\x2E\x2E\x00\xB6\xD0\x68\x3E\x80\x2F\x0C\xA9\xFE\x64\x53\x69\x7A";
+		
 		/**
-		 * RC4 encryption key
+		 * File ID (used on trailer)
 		 * @access protected
+		 * @since 5.0.005 (2010-05-12)
 		 */
-		protected $encryption_key;
-
+		protected $file_id;	
+		
 		// --- bookmark ---
 
 		/**
@@ -1772,8 +1752,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->ColorFlag = false;
 			// encryption values
 			$this->encrypted = false;
-			$this->last_rc4_key = '';
-			$this->padding = "\x28\xBF\x4E\x5E\x4E\x75\x8A\x41\x64\x00\x4E\x56\xFF\xFA\x01\x08\x2E\x2E\x00\xB6\xD0\x68\x3E\x80\x2F\x0C\xA9\xFE\x64\x53\x69\x7A";
+			$this->last_enc_key = '';
 			//Standard Unicode fonts
 			$this->CoreFonts = array(
 				'courier'=>'Courier',
@@ -1851,6 +1830,8 @@ if (!class_exists('TCPDF', false)) {
 			$this->apxo_obj_id = $this->apxo_start_obj_id;
 			$this->js_obj_id = $this->js_start_obj_id;
 			$this->default_form_prop = array('lineWidth'=>1, 'borderStyle'=>'solid', 'fillColor'=>array(255, 255, 255), 'strokeColor'=>array(128, 128, 128));
+			// set file ID for trailer
+			$this->file_id = md5(microtime().__FILE__.'TCPDF'.$orientation.$unit.$format.$encoding.uniqid());
 		}
 
 		/**
@@ -6675,6 +6656,7 @@ if (!class_exists('TCPDF', false)) {
 							//$annots .= ' /ExData ';
 						}
 						$lineendings = array('Square', 'Circle', 'Diamond', 'OpenArrow', 'ClosedArrow', 'None', 'Butt', 'ROpenArrow', 'RClosedArrow', 'Slash');
+						// Annotation types
 						switch (strtolower($pl['opt']['subtype'])) {
 							case 'text': {
 								if (isset($pl['opt']['open'])) {
@@ -6750,7 +6732,7 @@ if (!class_exists('TCPDF', false)) {
 								}
 								$tfit = array('FreeText', 'FreeTextCallout', 'FreeTextTypeWriter');
 								if (isset($pl['opt']['it']) AND in_array($pl['opt']['it'], $tfit)) {
-									$annots .= ' /IT '.$pl['opt']['it'];
+									$annots .= ' /IT /'.$pl['opt']['it'];
 								}
 								if (isset($pl['opt']['rd']) AND is_array($pl['opt']['rd'])) {
 									$l = $pl['opt']['rd'][0] * $this->k;
@@ -7852,8 +7834,8 @@ if (!class_exists('TCPDF', false)) {
 			$out .= ' /Root '.$this->n.' 0 R';
 			$out .= ' /Info '.($this->n - 1).' 0 R';
 			if ($this->encrypted) {
-				$out .= ' /Encrypt '.$this->enc_obj_id.' 0 R';
-				$out .= ' /ID [()()]';
+				$out .= ' /Encrypt '.$this->encryptdata['objid'].' 0 R';
+				$out .= ' /ID [ <'.$this->file_id.'> <'.$this->file_id.'> ]';
 			}
 			$out .= ' >>';
 			$this->_out($out);
@@ -8134,9 +8116,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @access protected
 		 */
 		protected function _datastring($s) {
-			if ($this->encrypted) {
-				$s = $this->_RC4($this->_objectkey($this->n), $s);
-			}
+			$s = $this->_encrypt_data($this->n, $s);
 			return '('. $this->_escape($s).')';
 		}
 
@@ -8147,9 +8127,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @access protected
 		 */
 		protected function _dataannobjstring($s) {
-			if ($this->encrypted) {
-				$s = $this->_RC4($this->_objectkey($this->annot_obj_id + 1), $s);
-			}
+			$s = $this->_encrypt_data(($this->annot_obj_id + 1), $s);
 			return '('. $this->_escape($s).')';
 		}
 
@@ -8217,13 +8195,11 @@ if (!class_exists('TCPDF', false)) {
 		 * @access protected
 		 */
 		protected function _getstream($s, $n=0) {
-			if ($this->encrypted) {
-				if ($n <= 0) {
-					// default to current object
-					$n = $this->n;
-				}
-				$s = $this->_RC4($this->_objectkey($n), $s);
+			if ($n <= 0) {
+				// default to current object
+				$n = $this->n;
 			}
+			$s = $this->_encrypt_data($n, $s);
 			return "stream\n".$s."\nendstream";
 		}
 
@@ -8699,21 +8675,56 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		// ENCRYPTION METHODS ----------------------------------
-		// SINCE 2.0.000 (2008-01-02)
 
 		/**
-		 * Compute encryption key depending on object number where the encrypted data is stored
+		 * Compute encryption key depending on object number where the encrypted data is stored.
+		 * This is used for all strings and streams without crypt filter specifier.
 		 * @param int $n object number
 		 * @access protected
+		 * @author Nicola Asuni
 		 * @since 2.0.000 (2008-01-02)
 		 */
 		protected function _objectkey($n) {
-			return substr($this->_md5_16($this->encryption_key.pack('VXxx', $n)), 0, 10);
+			$objkey = $this->encryptdata['key'].pack('VXxx', $n);
+			if ($this->encryptdata['mode'] == 2) {
+				// AES padding
+				$objkey .= "\x73\x41\x6C\x54";
+			}
+			$objkey = substr($this->_md5_16($objkey), 0, (($this->encryptdata['Length'] / 8) + 5));
+			$objkey = substr($objkey, 0, 16);			
+			return $objkey;
+		}
+
+		/**
+		 * Encrypt the input string.
+		 * @param int $n object number
+		 * @param string $s data string to encrypt
+		 * @access protected
+		 * @author Nicola Asuni
+		 * @since 5.0.005 (2010-05-11)
+		 */
+		protected function _encrypt_data($n, $s) {
+			if (!$this->encrypted) {
+				return $s;
+			}
+			switch ($this->encryptdata['mode']) {
+				case 0:   // RC4 40 bit
+				case 1: { // RC4 128 bit
+					$s = $this->_RC4($this->_objectkey($n), $s);
+					break;
+				}
+				case 2: { // AES 128 bit
+					$s = $this->_AES($this->_objectkey($n), $s);
+					break;
+				}
+			}
+			return $s;
 		}
 
 		/**
 		 * Put encryption on PDF document.
 		 * @access protected
+		 * @author Nicola Asuni
 		 * @since 2.0.000 (2008-01-02)
 		 */
 		protected function _putencryption() {
@@ -8721,11 +8732,106 @@ if (!class_exists('TCPDF', false)) {
 				return;
 			}
 			$this->_newobj();
-			$this->enc_obj_id = $this->n;
-			$out = '<< /Filter /Standard /V 1 /R 2';
-			$out .= ' /O ('.$this->_escape($this->Ovalue).')';
-			$out .= ' /U ('.$this->_escape($this->Uvalue).')';
-			$out .= ' /P '.$this->Pvalue;
+			$this->encryptdata['objid'] = $this->n;
+			$out = '<<';
+			if (!isset($this->encryptdata['Filter']) OR empty($this->encryptdata['Filter'])) {
+				$this->encryptdata['Filter'] = 'Standard';
+			}
+			$out .= ' /Filter /'.$this->encryptdata['Filter'];
+			if (isset($this->encryptdata['SubFilter']) AND !empty($this->encryptdata['SubFilter'])) {
+				$out .= ' /SubFilter /'.$this->encryptdata['SubFilter'];
+			}
+			if (!isset($this->encryptdata['V']) OR empty($this->encryptdata['V'])) {
+				$this->encryptdata['V'] = 1;
+			}
+			// V is a code specifying the algorithm to be used in encrypting and decrypting the document
+			$out .= ' /V '.$this->encryptdata['V'];
+			if (($this->encryptdata['V'] == 2) OR ($this->encryptdata['V'] == 3)) {
+				if (isset($this->encryptdata['Length']) AND !empty($this->encryptdata['Length'])) {
+					// The length of the encryption key, in bits. The value shall be a multiple of 8, in the range 40 to 128
+					$out .= ' /Length '.$this->encryptdata['Length'];
+				} else {
+					$out .= ' /Length 40';
+				}
+			} elseif ($this->encryptdata['V'] == 4) {
+				if (!isset($this->encryptdata['StmF']) OR empty($this->encryptdata['StmF'])) {
+					$this->encryptdata['StmF'] = 'Identity';
+				}
+				if (!isset($this->encryptdata['StrF']) OR empty($this->encryptdata['StrF'])) {
+					// The name of the crypt filter that shall be used when decrypting all strings in the document.
+					$this->encryptdata['StrF'] = 'Identity';
+				}
+				// A dictionary whose keys shall be crypt filter names and whose values shall be the corresponding crypt filter dictionaries.
+				if (isset($this->encryptdata['CF']) AND !empty($this->encryptdata['CF'])) {
+					$out .= ' /CF <<';
+					$out .= ' /'.$this->encryptdata['StmF'].' <<';
+					$out .= ' /Type /CryptFilter';
+					if (isset($this->encryptdata['CF']['CFM']) AND !empty($this->encryptdata['CF']['CFM'])) {
+						// The method used
+						$out .= ' /CFM /'.$this->encryptdata['CF']['CFM'];
+						if ($this->encryptdata['pubkey']) {
+							$out .= ' /Recipients [';
+							foreach ($this->encryptdata['Recipients'] as $rec) {
+								$out .= ' <'.$rec.'>';
+							}
+							$out .= ' ]';
+							if (isset($this->encryptdata['CF']['EncryptMetadata']) AND (!$this->encryptdata['CF']['EncryptMetadata'])) {
+								$out .= ' /EncryptMetadata false';
+							} else {
+								$out .= ' /EncryptMetadata true';
+							}
+						}
+					} else {
+						$out .= ' /CFM /None';
+					}
+					if (isset($this->encryptdata['CF']['AuthEvent']) AND !empty($this->encryptdata['CF']['AuthEvent'])) {
+						// The event to be used to trigger the authorization that is required to access encryption keys used by this filter.
+						$out .= ' /AuthEvent /'.$this->encryptdata['CF']['AuthEvent'];
+					} else {
+						$out .= ' /AuthEvent /DocOpen';
+					}
+					if (isset($this->encryptdata['CF']['Length']) AND !empty($this->encryptdata['CF']['Length'])) {
+						// The bit length of the encryption key.
+						$out .= ' /Length '.$this->encryptdata['CF']['Length'];
+					}
+					$out .= ' >> >>';
+				}
+				// The name of the crypt filter that shall be used by default when decrypting streams.
+				$out .= ' /StmF /'.$this->encryptdata['StmF'];
+				// The name of the crypt filter that shall be used when decrypting all strings in the document.
+				$out .= ' /StrF /'.$this->encryptdata['StrF'];
+				if (isset($this->encryptdata['EFF']) AND !empty($this->encryptdata['EFF'])) {
+					// The name of the crypt filter that shall be used when encrypting embedded file streams that do not have their own crypt filter specifier.
+					$out .= ' /EFF /'.$this->encryptdata[''];
+				}
+			}
+			// Additional encryption dictionary entries for the standard security handler
+			if ($this->encryptdata['pubkey']) {
+				if (($this->encryptdata['V'] < 4) AND isset($this->encryptdata['Recipients']) AND !empty($this->encryptdata['Recipients'])) {
+					$out .= ' /Recipients [';
+					foreach ($this->encryptdata['Recipients'] as $rec) {
+						$out .= ' <'.$rec.'>';
+					}
+					$out .= ' ]';
+				}
+			} else {
+				$out .= ' /R';
+				if ($this->encryptdata['V'] == 4) {
+					$out .= ' 4';
+				} elseif ($this->encryptdata['V'] < 2) {
+					$out .= ' 2';
+				} else {
+					$out .= ' 3';
+				}
+				$out .= ' /O ('.$this->_escape($this->encryptdata['O']).')';
+				$out .= ' /U ('.$this->_escape($this->encryptdata['U']).')';
+				$out .= ' /P '.$this->encryptdata['P'];
+				if (isset($this->encryptdata['EncryptMetadata']) AND (!$this->encryptdata['EncryptMetadata'])) {
+					$out .= ' /EncryptMetadata false';
+				} else {
+					$out .= ' /EncryptMetadata true';
+				}
+			}
 			$out .= ' >> endobj';
 			$this->_out($out);
 		}
@@ -8738,10 +8844,14 @@ if (!class_exists('TCPDF', false)) {
 		 * @return String encrypted text
 		 * @access protected
 		 * @since 2.0.000 (2008-01-02)
-		 * @author Klemen Vodopivec
+		 * @author Klemen Vodopivec, Nicola Asuni
 		 */
 		protected function _RC4($key, $text) {
-			if ($this->last_rc4_key != $key) {
+			if (function_exists('mcrypt_decrypt') AND ($out = @mcrypt_decrypt(@MCRYPT_ARCFOUR, $key, $text, @MCRYPT_MODE_STREAM))) {
+				// try to use mcrypt function if exist
+				return $out;
+		    }
+			if ($this->last_enc_key != $key) {
 				$k = str_repeat($key, ((256 / strlen($key)) + 1));
 				$rc4 = range(0, 255);
 				$j = 0;
@@ -8751,10 +8861,10 @@ if (!class_exists('TCPDF', false)) {
 					$rc4[$i] = $rc4[$j];
 					$rc4[$j] = $t;
 				}
-				$this->last_rc4_key = $key;
-				$this->last_rc4_key_c = $rc4;
+				$this->last_enc_key = $key;
+				$this->last_enc_key_c = $rc4;
 			} else {
-				$rc4 = $this->last_rc4_key_c;
+				$rc4 = $this->last_enc_key_c;
 			}
 			$len = strlen($text);
 			$a = 0;
@@ -8773,6 +8883,26 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
+		 * Returns the input text exrypted using AES algorithm and the specified key.
+		 * This method requires mcrypt.
+		 * @param string $key encryption key
+		 * @param String $text input text to be encrypted
+		 * @return String encrypted text
+		 * @access protected
+		 * @author Nicola Asuni
+		 * @since 5.0.005 (2010-05-11)
+		 */
+		protected function _AES($key, $text) {
+			// padding (RFC 2898, PKCS #5: Password-Based Cryptography Specification Version 2.0)
+			$padding = 16 - (strlen($text) % 16);
+			$text .= str_repeat(chr($padding), $padding);
+			$iv = mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC), MCRYPT_RAND);
+			$text = mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $key, $text, MCRYPT_MODE_CBC, $iv);
+			$text = $iv.$text;
+			return $text;
+		}
+
+		/**
 		 * Encrypts a string using MD5 and returns it's value as a binary string.
 		 * @param string $str input string
 		 * @return String MD5 encrypted binary string
@@ -8785,29 +8915,59 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
-		 * Compute O value (used for RC4 encryption)
+		 * Compute O value (used for encryption)
 		 * @param String $user_pass user password
 		 * @param String $owner_pass user password
 		 * @return String O value
 		 * @access protected
 		 * @since 2.0.000 (2008-01-02)
-		 * @author Klemen Vodopivec
+		 * @author Nicola Asuni
 		 */
 		protected function _Ovalue($user_pass, $owner_pass) {
 			$tmp = $this->_md5_16($owner_pass);
-			$owner_RC4_key = substr($tmp, 0, 5);
-			return $this->_RC4($owner_RC4_key, $user_pass);
+			if ($this->encryptdata['mode'] > 0) {
+				for ($i = 0; $i < 50; ++$i) {
+					$tmp = $this->_md5_16($tmp);
+				}
+			}
+			$owner_key = substr($tmp, 0, ($this->encryptdata['Length'] / 8));
+			$enc = $this->_RC4($owner_key, $user_pass);
+			if ($this->encryptdata['mode'] > 0) {
+				$len = strlen($owner_key);
+				for ($i = 1; $i <= 19; ++$i) {
+					$ek = '';
+					for ($j = 0; $j < $len; ++$j) {
+						$ek .= chr(ord($owner_key{$j}) ^ $i);
+					}
+					$enc = $this->_RC4($ek, $enc);
+				}
+			}
+			return $enc;
 		}
 
 		/**
-		 * Compute U value (used for RC4 encryption)
+		 * Compute U value (used for encryption)
 		 * @return String U value
 		 * @access protected
 		 * @since 2.0.000 (2008-01-02)
-		 * @author Klemen Vodopivec
+		 * @author Nicola Asuni
 		 */
 		protected function _Uvalue() {
-			return $this->_RC4($this->encryption_key, $this->padding);
+			if ($this->encryptdata['mode'] == 0) {
+				return $this->_RC4($this->encryptdata['key'], $this->enc_padding);
+			}
+			$tmp = $this->_md5_16($this->enc_padding.$this->encryptdata['fileid']);
+			$enc = $this->_RC4($this->encryptdata['key'], $tmp);
+			$len = strlen($tmp);
+			for ($i = 1; $i <= 19; ++$i) {
+				$ek = '';
+				for ($j = 0; $j < $len; ++$j) {
+					$ek .= chr(ord($this->encryptdata['key']{$j}) ^ $i);
+				}
+				$enc = $this->_RC4($ek, $enc);
+			}
+			$enc .= str_repeat("\x00", 16);
+			return substr($enc, 0, 32);
 		}
 
 		/**
@@ -8817,54 +8977,238 @@ if (!class_exists('TCPDF', false)) {
 		 * @param String $protection protection type
 		 * @access protected
 		 * @since 2.0.000 (2008-01-02)
-		 * @author Klemen Vodopivec
+		 * @author Nicola Asuni
 		 */
 		protected function _generateencryptionkey($user_pass, $owner_pass, $protection) {
-			// Pad passwords
-			$user_pass = substr($user_pass.$this->padding, 0, 32);
-			$owner_pass = substr($owner_pass.$this->padding, 0, 32);
-			// Compute O value
-			$this->Ovalue = $this->_Ovalue($user_pass, $owner_pass);
-			// Compute encyption key
-			$tmp = $this->_md5_16($user_pass.$this->Ovalue.chr($protection)."\xFF\xFF\xFF");
-			$this->encryption_key = substr($tmp, 0, 5);
-			// Compute U value
-			$this->Uvalue = $this->_Uvalue();
-			// Compute P value
-			$this->Pvalue = -(($protection^255) + 1);
+			$keybytelen = ($this->encryptdata['Length'] / 8);
+			if (!$this->encryptdata['pubkey']) { // standard mode
+				// Pad passwords
+				$user_pass = substr($user_pass.$this->enc_padding, 0, 32);
+				$owner_pass = substr($owner_pass.$this->enc_padding, 0, 32);
+				// Compute O value
+				$this->encryptdata['O'] = $this->_Ovalue($user_pass, $owner_pass);
+				// get default permissions (reverse byte order)
+				$permissions = $this->getEncPermissionsString($protection);
+				// Compute encryption key
+				$tmp = $this->_md5_16($user_pass.$this->encryptdata['O'].$permissions.$this->encryptdata['fileid']);
+				if ($this->encryptdata['mode'] > 0) {
+					for ($i = 0; $i < 50; ++$i) {
+						$tmp = $this->_md5_16(substr($tmp, 0, $keybytelen));
+					}
+				}
+				$this->encryptdata['key'] = substr($tmp, 0, $keybytelen);
+				// Compute U value
+				$this->encryptdata['U'] = $this->_Uvalue();
+				// Compute P value
+				$this->encryptdata['P'] = $protection;
+			} else { // Public-Key mode
+				// random 20-byte seed
+				$seed = sha1(microtime().uniqid().$this->file_id, true);
+				$recipient_bytes = '';
+				foreach ($this->encryptdata['pubkeys'] as $pubkey) {
+					// for each public certificate
+					if (isset($pubkey['p'])) {
+						$pkprotection = $this->getUserPermissionCode($pubkey['p'], $this->encryptdata['mode']);
+					} else {
+						$pkprotection = $protection;
+					}
+					// get default permissions (reverse byte order)
+					$pkpermissions = $this->getEncPermissionsString($pkprotection);
+					// envelope data
+					$envelope = $seed.$pkpermissions;
+					// write the envelope data to a temporary file
+					$tempkeyfile = tempnam(K_PATH_CACHE, 'tmpkey_');
+					$f = fopen($tempkeyfile, 'wb');
+					if (!$f) {
+						$this->Error('Unable to create temporary key file: '.$tempkeyfile);
+					}
+					$envelope_lenght = strlen($envelope);
+					fwrite($f, $envelope, $envelope_lenght);
+					fclose($f);
+					$tempencfile = tempnam(K_PATH_CACHE, 'tmpenc_');
+					if (!openssl_pkcs7_encrypt($tempkeyfile, $tempencfile, $pubkey['c'], array(), PKCS7_DETACHED | PKCS7_BINARY)) {
+						$this->Error('Unable to encrypt the file: '.$tempkeyfile);
+					}
+					unlink($tempkeyfile);
+					// read encryption signature
+					$signature = file_get_contents($tempencfile, false, null, $envelope_lenght);
+					unlink($tempencfile);
+					// extract signature
+					$signature = substr($signature, strpos($signature, 'Content-Disposition'));
+					$tmparr = explode("\n\n", $signature);
+					$signature = trim($tmparr[1]);
+					unset($tmparr);
+					// decode signature
+					$signature = base64_decode($signature);
+					// convert signature to hex
+					$hexsignature = current(unpack('H*', $signature));
+					// store signature on recipients array
+					$this->encryptdata['Recipients'][] = $hexsignature;
+					// The bytes of each item in the Recipients array of PKCS#7 objects in the order in which they appear in the array
+		            $recipient_bytes .= $signature;
+				}
+				// calculate encryption key
+				$this->encryptdata['key'] = substr(sha1($seed.$recipient_bytes, true), 0, $keybytelen);
+			}
 		}
 
 		/**
-		 * Set document protection
-		 * The permission array is composed of values taken from the following ones:
-		 * - copy: copy text and images to the clipboard
-		 * - print: print the document
-		 * - modify: modify it (except for annotations and forms)
-		 * - annot-forms: add annotations and forms
-		 * Remark: the protection against modification is for people who have the full Acrobat product.
-		 * If you don't set any password, the document will open as usual. If you set a user password, the PDF viewer will ask for it before displaying the document. The master password, if different from the user one, can be used to get full access.
-		 * Note: protecting a document requires to encrypt it, which increases the processing time a lot. This can cause a PHP time-out in some cases, especially if the document contains images or fonts.
-		 * @param Array $permissions the set of permissions. Empty by default (only viewing is allowed). (print, modify, copy, annot-forms)
-		 * @param String $user_pass user password. Empty by default.
-		 * @param String $owner_pass owner password. If not specified, a random value is used.
-		 * @access public
-		 * @since 2.0.000 (2008-01-02)
-		 * @author Klemen Vodopivec
+		 * Return the premission code used on encryption (P value).
+		 * @param Array $permissions the set of permissions (specify the ones you want to block).
+		 * @param int $mode encryption strength: 0 = RC4 40 bit; 1 = RC4 128 bit; 2 = AES 128 bit.
+		 * @access protected
+		 * @since 5.0.005 (2010-05-12)
+		 * @author Nicola Asuni
 		 */
-		public function SetProtection($permissions=array(), $user_pass='', $owner_pass=null) {
-			$options = array('print' => 4, 'modify' => 8, 'copy' => 16, 'annot-forms' => 32);
-			$protection = 192;
+		protected function getUserPermissionCode($permissions, $mode=0) {
+			$options = array(
+				'owner' => 2, // bit 2 -- inverted logic: cleared by default
+				'print' => 4, // bit 3
+				'modify' => 8, // bit 4
+				'copy' => 16, // bit 5
+				'annot-forms' => 32, // bit 6
+				'fill-forms' => 256, // bit 9
+				'extract' => 512, // bit 10
+				'assemble' => 1024,// bit 11
+				'print-high' => 2048 // bit 12
+				);
+			$protection = 4294967293; // 32 bits (all to 1 except bit 2)
 			foreach ($permissions as $permission) {
 				if (!isset($options[$permission])) {
 					$this->Error('Incorrect permission: '.$permission);
 				}
-				$protection += $options[$permission];
+				if (($mode > 0) OR ($options[$permission] <= 32)) {
+					// set only valid permissions
+					if ($options[$permission] == 2) {
+						// the logic for bit 2 is inverted (cleared by default)
+						$protection += $options[$permission];
+					} else {
+						$protection -= $options[$permission];
+					}
+				}
+			}
+			return $protection;
+		}
+
+		/**
+		 * Set document protection
+		 * Remark: the protection against modification is for people who have the full Acrobat product.
+		 * If you don't set any password, the document will open as usual. If you set a user password, the PDF viewer will ask for it before displaying the document. The master password, if different from the user one, can be used to get full access.
+		 * Note: protecting a document requires to encrypt it, which increases the processing time a lot. This can cause a PHP time-out in some cases, especially if the document contains images or fonts.
+		 * @param Array $permissions the set of permissions (specify the ones you want to block):<ul><li>print : Print the document;</li><li>modify : Modify the contents of the document by operations other than those controlled by 'fill-forms', 'extract' and 'assemble';</li><li>copy : Copy or otherwise extract text and graphics from the document;</li><li>annot-forms : Add or modify text annotations, fill in interactive form fields, and, if 'modify' is also set, create or modify interactive form fields (including signature fields);</li><li>fill-forms : Fill in existing interactive form fields (including signature fields), even if 'annot-forms' is not specified;</li><li>extract : Extract text and graphics (in support of accessibility to users with disabilities or for other purposes);</li><li>assemble : Assemble the document (insert, rotate, or delete pages and create bookmarks or thumbnail images), even if 'modify' is not set;</li><li>print-high : Print the document to a representation from which a faithful digital copy of the PDF content could be generated. When this is not set, printing is limited to a low-level representation of the appearance, possibly of degraded quality.</li><li>owner : (inverted logic - only for public-key) when set permits change of encryption and enables all other permissions.</li></ul>
+		 * @param String $user_pass user password. Empty by default.
+		 * @param String $owner_pass owner password. If not specified, a random value is used.
+		 * @param int $mode encryption strength: 0 = RC4 40 bit; 1 = RC4 128 bit; 2 = AES 128 bit.
+		 * @param String $pubkeys array of recipients containing public-key certificates ('c') and permissions ('p'). For example: array(array('c' => 'file://../tcpdf.crt', 'p' => array('print')))
+		 * @access public
+		 * @since 2.0.000 (2008-01-02)
+		 * @author Nicola Asuni
+		 */
+		public function SetProtection($permissions=array('print', 'modify', 'copy', 'annot-forms', 'fill-forms', 'extract', 'assemble', 'print-high'), $user_pass='', $owner_pass=null, $mode=0, $pubkeys=null) {
+			$protection = $this->getUserPermissionCode($permissions, $mode);
+			if (($pubkeys !== null) AND (is_array($pubkeys))) {
+				// public-key mode
+				$this->encryptdata['pubkeys'] = $pubkeys;
+				if ($mode == 0) {
+					// public-Key Security requires at least 128 bit
+					$mode = 1;
+				}
+				if (!function_exists('openssl_pkcs7_encrypt')) {
+					$this->Error('Public-Key Security requires openssl library.');
+				}
+				// Set Public-Key filter (availabe are: Entrust.PPKEF, Adobe.PPKLite, Adobe.PubSec)
+				$this->encryptdata['pubkey'] = true;
+				$this->encryptdata['Filter'] = 'Adobe.PubSec';
+				$this->encryptdata['StmF'] = 'DefaultCryptFilter';
+				$this->encryptdata['StrF'] = 'DefaultCryptFilter';
+			} else {
+				// standard mode (password mode)
+				$this->encryptdata['pubkey'] = false;
+				$this->encryptdata['Filter'] = 'Standard';
+				$this->encryptdata['StmF'] = 'StdCF';
+				$this->encryptdata['StrF'] = 'StdCF';
+			}
+			if ($mode > 1) { // AES
+				if (!extension_loaded('mcrypt')) {
+					$this->Error('AES encryption requires mcrypt library.');
+				}
+				if (mcrypt_get_cipher_name(MCRYPT_RIJNDAEL_128) === false) {
+					$this->Error('AES encryption requires MCRYPT_RIJNDAEL_128 cypher.');
+				}
 			}
 			if ($owner_pass === null) {
 				$owner_pass = uniqid(rand());
 			}
+			$this->encryptdata['mode'] = $mode;
+			switch ($mode) {
+				case 0: { // RC4 40 bit
+					$this->encryptdata['V'] = 1;
+					$this->encryptdata['Length'] = 40;
+					$this->encryptdata['CF']['CFM'] = 'V2';
+					break;
+				}
+				case 1: { // RC4 128 bit
+					$this->encryptdata['V'] = 2;
+					$this->encryptdata['Length'] = 128;
+					$this->encryptdata['CF']['CFM'] = 'V2';
+					if ($this->encryptdata['pubkey']) {
+						$this->encryptdata['SubFilter'] = 'adbe.pkcs7.s4';
+						$this->encryptdata['Recipients'] = array();
+					}
+					break;
+				}
+				case 2: { // AES 128 bit
+					$this->encryptdata['V'] = 4;
+					$this->encryptdata['Length'] = 128;
+					$this->encryptdata['CF']['CFM'] = 'AESV2';
+					if ($this->encryptdata['pubkey']) {
+						$this->encryptdata['SubFilter'] = 'adbe.pkcs7.s5';
+						$this->encryptdata['Recipients'] = array();
+					}
+					break;
+				}
+			}
 			$this->encrypted = true;
+			$this->encryptdata['fileid'] = $this->convertHexStringToString($this->file_id);
 			$this->_generateencryptionkey($user_pass, $owner_pass, $protection);
+		}
+
+		/**
+		 * Convert hexadecimal string to string
+		 * @param string $bs byte-string to convert
+		 * @return String
+		 * @access protected
+		 * @since 5.0.005 (2010-05-12)
+		 * @author Nicola Asuni
+		 */
+		protected function convertHexStringToString($bs) {
+			if ((strlen($bs) % 2) != 0) {
+				// padding
+				$bs .= '0';
+			}
+			$bytes = str_split($bs, 2);
+			$string = '';
+			foreach ($bytes as $byte) {
+				$string .= chr(hexdec($byte));
+			}
+			return $string;
+		}
+
+		/**
+		 * Convert encryption P value to a string of bytes, low-order byte first.
+		 * @param string $protection 32bit encryption permission value (P value)
+		 * @return String
+		 * @access protected
+		 * @since 5.0.005 (2010-05-12)
+		 * @author Nicola Asuni
+		 */
+		protected function getEncPermissionsString($protection) {
+			$binprot = sprintf('%032b', $protection);
+			$str = chr(bindec(substr($binprot, 24, 8)));
+			$str .= chr(bindec(substr($binprot, 16, 8)));
+			$str .= chr(bindec(substr($binprot, 8, 8)));
+			$str .= chr(bindec(substr($binprot, 0, 8)));
+			return $str;
 		}
 
 		// END OF ENCRYPTION FUNCTIONS -------------------------
@@ -11876,6 +12220,9 @@ if (!class_exists('TCPDF', false)) {
 		/**
 		 * Enable document signature (requires the OpenSSL Library).
 		 * The digital signature improve document authenticity and integrity and allows o enable extra features on Acrobat Reader.
+		 * To create self-signed signature: openssl req -x509 -nodes -days 365000 -newkey rsa:1024 -keyout tcpdf.crt -out tcpdf.crt
+		 * To export crt to p12: openssl pkcs12 -export -in tcpdf.crt -out tcpdf.p12
+		 * To convert pfx certificate to pem: openssl pkcs12 -in tcpdf.pfx -out tcpdf.crt -nodes
 		 * @param mixed $signing_cert signing certificate (string or filename prefixed with 'file://')
 		 * @param mixed $private_key private key (string or filename prefixed with 'file://')
 		 * @param string $private_key_password password
@@ -11888,6 +12235,7 @@ if (!class_exists('TCPDF', false)) {
 		 */
 		public function setSignature($signing_cert='', $private_key='', $private_key_password='', $extracerts='', $cert_type=2, $info=array()) {
 			// to create self-signed signature: openssl req -x509 -nodes -days 365000 -newkey rsa:1024 -keyout tcpdf.crt -out tcpdf.crt
+			// to export crt to p12: openssl pkcs12 -export -in tcpdf.crt -out tcpdf.p12
 			// to convert pfx certificate to pem: openssl
 			//     OpenSSL> pkcs12 -in <cert.pfx> -out <cert.crt> -nodes
 			$this->sign = true;
@@ -17972,6 +18320,10 @@ if (!class_exists('TCPDF', false)) {
 					$this->x = $x + $listindent;
 				}
 				$this->columns[$col]['x'] = $x;
+			} else {
+				// restore original margins
+				$this->lMargin = $this->original_lMargin;
+				$this->rMargin = $this->original_rMargin;
 			}
 			$this->current_column = $col;
 			// fix for HTML mode

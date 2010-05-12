@@ -311,6 +311,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodcommitTransaction">TCPDF::commitTransaction()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Delete the copy of the current TCPDF object used for undo operation.</dd>
 							<dt><b>convertData</b></dt>
 				<dd>in file qrcode.php, method <a href="com-tecnick-tcpdf/QRcode.html#methodconvertData">QRcode::convertData()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;convertData</dd>
+							<dt><b>convertHexStringToString</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodconvertHexStringToString">TCPDF::convertHexStringToString()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Convert hexadecimal string to string</dd>
 							<dt><b>convertHTMLColorToDec</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodconvertHTMLColorToDec">TCPDF::convertHTMLColorToDec()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns an associative array (keys: R,G,B) from an html color name or a six-digit or three-digit hexadecimal color representation (i.e. #3FE5AA or #7FF).</dd>
 							<dt><b>convertSVGtMatrix</b></dt>
@@ -383,12 +385,12 @@
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$embedded_start_obj_id">TCPDF::$embedded_start_obj_id</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Start ID for embedded file objects</dd>
 							<dt><b>$encoding</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$encoding">TCPDF::$encoding</a></dd>
+							<dt><b>$encryptdata</b></dt>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$encryptdata">TCPDF::$encryptdata</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Array containing encryption settings</dd>
 							<dt><b>$encrypted</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$encrypted">TCPDF::$encrypted</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Indicates whether document is protected</dd>
-							<dt><b>$encryption_key</b></dt>
-				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$encryption_key">TCPDF::$encryption_key</a><br>&nbsp;&nbsp;&nbsp;&nbsp;RC4 encryption key</dd>
-							<dt><b>$enc_obj_id</b></dt>
-				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$enc_obj_id">TCPDF::$enc_obj_id</a><br>&nbsp;&nbsp;&nbsp;&nbsp;encryption object id</dd>
+							<dt><b>$enc_padding</b></dt>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$enc_padding">TCPDF::$enc_padding</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Encryption padding</dd>
 							<dt><b>$endlinex</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$endlinex">TCPDF::$endlinex</a><br>&nbsp;&nbsp;&nbsp;&nbsp;End position of the latest inserted line</dd>
 							<dt><b>$epsmarker</b></dt>
@@ -463,6 +465,8 @@
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$fgcolor">TCPDF::$fgcolor</a></dd>
 							<dt><b>$fhPt</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$fhPt">TCPDF::$fhPt</a></dd>
+							<dt><b>$file_id</b></dt>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$file_id">TCPDF::$file_id</a><br>&nbsp;&nbsp;&nbsp;&nbsp;File ID (used on trailer)</dd>
 							<dt><b>$FillColor</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$FillColor">TCPDF::$FillColor</a></dd>
 							<dt><b>$FontAscent</b></dt>
@@ -542,11 +546,11 @@
 							<dt><b>getBarcode</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetBarcode">TCPDF::getBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Get current barcode.</dd>
 							<dt><b>getBarcodeArray</b></dt>
-				<dd>in file barcodes.php, method <a href="com-tecnick-tcpdf/TCPDFBarcode.html#methodgetBarcodeArray">TCPDFBarcode::getBarcodeArray()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Return an array representations of barcode.</dd>
-							<dt><b>getBarcodeArray</b></dt>
 				<dd>in file qrcode.php, method <a href="com-tecnick-tcpdf/QRcode.html#methodgetBarcodeArray">QRcode::getBarcodeArray()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns a barcode array which is readable by TCPDF</dd>
 							<dt><b>getBarcodeArray</b></dt>
 				<dd>in file 2dbarcodes.php, method <a href="com-tecnick-tcpdf/TCPDF2DBarcode.html#methodgetBarcodeArray">TCPDF2DBarcode::getBarcodeArray()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Return an array representations of barcode.</dd>
+							<dt><b>getBarcodeArray</b></dt>
+				<dd>in file barcodes.php, method <a href="com-tecnick-tcpdf/TCPDFBarcode.html#methodgetBarcodeArray">TCPDFBarcode::getBarcodeArray()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Return an array representations of barcode.</dd>
 							<dt><b>getBitStream</b></dt>
 				<dd>in file qrcode.php, method <a href="com-tecnick-tcpdf/QRcode.html#methodgetBitStream">QRcode::getBitStream()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns a stream of bits.</dd>
 							<dt><b>getBorderMode</b></dt>
@@ -571,6 +575,8 @@
 				<dd>in file qrcode.php, method <a href="com-tecnick-tcpdf/QRcode.html#methodgetECCLength">QRcode::getECCLength()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Return maximum error correction code length (bytes) for the version.</dd>
 							<dt><b>getEccSpec</b></dt>
 				<dd>in file qrcode.php, method <a href="com-tecnick-tcpdf/QRcode.html#methodgetEccSpec">QRcode::getEccSpec()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Return an array of ECC specification.</dd>
+							<dt><b>getEncPermissionsString</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetEncPermissionsString">TCPDF::getEncPermissionsString()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Convert encryption P value to a string of bytes, low-order byte first.</dd>
 							<dt><b>getFontAscent</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetFontAscent">TCPDF::getFontAscent()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Return the font ascent value</dd>
 							<dt><b>getFontBuffer</b></dt>
@@ -681,6 +687,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetSVGTransformMatrix">TCPDF::getSVGTransformMatrix()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Get the tranformation matrix from SVG transform attribute</dd>
 							<dt><b>getTransformationMatrixProduct</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetTransformationMatrixProduct">TCPDF::getTransformationMatrixProduct()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Get the product of two SVG tranformation matrices</dd>
+							<dt><b>getUserPermissionCode</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetUserPermissionCode">TCPDF::getUserPermissionCode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Return the premission code used on encryption (P value).</dd>
 							<dt><b>getVectorsAngle</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetVectorsAngle">TCPDF::getVectorsAngle()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns the angle in  radiants between two vectors</dd>
 							<dt><b>getVersionPattern</b></dt>
@@ -889,10 +897,10 @@
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$l">TCPDF::$l</a></dd>
 							<dt><b>$lasth</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$lasth">TCPDF::$lasth</a></dd>
-							<dt><b>$last_rc4_key</b></dt>
-				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$last_rc4_key">TCPDF::$last_rc4_key</a><br>&nbsp;&nbsp;&nbsp;&nbsp;last RC4 key encrypted (cached for optimisation)</dd>
-							<dt><b>$last_rc4_key_c</b></dt>
-				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$last_rc4_key_c">TCPDF::$last_rc4_key_c</a><br>&nbsp;&nbsp;&nbsp;&nbsp;last RC4 computed key</dd>
+							<dt><b>$last_enc_key</b></dt>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$last_enc_key">TCPDF::$last_enc_key</a><br>&nbsp;&nbsp;&nbsp;&nbsp;last RC4 key encrypted (cached for optimisation)</dd>
+							<dt><b>$last_enc_key_c</b></dt>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$last_enc_key_c">TCPDF::$last_enc_key_c</a><br>&nbsp;&nbsp;&nbsp;&nbsp;last RC4 computed key</dd>
 							<dt><b>$LayoutMode</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$LayoutMode">TCPDF::$LayoutMode</a></dd>
 							<dt><b>$lengthTableBits</b></dt>
@@ -1067,8 +1075,6 @@
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$OutlineRoot">TCPDF::$OutlineRoot</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Outline root for bookmark</dd>
 							<dt><b>$outlines</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$outlines">TCPDF::$outlines</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Outlines for bookmark</dd>
-							<dt><b>$Ovalue</b></dt>
-				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$Ovalue">TCPDF::$Ovalue</a><br>&nbsp;&nbsp;&nbsp;&nbsp;O entry in pdf document</dd>
 							<dt><b>$overline</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$overline">TCPDF::$overline</a></dd>
 							<dt><b>objclone</b></dt>
@@ -1087,8 +1093,6 @@
 	<div>
 		<h2>p</h2>
 		<dl>
-							<dt><b>$padding</b></dt>
-				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$padding">TCPDF::$padding</a><br>&nbsp;&nbsp;&nbsp;&nbsp;RC4 padding</dd>
 							<dt><b>$page</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$page">TCPDF::$page</a></dd>
 							<dt><b>$PageAnnots</b></dt>
@@ -1119,8 +1123,6 @@
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$print_footer">TCPDF::$print_footer</a></dd>
 							<dt><b>$print_header</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$print_header">TCPDF::$print_header</a></dd>
-							<dt><b>$Pvalue</b></dt>
-				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$Pvalue">TCPDF::$Pvalue</a><br>&nbsp;&nbsp;&nbsp;&nbsp;P entry in pdf document</dd>
 							<dt><b>PageNo</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodPageNo">TCPDF::PageNo()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns the current page number.</dd>
 							<dt><b>PageNoFormatted</b></dt>
@@ -1514,7 +1516,7 @@
 							<dt><b>setPrintHeader</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetPrintHeader">TCPDF::setPrintHeader()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set a flag to print page header.</dd>
 							<dt><b>SetProtection</b></dt>
-				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodSetProtection">TCPDF::SetProtection()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set document protection</dd>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodSetProtection">TCPDF::SetProtection()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set document protection  Remark: the protection against modification is for people who have the full Acrobat product.</dd>
 							<dt><b>setRasterizeVectorImages</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetRasterizeVectorImages">TCPDF::setRasterizeVectorImages()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Enable/disable rasterization of SVG images using ImageMagick library.</dd>
 							<dt><b>SetRightMargin</b></dt>
@@ -1673,8 +1675,6 @@
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$ur_form">TCPDF::$ur_form</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Names specifying additional form-field-related usage rights for the document.</dd>
 							<dt><b>$ur_signature</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$ur_signature">TCPDF::$ur_signature</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Names specifying additional signature-related usage rights for the document.</dd>
-							<dt><b>$Uvalue</b></dt>
-				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$Uvalue">TCPDF::$Uvalue</a><br>&nbsp;&nbsp;&nbsp;&nbsp;U entry in pdf document</dd>
 							<dt><b>unhtmlentities</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodunhtmlentities">TCPDF::unhtmlentities()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Reverse function for htmlentities.</dd>
 							<dt><b>UniArrSubString</b></dt>
@@ -1791,6 +1791,8 @@
 		<dl>
 							<dt><b>_addfield</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_addfield">TCPDF::_addfield()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Adds a javascript form field.</dd>
+							<dt><b>_AES</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_AES">TCPDF::_AES()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns the input text exrypted using AES algorithm and the specified key.</dd>
 							<dt><b>_beginpage</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_beginpage">TCPDF::_beginpage()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Initialize a new page.</dd>
 							<dt><b>_dataannobjstring</b></dt>
@@ -1815,6 +1817,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_dounderline">TCPDF::_dounderline()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Underline text.</dd>
 							<dt><b>_dounderlinew</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_dounderlinew">TCPDF::_dounderlinew()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Underline for rectangular text area.</dd>
+							<dt><b>_encrypt_data</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_encrypt_data">TCPDF::_encrypt_data()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Encrypt the input string.</dd>
 							<dt><b>_enddoc</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_enddoc">TCPDF::_enddoc()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Output end of document (EOF).</dd>
 							<dt><b>_endpage</b></dt>
@@ -1838,7 +1842,7 @@
 							<dt><b>_newobj</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_newobj">TCPDF::_newobj()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Begin a new object and return the object number.</dd>
 							<dt><b>_objectkey</b></dt>
-				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_objectkey">TCPDF::_objectkey()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Compute encryption key depending on object number where the encrypted data is stored</dd>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_objectkey">TCPDF::_objectkey()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Compute encryption key depending on object number where the encrypted data is stored.</dd>
 							<dt><b>_out</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_out">TCPDF::_out()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Output a string to the document.</dd>
 							<dt><b>_outCurve</b></dt>
@@ -1856,7 +1860,7 @@
 							<dt><b>_outRect</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_outRect">TCPDF::_outRect()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Append a rectangle to the current path as a complete subpath, with lower-left corner (x, y) and dimensions widthand height in user space.</dd>
 							<dt><b>_Ovalue</b></dt>
-				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_Ovalue">TCPDF::_Ovalue()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Compute O value (used for RC4 encryption)</dd>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_Ovalue">TCPDF::_Ovalue()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Compute O value (used for encryption)</dd>
 							<dt><b>_parsejpeg</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_parsejpeg">TCPDF::_parsejpeg()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Extract info from a JPEG file without using the GD library.</dd>
 							<dt><b>_parsepng</b></dt>
@@ -1926,7 +1930,7 @@
 							<dt><b>_toPNG</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_toPNG">TCPDF::_toPNG()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Convert the loaded image to a PNG and then return a structure for the PDF creator.</dd>
 							<dt><b>_Uvalue</b></dt>
-				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_Uvalue">TCPDF::_Uvalue()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Compute U value (used for RC4 encryption)</dd>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_Uvalue">TCPDF::_Uvalue()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Compute U value (used for encryption)</dd>
 							<dt><b>__construct</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method__construct">TCPDF::__construct()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;This is the class constructor.</dd>
 							<dt><b>__construct</b></dt>
@@ -1942,7 +1946,7 @@
 	<a href="elementindex.html#top">top</a><br>
         <div class="credit">
 		    <hr />
-		    Documentation generated on Mon, 10 May 2010 18:33:44 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
+		    Documentation generated on Wed, 12 May 2010 14:44:13 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
 	      </div>
       </td></tr></table>
     </td>

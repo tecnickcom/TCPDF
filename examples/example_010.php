@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_010.php
 // Begin       : 2008-03-04
-// Last Update : 2010-03-28
+// Last Update : 2010-05-11
 //
 // Description : Example 010 for TCPDF class
 //               Text on multiple columns
@@ -52,6 +52,8 @@ class MC_TCPDF extends TCPDF {
 		$this->setEqualColumns();
 		// add a new page
 		$this->AddPage();
+		// reset margins
+		$this->selectColumn();
 		// print chapter title
 		$this->ChapterTitle($num, $title);
 		// set columns
