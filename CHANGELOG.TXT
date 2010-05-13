@@ -1,3 +1,7 @@
+5.0.006 (2010-05-13)
+	- Length of hr tag was fixed.
+	- An error on 2d barcode method was fixed.
+
 5.0.005 (2010-05-12)
 	- WARNING: The logic of permissions on the SetProtection() method has been inverted and extended (see example 16). Now you have to specify the features you want to block.
 	- SetProtection() method was extended to support RSA and AES 128 encryption and public-keys (see example 16).

@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-05-12
+// Last Update : 2010-05-13
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 5.0.005
+// Version     : 5.0.006
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -122,7 +122,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.0.005
+ * @version 5.0.006
  */
 
 /**
@@ -146,14 +146,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.0.005 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.0.006 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.0.005
+	* @version 5.0.006
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -13610,11 +13610,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 			// set default values
 			if (!isset($style['position'])) {
-				if ($this->rtl) {
-					$style['position'] = 'R';
-				} else {
-					$style['position'] = 'L';
-				}
+				$style['position'] = '';
 			}
 			if (!isset($style['fgcolor'])) {
 				$style['fgcolor'] = array(0,0,0); // default black
@@ -13855,6 +13851,9 @@ if (!class_exists('TCPDF', false)) {
 				$this->Error('Error in 2D barcode string');
 			}
 			// set default values
+			if (!isset($style['position'])) {
+				$style['position'] = '';
+			}
 			if (!isset($style['fgcolor'])) {
 				$style['fgcolor'] = array(0,0,0); // default black
 			}
@@ -15890,12 +15889,6 @@ if (!class_exists('TCPDF', false)) {
 					break;
 				}
 				case 'hr': {
-					$wtmp = $this->w - $this->lMargin - $this->rMargin;
-					if ((isset($tag['attribute']['width'])) AND ($tag['attribute']['width'] != '')) {
-						$hrWidth = $this->getHTMLUnitToUnits($tag['attribute']['width'], $wtmp, 'px');
-					} else {
-						$hrWidth = $wtmp;
-					}
 					if ((isset($tag['height'])) AND ($tag['height'] != '')) {
 						$hrHeight = $this->getHTMLUnitToUnits($tag['height'], 1, 'px');
 					} else {
@@ -15904,6 +15897,15 @@ if (!class_exists('TCPDF', false)) {
 					$this->addHTMLVertSpace($hbz, ($hrHeight / 2), $cell, $firstorlast);
 					$x = $this->GetX();
 					$y = $this->GetY();
+					$wtmp = $this->w - $this->lMargin - $this->rMargin;
+					if ($cell) {
+						$wtmp -= 2 * $this->cMargin;
+					}
+					if ((isset($tag['attribute']['width'])) AND ($tag['attribute']['width'] != '')) {
+						$hrWidth = $this->getHTMLUnitToUnits($tag['attribute']['width'], $wtmp, 'px');
+					} else {
+						$hrWidth = $wtmp;
+					}
 					$prevlinewidth = $this->GetLineWidth();
 					$this->SetLineWidth($hrHeight);
 					$this->Line($x, $y, $x + $hrWidth, $y);

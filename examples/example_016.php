@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_016.php
 // Begin       : 2008-03-04
-// Last Update : 2010-05-12
+// Last Update : 2010-05-13
 //
 // Description : Example 016 for TCPDF class
 //               Document Encryption / Security
@@ -67,7 +67,7 @@ $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8',
 
 */
 
-$pdf->SetProtection($permissions=array('print', 'copy'), $user_pass='', $owner_pass=null, $mode=1, $pubkeys=null);
+$pdf->SetProtection($permissions=array('print', 'copy'), $user_pass='', $owner_pass=null, $mode=0, $pubkeys=null);
 
 // Example with public-key
 // To open the document you need to install the private key (tcpdf.p12) on the Acrobat Reader. The password is: 1234
