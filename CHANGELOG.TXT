@@ -1,3 +1,7 @@
+5.0.007 (2010-05-14)
+	- Bug #3001347 "Bug when using  WriteHTML with setEqualColumns()" was fixed.
+	- Bug #3001505 "problem with sup and sub tags at the beginning of a line" was fixed.
+
 5.0.006 (2010-05-13)
 	- Length of hr tag was fixed.
 	- An error on 2d barcode method was fixed.

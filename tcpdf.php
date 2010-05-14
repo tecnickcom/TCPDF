@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-05-13
+// Last Update : 2010-05-14
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 5.0.006
+// Version     : 5.0.007
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -122,7 +122,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.0.006
+ * @version 5.0.007
  */
 
 /**
@@ -146,14 +146,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.0.006 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.0.007 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.0.006
+	* @version 5.0.007
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -776,14 +776,14 @@ if (!class_exists('TCPDF', false)) {
 		 * @access protected
 		 */
 		protected $enc_padding = "\x28\xBF\x4E\x5E\x4E\x75\x8A\x41\x64\x00\x4E\x56\xFF\xFA\x01\x08\x2E\x2E\x00\xB6\xD0\x68\x3E\x80\x2F\x0C\xA9\xFE\x64\x53\x69\x7A";
-		
+
 		/**
 		 * File ID (used on trailer)
 		 * @access protected
 		 * @since 5.0.005 (2010-05-12)
 		 */
-		protected $file_id;	
-		
+		protected $file_id;
+
 		// --- bookmark ---
 
 		/**
@@ -4904,7 +4904,6 @@ if (!class_exists('TCPDF', false)) {
 					$shy = false;
 					// account for margin changes
 					if ((($this->y + $this->lasth) > $this->PageBreakTrigger) AND (!$this->InFooter)) {
-						// AcceptPageBreak() may be overriden on extended classed to include margin changes
 						$this->AcceptPageBreak();
 					}
 					$w = $this->getRemainingWidth();
@@ -5046,7 +5045,6 @@ if (!class_exists('TCPDF', false)) {
 						}
 						// account for margin changes
 						if ((($this->y + $this->lasth) > $this->PageBreakTrigger) AND (!$this->InFooter)) {
-							// AcceptPageBreak() may be overriden on extended classed to include margin changes
 							$this->AcceptPageBreak();
 						}
 						$w = $this->getRemainingWidth();
@@ -8691,7 +8689,7 @@ if (!class_exists('TCPDF', false)) {
 				$objkey .= "\x73\x41\x6C\x54";
 			}
 			$objkey = substr($this->_md5_16($objkey), 0, (($this->encryptdata['Length'] / 8) + 5));
-			$objkey = substr($objkey, 0, 16);			
+			$objkey = substr($objkey, 0, 16);
 			return $objkey;
 		}
 
@@ -15334,12 +15332,19 @@ if (!class_exists('TCPDF', false)) {
 							$this->y -= $yshift;
 						}
 					}
-					$this->newline = false;
+					$pre_y = $this->y;
 					$pbrk = $this->checkPageBreak($this->lasth);
+					$this->newline = false;
 					$startlinex = $this->x;
 					$startliney = $this->y;
-					$minstartliney = $startliney;
-					$maxbottomliney = ($this->y + (($fontsize * $this->cell_height_ratio) / $this->k));
+					if ($dom[$dom[$key]['parent']]['value'] == 'sup') {
+						$startliney -= ((0.3 * $this->FontSizePt) / $this->k);
+					} elseif ($dom[$dom[$key]['parent']]['value'] == 'sub') {
+						$startliney -= (($this->FontSizePt / 0.7) / $this->k);
+					} else {
+						$minstartliney = $startliney;
+						$maxbottomliney = ($this->y + (($fontsize * $this->cell_height_ratio) / $this->k));
+					}
 					$startlinepage = $this->page;
 					if (isset($endlinepos) AND (!$pbrk)) {
 						$startlinepos = $endlinepos;
@@ -15646,7 +15651,6 @@ if (!class_exists('TCPDF', false)) {
 						$strrest = $this->Write($this->lasth, $dom[$key]['value'], '', $wfill, '', false, 0, true, $firstblock, 0);
 					}
 					$this->textindent = 0;
-
 					if (strlen($strrest) > 0) {
 						// store the remaining string on the previous $key position
 						$this->newline = true;
@@ -16999,6 +17003,7 @@ if (!class_exists('TCPDF', false)) {
 					$retval = ($value * $refsize);
 					break;
 				}
+				// height of lower case 'x' (about half the font-size)
 				case 'ex': {
 					$retval = $value * ($refsize / 2);
 					break;
@@ -17008,23 +17013,27 @@ if (!class_exists('TCPDF', false)) {
 					$retval = ($value * $this->dpi) / $k;
 					break;
 				}
+				// centimeters
 				case 'cm': {
 					$retval = ($value / 2.54 * $this->dpi) / $k;
 					break;
 				}
+				// millimeters
 				case 'mm': {
 					$retval = ($value / 25.4 * $this->dpi) / $k;
 					break;
 				}
+				// one pica is 12 points
 				case 'pc': {
-					// one pica is 12 points
 					$retval = ($value * 12) / $k;
 					break;
 				}
+				// points
 				case 'pt': {
 					$retval = $value / $k;
 					break;
 				}
+				// pixels
 				case 'px': {
 					$retval = $this->pixelsToUnits($value);
 					break;
@@ -19728,8 +19737,8 @@ if (!class_exists('TCPDF', false)) {
 		/**
 		 * Sets the opening SVG element handler function for the XML parser. (*** TO BE COMPLETED ***)
 		 * @param resource $parser The first parameter, parser, is a reference to the XML parser calling the handler.
-		 * @param string $name The second parameter, name, contains the name of the element for which this handler is called. If case-folding is in effect for this parser, the element name will be in uppercase letters. 
-		 * @param array $attribs The third parameter, attribs, contains an associative array with the element's attributes (if any). The keys of this array are the attribute names, the values are the attribute values. Attribute names are case-folded on the same criteria as element names. Attribute values are not case-folded. The original order of the attributes can be retrieved by walking through attribs the normal way, using each(). The first key in the array was the first attribute, and so on. 
+		 * @param string $name The second parameter, name, contains the name of the element for which this handler is called. If case-folding is in effect for this parser, the element name will be in uppercase letters.
+		 * @param array $attribs The third parameter, attribs, contains an associative array with the element's attributes (if any). The keys of this array are the attribute names, the values are the attribute values. Attribute names are case-folded on the same criteria as element names. Attribute values are not case-folded. The original order of the attributes can be retrieved by walking through attribs the normal way, using each(). The first key in the array was the first attribute, and so on.
 		 * @author Nicola Asuni
 		 * @since 5.0.000 (2010-05-02)
 		 * @access protected
@@ -20120,7 +20129,7 @@ if (!class_exists('TCPDF', false)) {
 		/**
 		 * Sets the closing SVG element handler function for the XML parser.
 		 * @param resource $parser The first parameter, parser, is a reference to the XML parser calling the handler.
-		 * @param string $name The second parameter, name, contains the name of the element for which this handler is called. If case-folding is in effect for this parser, the element name will be in uppercase letters. 
+		 * @param string $name The second parameter, name, contains the name of the element for which this handler is called. If case-folding is in effect for this parser, the element name will be in uppercase letters.
 		 * @author Nicola Asuni
 		 * @since 5.0.000 (2010-05-02)
 		 * @access protected
@@ -20158,7 +20167,7 @@ if (!class_exists('TCPDF', false)) {
 		/**
 		 * Sets the character data handler function for the XML parser.
 		 * @param resource $parser The first parameter, parser, is a reference to the XML parser calling the handler.
-		 * @param string $data The second parameter, data, contains the character data as a string. 
+		 * @param string $data The second parameter, data, contains the character data as a string.
 		 * @author Nicola Asuni
 		 * @since 5.0.000 (2010-05-02)
 		 * @access protected
