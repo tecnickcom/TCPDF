@@ -1,3 +1,6 @@
+5.0.008 (2010-05-15)
+	- Bug "Columns WriteHTML and Justification" was fixed.
+
 5.0.007 (2010-05-14)
 	- Bug #3001347 "Bug when using  WriteHTML with setEqualColumns()" was fixed.
 	- Bug #3001505 "problem with sup and sub tags at the beginning of a line" was fixed.
