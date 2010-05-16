@@ -1,3 +1,6 @@
+5.0.009 (2010-05-16)
+	- Bug #3002381 "Multiple columns and nested lists" was fixed.
+
 5.0.008 (2010-05-15)
 	- Bug "Columns WriteHTML and Justification" was fixed.
 
