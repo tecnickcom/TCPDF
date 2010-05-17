@@ -75,7 +75,7 @@ class TCPDF2DBarcode {
 	 * <li>$arrcode['num_cols'] required number of columns</li>
 	 * <li>$arrcode['bcode'][$r][$c] value of the cell is $r row and $c column (0 = transparent, 1 = black)</li></ul>
 	 * @param string $code code to print
- 	 * @param string $type type of barcode: <ul>li>RAW: raw mode - comma-separad list of array rows</li><li>RAW2: raw mode - array rows are surrounded by square parenthesis.</li><li>QRCODE : QR-CODE Low error correction</li><li>QRCODE,L : QR-CODE Low error correction</li><li>QRCODE,M : QR-CODE Medium error correction</li><li>QRCODE,Q : QR-CODE Better error correction</li><li>QRCODE,H : QR-CODE Best error correction</li></ul>
+ 	 * @param string $type type of barcode: <ul><li>RAW: raw mode - comma-separad list of array rows</li><li>RAW2: raw mode - array rows are surrounded by square parenthesis.</li><li>QRCODE : QR-CODE Low error correction</li><li>QRCODE,L : QR-CODE Low error correction</li><li>QRCODE,M : QR-CODE Medium error correction</li><li>QRCODE,Q : QR-CODE Better error correction</li><li>QRCODE,H : QR-CODE Best error correction</li></ul>
 	 */
 	public function __construct($code, $type) {
 		$this->setBarcode($code, $type);
