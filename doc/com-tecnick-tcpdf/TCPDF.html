@@ -4804,7 +4804,7 @@ This is a PHP class for generating PDF documents without requiring external exte
 <div class="tags">
 <table border="0" cellspacing="0" cellpadding="0">
   <tr>
-    <td><b>var:</b>&nbsp;&nbsp;</td><td>dimensions: <ul><li>$this-&gt;pagedim[$this-&gt;page]['w'] = page width in points</li><li>$this-&gt;pagedim[$this-&gt;page]['h'] = height in points</li><li>$this-&gt;pagedim[$this-&gt;page]['wk'] = page width in user units</li><li>$this-&gt;pagedim[$this-&gt;page]['hk'] = page height in user units</li><li>$this-&gt;pagedim[$this-&gt;page]['tm'] = top margin</li><li>$this-&gt;pagedim[$this-&gt;page]['bm'] = bottom margin</li><li>$this-&gt;pagedim[$this-&gt;page]['lm'] = left margin</li><li>$this-&gt;pagedim[$this-&gt;page]['rm'] = right margin</li><li>$this-&gt;pagedim[$this-&gt;page]['pb'] = auto page break</li><li>$this-&gt;pagedim[$this-&gt;page]['or'] = page orientation</li><li>$this-&gt;pagedim[$this-&gt;page]['olm'] = original left margin</li><li>$this-&gt;pagedim[$this-&gt;page]['orm'] = original right margin</li><li>$this-&gt;pagedim[$this-&gt;page]['Rotate'] = The number of degrees by which the page shall be rotated clockwise when displayed or printed. The value shall be a multiple of 90.</li><li>$this-&gt;pagedim[$this-&gt;page]['PZ'] = The page's preferred zoom (magnification) factor.</li><li>$this-&gt;pagedim[$this-&gt;page]['trans'] : the style and duration of the visual transition to use when moving from another page to the given page during a presentation<ul><li>$this-&gt;pagedim[$this-&gt;page]['trans']['Dur'] = The page's display duration (also called its advance timing): the maximum length of time, in seconds, that the page shall be displayed during presentations before the viewer application shall automatically advance to the next page.</li><li>$this-&gt;pagedim[$this-&gt;page]['trans']['S'] = transition style : Split, Blinds, Box, Wipe, Dissolve, Glitter, R, Fly, Push, Cover, Uncover, Fade</li><li>$this-&gt;pagedim[$this-&gt;page]['trans']['D'] = The duration of the transition effect, in seconds.</li><li>$this-&gt;pagedim[$this-&gt;page]['trans']['Dm'] = (Split and Blinds transition styles only) The dimension in which the specified transition effect shall occur: H = Horizontal, V = Vertical. Default value: H.</li><li>$this-&gt;pagedim[$this-&gt;page]['trans']['M'] = (Split, Box and Fly transition styles only) The direction of motion for the specified transition effect: I = Inward from the edges of the page, O = Outward from the center of the pageDefault value: I.</li><li>$this-&gt;pagedim[$this-&gt;page]['trans']['Di'] = (Wipe, Glitter, Fly, Cover, Uncover and Push transition styles only) The direction in which the specified transition effect shall moves, expressed in degrees counterclockwise starting from a left-to-right direction. If the value is a number, it shall be one of: 0 = Left to right, 90 = Bottom to top (Wipe only), 180 = Right to left (Wipe only), 270 = Top to bottom, 315 = Top-left to bottom-right (Glitter only). If the value is a name, it shall be None, which is relevant only for the Fly transition when the value of SS is not 1.0. Default value: 0.</li><li>$this-&gt;pagedim[$this-&gt;page]['trans']['SS'] = (Fly transition style only) The starting or ending scale at which the changes shall be drawn. If M specifies an inward transition, the scale of the changes drawn shall progress from SS to 1.0 over the course of the transition. If M specifies an outward transition, the scale of the changes drawn shall progress from 1.0 to SS over the course of the transition. Default: 1.0.</li><li>$this-&gt;pagedim[$this-&gt;page]['trans']['B'] = (Fly transition style only) If true, the area that shall be flown in is rectangular and opaque. Default: false.</li></ul></li><li>$this-&gt;pagedim[$this-&gt;page]['MediaBox'] : the boundaries of the physical medium on which the page shall be displayed or printed<ul><li>$this-&gt;pagedim[$this-&gt;page]['MediaBox']['llx'] = lower-left x coordinate in points</li><li>$this-&gt;pagedim[$this-&gt;page]['MediaBox']['lly'] = lower-left y coordinate in points</li><li>$this-&gt;pagedim[$this-&gt;page]['MediaBox']['urx'] = upper-right x coordinate in points</li><li>$this-&gt;pagedim[$this-&gt;page]['MediaBox']['ury'] = upper-right y coordinate in points</li></ul></li><li>$this-&gt;pagedim[$this-&gt;page]['CropBox'] : the visible region of default user space<ul><li>$this-&gt;pagedim[$this-&gt;page]['CropBox']['llx'] = lower-left x coordinate in points</li><li>$this-&gt;pagedim[$this-&gt;page]['CropBox']['lly'] = lower-left y coordinate in points</li><li>$this-&gt;pagedim[$this-&gt;page]['CropBox']['urx'] = upper-right x coordinate in points</li><li>$this-&gt;pagedim[$this-&gt;page]['CropBox']['ury'] = upper-right y coordinate in points</li></ul></li><li>$this-&gt;pagedim[$this-&gt;page]['BleedBox'] : the region to which the contents of the page shall be clipped when output in a production environment<ul><li>$this-&gt;pagedim[$this-&gt;page]['BleedBox']['llx'] = lower-left x coordinate in points</li><li>$this-&gt;pagedim[$this-&gt;page]['BleedBox']['lly'] = lower-left y coordinate in points</li><li>$this-&gt;pagedim[$this-&gt;page]['BleedBox']['urx'] = upper-right x coordinate in points</li><li>$this-&gt;pagedim[$this-&gt;page]['BleedBox']['ury'] = upper-right y coordinate in points</li></ul></li><li>$this-&gt;pagedim[$this-&gt;page]['TrimBox'] : the intended dimensions of the finished page after trimming<ul><li>$this-&gt;pagedim[$this-&gt;page]['TrimBox']['llx'] = lower-left x coordinate in points</li><li>$this-&gt;pagedim[$this-&gt;page]['TrimBox']['lly'] = lower-left y coordinate in points</li><li>$this-&gt;pagedim[$this-&gt;page]['TrimBox']['urx'] = upper-right x coordinate in points</li><li>$this-&gt;pagedim[$this-&gt;page]['TrimBox']['ury'] = upper-right y coordinate in points</li></ul></li><li>$this-&gt;pagedim[$this-&gt;page]['ArtBox'] : the extent of the page's meaningful content<ul><li>$this-&gt;pagedim[$this-&gt;page]['ArtBox']['llx'] = lower-left x coordinate in points</li><li>$this-&gt;pagedim[$this-&gt;page]['ArtBox']['lly'] = lower-left y coordinate in points</li><li>$this-&gt;pagedim[$this-&gt;page]['ArtBox']['urx'] = upper-right x coordinate in points</li><li>$this-&gt;pagedim[$this-&gt;page]['ArtBox']['ury'] = upper-right y coordinate in points</li></ul></li></ul></td>
+    <td><b>var:</b>&nbsp;&nbsp;</td><td>dimensions</td>
   </tr>
   <tr>
     <td><b>access:</b>&nbsp;&nbsp;</td><td>protected</td>
@@ -7097,7 +7097,7 @@ $firstblock = false])</code>
 [int
 $page = ''], [string
 $toc_name = 'TOC'], [array
-$templates = array()], [
+$templates = array()], [boolean
 $correct_align = true])</code>
     </td></tr></table>
     </td></tr></table><br />
@@ -7142,9 +7142,9 @@ $correct_align = true])</code>
         <td>array of html templates. Use: #TOC_DESCRIPTION# for bookmark title, #TOC_PAGE_NUMBER# for page number.</td>
       </tr>
           <tr>
-        <td class="type">&nbsp;&nbsp;</td>
+        <td class="type">boolean&nbsp;&nbsp;</td>
         <td><b>$correct_align</b>&nbsp;&nbsp;</td>
-        <td></td>
+        <td>if true correct the number alignment (numbers must be in monospaced font like courier and right aligned on LTR, or left aligned on RTL)</td>
       </tr>
         </table>
     </div><br />
@@ -25025,7 +25025,7 @@ $file)</code>
 
         <div class="credit">
 		    <hr />
-		    Documentation generated on Mon, 17 May 2010 20:34:01 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
+		    Documentation generated on Mon, 17 May 2010 20:35:37 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
 	      </div>
       </td></tr></table>
     </td>
