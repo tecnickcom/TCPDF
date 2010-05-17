@@ -315,6 +315,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodconvertHexStringToString">TCPDF::convertHexStringToString()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Convert hexadecimal string to string</dd>
 							<dt><b>convertHTMLColorToDec</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodconvertHTMLColorToDec">TCPDF::convertHTMLColorToDec()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns an associative array (keys: R,G,B) from an html color name or a six-digit or three-digit hexadecimal color representation (i.e. #3FE5AA or #7FF).</dd>
+							<dt><b>convertStringToHexString</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodconvertStringToHexString">TCPDF::convertStringToHexString()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Convert string to  hexadecimal string (byte string)</dd>
 							<dt><b>convertSVGtMatrix</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodconvertSVGtMatrix">TCPDF::convertSVGtMatrix()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Convert SVG transformation matrix to PDF.</dd>
 							<dt><b>CoonsPatchMesh</b></dt>
@@ -665,6 +667,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetPageHeight">TCPDF::getPageHeight()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns the page height in units.</dd>
 							<dt><b>getPageNumGroupAlias</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetPageNumGroupAlias">TCPDF::getPageNumGroupAlias()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Return the alias for the page number on the current page group  If the current font is unicode type, the returned string is surrounded by additional curly braces.</dd>
+							<dt><b>getPageSizeFromFormat</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetPageSizeFromFormat">TCPDF::getPageSizeFromFormat()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Get page dimensions from fromat name.</dd>
 							<dt><b>getPageWidth</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetPageWidth">TCPDF::getPageWidth()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns the page width in units.</dd>
 							<dt><b>getPathPaintOperator</b></dt>
@@ -1392,9 +1396,9 @@
 							<dt><b>SetAutoPageBreak</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodSetAutoPageBreak">TCPDF::SetAutoPageBreak()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Enables or disables the automatic page breaking mode. When enabling, the second parameter is the distance from the bottom of the page that defines the triggering limit. By default, the mode is on and the margin is 2 cm.</dd>
 							<dt><b>setBarcode</b></dt>
-				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetBarcode">TCPDF::setBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set document barcode.</dd>
-							<dt><b>setBarcode</b></dt>
 				<dd>in file 2dbarcodes.php, method <a href="com-tecnick-tcpdf/TCPDF2DBarcode.html#methodsetBarcode">TCPDF2DBarcode::setBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set the barcode.</dd>
+							<dt><b>setBarcode</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetBarcode">TCPDF::setBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set document barcode.</dd>
 							<dt><b>setBarcode</b></dt>
 				<dd>in file barcodes.php, method <a href="com-tecnick-tcpdf/TCPDFBarcode.html#methodsetBarcode">TCPDFBarcode::setBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set the barcode.</dd>
 							<dt><b>SetBooklet</b></dt>
@@ -1499,6 +1503,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetOpenCell">TCPDF::setOpenCell()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set the top/bottom cell sides to be open or closed when the cell cross the page.</dd>
 							<dt><b>setPage</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetPage">TCPDF::setPage()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Move pointer at the specified document page and update page dimensions.</dd>
+							<dt><b>setPageBoxes</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetPageBoxes">TCPDF::setPageBoxes()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set page boundaries.</dd>
 							<dt><b>setPageBuffer</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetPageBuffer">TCPDF::setPageBuffer()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set page buffer content.</dd>
 							<dt><b>setPageFormat</b></dt>
@@ -1593,6 +1599,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodSVGTransform">TCPDF::SVGTransform()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Apply SVG graphic transformation matrix.</dd>
 							<dt><b>swapMargins</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodswapMargins">TCPDF::swapMargins()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Swap the left and right margins.</dd>
+							<dt><b>swapPageBoxCoordinates</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodswapPageBoxCoordinates">TCPDF::swapPageBoxCoordinates()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Swap X and Y coordinates of page boxes (change page boxes orientation).</dd>
 					</dl>
 	</div>
 	<a href="elementindex.html#top">top</a><br>
@@ -1831,6 +1839,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_freadint">TCPDF::_freadint()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Read a 4-byte integer from file.</dd>
 							<dt><b>_generateencryptionkey</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_generateencryptionkey">TCPDF::_generateencryptionkey()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Compute encryption key</dd>
+							<dt><b>_getannotsrefs</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_getannotsrefs">TCPDF::_getannotsrefs()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Get references to page annotations.</dd>
 							<dt><b>_getfontpath</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_getfontpath">TCPDF::_getfontpath()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Return fonts path</dd>
 							<dt><b>_getstream</b></dt>
@@ -1946,7 +1956,7 @@
 	<a href="elementindex.html#top">top</a><br>
         <div class="credit">
 		    <hr />
-		    Documentation generated on Sun, 16 May 2010 19:25:58 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
+		    Documentation generated on Mon, 17 May 2010 20:00:51 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
 	      </div>
       </td></tr></table>
     </td>

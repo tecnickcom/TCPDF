@@ -1,3 +1,8 @@
+5.0.010 (2010-05-17)
+	- The methods setPageFormat(), setPageOrientation() and related methods were extended to include page boxes, page rotations and page transitions.
+	- The method setPageBoxes() was added to set page boundaries (MediaBox, CropBox, BleedBox, TrimBox, ArtBox);
+	- A bug relative to underline, overline and linethrough was fixed.
+
 5.0.009 (2010-05-16)
 	- Bug #3002381 "Multiple columns and nested lists" was fixed.
 
