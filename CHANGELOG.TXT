@@ -1,3 +1,7 @@
+5.0.012 (2010-05-19)
+	- Page orientation bug was fixed.
+	- The access to method setPageFormat() was changed to 'protected' because it is not intended to be directly called.
+
 5.0.011 (2010-05-19)
 	- Page orientation bug was fixed.
 	- Bug #3003966 "Multiple columns and nested lists" was fixed.

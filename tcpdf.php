@@ -4,7 +4,7 @@
 // Begin       : 2002-08-03
 // Last Update : 2010-05-19
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 5.0.011
+// Version     : 5.0.012
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -122,7 +122,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.0.011
+ * @version 5.0.012
  */
 
 /**
@@ -146,14 +146,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.0.011 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.0.012 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.0.011
+	* @version 5.0.012
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1957,13 +1957,16 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
-		 * Set the page format
+		 * Change the format of the current page
 		 * @param mixed $format The format used for pages. It can be either:<b>A string indicating the page format:</b><ul><li>4A0</li><li>2A0</li><li>A0</li><li>A1</li><li>A2</li><li>A3</li><li>A4 (default)</li><li>A5</li><li>A6</li><li>A7</li><li>A8</li><li>A9</li><li>A10</li><li>B0</li><li>B1</li><li>B2</li><li>B3</li><li>B4</li><li>B5</li><li>B6</li><li>B7</li><li>B8</li><li>B9</li><li>B10</li><li>C0</li><li>C1</li><li>C2</li><li>C3</li><li>C4</li><li>C5</li><li>C6</li><li>C7</li><li>C8</li><li>C9</li><li>C10</li><li>RA0</li><li>RA1</li><li>RA2</li><li>RA3</li><li>RA4</li><li>SRA0</li><li>SRA1</li><li>SRA2</li><li>SRA3</li><li>SRA4</li><li>LETTER</li><li>LEGAL</li><li>EXECUTIVE</li><li>FOLIO</li></ul><b>An array containing page measures and advanced options:</b><ul><li>['format'] = page format name (one of the above);</li><li>['Rotate'] : The number of degrees by which the page shall be rotated clockwise when displayed or printed. The value shall be a multiple of 90.</li><li>['PZ'] : The page's preferred zoom (magnification) factor.</li><li>['MediaBox'] : the boundaries of the physical medium on which the page shall be displayed or printed:</li><li>['MediaBox']['llx'] : lower-left x coordinate in points</li><li>['MediaBox']['lly'] : lower-left y coordinate in points</li><li>['MediaBox']['urx'] : upper-right x coordinate in points</li><li>['MediaBox']['ury'] : upper-right y coordinate in points</li><li>['CropBox'] : the visible region of default user space:</li><li>['CropBox']['llx'] : lower-left x coordinate in points</li><li>['CropBox']['lly'] : lower-left y coordinate in points</li><li>['CropBox']['urx'] : upper-right x coordinate in points</li><li>['CropBox']['ury'] : upper-right y coordinate in points</li><li>['BleedBox'] : the region to which the contents of the page shall be clipped when output in a production environment:</li><li>['BleedBox']['llx'] : lower-left x coordinate in points</li><li>['BleedBox']['lly'] : lower-left y coordinate in points</li><li>['BleedBox']['urx'] : upper-right x coordinate in points</li><li>['BleedBox']['ury'] : upper-right y coordinate in points</li><li>['TrimBox'] : the intended dimensions of the finished page after trimming:</li><li>['TrimBox']['llx'] : lower-left x coordinate in points</li><li>['TrimBox']['lly'] : lower-left y coordinate in points</li><li>['TrimBox']['urx'] : upper-right x coordinate in points</li><li>['TrimBox']['ury'] : upper-right y coordinate in points</li><li>['ArtBox'] : the extent of the page's meaningful content:</li><li>['ArtBox']['llx'] : lower-left x coordinate in points</li><li>['ArtBox']['lly'] : lower-left y coordinate in points</li><li>['ArtBox']['urx'] : upper-right x coordinate in points</li><li>['ArtBox']['ury'] : upper-right y coordinate in points</li><li>['BoxColorInfo'] :specify the colours and other visual characteristics that should be used in displaying guidelines on the screen for each of the possible page boundaries other than the MediaBox:</li><li>['BoxColorInfo'][BOXTYPE]['C'] : an array of three numbers in the range 0-255, representing the components in the DeviceRGB colour space.</li><li>['BoxColorInfo'][BOXTYPE]['W'] : the guideline width in default user units</li><li>['BoxColorInfo'][BOXTYPE]['S'] : the guideline style: S = Solid; D = Dashed</li><li>['BoxColorInfo'][BOXTYPE]['D'] : dash array defining a pattern of dashes and gaps to be used in drawing dashed guidelines</li><li>['trans'] : the style and duration of the visual transition to use when moving from another page to the given page during a presentation</li><li>['trans']['Dur'] : The page's display duration (also called its advance timing): the maximum length of time, in seconds, that the page shall be displayed during presentations before the viewer application shall automatically advance to the next page.</li><li>['trans']['S'] : transition style : Split, Blinds, Box, Wipe, Dissolve, Glitter, R, Fly, Push, Cover, Uncover, Fade</li><li>['trans']['D'] : The duration of the transition effect, in seconds.</li><li>['trans']['Dm'] : (Split and Blinds transition styles only) The dimension in which the specified transition effect shall occur: H = Horizontal, V = Vertical. Default value: H.</li><li>['trans']['M'] : (Split, Box and Fly transition styles only) The direction of motion for the specified transition effect: I = Inward from the edges of the page, O = Outward from the center of the pageDefault value: I.</li><li>['trans']['Di'] : (Wipe, Glitter, Fly, Cover, Uncover and Push transition styles only) The direction in which the specified transition effect shall moves, expressed in degrees counterclockwise starting from a left-to-right direction. If the value is a number, it shall be one of: 0 = Left to right, 90 = Bottom to top (Wipe only), 180 = Right to left (Wipe only), 270 = Top to bottom, 315 = Top-left to bottom-right (Glitter only). If the value is a name, it shall be None, which is relevant only for the Fly transition when the value of SS is not 1.0. Default value: 0.</li><li>['trans']['SS'] : (Fly transition style only) The starting or ending scale at which the changes shall be drawn. If M specifies an inward transition, the scale of the changes drawn shall progress from SS to 1.0 over the course of the transition. If M specifies an outward transition, the scale of the changes drawn shall progress from 1.0 to SS over the course of the transition. Default: 1.0.</li><li>['trans']['B'] : (Fly transition style only) If true, the area that shall be flown in is rectangular and opaque. Default: false.</li></ul>
-		 * @access public
+		 * @access protected
 		 * @since 3.0.015 (2008-06-06)
 		 */
-		public function setPageFormat($format, $orientation='P') {
-			//Page format
+		protected function setPageFormat($format, $orientation='P') {
+			if (!empty($format) AND isset($this->pagedim[$this->page])) {
+				// remove inherited values
+				unset($this->pagedim[$this->page]);
+			}
 			if (is_string($format)) {
 				// get page measures from format name
 				$pf = $this->getPageSizeFromFormat($format);
@@ -2171,7 +2174,8 @@ if (!class_exists('TCPDF', false)) {
 				$this->wPt = $this->fwPt;
 				$this->hPt = $this->fhPt;
 			}
-			if ($this->pagedim[$this->page]['MediaBox']['urx'] != $this->wPt) {
+			if ((abs($this->pagedim[$this->page]['MediaBox']['urx'] - $this->hPt) < $this->feps) AND (abs($this->pagedim[$this->page]['MediaBox']['ury'] - $this->wPt) < $this->feps)){
+				// swap X and Y coordinates (change page orientation)
 				$this->swapPageBoxCoordinates($this->page);
 			}
 			$this->w = $this->wPt / $this->k;
