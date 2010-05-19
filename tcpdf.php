@@ -4,7 +4,7 @@
 // Begin       : 2002-08-03
 // Last Update : 2010-05-19
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 5.0.012
+// Version     : 5.0.013
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -122,7 +122,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.0.012
+ * @version 5.0.013
  */
 
 /**
@@ -146,14 +146,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.0.012 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.0.013 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.0.012
+	* @version 5.0.013
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -4207,10 +4207,15 @@ if (!class_exists('TCPDF', false)) {
 						}
 					}
 				}
+				$this->newline = true;
 				return true;
 			}
-			// account for columns mode
-			return ($current_page != $this->page);
+			if ($current_page != $this->page) {
+				// account for columns mode
+				$this->newline = true;
+				return true;
+			}
+			return false;
 		}
 
 		/**
@@ -4708,9 +4713,13 @@ if (!class_exists('TCPDF', false)) {
 			} else {
 				$y = $this->GetY();
 			}
-			// check for page break
-			$this->checkPageBreak($h);
-			$y = $this->GetY();
+			$resth = 0;
+			if ((!$this->InFooter) AND (($y + $h) > $this->PageBreakTrigger)) {
+				// spit cell in two pages
+				$newh = $this->PageBreakTrigger - $y;
+				$resth = $h - $newh; // cell to be printed on the next page
+				$h = $newh;
+			}
 			// get current page number
 			$startpage = $this->page;
 			if (!$this->empty_string($x)) {
@@ -4768,22 +4777,34 @@ if (!class_exists('TCPDF', false)) {
 			$currentY = $this->y;
 			// get latest page number
 			$endpage = $this->page;
+			if (($resth > 0) AND ($endpage == $startpage)) {
+				// add new page to print the remaining cell portion
+				$this->AddPage();
+				$currentY = $this->y;
+				$endpage = $this->page;
+			}
 			// check if a new page has been created
 			if ($endpage > $startpage) {
 				// design borders around HTML cells.
 				for ($page=$startpage; $page <= $endpage; ++$page) {
 					$this->setPage($page);
 					if ($page == $startpage) {
+						// first page
 						$this->y = $starty; // put cursor at the beginning of cell on the first page
-						$h = $this->getPageHeight() - $starty - $this->getBreakMargin();
+						$h = $this->h - $starty - $this->bMargin;
 						$cborder = $this->getBorderMode($border, $position='start');
 					} elseif ($page == $endpage) {
+						// last page
 						$this->y = $this->tMargin; // put cursor at the beginning of last page
 						$h = $currentY - $this->tMargin;
+						if ($resth > $h) {
+							$h = $resth;
+						}
 						$cborder = $this->getBorderMode($border, $position='end');
 					} else {
 						$this->y = $this->tMargin; // put cursor at the beginning of the current page
-						$h = $this->getPageHeight() - $this->tMargin - $this->getBreakMargin();
+						$h = $this->h - $this->tMargin - $this->bMargin;
+						$resth -= $h;
 						$cborder = $this->getBorderMode($border, $position='middle');
 					}
 					$nx = $x;

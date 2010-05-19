@@ -1,3 +1,6 @@
+5.0.013 (2010-05-19)
+	- A bug related to page-breaks and table cells was fixed.
+
 5.0.012 (2010-05-19)
 	- Page orientation bug was fixed.
 	- The access to method setPageFormat() was changed to 'protected' because it is not intended to be directly called.
