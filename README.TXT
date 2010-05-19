@@ -1,15 +1,15 @@
 TCPDF - README
 ============================================================
 
-IF YOU'D LIKE TO SUPPORT TCPDF, PLEASE CONSIDER MAKING A 
-DONATION: 
+I WISH TO IMPROVE AND EXPAND TCPDF BUT I NEED YOUR SUPPORT.
+PLEASE MAKE A DONATION: 
 http://sourceforge.net/donate/index.php?group_id=128076
 
 ------------------------------------------------------------
 
 Name: TCPDF
-Version: 5.0.010
-Release date: 2010-05-17
+Version: 5.0.011
+Release date: 2010-05-19
 Author:	Nicola Asuni
 	
 Copyright (c) 2001-2010:

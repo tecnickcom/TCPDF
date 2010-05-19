@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-05-17
+// Last Update : 2010-05-19
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 5.0.010
+// Version     : 5.0.011
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -122,7 +122,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.0.010
+ * @version 5.0.011
  */
 
 /**
@@ -146,14 +146,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.0.010 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.0.011 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.0.010
+	* @version 5.0.011
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -2160,18 +2160,19 @@ if (!class_exists('TCPDF', false)) {
 			if (empty($orientation)) {
 				$orientation = $default_orientation;
 			} else {
-				$orientation = $orientation{0};
-				$orientation = strtoupper($orientation);
+				$orientation = strtoupper($orientation{0});
 			}
 			if (in_array($orientation, $valid_orientations) AND ($orientation != $default_orientation)) {
 				$this->CurOrientation = $orientation;
 				$this->wPt = $this->fhPt;
 				$this->hPt = $this->fwPt;
-				$this->swapPageBoxCoordinates($this->page);
 			} else {
 				$this->CurOrientation = $default_orientation;
 				$this->wPt = $this->fwPt;
 				$this->hPt = $this->fhPt;
+			}
+			if ($this->pagedim[$this->page]['MediaBox']['urx'] != $this->wPt) {
+				$this->swapPageBoxCoordinates($this->page);
 			}
 			$this->w = $this->wPt / $this->k;
 			$this->h = $this->hPt / $this->k;
@@ -17574,6 +17575,12 @@ if (!class_exists('TCPDF', false)) {
 				'bgcolor' => $this->bgcolor,
 				'fgcolor' => $this->fgcolor,
 				'htmlvspace' => $this->htmlvspace,
+				'listindent' => $this->listindent,
+				'listindentlevel' => $this->listindentlevel,
+				'listnum' => $this->listnum,
+				'listordered' => $this->listordered,
+				'listcount' => $this->listcount,
+				'lispacer' => $this->lispacer,
 				'lasth' => $this->lasth
 				);
 			return $grapvars;
@@ -17606,6 +17613,12 @@ if (!class_exists('TCPDF', false)) {
 			$this->bgcolor = $gvars['bgcolor'];
 			$this->fgcolor = $gvars['fgcolor'];
 			$this->htmlvspace = $gvars['htmlvspace'];
+			$this->listindent = $gvars['listindent'];
+			$this->listindentlevel = $gvars['listindentlevel'];
+			$this->listnum = $gvars['listnum'];
+			$this->listordered = $gvars['listordered'];
+			$this->listcount = $gvars['listcount'];
+			$this->lispacer = $gvars['lispacer'];
 			//$this->lasth = $gvars['lasth'];
 			$this->_out(''.$this->linestyleWidth.' '.$this->linestyleCap.' '.$this->linestyleJoin.' '.$this->linestyleDash.' '.$this->DrawColor.' '.$this->FillColor.'');
 			if (!$this->empty_string($this->FontFamily)) {

@@ -1,3 +1,7 @@
+5.0.011 (2010-05-19)
+	- Page orientation bug was fixed.
+	- Bug #3003966 "Multiple columns and nested lists" was fixed.
+
 5.0.010 (2010-05-17)
 	- The methods setPageFormat(), setPageOrientation() and related methods were extended to include page boxes, page rotations and page transitions.
 	- The method setPageBoxes() was added to set page boundaries (MediaBox, CropBox, BleedBox, TrimBox, ArtBox);
