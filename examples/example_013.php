@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_013.php
 // Begin       : 2008-03-04
-// Last Update : 2010-04-05
+// Last Update : 2010-05-20
 //
 // Description : Example 013 for TCPDF class
 //               Graphic Transformations
@@ -43,15 +43,20 @@ $pdf->SetTitle('TCPDF Example 013');
 $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
-// disable header and footer
-$pdf->setPrintHeader(false);
-$pdf->setPrintFooter(false);
+// set default header data
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 013', PDF_HEADER_STRING);
+
+// set header and footer fonts
+$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
 //set margins
 $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
 //set auto page breaks
 $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
@@ -65,129 +70,134 @@ $pdf->setLanguageArray($l);
 // ---------------------------------------------------------
 
 // set font
-$pdf->SetFont('helvetica', '', 10);
+$pdf->SetFont('helvetica', 'B', 20);
 
 // add a page
 $pdf->AddPage();
 
-//Scaling
+$pdf->Write(0, 'Graphic Transformations', '', 0, 'C', 1, 0, false, false, 0);
+
+// set font
+$pdf->SetFont('helvetica', '', 10);
+
+// --- Scaling ---------------------------------------------
 $pdf->SetDrawColor(200);
 $pdf->SetTextColor(200);
-$pdf->Rect(50, 20, 40, 10, 'D');
-$pdf->Text(50, 16, 'Scale');
+$pdf->Rect(50, 70, 40, 10, 'D');
+$pdf->Text(50, 66, 'Scale');
 $pdf->SetDrawColor(0);
 $pdf->SetTextColor(0);
-//Start Transformation
+// Start Transformation
 $pdf->StartTransform();
-//Scale by 150% centered by (50,30) which is the lower left corner of the rectangle
-$pdf->ScaleXY(150, 50, 30);
-$pdf->Rect(50, 20, 40, 10, 'D');
-$pdf->Text(50, 16, 'Scale');
-//Stop Transformation
+// Scale by 150% centered by (50,80) which is the lower left corner of the rectangle
+$pdf->ScaleXY(150, 50, 80);
+$pdf->Rect(50, 70, 40, 10, 'D');
+$pdf->Text(50, 66, 'Scale');
+// Stop Transformation
 $pdf->StopTransform();
 
-//Translation
+// --- Translation -----------------------------------------
 $pdf->SetDrawColor(200);
 $pdf->SetTextColor(200);
-$pdf->Rect(125, 20, 40, 10, 'D');
-$pdf->Text(125, 16, 'Translate');
+$pdf->Rect(125, 70, 40, 10, 'D');
+$pdf->Text(125, 66, 'Translate');
 $pdf->SetDrawColor(0);
 $pdf->SetTextColor(0);
-//Start Transformation
+// Start Transformation
 $pdf->StartTransform();
-//Translate 7 to the right, 5 to the bottom
+// Translate 7 to the right, 5 to the bottom
 $pdf->Translate(7, 5);
-$pdf->Rect(125, 20, 40, 10, 'D');
-$pdf->Text(125, 16, 'Translate');
-//Stop Transformation
+$pdf->Rect(125, 70, 40, 10, 'D');
+$pdf->Text(125, 66, 'Translate');
+// Stop Transformation
 $pdf->StopTransform();
 
-//Rotation
+// --- Rotation --------------------------------------------
 $pdf->SetDrawColor(200);
 $pdf->SetTextColor(200);
-$pdf->Rect(50, 50, 40, 10, 'D');
-$pdf->Text(50, 46, 'Rotate');
+$pdf->Rect(70, 100, 40, 10, 'D');
+$pdf->Text(70, 96, 'Rotate');
 $pdf->SetDrawColor(0);
 $pdf->SetTextColor(0);
-//Start Transformation
+// Start Transformation
 $pdf->StartTransform();
-//Rotate 20 degrees counter-clockwise centered by (50,60) which is the lower left corner of the rectangle
-$pdf->Rotate(20, 50, 60);
-$pdf->Rect(50, 50, 40, 10, 'D');
-$pdf->Text(50, 46, 'Rotate');
-//Stop Transformation
+// Rotate 20 degrees counter-clockwise centered by (70,110) which is the lower left corner of the rectangle
+$pdf->Rotate(20, 70, 110);
+$pdf->Rect(70, 100, 40, 10, 'D');
+$pdf->Text(70, 96, 'Rotate');
+// Stop Transformation
 $pdf->StopTransform();
 
-//Skewing
+// --- Skewing ---------------------------------------------
 $pdf->SetDrawColor(200);
 $pdf->SetTextColor(200);
-$pdf->Rect(125, 50, 40, 10, 'D');
-$pdf->Text(125, 46, 'Skew');
+$pdf->Rect(125, 100, 40, 10, 'D');
+$pdf->Text(125, 96, 'Skew');
 $pdf->SetDrawColor(0);
 $pdf->SetTextColor(0);
-//Start Transformation
+// Start Transformation
 $pdf->StartTransform();
-//skew 30 degrees along the x-axis centered by (125,60) which is the lower left corner of the rectangle
-$pdf->SkewX(30, 125, 60);
-$pdf->Rect(125, 50, 40, 10, 'D');
-$pdf->Text(125, 46, 'Skew');
-//Stop Transformation
+// skew 30 degrees along the x-axis centered by (125,110) which is the lower left corner of the rectangle
+$pdf->SkewX(30, 125, 110);
+$pdf->Rect(125, 100, 40, 10, 'D');
+$pdf->Text(125, 96, 'Skew');
+// Stop Transformation
 $pdf->StopTransform();
 
-//Mirroring horizontally
+// --- Mirroring horizontally ------------------------------
 $pdf->SetDrawColor(200);
 $pdf->SetTextColor(200);
-$pdf->Rect(50, 80, 40, 10, 'D');
-$pdf->Text(50, 76, 'MirrorH');
+$pdf->Rect(70, 130, 40, 10, 'D');
+$pdf->Text(70, 126, 'MirrorH');
 $pdf->SetDrawColor(0);
 $pdf->SetTextColor(0);
-//Start Transformation
+// Start Transformation
 $pdf->StartTransform();
-//mirror horizontally with axis of reflection at x-position 50 (left side of the rectangle)
-$pdf->MirrorH(50);
-$pdf->Rect(50, 80, 40, 10, 'D');
-$pdf->Text(50, 76, 'MirrorH');
-//Stop Transformation
+// mirror horizontally with axis of reflection at x-position 70 (left side of the rectangle)
+$pdf->MirrorH(70);
+$pdf->Rect(70, 130, 40, 10, 'D');
+$pdf->Text(70, 126, 'MirrorH');
+// Stop Transformation
 $pdf->StopTransform();
 
-//Mirroring vertically
+// --- Mirroring vertically --------------------------------
 $pdf->SetDrawColor(200);
 $pdf->SetTextColor(200);
-$pdf->Rect(125, 80, 40, 10, 'D');
-$pdf->Text(125, 76, 'MirrorV');
+$pdf->Rect(125, 130, 40, 10, 'D');
+$pdf->Text(125, 126, 'MirrorV');
 $pdf->SetDrawColor(0);
 $pdf->SetTextColor(0);
-//Start Transformation
+// Start Transformation
 $pdf->StartTransform();
-//mirror vertically with axis of reflection at y-position 90 (bottom side of the rectangle)
-$pdf->MirrorV(90);
-$pdf->Rect(125, 80, 40, 10, 'D');
-$pdf->Text(125, 76, 'MirrorV');
-//Stop Transformation
+// mirror vertically with axis of reflection at y-position 140 (bottom side of the rectangle)
+$pdf->MirrorV(140);
+$pdf->Rect(125, 130, 40, 10, 'D');
+$pdf->Text(125, 126, 'MirrorV');
+// Stop Transformation
 $pdf->StopTransform();
 
-//Point reflection
+// --- Point reflection ------------------------------------
 $pdf->SetDrawColor(200);
 $pdf->SetTextColor(200);
-$pdf->Rect(50, 110, 40, 10, 'D');
-$pdf->Text(50, 106, 'MirrorP');
+$pdf->Rect(70, 160, 40, 10, 'D');
+$pdf->Text(70, 156, 'MirrorP');
 $pdf->SetDrawColor(0);
 $pdf->SetTextColor(0);
-//Start Transformation
+// Start Transformation
 $pdf->StartTransform();
-//point reflection at the lower left point of rectangle
-$pdf->MirrorP(50,120);
-$pdf->Rect(50, 110, 40, 10, 'D');
-$pdf->Text(50, 106, 'MirrorP');
-//Stop Transformation
+// point reflection at the lower left point of rectangle
+$pdf->MirrorP(70,170);
+$pdf->Rect(70, 160, 40, 10, 'D');
+$pdf->Text(70, 156, 'MirrorP');
+// Stop Transformation
 $pdf->StopTransform();
 
-//Mirroring against a straigth line described by a point (120, 120) and an angle -20°
+// --- Mirroring against a straigth line described by a point (120, 120) and an angle -20°
 $angle=-20;
 $px=120;
-$py=120;
+$py=170;
 
-//just vor visualisation: the straight line to mirror against
+// just for visualisation: the straight line to mirror against
 
 $pdf->SetDrawColor(200);
 $pdf->Line($px-1,$py-1,$px+1,$py+1);
@@ -199,16 +209,16 @@ $pdf->StopTransform();
 
 $pdf->SetDrawColor(200);
 $pdf->SetTextColor(200);
-$pdf->Rect(125, 110, 40, 10, 'D');
-$pdf->Text(125, 106, 'MirrorL');
+$pdf->Rect(125, 160, 40, 10, 'D');
+$pdf->Text(125, 156, 'MirrorL');
 $pdf->SetDrawColor(0);
 $pdf->SetTextColor(0);
 //Start Transformation
 $pdf->StartTransform();
 //mirror against the straight line
 $pdf->MirrorL($angle, $px, $py);
-$pdf->Rect(125, 110, 40, 10, 'D');
-$pdf->Text(125, 106, 'MirrorL');
+$pdf->Rect(125, 160, 40, 10, 'D');
+$pdf->Text(125, 156, 'MirrorL');
 //Stop Transformation
 $pdf->StopTransform();
 

@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_010.php
 // Begin       : 2008-03-04
-// Last Update : 2010-05-11
+// Last Update : 2010-05-20
 //
 // Description : Example 010 for TCPDF class
 //               Text on multiple columns
@@ -114,7 +114,7 @@ $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 010', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -139,11 +139,11 @@ $pdf->setLanguageArray($l);
 
 // ---------------------------------------------------------
 
-// print a text
-$pdf->PrintChapter(1, 'A RUNAWAY REEF', '../cache/chapter_demo_1.txt', false);
+// print TEXT
+$pdf->PrintChapter(1, 'LOREM IPSUM [TEXT]', '../cache/chapter_demo_1.txt', false);
 
-// print an html text
-$pdf->PrintChapter(2, 'THE PROS AND CONS', '../cache/chapter_demo_2.txt', true);
+// print HTML
+$pdf->PrintChapter(2, 'LOREM IPSUM [HTML]', '../cache/chapter_demo_2.txt', true);
 
 // ---------------------------------------------------------
 

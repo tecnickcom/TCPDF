@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_025.php
 // Begin       : 2008-03-04
-// Last Update : 2010-04-05
+// Last Update : 2010-05-20
 //
 // Description : Example 025 for TCPDF class
 //               Object Transparency
@@ -44,7 +44,7 @@ $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 025', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -70,10 +70,13 @@ $pdf->setLanguageArray($l);
 // ---------------------------------------------------------
 
 // set font
-$pdf->SetFont('helvetica', 'BI', 8);
+$pdf->SetFont('helvetica', '', 12);
 
 // add a page
 $pdf->AddPage();
+
+$txt = 'You can set the transparency of PDF objects using the setAlpha() method.';
+$pdf->Write(0, $txt, '', 0, '', true, 0, false, false, 0);
 
 /*
  * setAlpha() gives transparency support. You can set the
@@ -82,27 +85,31 @@ $pdf->AddPage();
  * images).
  */
 
-$pdf->SetLineWidth(1.5);
+$pdf->SetLineWidth(2);
 
 // draw opaque red square
 $pdf->SetFillColor(255, 0, 0);
-$pdf->Rect(30, 60, 40, 40, 'DF');
+$pdf->SetDrawColor(127, 0, 0);
+$pdf->Rect(30, 40, 60, 60, 'DF');
 
 // set alpha to semi-transparency
 $pdf->SetAlpha(0.5);
 
 // draw green square
 $pdf->SetFillColor(0, 255, 0);
-$pdf->Rect(40, 70, 40, 40, 'DF');
+$pdf->SetDrawColor(0, 127, 0);
+$pdf->Rect(50, 60, 60, 60, 'DF');
+
+// draw blue square
+$pdf->SetFillColor(0, 0, 255);
+$pdf->SetDrawColor(0, 0, 127);
+$pdf->Rect(70, 80, 60, 60, 'DF');
 
 // draw jpeg image
-$pdf->Image('../images/image_demo.jpg', 50, 80, 40, 40, '', 'http://www.tcpdf.org', '', true, 72);
+$pdf->Image('../images/image_demo.jpg', 90, 100, 60, 60, '', 'http://www.tcpdf.org', '', true, 72);
 
 // restore full opacity
 $pdf->SetAlpha(1);
-
-// print name
-$pdf->Text(55, 82, 'TRANSPARENCY');
 
 // ---------------------------------------------------------
 

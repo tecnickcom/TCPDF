@@ -2,13 +2,13 @@
 //============================================================+
 // File name   : example_051.php
 // Begin       : 2009-04-16
-// Last Update : 2010-03-22
-// 
+// Last Update : 2010-05-20
+//
 // Description : Example 051 for TCPDF class
 //               Full page background
-// 
+//
 // Author: Nicola Asuni
-// 
+//
 // (c) Copyright:
 //               Nicola Asuni
 //               Tecnick.com s.r.l.
@@ -78,10 +78,10 @@ $pdf->setPrintFooter(false);
 $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
 //set image scale factor
-$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO); 
+$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 //set some language-dependent strings
-$pdf->setLanguageArray($l); 
+$pdf->setLanguageArray($l);
 
 // ---------------------------------------------------------
 
@@ -91,14 +91,18 @@ $pdf->SetFont('times', '', 48);
 // add a page
 $pdf->AddPage();
 
-// Pritn a text
-$pdf->writeHTML('<span style="background-color:yellow;color:blue">PAGE 1</span>', $ln=true, $fill=false, $reseth=false, $cell=false, $align='');
+// Print a text
+$html = '<span style="background-color:yellow;color:blue;">&nbsp;PAGE 1&nbsp;</span>
+<p stroke="0.2" fill="true" strokecolor="yellow" color="blue" style="font-family:helvetica;font-weight:bold;font-size:26pt;">You can set a full page background.</p>';
+$pdf->writeHTML($html, true, false, true, false, '');
+
 
 // add a page
 $pdf->AddPage();
 
-// Pritn a text
-$pdf->writeHTML('<span style="background-color:yellow;color:blue">PAGE 2</span>', $ln=true, $fill=false, $reseth=false, $cell=false, $align='');
+// Print a text
+$html = '<span style="background-color:yellow;color:blue;">&nbsp;PAGE 2&nbsp;</span>';
+$pdf->writeHTML($html, true, false, true, false, '');
 
 // ---------------------------------------------------------
 
@@ -106,6 +110,6 @@ $pdf->writeHTML('<span style="background-color:yellow;color:blue">PAGE 2</span>'
 $pdf->Output('example_051.pdf', 'I');
 
 //============================================================+
-// END OF FILE                                                 
+// END OF FILE                                                
 //============================================================+
 ?>

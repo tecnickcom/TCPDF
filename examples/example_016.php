@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_016.php
 // Begin       : 2008-03-04
-// Last Update : 2010-05-13
+// Last Update : 2010-05-20
 //
 // Description : Example 016 for TCPDF class
 //               Document Encryption / Security
@@ -84,7 +84,7 @@ $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 016', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array('helvetica', '', PDF_FONT_SIZE_MAIN));
@@ -110,13 +110,21 @@ $pdf->setLanguageArray($l);
 // ---------------------------------------------------------
 
 // set font
-$pdf->SetFont('times', '', 20);
+$pdf->SetFont('times', '', 16);
 
 // add a page
 $pdf->AddPage();
 
-// print a line using Cell()
-$pdf->Cell(0, 10, 'Encryption Example', 1, 1, 'C');
+// set some text to print
+$txt = <<<EOD
+Encryption Example
+
+Consult the source code documentation for the SetProtection() method.
+EOD;
+
+// print a block of text using Write()
+$pdf->Write(0, $txt, '', 0, 'L', true, 0, false, false, 0);
+
 
 // ---------------------------------------------------------
 

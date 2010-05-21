@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_059.php
 // Begin       : 2010-05-06
-// Last Update : 2010-05-06
+// Last Update : 2010-05-20
 //
 // Description : Example 059 for TCPDF class
 //               Table Of Content using HTML templates.
@@ -79,7 +79,7 @@ $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 059', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -174,6 +174,7 @@ $bookmark_templates[2] = '<table border="0" cellpadding="0" cellspacing="0"><tr>
 // add other bookmark level templates here ...
 
 // add table of content at page 1
+// (check the example n. 45 for a text-only TOC
 $pdf->addHTMLTOC($page=1, $toc_name='INDEX', $bookmark_templates, $correct_align=true);
 
 // end of TOC page

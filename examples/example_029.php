@@ -2,13 +2,13 @@
 //============================================================+
 // File name   : example_029.php
 // Begin       : 2008-06-09
-// Last Update : 2009-09-30
-// 
+// Last Update : 2010-05-20
+//
 // Description : Example 029 for TCPDF class
 //               Set PDF viewer display preferences.
-// 
+//
 // Author: Nicola Asuni
-// 
+//
 // (c) Copyright:
 //               Nicola Asuni
 //               Tecnick.com s.r.l.
@@ -34,7 +34,7 @@ require_once('../config/lang/eng.php');
 require_once('../tcpdf.php');
 
 // create new PDF document
-$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false); 
+$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
 // set document information
 $pdf->SetCreator(PDF_CREATOR);
@@ -44,7 +44,7 @@ $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 029', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -62,13 +62,14 @@ $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
 //set image scale factor
-$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO); 
+$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 //set some language-dependent strings
-$pdf->setLanguageArray($l); 
+$pdf->setLanguageArray($l);
 
 // ---------------------------------------------------------
 
+// set array for viewer preferences
 $preferences = array(
 	'HideToolbar' => true,
 	'HideMenubar' => true,
@@ -88,6 +89,8 @@ $preferences = array(
 	'NumCopies' => 2
 );
 
+// Check the example n. 60 for advanced page settings
+
 // set pdf viewer preferences
 $pdf->setViewerPreferences($preferences);
 
@@ -96,8 +99,13 @@ $pdf->SetFont('times', '', 14);
 
 // add a page
 $pdf->AddPage();
+
 // print a line
-$pdf->Cell(0, 12, 'DISPLAY PREFERENCES - PAGE 1', 0, 0, 'C');
+$pdf->Cell(0, 12, 'DISPLAY PREFERENCES - PAGE 1', 1, 1, 'C');
+
+$pdf->Ln(5);
+
+$pdf->Write(0, 'You can use the setViewerPreferences() method to change viewer preferences.', '', 0, 'L', true, 0, false, false, 0);
 
 // add a page
 $pdf->AddPage();
@@ -115,6 +123,6 @@ $pdf->Cell(0, 12, 'DISPLAY PREFERENCES - PAGE 3', 0, 0, 'C');
 $pdf->Output('example_029.pdf', 'I');
 
 //============================================================+
-// END OF FILE                                                 
+// END OF FILE                                                
 //============================================================+
 ?>

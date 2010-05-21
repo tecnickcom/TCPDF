@@ -2,10 +2,10 @@
 //============================================================+
 // File name   : example_020.php
 // Begin       : 2008-03-04
-// Last Update : 2009-09-30
+// Last Update : 2010-05-20
 //
 // Description : Example 020 for TCPDF class
-//               Two columns composed by MultiCell of different 
+//               Two columns composed by MultiCell of different
 //               heights
 //
 // Author: Nicola Asuni
@@ -35,27 +35,28 @@ require_once('../config/lang/eng.php');
 require_once('../tcpdf.php');
 
 // extend TCPF with custom functions
-class MYPDF extends TCPDF { 
+class MYPDF extends TCPDF {
+	
 	public function MultiRow($left, $right) {
-		//MultiCell($w, $h, $txt, $border=0, $align='J', $fill=0, $ln=1, $x='', $y='', $reseth=true, $stretch=0)
-		
+		// MultiCell($w, $h, $txt, $border=0, $align='J', $fill=0, $ln=1, $x='', $y='', $reseth=true, $stretch=0)
+	
 		$page_start = $this->getPage();
 		$y_start = $this->GetY();
-		
+	
 		// write the left cell
-		$this->MultiCell(40, 0, $left, 1, 'R', 0, 2, '', '', true, 0);
-		
+		$this->MultiCell(40, 0, $left, 1, 'R', 1, 2, '', '', true, 0);
+	
 		$page_end_1 = $this->getPage();
 		$y_end_1 = $this->GetY();
-		
+	
 		$this->setPage($page_start);
-		
+	
 		// write the right cell
 		$this->MultiCell(0, 0, $right, 1, 'J', 0, 1, $this->GetX() ,$y_start, true, 0);
-		
+	
 		$page_end_2 = $this->getPage();
 		$y_end_2 = $this->GetY();
-		
+	
 		// set the new row position by case
 		if (max($page_end_1,$page_end_2) == $page_start) {
 			$ynew = max($y_end_1, $y_end_2);
@@ -66,11 +67,11 @@ class MYPDF extends TCPDF {
 		} else {
 			$ynew = $y_end_2;
 		}
-		
+	
 		$this->setPage(max($page_end_1,$page_end_2));
 		$this->SetXY($this->GetX(),$ynew);
 	}
-	
+
 }
 
 // create new PDF document
@@ -84,7 +85,7 @@ $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 020', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -110,17 +111,28 @@ $pdf->setLanguageArray($l);
 // ---------------------------------------------------------
 
 // set font
-$pdf->SetFont('times', '', 9);
+$pdf->SetFont('helvetica', '', 20);
 // add a page
 $pdf->AddPage();
+
+$pdf->Write(0, 'Example of text layout using Multicell()', '', 0, 'L', true, 0, false, false, 0);
+
+$pdf->Ln(5);
+
+$pdf->SetFont('times', '', 9);
 
 //$pdf->SetCellPadding(0);
 //$pdf->SetLineWidth(2);
 
-$text = 'Cras eros leo, porttitor porta, accumsan fermentum, ornare ac, est. Praesent dui lorem, imperdiet at, cursus sed, facilisis aliquam, nibh. Nulla accumsan nonummy diam. Donec tempus. Etiam posuere. Proin lectus. Donec purus. Duis in sem pretium urna feugiat vehicula. Ut suscipit velit eget massa. Nam nonummy, enim commodo euismod placerat, tortor elit tempus lectus, quis suscipit metus lorem blandit turpis. Cras nulla nulla, hendrerit et, porttitor eu, adipiscing et, lorem. Pellentesque sit amet augue. Nam lobortis sollicitudin turpis. Sed velit est, mollis non, elementum ac, tempor quis, arcu. Aliquam a pede. Quisque arcu magna, nonummy eget, hendrerit a, lacinia egestas, enim. Donec bibendum. In a ipsum. Sed gravida facilisis sem. Nam tempus, tellus ut tincidunt elementum, augue tellus fermentum quam, sit amet lobortis sem ipsum sed elit.In accumsan ligula nonummy libero. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed vel risus. Vestibulum ut lacus. Proin fermentum, erat a commodo lacinia, lacus dui hendrerit nulla, et pellentesque neque diam at elit. Fusce blandit, dolor pharetra bibendum lacinia, augue sem scelerisque sem, bibendum sodales orci justo et sapien. Etiam nec eros ac turpis lobortis interdum. Integer volutpat nibh a lacus. Duis erat est, rhoncus nec, rhoncus viverra, pulvinar sit amet, leo. Duis blandit. Nunc convallis nisi ac ante. Cras nunc massa, molestie quis, porttitor a, volutpat accumsan, quam. Nullam a erat vitae orci bibendum viverra. Donec tristique leo eget nisl adipiscing pellentesque. Nam vehicula, enim quis aliquet euismod, dolor sem pellentesque libero, nec blandit nisi erat sit amet dui. Integer sapien. Donec molestie metus in neque. Suspendisse porttitor enim a nisl.Maecenas lacinia dolor ornare ligula. Maecenas eu eros. Curabitur non leo non nulla fringilla auctor. Etiam porttitor diam vel quam. Maecenas sed ligula nec massa venenatis faucibus. Curabitur aliquet accumsan tellus. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Suspendisse vitae eros ac purus fermentum suscipit. Curabitur interdum orci a mi. Nunc placerat diam in elit.Nunc elit. Maecenas vulputate, sem sit amet condimentum lacinia, ipsum eros porta dolor, sed luctus magna ante eu nisl. Proin non nisi. Vivamus sed quam et est lobortis porttitor. Cras sit amet urna sit amet elit ultricies consequat. Praesent blandit elit ut urna. Cras hendrerit rhoncus sapien. Fusce ullamcorper lobortis ipsum. Pellentesque vel velit at sem blandit facilisis. Nulla aliquet orci id metus.';
+// set color for background
+$pdf->SetFillColor(255, 255, 200);
+
+$text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In sed imperdiet lectus. Phasellus quis velit velit, non condimentum quam. Sed neque urna, ultrices ac volutpat vel, laoreet vitae augue. Sed vel velit erat. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Cras eget velit nulla, eu sagittis elit. Nunc ac arcu est, in lobortis tellus. Praesent condimentum rhoncus sodales. In hac habitasse platea dictumst. Proin porta eros pharetra enim tincidunt dignissim nec vel dolor. Cras sapien elit, ornare ac dignissim eu, ultricies ac eros. Maecenas augue magna, ultrices a congue in, mollis eu nulla. Nunc venenatis massa at est eleifend faucibus. Vivamus sed risus lectus, nec interdum nunc.
+
+Fusce et felis vitae diam lobortis sollicitudin. Aenean tincidunt accumsan nisi, id vehicula quam laoreet elementum. Phasellus egestas interdum erat, et viverra ipsum ultricies ac. Praesent sagittis augue at augue volutpat eleifend. Cras nec orci neque. Mauris bibendum posuere blandit. Donec feugiat mollis dui sit amet pellentesque. Sed a enim justo. Donec tincidunt, nisl eget elementum aliquam, odio ipsum ultrices quam, eu porttitor ligula urna at lorem. Donec varius, eros et convallis laoreet, ligula tellus consequat felis, ut ornare metus tellus sodales velit. Duis sed diam ante. Ut rutrum malesuada massa, vitae consectetur ipsum rhoncus sed. Suspendisse potenti. Pellentesque a congue massa.';
 
 // print some rows just as example
-for ($i = 0; $i < 5; $i++) {
+for ($i = 0; $i < 7; ++$i) {
 	$pdf->MultiRow('Row '.($i+1), $text."\n");
 }
 
@@ -133,6 +145,6 @@ $pdf->lastPage();
 $pdf->Output('example_020.pdf', 'I');
 
 //============================================================+
-// END OF FILE                                                 
+// END OF FILE                                                
 //============================================================+
-?> 
+?>

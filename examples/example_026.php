@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_026.php
 // Begin       : 2008-03-04
-// Last Update : 2010-04-03
+// Last Update : 2010-05-20
 //
 // Description : Example 026 for TCPDF class
 //               Text Rendering Modes and Text Clipping
@@ -44,7 +44,7 @@ $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 026', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));

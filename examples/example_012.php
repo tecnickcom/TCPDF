@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_012.php
 // Begin       : 2008-03-04
-// Last Update : 2010-05-04
+// Last Update : 2010-05-20
 //
 // Description : Example 012 for TCPDF class
 //               Graphic Functions
@@ -172,6 +172,8 @@ $pdf->Arrow($x0=200, $y0=280, $x1=200, $y1=260, $head_style=3, $arm_size=5, $arm
 
 // add a page
 $pdf->AddPage();
+
+$pdf->Cell(0, 0, 'Arc of Ellipse');
 
 // center of ellipse
 $xc=100;

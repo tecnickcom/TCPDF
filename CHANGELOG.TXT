@@ -1,3 +1,9 @@
+5.0.014 (2010-05-21)
+	- A problem on color and style of HTML links was fixed.
+	- A bug relative to gradients was fixed.
+	- The getStringHeight() method was added and getNumLines() method was improved.
+	- All examples were updated.
+
 5.0.013 (2010-05-19)
 	- A bug related to page-breaks and table cells was fixed.
 

@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_022.php
 // Begin       : 2008-03-04
-// Last Update : 2010-04-05
+// Last Update : 2010-05-20
 //
 // Description : Example 022 for TCPDF class
 //               CMYK colors
@@ -44,7 +44,7 @@ $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 022', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -69,61 +69,75 @@ $pdf->setLanguageArray($l);
 
 // ---------------------------------------------------------
 
+// check also the following methods:
+// SetDrawColorArray()
+// SetFillColorArray()
+// SetTextColorArray()
+
 // set font
-$pdf->SetFont('helvetica', "B", 12);
+$pdf->SetFont('helvetica', 'B', 18);
 
 // add a page
 $pdf->AddPage();
 
-$pdf->SetLineWidth(1);
+$pdf->Write(0, 'Example of CMYK, RGB and Grayscale colours', '', 0, 'L', true, 0, false, false, 0);
+
+// define style for border
+$border_style = array('all' => array('width' => 2, 'cap' => 'square', 'join' => 'miter', 'dash' => 0, 'phase' => 0));
+
+// --- CMYK ------------------------------------------------
 
 $pdf->SetDrawColor(50, 0, 0, 0);
 $pdf->SetFillColor(100, 0, 0, 0);
 $pdf->SetTextColor(100, 0, 0, 0);
-$pdf->Rect(30, 60, 20, 20, 'DF');
-$pdf->Text(30, 82, 'Cyan');
+$pdf->Rect(30, 60, 30, 30, 'DF', $border_style);
+$pdf->Text(30, 92, 'Cyan');
 
 $pdf->SetDrawColor(0, 50, 0, 0);
 $pdf->SetFillColor(0, 100, 0, 0);
 $pdf->SetTextColor(0, 100, 0, 0);
-$pdf->Rect(60, 60, 20, 20, 'DF');
-$pdf->Text(60, 82, 'Magenta');
+$pdf->Rect(70, 60, 30, 30, 'DF', $border_style);
+$pdf->Text(70, 92, 'Magenta');
 
 $pdf->SetDrawColor(0, 0, 50, 0);
 $pdf->SetFillColor(0, 0, 100, 0);
 $pdf->SetTextColor(0, 0, 100, 0);
-$pdf->Rect(90, 60, 20, 20, 'DF');
-$pdf->Text(90, 82, 'Yellow');
+$pdf->Rect(110, 60, 30, 30, 'DF', $border_style);
+$pdf->Text(110, 92, 'Yellow');
 
 $pdf->SetDrawColor(0, 0, 0, 50);
 $pdf->SetFillColor(0, 0, 0, 100);
 $pdf->SetTextColor(0, 0, 0, 100);
-$pdf->Rect(120, 60, 20, 20, 'DF');
-$pdf->Text(120, 82, 'Black');
+$pdf->Rect(150, 60, 30, 30, 'DF', $border_style);
+$pdf->Text(150, 92, 'Black');
 
-$pdf->SetDrawColor(128, 0, 0);
+// --- RGB -------------------------------------------------
+
+$pdf->SetDrawColor(255, 127, 127);
 $pdf->SetFillColor(255, 0, 0);
 $pdf->SetTextColor(255, 0, 0);
-$pdf->Rect(30, 100, 20, 20, 'DF');
-$pdf->Text(30, 122, 'Red');
+$pdf->Rect(30, 110, 30, 30, 'DF', $border_style);
+$pdf->Text(30, 142, 'Red');
 
-$pdf->SetDrawColor(0, 127, 0);
+$pdf->SetDrawColor(127, 255, 127);
 $pdf->SetFillColor(0, 255, 0);
 $pdf->SetTextColor(0, 255, 0);
-$pdf->Rect(60, 100, 20, 20, 'DF');
-$pdf->Text(60, 122, 'Green');
+$pdf->Rect(70, 110, 30, 30, 'DF', $border_style);
+$pdf->Text(70, 142, 'Green');
 
-$pdf->SetDrawColor(0, 0, 127);
+$pdf->SetDrawColor(127, 127, 255);
 $pdf->SetFillColor(0, 0, 255);
 $pdf->SetTextColor(0, 0, 255);
-$pdf->Rect(90, 100, 20, 20, 'DF');
-$pdf->Text(90, 122, 'Blue');
+$pdf->Rect(110, 110, 30, 30, 'DF', $border_style);
+$pdf->Text(110, 142, 'Blue');
 
-$pdf->SetDrawColor(50);
-$pdf->SetFillColor(128);
-$pdf->SetTextColor(128);
-$pdf->Rect(30, 140, 20, 20, 'DF');
-$pdf->Text(30, 162, 'Gray');
+// --- GRAY ------------------------------------------------
+
+$pdf->SetDrawColor(191);
+$pdf->SetFillColor(127);
+$pdf->SetTextColor(127);
+$pdf->Rect(30, 160, 30, 30, 'DF', $border_style);
+$pdf->Text(30, 192, 'Gray');
 
 // ---------------------------------------------------------
 

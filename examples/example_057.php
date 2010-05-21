@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_057.php
 // Begin       : 2010-04-03
-// Last Update : 2010-04-07
+// Last Update : 2010-05-20
 //
 // Description : Example 057 for TCPDF class
 //               Cell vertical alignments
@@ -44,7 +44,7 @@ $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 057', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -70,16 +70,24 @@ $pdf->setLanguageArray($l);
 // ---------------------------------------------------------
 
 // set font
-$pdf->SetFont('helvetica', '', 11);
+$pdf->SetFont('helvetica', 'B', 20);
 
 // add a page
 $pdf->AddPage();
 
+$pdf->Write(0, 'Example of alignment options for Cell()', '', 0, 'L', true, 0, false, false, 0);
+
+$pdf->SetFont('helvetica', '', 11);
+
+// set border width
 $pdf->SetLineWidth(0.7);
+
+// set color for cell border
+$pdf->SetDrawColor(0,128,255);
 
 $pdf->setCellHeightRatio(3);
 
-$pdf->SetXY(15, 50);
+$pdf->SetXY(15, 60);
 
 // text on center
 $pdf->Cell(30, 0, 'Top-Center', 1, $ln=0, 'C', 0, '', 0, false, 'T', 'C');
@@ -90,7 +98,7 @@ $pdf->Cell(30, 0, 'Baseline-Center', 1, $ln=0, 'C', 0, '', 0, false, 'L', 'C');
 $pdf->Cell(30, 0, 'Descent-Center', 1, $ln=0, 'C', 0, '', 0, false, 'D', 'C');
 
 
-$pdf->SetXY(15, 80);
+$pdf->SetXY(15, 90);
 
 // text on top
 $pdf->Cell(30, 0, 'Top-Top', 1, $ln=0, 'C', 0, '', 0, false, 'T', 'T');
@@ -101,7 +109,7 @@ $pdf->Cell(30, 0, 'Baseline-Top', 1, $ln=0, 'C', 0, '', 0, false, 'L', 'T');
 $pdf->Cell(30, 0, 'Descent-Top', 1, $ln=0, 'C', 0, '', 0, false, 'D', 'T');
 
 
-$pdf->SetXY(15, 110);
+$pdf->SetXY(15, 120);
 
 // text on bottom
 $pdf->Cell(30, 0, 'Top-Bottom', 1, $ln=0, 'C', 0, '', 0, false, 'T', 'B');
@@ -114,9 +122,9 @@ $pdf->Cell(30, 0, 'Descent-Bottom', 1, $ln=0, 'C', 0, '', 0, false, 'D', 'B');
 
 // draw some reference lines
 $linestyle = array('width' => 0.1, 'cap' => 'butt', 'join' => 'miter', 'dash' => '', 'phase' => 0, 'color' => array(255, 0, 0));
-$pdf->Line(15, 50, 195, 50, $linestyle);
-$pdf->Line(15, 80, 195, 80, $linestyle);
-$pdf->Line(15, 110, 195, 110, $linestyle);
+$pdf->Line(15, 60, 195, 60, $linestyle);
+$pdf->Line(15, 90, 195, 90, $linestyle);
+$pdf->Line(15, 120, 195, 120, $linestyle);
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

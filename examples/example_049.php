@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_049.php
 // Begin       : 2009-04-03
-// Last Update : 2010-04-02
+// Last Update : 2010-05-20
 //
 // Description : Example 049 for TCPDF class
 //               WriteHTML with TCPDF callback functions
@@ -44,7 +44,7 @@ $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 049', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -83,9 +83,9 @@ If you are printing user-generated content, tcpdf tag can be unsafe.
 You can disable this tag by setting to false the K_TCPDF_CALLS_IN_HTML
 constant on TCPDF configuration file.
 
-The parameters for the 'params' attribute of TCPDF tag must be prepared
-as an array and encoded with the serializeTCPDFtagParameters() method
-(see the example below).
+For security reasons, the parameters for the 'params' attribute of TCPDF 
+tag must be prepared as an array and encoded with the 
+serializeTCPDFtagParameters() method (see the example below).
 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -100,11 +100,9 @@ $params = $pdf->serializeTCPDFtagParameters(array('CODE 39', 'C39', '', '', 80, 
 $html .= '<tcpdf method="write1DBarcode" params="'.$params.'" />';
 
 $params = $pdf->serializeTCPDFtagParameters(array('CODE 128C+', 'C128C', '', '', 80, 30, 0.4, array('position'=>'S', 'border'=>true, 'padding'=>4, 'fgcolor'=>array(0,0,0), 'bgcolor'=>array(255,255,255), 'text'=>true, 'font'=>'helvetica', 'fontsize'=>8, 'stretchtext'=>4), 'N'));
-
 $html .= '<tcpdf method="write1DBarcode" params="'.$params.'" />';
 
-$html .= '<tcpdf method="AddPage" />
-<h2> Graphic Functions</h2>';
+$html .= '<tcpdf method="AddPage" /><h2>Graphic Functions</h2>';
 
 $params = $pdf->serializeTCPDFtagParameters(array(0));
 $html .= '<tcpdf method="SetDrawColor" params="'.$params.'" />';

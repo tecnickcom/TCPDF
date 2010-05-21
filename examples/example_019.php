@@ -2,13 +2,13 @@
 //============================================================+
 // File name   : example_019.php
 // Begin       : 2008-03-07
-// Last Update : 2009-09-30
-// 
+// Last Update : 2010-05-20
+//
 // Description : Example 019 for TCPDF class
 //               Non unicode with alternative config file
-// 
+//
 // Author: Nicola Asuni
-// 
+//
 // (c) Copyright:
 //               Nicola Asuni
 //               Tecnick.com s.r.l.
@@ -49,7 +49,7 @@ $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 019', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -67,7 +67,7 @@ $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
 //set image scale factor
-$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO); 
+$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // set some language dependent data:
 $lg = Array();
@@ -77,23 +77,24 @@ $lg['a_meta_language'] = 'en';
 $lg['w_page'] = 'page';
 
 //set some language-dependent strings
-$pdf->setLanguageArray($lg);  
+$pdf->setLanguageArray($lg); 
 
 // ---------------------------------------------------------
 
 // set font
-$pdf->SetFont('helvetica', 'BIU', 20);
+$pdf->SetFont('helvetica', '', 12);
 
 // add a page
 $pdf->AddPage();
 
-// print a line using Cell()
-$pdf->Cell(0, 10, 'Example 019', 1, 1, 'C');
+// set color for background
+$pdf->SetFillColor(200, 255, 200);
 
-$pdf->Ln();
+$txt = 'An alternative configuration file is used on this example.
+Check the definition of the K_TCPDF_EXTERNAL_CONFIG constant on the source code.';
 
-$pdf->SetFont('times', '', 10);
-$pdf->MultiCell(80, 0, 'Cras eros leo, porttitor porta, accumsan fermentum, ornare ac, est. Praesent dui lorem, imperdiet at, cursus sed, facilisis aliquam, nibh. Nulla accumsan nonummy diam. Donec tempus. Etiam posuere. Proin lectus. Donec purus. Duis in sem pretium urna feugiat vehicula. Ut suscipit velit eget massa. Nam nonummy, enim commodo euismod placerat, tortor elit tempus lectus, quis suscipit metus lorem blandit turpis.'."\n", 1, 'J', 0, 1, '', '', true, 0);
+// print some text
+$pdf->MultiCell(0, 0, $txt."\n", 1, 'J', 1, 1, '', '', true, 0, false, true, 0);
 
 // ---------------------------------------------------------
 
@@ -101,6 +102,6 @@ $pdf->MultiCell(80, 0, 'Cras eros leo, porttitor porta, accumsan fermentum, orna
 $pdf->Output('example_019.pdf', 'I');
 
 //============================================================+
-// END OF FILE                                                 
+// END OF FILE                                                
 //============================================================+
 ?>

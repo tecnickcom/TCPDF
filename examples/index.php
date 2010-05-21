@@ -40,7 +40,7 @@ echo '<'.'?'.'xml version="1.0" encoding="UTF-8"'.'?'.'>';
 <li>Non unicode / Alternative config file: [<a href="example_019.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Multicell complex alignment: [<a href="example_020.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>writeHTML alignment: [<a href="example_021.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
-<li>CMYK colors: [[<a href="example_022.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
+<li>CMYK colors: [<a href="example_022.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Page Groups: [<a href="example_023.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Object Visibility: [<a href="example_024.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Object Transparency: [<a href="example_025.php" title="PDF [new window]" target="_blank">PDF</a>]</li>

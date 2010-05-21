@@ -2,13 +2,13 @@
 //============================================================+
 // File name   : example_034.php
 // Begin       : 2008-07-18
-// Last Update : 2009-09-30
-// 
+// Last Update : 2010-05-20
+//
 // Description : Example 034 for TCPDF class
 //               Clipping
-// 
+//
 // Author: Nicola Asuni
-// 
+//
 // (c) Copyright:
 //               Nicola Asuni
 //               Tecnick.com s.r.l.
@@ -34,7 +34,7 @@ require_once('../config/lang/eng.php');
 require_once('../tcpdf.php');
 
 // create new PDF document
-$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false); 
+$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
 // set document information
 $pdf->SetCreator(PDF_CREATOR);
@@ -44,7 +44,7 @@ $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 034', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -62,27 +62,29 @@ $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
 //set image scale factor
-$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO); 
+$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 //set some language-dependent strings
-$pdf->setLanguageArray($l); 
+$pdf->setLanguageArray($l);
 
 // ---------------------------------------------------------
 
 // set font
-$pdf->SetFont('helvetica', 'BI', 50);
+$pdf->SetFont('helvetica', 'B', 20);
 
 // add a page
 $pdf->AddPage();
+
+$pdf->Write(0, 'Image Clipping using geometric functions', '', 0, 'C', 1, 0, false, false, 0);
 
 //Start Graphic Transformation
 $pdf->StartTransform();
 
 // set clipping mask
-$pdf->StarPolygon(50, 70, 30, 10, 3, 0, 1, 'CNZ');
+$pdf->StarPolygon(105, 100, 30, 10, 3, 0, 1, 'CNZ');
 
 // draw jpeg image to be clipped
-$pdf->Image('../images/image_demo.jpg', 20, 40, 60, 60, '', 'http://www.tcpdf.org', '', true, 72);
+$pdf->Image('../images/image_demo.jpg', 75, 70, 60, 60, '', 'http://www.tcpdf.org', '', true, 72);
 
 //Stop Graphic Transformation
 $pdf->StopTransform();
@@ -93,6 +95,6 @@ $pdf->StopTransform();
 $pdf->Output('example_034.pdf', 'I');
 
 //============================================================+
-// END OF FILE                                                 
+// END OF FILE                                                
 //============================================================+
 ?>

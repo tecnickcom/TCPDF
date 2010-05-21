@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_044.php
 // Begin       : 2009-01-02
-// Last Update : 2010-04-20
+// Last Update : 2010-05-20
 //
 // Description : Example 044 for TCPDF class
 //               Move, copy and delete pages
@@ -44,7 +44,7 @@ $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 044', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -70,32 +70,42 @@ $pdf->setLanguageArray($l);
 // ---------------------------------------------------------
 
 // set font
-$pdf->SetFont('helvetica', '', 18);
+$pdf->SetFont('helvetica', 'B', 40);
 
 // print a line using Cell()
 $pdf->AddPage();
-$pdf->Cell(0, 10, 'PAGE A', 0, 1, 'L');
+$pdf->Cell(0, 10, 'PAGE: A', 0, 1, 'L');
+
+// add some vertical space
+$pdf->Ln(10);
+
+// print some text
+$pdf->SetFont('times', 'I', 16);
+$txt = 'TCPDF allows you to Copy, Move and Delete pages.';
+$pdf->Write(0, $txt, '', 0, 'L', true, 0, false, false, 0);
+
+$pdf->SetFont('helvetica', 'B', 40);
 
 $pdf->AddPage();
-$pdf->Cell(0, 10, 'PAGE B', 0, 1, 'L');
+$pdf->Cell(0, 10, 'PAGE: B', 0, 1, 'L');
 
 $pdf->AddPage();
-$pdf->Cell(0, 10, 'PAGE D', 0, 1, 'L');
+$pdf->Cell(0, 10, 'PAGE: D', 0, 1, 'L');
 
 $pdf->AddPage();
-$pdf->Cell(0, 10, 'PAGE E', 0, 1, 'L');
+$pdf->Cell(0, 10, 'PAGE: E', 0, 1, 'L');
 
 $pdf->AddPage();
-$pdf->Cell(0, 10, 'PAGE E-2', 0, 1, 'L');
+$pdf->Cell(0, 10, 'PAGE: E-2', 0, 1, 'L');
 
 $pdf->AddPage();
-$pdf->Cell(0, 10, 'PAGE F', 0, 1, 'L');
+$pdf->Cell(0, 10, 'PAGE: F', 0, 1, 'L');
 
 $pdf->AddPage();
-$pdf->Cell(0, 10, 'PAGE C', 0, 1, 'L');
+$pdf->Cell(0, 10, 'PAGE: C', 0, 1, 'L');
 
 $pdf->AddPage();
-$pdf->Cell(0, 10, 'PAGE G', 0, 1, 'L');
+$pdf->Cell(0, 10, 'PAGE: G', 0, 1, 'L');
 
 // Move page 7 to page 3
 $pdf->movePage(7, 3);
@@ -104,7 +114,7 @@ $pdf->movePage(7, 3);
 $pdf->deletePage(6);
 
 $pdf->AddPage();
-$pdf->Cell(0, 10, 'PAGE H', 0, 1, 'L');
+$pdf->Cell(0, 10, 'PAGE: H', 0, 1, 'L');
 
 // copy the second page
 $pdf->copyPage(2);

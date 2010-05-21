@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_027.php
 // Begin       : 2008-03-04
-// Last Update : 2010-05-02
+// Last Update : 2010-05-20
 //
 // Description : Example 027 for TCPDF class
 //               1D Barcodes
@@ -44,7 +44,7 @@ $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 027', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -312,7 +312,7 @@ $style = array(
 
 // CODE 39 EXTENDED + CHECKSUM
 $pdf->Cell(0, 0, 'CODE 39 EXTENDED + CHECKSUM', 0, 1);
-$pdf->write1DBarcode('CODE 39 E+', 'C39E+', '', '', 80, 15, 0.4, $style, 'N');
+$pdf->write1DBarcode('CODE 39 E+', 'C39E+', '', '', 100, 15, 0.4, $style, 'N');
 
 // ---------------------------------------------------------
 

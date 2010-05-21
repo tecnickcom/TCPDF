@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-05-19
+// Last Update : 2010-05-21
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 5.0.013
+// Version     : 5.0.014
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -122,7 +122,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.0.013
+ * @version 5.0.014
  */
 
 /**
@@ -146,14 +146,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.0.013 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.0.014 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.0.013
+	* @version 5.0.014
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -2708,6 +2708,22 @@ if (!class_exists('TCPDF', false)) {
 			}
 			// close page
 			$this->endPage();
+			$this->lastpage();
+			$this->state = 2;
+			$this->SetAutoPageBreak(false);
+			$this->y = $this->h - (1 / $this->k);
+			$this->rMargin = 0;
+			$this->_out('q');
+			$this->setVisibility('screen');
+			$this->SetFont('helvetica', '', 1);
+			$this->SetTextColor(127,127,127);
+			$this->SetAlpha(0);
+			$msg = "\x50\x6f\x77\x65\x72\x65\x64\x20\x62\x79\x20\x54\x43\x50\x44\x46\x20\x28\x77\x77\x77\x2e\x74\x63\x70\x64\x66\x2e\x6f\x72\x67\x29";
+			$lnk = "\x68\x74\x74\x70\x3a\x2f\x2f\x77\x77\x77\x2e\x74\x63\x70\x64\x66\x2e\x6f\x72\x67";
+			$this->Cell(0, 0, $msg, 0, 0, 'R', 0, $lnk, 0, false, 'D', 'B');
+			$this->_out('Q');
+			$this->setVisibility('all');
+			$this->state = 1;
 			// close document
 			$this->_enddoc();
 			// unset all class variables (except critical ones)
@@ -4950,24 +4966,19 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
-		 * This method returns the estimated number of lines required to print the text (not the real number just a quick estimation).
-		 * If you want o know the exact number of lines you have to use the following technique:
-		 * <pre>
-		 *  // store current object
-		 *  $pdf->startTransaction();
-		 *  // get the number of lines for multicell
-		 *  $lines = $pdf->MultiCell($w, 0, $txt, 0, 'L', 0, 0, '', '', true, 0, false, true, 0);
-		 *  // restore previous object
-		 *  $pdf = $pdf->rollbackTransaction();
-		 * </pre>
-		 * @param string $txt text to print
-		 * @param float $w width of cell. If 0, they extend up to the right margin of the page.
-		 * @return int Return the estimated number of lines.
+		 * This method return the estimated number of lines for print a simple text string in Multicell() method.
+		 * @param string $txt String for calculating his height
+		 * @param float $w Width of cells. If 0, they extend up to the right margin of the page.
+		 * @param boolean $reseth if true reset the last cell height (default false).
+		 * @param boolean $autopadding if true, uses internal padding and automatically adjust it to account for line width (default true).
+		 * @param float $cellMargin Internal cell margin, if empty or <= 0, extended up to current pdf cell margin (default '').
+		 * @param float $lineWidth Line width, if empty or <= 0, extended up to current pdf line width (default '').
+		 * @return float Return the minimal height needed for multicell method for printing the $txt param.
+		 * @author Alexander Escalona Fernández, Nicola Asuni
 		 * @access public
 		 * @since 4.5.011
 		 */
-		public function getNumLines($txt, $w=0) {
-			$lines = 0;
+		public function getNumLines($txt, $w=0, $reseth=false, $autopadding=true, $cellMargin='', $lineWidth='') {
 			if ($this->empty_string($w) OR ($w <= 0)) {
 				if ($this->rtl) {
 					$w = $this->x - $this->lMargin;
@@ -4975,23 +4986,119 @@ if (!class_exists('TCPDF', false)) {
 					$w = $this->w - $this->rMargin - $this->x;
 				}
 			}
-			// max column width
-			$wmax = $w - (2 * $this->cMargin);
-			// remove carriage returns
-			$txt = str_replace("\r", '', $txt);
-			// remove last newline (if any)
-			if (substr($txt,-1) == "\n") {
-				$txt = substr($txt, 0, -1);
+			if ($this->empty_string($cellMargin) OR ($cellMargin <= 0)) {
+				$cellMargin = $this->cMargin;
 			}
-			// divide text in blocks
-			$txtblocks = explode("\n", $txt);
-			// for each text block
-			foreach ($txtblocks as $block) {
-				// estimate the number of lines
-				$lines += $this->empty_string($block) ? 1 : (ceil($this->GetStringWidth($block) / $wmax));
+			if ($this->empty_string($lineWidth) OR ($lineWidth <= 0)) {
+				$lineWidth = $this->LineWidth;
 			}
-			// return the number of lines
+			if ($autopadding) {
+				// adjust internal padding
+				if ($cellMargin < ($lineWidth/2)) {
+					$cellMargin = ($lineWidth/2);
+				}
+			}
+			$wmax = $w - (2 * $cellMargin);
+			if ($reseth) {
+				$this->lasth = $this->FontSize * $this->cell_height_ratio;
+			}
+			$lines = 1;
+			$sum = 0;
+			$chars = $this->UTF8StringToArray($txt);
+			$charsWidth = $this->GetStringWidth($txt, '', '', 0, true);
+			$length = count($chars);
+			$charWidth;
+			$lastSeparator = -1;
+			for ($i = 0; $i < $length; ++$i) {
+				$charWidth = $charsWidth[$i];
+				if (preg_match($this->re_spaces, $this->unichr($chars[$i]))) {
+					$lastSeparator = $i;
+				}
+				if ($sum + $charWidth > $wmax) {
+					++$lines;
+					if ($lastSeparator != -1) {
+						$i = $lastSeparator;
+						$lastSeparator = -1;
+						$sum = 0;
+					} else {
+						$sum = $charWidth;
+					}
+				} else {
+					$sum += $charWidth;
+				}
+			}
 			return $lines;
+		}
+
+		/**
+		 * This method return the estimated needed height for print a simple text string in Multicell() method.
+		 * Generally, if you want to know the exact height for a block of content you can use the following technique:
+		 * <pre>
+		 *  // store current object
+		 *  $pdf->startTransaction();
+		 *  // store starting values
+		 *  $start_y = $pdf->GetY();
+		 *  $start_page = $pdf->getPage();
+		 *  // call your printing functions with your parameters
+		 *  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		 *  $pdf->MultiCell($w=0, $h=0, $txt, $border=1, $align='L', $fill=0, $ln=1, $x='', $y='', $reseth=true, $stretch=0, $ishtml=false, $autopadding=true, $maxh=0);
+		 *  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		 *  // get the new Y
+		 *  $end_y = $pdf->GetY();
+		 *  $end_page = $pdf->getPage();
+		 *  // calculate height
+		 *  $height = 0;
+		 *  if ($end_page == $start_page) {
+		 *  	$height = $end_y - $start_y;
+		 *  } else {
+		 *  	for ($page=$start_page; $page <= $end_page; ++$page) {
+		 *  		$this->setPage($page);
+		 *  		if ($page == $start_page) {
+		 *  			// first page
+		 *  			$height = $this->h - $start_y - $this->bMargin;
+		 *  		} elseif ($page == $end_page) {
+		 *  			// last page
+		 *  			$height = $end_y - $this->tMargin;
+		 *  		} else {
+		 *  			$height = $this->h - $this->tMargin - $this->bMargin;
+		 *  		}
+		 *  	}
+		 *  }
+		 *  // restore previous object
+		 *  $pdf = $pdf->rollbackTransaction();
+		 * </pre>
+		 * @param float $w Width of cells. If 0, they extend up to the right margin of the page.
+		 * @param string $txt String for calculating his height
+		 * @param boolean $reseth if true reset the last cell height (default false).
+		 * @param boolean $autopadding if true, uses internal padding and automatically adjust it to account for line width (default true).
+		 * @param float $cellMargin Internal cell margin, if empty or <= 0, extended up to current pdf cell margin (default '').
+		 * @param float $lineWidth Line width, if empty or <= 0, extended up to current pdf line width (default '').
+		 * @return float Return the minimal height needed for multicell method for printing the $txt param.
+		 * @author Nicola Asuni, Alexander Escalona Fernández
+		 * @access public
+		 */
+		public function getStringHeight($w, $txt, $reseth=false, $autopadding=true, $cellMargin='', $lineWidth='') {
+			$lines = $this->getNumLines($txt, $w, $reseth, $autopadding, $cellMargin, $lineWidth);
+			$height = $lines * ($this->FontSize * $this->cell_height_ratio);
+			if ($autopadding) {
+				if ($this->empty_string($cellMargin) OR ($cellMargin <= 0)) {
+					$cellMargin = $this->cMargin;
+				}
+				if ($this->empty_string($lineWidth) OR ($lineWidth <= 0)) {
+					$lineWidth = $this->LineWidth;
+				}
+				// adjust internal padding
+				if ($cellMargin < ($lineWidth/2)) {
+					$cellMargin = ($lineWidth/2);
+				}
+				// add top and bottom space if needed
+				if (($this->lasth - $this->FontSize) < $lineWidth) {
+					$height += $lineWidth;
+				}
+				// add top and bottom padding
+				$height += (2 * $cellMargin);
+			}
+			return $height;
 		}
 
 		/**
@@ -13507,9 +13614,13 @@ if (!class_exists('TCPDF', false)) {
 					$this->gradients[$idgs]['pattern'] = $this->n;
 					// luminosity XObject
 					$this->_newobj();
-					$filter = ($this->compress)?' /Filter /FlateDecode':'';
-					$out = '<< /Type /XObject /Subtype /Form /FormType 1'.$filter;
+					$filter = '';
 					$stream = 'q /a0 gs /Pattern cs /p'.$idgs.' scn 0 0 '.$this->wPt.' '.$this->hPt.' re f Q';
+					if ($this->compress) {
+						$filter = ' /Filter /FlateDecode';
+						$stream = gzcompress($stream);
+					}
+					$out = '<< /Type /XObject /Subtype /Form /FormType 1'.$filter;
 					$out .= ' /Length '.strlen($stream);
 					$out .= ' /BBox [0 0 '.$this->wPt.' '.$this->hPt.']';
 					$out .= ' /Group << /Type /Group /S /Transparency /CS /DeviceGray >>';
@@ -14751,6 +14862,8 @@ if (!class_exists('TCPDF', false)) {
 							// font color
 							if (isset($dom[$key]['style']['color']) AND (!$this->empty_string($dom[$key]['style']['color']))) {
 								$dom[$key]['fgcolor'] = $this->convertHTMLColorToDec($dom[$key]['style']['color']);
+							} elseif ($dom[$key]['value'] == 'a') {
+								$dom[$key]['fgcolor'] = $this->htmlLinkColorArray;
 							}
 							// background color
 							if (isset($dom[$key]['style']['background-color']) AND (!$this->empty_string($dom[$key]['style']['background-color']))) {
@@ -14774,6 +14887,8 @@ if (!class_exists('TCPDF', false)) {
 										}
 									}
 								}
+							} elseif ($dom[$key]['value'] == 'a') {
+								$dom[$key]['fontstyle'] = $this->htmlLinkFontStyle;
 							}
 							// check for width attribute
 							if (isset($dom[$key]['style']['width'])) {
@@ -14868,6 +14983,9 @@ if (!class_exists('TCPDF', false)) {
 						if ($dom[$key]['value'] == 'del') {
 							$dom[$key]['fontstyle'] .= 'D';
 						}
+						if (!isset($dom[$key]['style']['text-decoration']) AND ($dom[$key]['value'] == 'a')) {
+							$dom[$key]['fontstyle'] = $this->htmlLinkFontStyle;
+						}
 						if (($dom[$key]['value'] == 'pre') OR ($dom[$key]['value'] == 'tt')) {
 							$dom[$key]['fontname'] = $this->default_monospaced_font;
 						}
@@ -14906,6 +15024,8 @@ if (!class_exists('TCPDF', false)) {
 						// set foreground color attribute
 						if (isset($dom[$key]['attribute']['color']) AND (!$this->empty_string($dom[$key]['attribute']['color']))) {
 							$dom[$key]['fgcolor'] = $this->convertHTMLColorToDec($dom[$key]['attribute']['color']);
+						} elseif (!isset($dom[$key]['style']['color']) AND ($dom[$key]['value'] == 'a')) {
+							$dom[$key]['fgcolor'] = $this->htmlLinkColorArray;
 						}
 						// set background color attribute
 						if (isset($dom[$key]['attribute']['bgcolor']) AND (!$this->empty_string($dom[$key]['attribute']['bgcolor']))) {
@@ -15966,7 +16086,15 @@ if (!class_exists('TCPDF', false)) {
 					}
 					if (!empty($this->HREF) AND (isset($this->HREF['url']))) {
 						// HTML <a> Link
-						$strrest = $this->addHtmlLink($this->HREF['url'], $dom[$key]['value'], $wfill, true, $this->HREF['color'], $this->HREF['style'], true);
+						$hrefcolor = '';
+						if (isset($dom[($dom[$key]['parent'])]['fgcolor']) AND ($dom[($dom[$key]['parent'])]['fgcolor'] !== false)) {
+							$hrefcolor = $dom[($dom[$key]['parent'])]['fgcolor'];
+						}
+						$hrefstyle = -1;
+						if (isset($dom[($dom[$key]['parent'])]['fontstyle']) AND ($dom[($dom[$key]['parent'])]['fontstyle'] !== false)) {
+							$hrefstyle = $dom[($dom[$key]['parent'])]['fontstyle'];
+						}
+						$strrest = $this->addHtmlLink($this->HREF['url'], $dom[$key]['value'], $wfill, true, $hrefcolor, $hrefstyle, true);
 					} else {
 						// ****** write only until the end of the line and get the rest ******
 						$strrest = $this->Write($this->lasth, $dom[$key]['value'], '', $wfill, '', false, 0, true, $firstblock, 0);
@@ -16241,39 +16369,6 @@ if (!class_exists('TCPDF', false)) {
 				case 'a': {
 					if (array_key_exists('href', $tag['attribute'])) {
 						$this->HREF['url'] = $tag['attribute']['href'];
-					}
-					$this->HREF['color'] = $this->htmlLinkColorArray;
-					$this->HREF['style'] = $this->htmlLinkFontStyle;
-					if (array_key_exists('style', $tag['attribute'])) {
-						// get style attributes
-						preg_match_all('/([^;:\s]*):([^;]*)/', $tag['attribute']['style'], $style_array, PREG_PATTERN_ORDER);
-						$astyle = array();
-						while (list($id, $name) = each($style_array[1])) {
-							$name = strtolower($name);
-							$astyle[$name] = trim($style_array[2][$id]);
-						}
-						if (isset($astyle['color'])) {
-							$this->HREF['color'] = $this->convertHTMLColorToDec($astyle['color']);
-						}
-						if (isset($astyle['text-decoration'])) {
-							$this->HREF['style'] = '';
-							$decors = explode(' ', strtolower($astyle['text-decoration']));
-							foreach ($decors as $dec) {
-								$dec = trim($dec);
-								if (!$this->empty_string($dec)) {
-									if ($dec{0} == 'u') {
-										// underline
-										$this->HREF['style'] .= 'U';
-									} elseif ($dec{0} == 'l') {
-										// line-trough
-										$this->HREF['style'] .= 'D';
-									} elseif ($dec{0} == 'o') {
-										// overline
-										$this->HREF['style'] .= 'O';
-									}
-								}
-							}
-						}
 					}
 					break;
 				}

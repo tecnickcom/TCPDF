@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_037.php
 // Begin       : 2008-09-12
-// Last Update : 2010-04-05
+// Last Update : 2010-05-20
 //
 // Description : Example 037 for TCPDF class
 //               Spot colors
@@ -44,7 +44,7 @@ $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 037', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -70,13 +70,21 @@ $pdf->setLanguageArray($l);
 // ---------------------------------------------------------
 
 // set font
-$pdf->SetFont('helvetica', '', 8);
+$pdf->SetFont('helvetica', '', 20);
 
 // add a page
 $pdf->AddPage();
 
+
+$pdf->Write(0, 'Example of Spot Colors', '', 0, 'L', true, 0, false, false, 0);
+
+$pdf->Ln(5);
+
+$pdf->SetFont('helvetica', '', 8);
+
 // Define some new spot colors
-// where c, m, y and k (2nd, 3rd, 4th and 5th parameter) are the equivalent CMYK components.
+// $c, $m, $y and $k (2nd, 3rd, 4th and 5th parameter) are the CMYK color components.
+// AddSpotColor($name, $c, $m, $y, $k)
 $pdf->AddSpotColor('Pantone 116 C', 0, 20, 100, 0);
 $pdf->AddSpotColor('HKS 16 K', 30, 100, 90, 10);
 $pdf->AddSpotColor('Pantone 505 C', 57, 100, 85, 55);
@@ -93,12 +101,16 @@ $pdf->AddSpotColor('NovaSpace-Black', 50, 0, 0, 100);
 $pdf->AddSpotColor('Pantone 601 C', 0, 0, 55, 0);
 $pdf->AddSpotColor('Pantone 659 C', 50, 20, 0, 10);
 
-// select the spot color
-// where tint (the second parameter) is the intensity of the color (full intensity by default).
+// Select the spot color
+// $tint (the second parameter) is the intensity of the color (0-100).
+// SetTextSpotColor($name, $tint=100)
+// SetDrawSpotColor($name, $tint=100)
+// SetFillSpotColor($name, $tint=100)
+
 $pdf->SetTextSpotColor('NovaSpace-Black', 100);
 $pdf->SetDrawSpotColor('NovaSpace-Black', 100);
 
-$starty = 30;
+$starty = 50;
 
 // print some spot colors
 $pdf->SetFillSpotColor('Pantone 116 C', 100);

@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_031.php
 // Begin       : 2008-06-09
-// Last Update : 2010-05-04
+// Last Update : 2010-05-20
 //
 // Description : Example 031 for TCPDF class
 //               Pie Chart
@@ -43,15 +43,20 @@ $pdf->SetTitle('TCPDF Example 031');
 $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
-// disable header and footer
-$pdf->setPrintHeader(false);
-$pdf->setPrintFooter(false);
+// set default header data
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 031', PDF_HEADER_STRING);
+
+// set header and footer fonts
+$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
 //set margins
 $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
 //set auto page breaks
 $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
@@ -65,21 +70,31 @@ $pdf->setLanguageArray($l);
 // ---------------------------------------------------------
 
 // set font
-$pdf->SetFont('helvetica', '', 14);
+$pdf->SetFont('helvetica', 'B', 20);
 
 // add a page
 $pdf->AddPage();
 
-$xc = 105;
-$yc = 55;
-$r = 40;
+$pdf->Write(0, 'Example of PieSector() method.');
 
-$pdf->SetFillColor(120, 120, 255);
+$xc = 105;
+$yc = 100;
+$r = 50;
+
+$pdf->SetFillColor(0, 0, 255);
 $pdf->PieSector($xc, $yc, $r, 20, 120, 'FD', false, 0, 2);
-$pdf->SetFillColor(120, 255, 120);
+
+$pdf->SetFillColor(0, 255, 0);
 $pdf->PieSector($xc, $yc, $r, 120, 250, 'FD', false, 0, 2);
-$pdf->SetFillColor(255, 120, 120);
+
+$pdf->SetFillColor(255, 0, 0);
 $pdf->PieSector($xc, $yc, $r, 250, 20, 'FD', false, 0, 2);
+
+// write labels
+$pdf->SetTextColor(255,255,255);
+$pdf->Text(105, 65, 'BLUE');
+$pdf->Text(60, 95, 'GREEN');
+$pdf->Text(120, 115, 'RED');
 
 // ---------------------------------------------------------
 
