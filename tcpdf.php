@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-05-21
+// Last Update : 2010-05-25
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 5.0.014
+// Version     : 5.1.000
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -38,7 +38,7 @@
 //  * all ISO page formats, custom page formats, custom margins and units of measure;
 //  * UTF-8 Unicode and Right-To-Left languages;
 //  * TrueTypeUnicode, OpenTypeUnicode, TrueType, OpenType, Type1 and CID-0 fonts;
-//  * methods to publish some XHTML code, Javascript and Forms;
+//  * methods to publish some XHTML + CSS code, Javascript and Forms;
 //  * images, graphic (geometric figures) and transformation methods;
 //  * supports JPEG, PNG and SVG images natively, all images supported by GD (GD, GD2, GD2PART, GIF, JPEG, PNG, BMP, XBM, XPM) and all images supported via ImagMagick (http://www.imagemagick.org/www/formats.html)
 //  * 1D and 2D barcodes: CODE 39, ANSI MH10.8M-1983, USD-3, 3 of 9, CODE 93, USS-93, Standard 2 of 5, Interleaved 2 of 5, CODE 128 A/B/C, 2 and 5 Digits UPC-Based Extention, EAN 8, EAN 13, UPC-A, UPC-E, MSI, POSTNET, PLANET, RMS4CC (Royal Mail 4-state Customer Code), CBC (Customer Bar Code), KIX (Klant index - Customer index), Intelligent Mail Barcode, Onecode, USPS-B-3200, CODABAR, CODE 11, PHARMACODE, PHARMACODE TWO-TRACKS, QR-Code;
@@ -97,7 +97,7 @@
  * <li>all ISO page formats, custom page formats, custom margins and units of measure;</li>
  * <li>UTF-8 Unicode and Right-To-Left languages;</li>
  * <li>TrueTypeUnicode, OpenTypeUnicode, TrueType, OpenType, Type1 and CID-0 fonts;</li>
- * <li>methods to publish some XHTML code, Javascript and Forms;</li>
+ * <li>methods to publish some XHTML + CSS code, Javascript and Forms;</li>
  * <li>images, graphic (geometric figures) and transformation methods;
  * <li>supports JPEG, PNG and SVG images natively, all images supported by GD (GD, GD2, GD2PART, GIF, JPEG, PNG, BMP, XBM, XPM) and all images supported via ImagMagick (http://www.imagemagick.org/www/formats.html)</li>
  * <li>1D and 2D barcodes: CODE 39, ANSI MH10.8M-1983, USD-3, 3 of 9, CODE 93, USS-93, Standard 2 of 5, Interleaved 2 of 5, CODE 128 A/B/C, 2 and 5 Digits UPC-Based Extention, EAN 8, EAN 13, UPC-A, UPC-E, MSI, POSTNET, PLANET, RMS4CC (Royal Mail 4-state Customer Code), CBC (Customer Bar Code), KIX (Klant index - Customer index), Intelligent Mail Barcode, Onecode, USPS-B-3200, CODABAR, CODE 11, PHARMACODE, PHARMACODE TWO-TRACKS, QR-Code;</li>
@@ -122,7 +122,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.0.014
+ * @version 5.1.000
  */
 
 /**
@@ -146,14 +146,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.0.014 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.1.000 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.0.014
+	* @version 5.1.000
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -9024,12 +9024,21 @@ if (!class_exists('TCPDF', false)) {
 			if (strlen($color) == 0) {
 				return false;
 			}
+			// RGB ARRAY
 			if (substr($color, 0, 3) == 'rgb') {
 				$codes = substr($color, 4);
 				$codes = str_replace(')', '', $codes);
-				$returncolor = explode(',', $codes, 3);
+				$returncolor = explode(',', $codes);
 				return $returncolor;
 			}
+			// CMYK ARRAY
+			if (substr($color, 0, 4) == 'cmyk') {
+				$codes = substr($color, 5);
+				$codes = str_replace(')', '', $codes);
+				$returncolor = explode(',', $codes);
+				return $returncolor;
+			}
+			// COLOR NAME
 			if (substr($color, 0, 1) != '#') {
 				// decode color name
 				if (isset($webcolor[$color])) {
@@ -9040,6 +9049,7 @@ if (!class_exists('TCPDF', false)) {
 			} else {
 				$color_code = substr($color, 1);
 			}
+			// RGB VALUE
 			switch (strlen($color_code)) {
 				case 3: {
 					// three-digit hexadecimal representation
@@ -14506,27 +14516,279 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
-		 * Prints a cell (rectangular area) with optional borders, background color and html text string.
-		 * The upper-left corner of the cell corresponds to the current position. After the call, the current position moves to the right or to the next line.<br />
-		 * If automatic page breaking is enabled and the cell goes beyond the limit, a page break is done before outputting.
-		 * @param float $w Cell width. If 0, the cell extends up to the right margin.
-		 * @param float $h Cell minimum height. The cell extends automatically if needed.
-		 * @param float $x upper-left corner X coordinate
-		 * @param float $y upper-left corner Y coordinate
-		 * @param string $html html text to print. Default value: empty string.
-		 * @param mixed $border Indicates if borders must be drawn around the cell. The value can be either a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul>or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul>
-		 * @param int $ln Indicates where the current position should go after the call. Possible values are:<ul><li>0: to the right (or left for RTL language)</li><li>1: to the beginning of the next line</li><li>2: below</li></ul>
-	Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value: 0.
-		 * @param int $fill Indicates if the cell background must be painted (1) or transparent (0). Default value: 0.
-		 * @param boolean $reseth if true reset the last cell height (default true).
-		 * @param string $align Allows to center or align the text. Possible values are:<ul><li>L : left align</li><li>C : center</li><li>R : right align</li><li>'' : empty string : left for LTR or right for RTL</li></ul>
-		 * @param boolean $autopadding if true, uses internal padding and automatically adjust it to account for line width.
-		 * @access public
-		 * @uses MultiCell()
-		 * @see Multicell(), writeHTML()
+		 * Extracts the CSS properties from a CSS string.
+		 * @param string $cssdata string containing CSS definitions.
+		 * @return An array where the keys are the CSS selectors and the values are the CSS properties.
+		 * @author Nicola Asuni
+		 * @since 5.1.000 (2010-05-25)
+		 * @access protected
 		 */
-		public function writeHTMLCell($w, $h, $x, $y, $html='', $border=0, $ln=0, $fill=0, $reseth=true, $align='', $autopadding=true) {
-			return $this->MultiCell($w, $h, $html, $border, $align, $fill, $ln, $x, $y, $reseth, 0, true, $autopadding, 0);
+		protected function extractCSSproperties($cssdata) {
+			if (empty($cssdata)) {
+				return array();
+			}
+			// remove comments
+			$cssdata = preg_replace('/\/\*[^\*]*\*\//', '', $cssdata);
+			// remove newlines and multiple spaces
+			$cssdata = preg_replace('/[\s]+/', ' ', $cssdata);
+			// remove some spaces
+			$cssdata = preg_replace('/[\s]*([;:\{\}]{1})[\s]*/', '\\1', $cssdata);
+			// remove empty blocks
+			$cssdata = preg_replace('/([^\}\{]+)\{\}/', '', $cssdata);
+			// replace media type parenthesis
+			$cssdata = preg_replace('/@media[\s]+([^\{]*)\{/i', '@media \\1§', $cssdata);
+			$cssdata = preg_replace('/\}\}/si', '}§', $cssdata);
+			// trim string
+			$cssdata = trim($cssdata);
+			// find media blocks (all, braille, embossed, handheld, print, projection, screen, speech, tty, tv)
+			$cssblocks = array();
+			$matches = array();
+			if (preg_match_all('/@media[\s]+([^\§]*)§([^§]*)§/i', $cssdata, $matches) > 0) {
+				foreach ($matches[1] as $key => $type) {
+					$cssblocks[$type] = $matches[2][$key];
+				}
+				// remove media blocks
+				$cssdata = preg_replace('/@media[\s]+([^\§]*)§([^§]*)§/i', '', $cssdata);
+			}
+			// keep 'all' and 'print' media, other media types are discarded
+			if (isset($cssblocks['all']) AND !empty($cssblocks['all'])) {
+				$cssdata .= $cssblocks['all'];
+			}
+			if (isset($cssblocks['print']) AND !empty($cssblocks['print'])) {
+				$cssdata .= $cssblocks['print'];
+			}
+			// reset css blocks array
+			$cssblocks = array();
+			$matches = array();
+			// explode css data string into array
+			if (substr($cssdata, -1) == '}') {
+				// remove last parethesis
+				$cssdata = substr($cssdata, 0, -1);
+			}
+			$matches = explode('}', $cssdata);
+			foreach ($matches as $key => $block) {
+				// index 0 contains the CSS selector, index 1 contains CSS properties
+				$cssblocks[$key] = explode('{', $block);
+			}
+			// split groups of selectors (comma-separated list of selectors)
+			foreach ($cssblocks as $key => $block) {
+				if (strpos($block[0], ',') > 0) {
+					$selectors = explode(',', $block[0]);
+					foreach ($selectors as $sel) {
+						$cssblocks[] = array(0 => trim($sel), 1 => $block[1]);
+					}
+					unset($cssblocks[$key]);
+				}
+			}
+			// covert array to selector => properties
+			$cssdata = array();
+			foreach ($cssblocks as $block) {
+				$selector = $block[0];
+				// calculate selector's specificity
+				$matches = array();
+				$a = 0; // the declaration is not from is a 'style' attribute
+				$b = intval(preg_match_all('/[\#]/', $selector, $matches)); // number of ID attributes
+				$c = intval(preg_match_all('/[\[\.]/', $selector, $matches)); // number of other attributes
+				$c += intval(preg_match_all('/[\:]link|visited|hover|active|focus|target|lang|enabled|disabled|checked|indeterminate|root|nth|first|last|only|empty|contains|not/i', $selector, $matches)); // number of pseudo-classes
+				$d = intval(preg_match_all('/[\>\+\~\s]{1}[a-zA-Z0-9\*]+/', ' '.$selector, $matches)); // number of element names
+				$d += intval(preg_match_all('/[\:][\:]/', $selector, $matches)); // number of pseudo-elements
+				$specificity = $a.$b.$c.$d;
+				// add specificity to the beginning of the selector
+				$cssdata[$specificity.' '.$selector] = $block[1];
+			}
+			// sort selectors alphabetically to account for specificity
+			ksort($cssdata, SORT_STRING);
+			// return array
+			return $cssdata;
+		}
+
+		/**
+	 	 * Returns true if the CSS selector is valid for the selected HTML tag
+		 * @param array $dom array of HTML tags and properties
+		 * @param int $key key of the current HTML tag
+		 * @param string $selector CSS selector string
+		 * @return true if the selector is valid, false otherwise
+		 * @access protected
+		 * @since 5.1.000 (2010-05-25)
+		 */
+		protected function isValidCSSSelectorForTag($dom, $key, $selector) {
+			$valid = false; // value to be returned
+			$tag = $dom[$key]['value'];
+			$class = '';
+			if (isset($dom[$key]['attribute']['class']) AND !empty($dom[$key]['attribute']['class'])) {
+				$class = strtolower($dom[$key]['attribute']['class']);
+			}
+			$id = '';
+			if (isset($dom[$key]['attribute']['id']) AND !empty($dom[$key]['attribute']['id'])) {
+				$id = strtolower($dom[$key]['attribute']['id']);
+			}
+			$matches = array();
+			if (preg_match_all('/([\>\+\~\s]{1})([a-zA-Z0-9\*]+)([^\>\+\~\s]*)/si', $selector, $matches, PREG_PATTERN_ORDER | PREG_OFFSET_CAPTURE) > 0) {
+				$parentop = array_pop($matches[1]);
+				$operator = $parentop[0];
+				$offset = $parentop[1];
+				$lasttag = array_pop($matches[2]);
+				$lasttag = strtolower(trim($lasttag[0]));
+				if (($lasttag == '*') OR ($lasttag == $tag)) {
+					// the last element on selector is our tag or 'any tag'
+					$attrib = array_pop($matches[3]);
+					$attrib = strtolower(trim($attrib[0]));
+					if (!empty($attrib)) {
+						// check if matches class, id, attribute, pseudo-class or pseudo-element
+						switch ($attrib{0}) {
+							case '.': { // class
+								if (substr($attrib, 1) == $class) {
+									$valid = true;
+								}
+								break;
+							}
+							case '#': { // ID
+								if (substr($attrib, 1) == $id) {
+									$valid = true;
+								}
+								break;
+							}
+							case '[': { // attribute
+								$attrmatch = array();
+								if (preg_match('/\[([a-zA-Z0-9]*)[\s]*([\~\^\$\*\|\=]*)[\s]*["]?([^"\]]*)["]?\]/i', $attrib, $attrmatch) > 0) {
+									$att = strtolower($attrmatch[1]);
+									$val = $attrmatch[3];
+									if (isset($dom[$key]['attribute'][$att])) {
+										switch ($attrmatch[2]) {
+											case '=': {
+												if ($dom[$key]['attribute'][$att] == $val) {
+													$valid = true;
+												}
+												break;
+											}
+											case '~=': {
+												if (in_array($val, explode(' ', $dom[$key]['attribute'][$att]))) {
+													$valid = true;
+												}
+												break;
+											}
+											case '^=': {
+												if ($val == substr($dom[$key]['attribute'][$att], 0, strlen($val))) {
+													$valid = true;
+												}
+												break;
+											}
+											case '$=': {
+												if ($val == substr($dom[$key]['attribute'][$att], -strlen($val))) {
+													$valid = true;
+												}
+												break;
+											}
+											case '*=': {
+												if (strpos($dom[$key]['attribute'][$att], $val) !== false) {
+													$valid = true;
+												}
+												break;
+											}
+											case '|=': {
+												if ($dom[$key]['attribute'][$att] == $val) {
+													$valid = true;
+												} elseif (preg_match('/'.$val.'[\-]{1}/i', $dom[$key]['attribute'][$att]) > 0) {
+													$valid = true;
+												}
+												break;
+											}
+											default: {
+												$valid = true;
+											}
+										}
+									}
+								}
+								break;
+							}
+							case ':': { // pseudo-class or pseudo-element
+								if ($attrib{1} == ':') { // pseudo-element
+									// pseudo-elements are not supported!
+									// (::first-line, ::first-letter, ::before, ::after)
+								} else { // pseudo-class
+									// pseudo-classes are not supported!
+									// (:root, :nth-child(n), :nth-last-child(n), :nth-of-type(n), :nth-last-of-type(n), :first-child, :last-child, :first-of-type, :last-of-type, :only-child, :only-of-type, :empty, :link, :visited, :active, :hover, :focus, :target, :lang(fr), :enabled, :disabled, :checked)
+								}
+								break;
+							}
+						} // end of switch
+					} else {
+						$valid = true;
+					}
+					if ($valid AND ($offset > 0)) {
+						$valid = false;
+						// check remaining selector part
+						$selector = substr($selector, 0, $offset);
+						switch ($operator) {
+							case ' ': { // descendant of an element
+								while ($dom[$key]['parent'] > 0) {
+									if ($this->isValidCSSSelectorForTag($dom, $dom[$key]['parent'], $selector)) {
+										$valid = true;
+										break;
+									} else {
+										$key = $dom[$key]['parent'];
+									}
+								}
+								break;
+							}
+							case '>': { // child of an element
+								$valid = $this->isValidCSSSelectorForTag($dom, $dom[$key]['parent'], $selector);
+								break;
+							}
+							case '+': { // immediately preceded by an element
+								for ($i = ($key - 1); $i > $dom[$key]['parent']; --$i) {
+									if ($dom[$i]['tag'] AND $dom[$i]['opening']) {
+										$valid = $this->isValidCSSSelectorForTag($dom, $i, $selector);
+										break;
+									}
+								}
+								break;
+							}
+							case '~': { // preceded by an element
+								for ($i = ($key - 1); $i > $dom[$key]['parent']; --$i) {
+									if ($dom[$i]['tag'] AND $dom[$i]['opening']) {
+										if ($this->isValidCSSSelectorForTag($dom, $i, $selector)) {
+											break;
+										}
+									}
+								}
+								break;
+							}
+						}
+					}
+				}
+			}
+			return $valid;
+		}
+
+		/**
+	 	 * Returns the styles that apply for the selected HTML tag.
+		 * @param array $dom array of HTML tags and properties
+		 * @param int $key key of the current HTML tag
+		 * @param array $css array of CSS properties
+		 * @return string containing CSS properties
+		 * @access protected
+		 * @since 5.1.000 (2010-05-25)
+		 */
+		protected function getTagStyleFromCSS($dom, $key, $css) {
+			$tagstyle = ''; // style to be returned
+			// get all styles that apply
+			foreach($css as $selector => $style) {
+				// remove specificity
+				$selector = substr($selector, strpos($selector, ' '));
+				// check if this selector apply to current tag
+				if ($this->isValidCSSSelectorForTag($dom, $key, $selector)) {
+					// apply style
+					$tagstyle .= ';'.$style;
+				}
+			}
+			if (isset($dom[$key]['attribute']['style'])) {
+				// attach inline style (latest properties have high priority)
+				$tagstyle .= ';'.$dom[$key]['attribute']['style'];
+			}
+			// remove multiple semicolons
+			$tagstyle = preg_replace('/[;]+/', ';', $tagstyle);
+			return $tagstyle;
 		}
 
 		/**
@@ -14538,6 +14800,46 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 3.2.000 (2008-06-20)
 		 */
 		protected function getHtmlDomArray($html) {
+			// array of CSS styles ( selector => properties).
+			$css = array();
+			// extract external CSS files
+			$matches = array();
+			if (preg_match_all('/<link([^\>]*)>/isU', $html, $matches) > 0) {
+				foreach ($matches[1] as $key => $link) {
+					$type = array();
+					if (preg_match('/type[\s]*=[\s]*"text\/css"/', $link, $type)) {
+						$type = array();
+						preg_match('/media[\s]*=[\s]*"([^"]*)"/', $link, $type);
+						// get 'all' and 'print' media, other media types are discarded
+						// (all, braille, embossed, handheld, print, projection, screen, speech, tty, tv)
+						if (empty($type) OR (isset($type[1]) AND (($type[1] == 'all') OR ($type[1] == 'print')))) {
+							$type = array();
+							if (preg_match('/href[\s]*=[\s]*"([^"]*)"/', $link, $type) > 0) {
+								// read CSS data file
+								$cssdata = file_get_contents(trim($type[1]));
+								$css = array_merge($css, $this->extractCSSproperties($cssdata));
+							}
+						}
+					}
+				}
+			}
+			// extract style tags
+			$matches = array();
+			if (preg_match_all('/<style([^\>]*)>([^\<]*)<\/style>/isU', $html, $matches) > 0) {
+				foreach ($matches[1] as $key => $media) {
+					$type = array();
+					preg_match('/media[\s]*=[\s]*"([^"]*)"/', $media, $type);
+					// get 'all' and 'print' media, other media types are discarded
+					// (all, braille, embossed, handheld, print, projection, screen, speech, tty, tv)
+					if (empty($type) OR (isset($type[1]) AND (($type[1] == 'all') OR ($type[1] == 'print')))) {
+						$cssdata = $matches[2][$key];
+						$css = array_merge($css, $this->extractCSSproperties($cssdata));
+					}
+				}
+			}
+			// remove heade and style blocks
+			$html = preg_replace('/<head([^\>]*)>(.*?)<\/head>/siU', '', $html);
+			$html = preg_replace('/<style([^\>]*)>([^\<]*)<\/style>/isU', '', $html);
 			// define block tags
 			$blocktags = array('blockquote','br','dd','dl','div','dt','h1','h2','h3','h4','h5','h6','hr','li','ol','p','pre','ul','tcpdf','table','tr','td');
 			// remove all unsupported tags (the line below lists all supported tags)
@@ -14747,17 +15049,22 @@ if (!class_exists('TCPDF', false)) {
 							$dom[$key]['text-indent'] = $dom[$parentkey]['text-indent'];
 						}
 						// get attributes
-						preg_match_all('/([^=\s]*)=["]?([^"]*)["]?/', $element, $attr_array, PREG_PATTERN_ORDER);
+						preg_match_all('/([^=\s]*)[\s]*=[\s]*"([^"]*)"/', $element, $attr_array, PREG_PATTERN_ORDER);
 						$dom[$key]['attribute'] = array(); // reset attribute array
 						while (list($id, $name) = each($attr_array[1])) {
 							$dom[$key]['attribute'][strtolower($name)] = $attr_array[2][$id];
 						}
+						if (!empty($css)) {
+							// merge eternal CSS style to current style
+							$dom[$key]['attribute']['style'] = $this->getTagStyleFromCSS($dom, $key, $css);
+						}
 						// split style attributes
-						if (isset($dom[$key]['attribute']['style'])) {
+						if (isset($dom[$key]['attribute']['style']) AND !empty($dom[$key]['attribute']['style'])) {
 							// get style attributes
 							preg_match_all('/([^;:\s]*):([^;]*)/', $dom[$key]['attribute']['style'], $style_array, PREG_PATTERN_ORDER);
 							$dom[$key]['style'] = array(); // reset style attribute array
 							while (list($id, $name) = each($style_array[1])) {
+								// in case of duplicate attribute the last replace the previous
 								$dom[$key]['style'][strtolower($name)] = trim($style_array[2][$id]);
 							}
 							// --- get some style attributes ---
@@ -14990,9 +15297,14 @@ if (!class_exists('TCPDF', false)) {
 							$dom[$key]['fontname'] = $this->default_monospaced_font;
 						}
 						if (($dom[$key]['value']{0} == 'h') AND (intval($dom[$key]['value']{1}) > 0) AND (intval($dom[$key]['value']{1}) < 7)) {
-							$headsize = (4 - intval($dom[$key]['value']{1})) * 2;
-							$dom[$key]['fontsize'] = $dom[0]['fontsize'] + $headsize;
-							$dom[$key]['fontstyle'] .= 'B';
+							// headings h1, h2, h3, h4, h5, h6
+							if (!isset($dom[$key]['attribute']['size']) AND !isset($dom[$key]['style']['font-size'])) {
+								$headsize = (4 - intval($dom[$key]['value']{1})) * 2;
+								$dom[$key]['fontsize'] = $dom[0]['fontsize'] + $headsize;
+							}
+							if (!isset($dom[$key]['style']['font-weight'])) {
+								$dom[$key]['fontstyle'] .= 'B';
+							}
 						}
 						if (($dom[$key]['value'] == 'table')) {
 							$dom[$key]['rows'] = 0; // number of rows
@@ -15095,6 +15407,30 @@ if (!class_exists('TCPDF', false)) {
 				$spacestr = chr(0).chr(32);
 			}
 			return $spacestr;
+		}
+
+		/**
+		 * Prints a cell (rectangular area) with optional borders, background color and html text string.
+		 * The upper-left corner of the cell corresponds to the current position. After the call, the current position moves to the right or to the next line.<br />
+		 * If automatic page breaking is enabled and the cell goes beyond the limit, a page break is done before outputting.
+		 * @param float $w Cell width. If 0, the cell extends up to the right margin.
+		 * @param float $h Cell minimum height. The cell extends automatically if needed.
+		 * @param float $x upper-left corner X coordinate
+		 * @param float $y upper-left corner Y coordinate
+		 * @param string $html html text to print. Default value: empty string.
+		 * @param mixed $border Indicates if borders must be drawn around the cell. The value can be either a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul>or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul>
+		 * @param int $ln Indicates where the current position should go after the call. Possible values are:<ul><li>0: to the right (or left for RTL language)</li><li>1: to the beginning of the next line</li><li>2: below</li></ul>
+	Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value: 0.
+		 * @param int $fill Indicates if the cell background must be painted (1) or transparent (0). Default value: 0.
+		 * @param boolean $reseth if true reset the last cell height (default true).
+		 * @param string $align Allows to center or align the text. Possible values are:<ul><li>L : left align</li><li>C : center</li><li>R : right align</li><li>'' : empty string : left for LTR or right for RTL</li></ul>
+		 * @param boolean $autopadding if true, uses internal padding and automatically adjust it to account for line width.
+		 * @access public
+		 * @uses MultiCell()
+		 * @see Multicell(), writeHTML()
+		 */
+		public function writeHTMLCell($w, $h, $x, $y, $html='', $border=0, $ln=0, $fill=0, $reseth=true, $align='', $autopadding=true) {
+			return $this->MultiCell($w, $h, $html, $border, $align, $fill, $ln, $x, $y, $reseth, 0, true, $autopadding, 0);
 		}
 
 		/**
@@ -20605,6 +20941,8 @@ if (!class_exists('TCPDF', false)) {
 		protected function segSVGContentHandler($parser, $data) {
 			$this->svgtext .= $data;
 		}
+
+		// --- END SVG METHODS -----------------------------
 
 	} // END OF TCPDF CLASS
 }

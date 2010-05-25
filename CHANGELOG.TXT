@@ -1,3 +1,9 @@
+5.1.000 (2010-05-25)
+	- This version includes support for CSS (Cascading Style Sheets) (see example n. 61).
+	- The convertHTMLColorToDec() method was improved.
+
+------------------------------------------------------------
+
 5.0.014 (2010-05-21)
 	- A problem on color and style of HTML links was fixed.
 	- A bug relative to gradients was fixed.
@@ -71,7 +77,7 @@
 	- The Output() method now accepts FI and FD destinations to save the document on server before sending it to the client.
 	- Ellipse() method was improved and fixed (see page 2 of example n. 12).
 	
---------------------------------------------------------------------------------
+------------------------------------------------------------
 
 4.9.018 (2010-04-21)
 	- Bug item #2990356 "Current font size not respected with more than two HTML <p>" was fixed.
@@ -165,7 +171,7 @@
 	- Bug item #2974929 "Duplicate case values" was fixed.
 	- Bug item #2976729 "File attachment not working with security" was fixed.
 
---------------------------------------------------------------------------------
+------------------------------------------------------------
 
 4.8.039 (2010-03-20)
 	- Problems related to custom locale settings were fixed.
@@ -336,7 +342,7 @@
 	- Signature of Image() method was changed.
 	- htmlcolors.php file was updated.
 
---------------------------------------------------------------------------------
+------------------------------------------------------------
 
 4.7.003 (2009-09-03)
 	- Support for TCPDF methods on HTML was improved (see example n. 49).
@@ -1429,4 +1435,4 @@
 	- Bitstream Vera Fonts were added (http://www.bitstream.com/font_rendering/products/dev_fonts/vera.html).
 	- Now the AddFont and SetFont functions returns the basic font if the styled version do not exist.
 
-EOF ----------------------------------------------------------------------------
+EOF --------------------------------------------------------

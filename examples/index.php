@@ -79,6 +79,7 @@ echo '<'.'?'.'xml version="1.0" encoding="UTF-8"'.'?'.'>';
 <li>SVG Image: [<a href="example_058.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Table Of Content with HTML templates: [<a href="example_059.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Advanced page settings: [<a href="example_060.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
+<li>XHTML + CSS: [<a href="example_061.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 </ol>
 
 </body>
