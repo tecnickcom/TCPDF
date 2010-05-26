@@ -1,3 +1,6 @@
+5.1.001 (2010-05-26)
+	- The problem of blank page after table was fixed.
+
 5.1.000 (2010-05-25)
 	- This version includes support for CSS (Cascading Style Sheets) (see example n. 61).
 	- The convertHTMLColorToDec() method was improved.

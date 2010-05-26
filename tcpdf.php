@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-05-25
+// Last Update : 2010-05-26
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 5.1.000
+// Version     : 5.1.001
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -122,7 +122,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.1.000
+ * @version 5.1.001
  */
 
 /**
@@ -146,14 +146,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.1.000 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.1.001 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.1.000
+	* @version 5.1.001
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -15276,7 +15276,9 @@ if (!class_exists('TCPDF', false)) {
 							}
 						}
 						if (($dom[$key]['value'] == 'small') OR ($dom[$key]['value'] == 'sup') OR ($dom[$key]['value'] == 'sub')) {
-							$dom[$key]['fontsize'] = $dom[$key]['fontsize'] * K_SMALL_RATIO;
+							if (!isset($dom[$key]['attribute']['size']) AND !isset($dom[$key]['style']['font-size'])) {
+								$dom[$key]['fontsize'] = $dom[$key]['fontsize'] * K_SMALL_RATIO;
+							}
 						}
 						if (($dom[$key]['value'] == 'strong') OR ($dom[$key]['value'] == 'b')) {
 							$dom[$key]['fontstyle'] .= 'B';
@@ -16359,7 +16361,11 @@ if (!class_exists('TCPDF', false)) {
 						}
 					} else {
 						// closing tag
+						$prev_numpages = $this->numpages;
 						$this->closeHTMLTagHandler($dom, $key, $cell, $maxbottomliney);
+						if ($prev_numpages > $this->numpages) {
+							$startlinepage = $this->page;
+						}
 					}
 				} elseif (strlen($dom[$key]['value']) > 0) {
 					// print list-item
@@ -17432,11 +17438,11 @@ if (!class_exists('TCPDF', false)) {
 							$this->cMargin = $this->oldcMargin;
 						}
 						$this->lasth = $this->FontSize * $this->cell_height_ratio;
+						if (($this->page == ($this->numpages - 1)) AND ($this->pageopen[$this->numpages])) {
+							// remove last blank page
+							$this->deletePage($this->numpages);
+						}
 						if (isset($this->theadMargins['top'])) {
-							if (($this->theadMargins['top'] == $this->tMargin) AND ($this->page == ($this->numpages - 1))) {
-								// remove last page containing only THEAD
-								$this->deletePage($this->numpages);
-							}
 							// restore top margin
 							$this->tMargin = $this->theadMargins['top'];
 							$this->pagedim[$this->page]['tm'] = $this->tMargin;
