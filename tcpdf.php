@@ -2,9 +2,9 @@
 //============================================================+
 // File name   : tcpdf.php
 // Begin       : 2002-08-03
-// Last Update : 2010-05-26
+// Last Update : 2010-05-27
 // Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 5.1.001
+// Version     : 5.1.002
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 //  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
@@ -122,7 +122,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.1.001
+ * @version 5.1.002
  */
 
 /**
@@ -146,14 +146,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.1.001 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.1.002 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.1.001
+	* @version 5.1.002
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -4793,9 +4793,17 @@ if (!class_exists('TCPDF', false)) {
 			$currentY = $this->y;
 			// get latest page number
 			$endpage = $this->page;
-			if (($resth > 0) AND ($endpage == $startpage)) {
-				// add new page to print the remaining cell portion
-				$this->AddPage();
+			if ($resth > 0) {
+				$skip = ($endpage - $startpage);
+				$tmpresth = $resth;
+				while ($tmpresth > 0) {
+					if ($skip <= 0) {
+						// add a page (or trig AcceptPageBreak() for multicolumn mode)
+						$this->checkPageBreak($this->PageBreakTrigger + 1);
+					}
+					$tmpresth -= ($this->h - $this->tMargin - $this->bMargin);
+					--$skip;
+				}
 				$currentY = $this->y;
 				$endpage = $this->page;
 			}
