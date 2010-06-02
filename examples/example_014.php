@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_014.php
 // Begin       : 2008-03-04
-// Last Update : 2010-05-20
+// Last Update : 2010-06-02
 //
 // Description : Example 014 for TCPDF class
 //               Javascript Form and user rights (only works on Adobe Acrobat)
@@ -70,7 +70,8 @@ $pdf->setLanguageArray($l);
 // ---------------------------------------------------------
 
 // set font
-$pdf->SetFont('helvetica', '', 10);
+// IMPORTANT: disable font subsetting to allow users editing the document
+$pdf->SetFont('helvetica', '', 10, false);
 
 // add a page
 $pdf->AddPage();
@@ -186,6 +187,6 @@ $pdf->IncludeJS($js);
 $pdf->Output('example_014.pdf', 'I');
 
 //============================================================+
-// END OF FILE                                                
+// END OF FILE
 //============================================================+
 ?>

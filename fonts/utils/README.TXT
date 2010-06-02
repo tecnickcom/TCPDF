@@ -2,7 +2,12 @@ TCPDF Fonts
 
 TCPDF supports TrueTypeUnicode (UTF-8 Unicode), OpenTypeUnicode, TrueType, OpenType, Type1, CID-0 and Core (standard) fonts.
 
-There are two ways to use a new font: embedding it in the PDF or not. When a font is not embedded, it is searched in the system. The advantage is that the PDF file is lighter; on the other hand, if it is not available, a substitution font is used. So it is preferable to ensure that the needed font is installed on the client systems. If the file is to be viewed by a large audience, it is recommended to embed.
+There are two ways to use a new font: embedding it in the PDF (with or without subsetting) or not. When a font is not embedded, it is searched in the system. The advantage is that the PDF file is lighter; on the other hand, if it is not available, a substitution font is used. So it is preferable to ensure that the needed font is installed on the client systems. If the file is to be viewed by a large audience, it is recommended to embed.
+
+TCPDF support font subsetting to reduce the size of documents using large unicode font files.
+If you embed the whole font in the PDF, the person on the other end can make changes to it even if he didn't have your font.
+If you subset the font, file size of the PDF will be smaller but the person who receives your PDF would need to have your same font in order to make changes to your PDF.
+The option for enabling/disabling the font subsetting are explained on the source code documentation for methods SetFont() and AddFont(). 
 
 The fonts that could be not embedded are only the standard core fonts and CID-0 fonts.
 

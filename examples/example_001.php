@@ -69,11 +69,11 @@ $pdf->setLanguageArray($l);
 
 // ---------------------------------------------------------
 
-// Set font 
+// Set font
 // dejavusans is a UTF-8 Unicode font, if you only need to
 // print standard ASCII chars, you can use core fonts like
 // helvetica or times to reduce file size.
-$pdf->SetFont('dejavusans', '', 14);
+$pdf->SetFont('dejavusans', '', 14, true);
 
 // Add a page
 // This method has several options, check the source code documentation for more information.
@@ -98,6 +98,6 @@ $pdf->writeHTMLCell($w=0, $h=0, $x='', $y='', $html, $border=0, $ln=1, $fill=0, 
 $pdf->Output('example_001.pdf', 'I');
 
 //============================================================+
-// END OF FILE                                                
+// END OF FILE
 //============================================================+
 ?>

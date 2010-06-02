@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_054.php
 // Begin       : 2009-09-07
-// Last Update : 2010-05-20
+// Last Update : 2010-06-02
 //
 // Description : Example 054 for TCPDF class
 //               XHTML Forms
@@ -70,7 +70,8 @@ $pdf->setLanguageArray($l);
 // ---------------------------------------------------------
 
 // set font
-$pdf->SetFont('dejavusans', '', 10);
+// IMPORTANT: disable font subsetting to allow users editing the document
+$pdf->SetFont('helvetica', '', 10, false);
 
 // add a page
 $pdf->AddPage();
@@ -124,6 +125,6 @@ $pdf->lastPage();
 $pdf->Output('example_054.pdf', 'I');
 
 //============================================================+
-// END OF FILE                                                
+// END OF FILE
 //============================================================+
 ?>

@@ -1,3 +1,12 @@
+5.2.000 (2010-06-02)
+	- IMPORTANT: Support for font subsetting was added by default to reduce the size of documents using large unicode font files.
+		If you embed the whole font in the PDF, the person on the other end can make changes to it even if he didn't have your font.
+		If you subset the font, file size of the PDF will be smaller but the person who receives your PDF would need to have your same font in order to make changes to your PDF. 
+	- The signature of the SetFont() and AddFont() methods were changed to include the font subsetting option (subsetting is applied by default).
+	- Examples 14 and 54 were updated.
+
+------------------------------------------------------------
+
 5.1.002 (2010-05-27)
 	- Bug #3007818 "SetAutoPageBreak fails with MultiCell" was fixed.
 	- A bug related to MultiCell() minimun height was fixed.
@@ -83,7 +92,7 @@
 	- Bug #2995003 "Reproduced thead bug" was fixed.
 	- The Output() method now accepts FI and FD destinations to save the document on server before sending it to the client.
 	- Ellipse() method was improved and fixed (see page 2 of example n. 12).
-	
+
 ------------------------------------------------------------
 
 4.9.018 (2010-04-21)
