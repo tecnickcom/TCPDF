@@ -1,3 +1,10 @@
+5.3.000 (2010-06-05)
+	- License was changed to GNU-LGPLv3 (see the updated LICENSE.TXT file).
+	- PDF417 barcode support was added (check the example n. 50).
+	- The method write2DBarcode() was improved (some parameters were added and other changed - check example n. 50).
+
+------------------------------------------------------------
+
 5.2.000 (2010-06-02)
 	- IMPORTANT: Support for font subsetting was added by default to reduce the size of documents using large unicode font files.
 		If you embed the whole font in the PDF, the person on the other end can make changes to it even if he didn't have your font.

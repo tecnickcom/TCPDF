@@ -68,7 +68,7 @@ echo '<'.'?'.'xml version="1.0" encoding="UTF-8"'.'?'.'>';
 <li>Transactions and UNDO: [<a href="example_047.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Table header and rowspan: [<a href="example_048.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>TCPDF methods in HTML: [<a href="example_049.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
-<li>2D Barcode (QR Code): [<a href="example_050.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
+<li>2D Barcode (QR-Code AND PDF417): [<a href="example_050.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Full page background: [<a href="example_051.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Digital Signature Certification: [<a href="example_052.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Javascript functions: [<a href="example_053.php" title="PDF [new window]" target="_blank">PDF</a>]</li>

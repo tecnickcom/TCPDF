@@ -1,28 +1,31 @@
 <?php
 //============================================================+
 // File name   : qrcode.php
+// Version     : 1.0.004
 // Begin       : 2010-03-22
-// Last Update : 2010-03-30
-// Version     : 1.0.003
-// License     : GNU LGPL v.3 (http://www.gnu.org/copyleft/lesser.html)
-// 	----------------------------------------------------------------------------
+// Last Update : 2010-06-03
+// Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
+// License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
+// -------------------------------------------------------------------
+// Copyright (C) 2010-2010  Nicola Asuni - Tecnick.com S.r.l.
 //
-// 	This library is free software; you can redistribute it and/or
-// 	modify it under the terms of the GNU Lesser General Public
-// 	License as published by the Free Software Foundation; either
-// 	version 3 of the License, or any later version.
+// This file is part of TCPDF software library.
 //
-// 	This library is distributed in the hope that it will be useful,
-// 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-// 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// 	Lesser General Public License for more details.
+// TCPDF is free software: you can redistribute it and/or modify it
+// under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 //
-// 	You should have received a copy of the GNU Lesser General Public
-// 	License along with this library; if not, write to the Free Software
-// 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-//  or browse http://www.gnu.org/copyleft/lesser.html
+// TCPDF is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU General Public License for more details.
 //
-//  ----------------------------------------------------------------------------
+// You should have received a copy of the GNU General Public License
+// along with TCPDF.  If not, see <http://www.gnu.org/licenses/>.
+//
+// See LICENSE.TXT file for more information.
+// -------------------------------------------------------------------
 //
 // DESCRIPTION :
 //
@@ -58,17 +61,6 @@
 // QR Code is registered trademark of DENSO WAVE INCORPORATED
 // http://www.denso-wave.com/qrcode/index-e.html
 // ---------------------------------------------------------
-//
-// Author: Nicola Asuni
-//
-// (c) Copyright 2010:
-//               Nicola Asuni
-//               Tecnick.com S.r.l.
-//               Via della Pace, 11
-//               09044 Quartucciu (CA)
-//               ITALY
-//               www.tecnick.com
-//               info@tecnick.com
 //============================================================+
 
 /**
@@ -84,10 +76,10 @@
  * @package com.tecnick.tcpdf
  * @abstract Class for generating QR-code array for TCPDF.
  * @author Nicola Asuni
- * @copyright 2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
+ * @copyright 2010-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 1.0.003
+ * @version 1.0.004
  */
 
 // definitions
@@ -300,10 +292,10 @@ if (!class_exists('QRcode', false)) {
 	 * @package com.tecnick.tcpdf
 	 * @abstract Class for generating QR-code array for TCPDF.
 	 * @author Nicola Asuni
-	 * @copyright 2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
+	 * @copyright 2010-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 	 * @link http://www.tcpdf.org
 	 * @license http://www.gnu.org/copyleft/lesser.html LGPL
-	 * @version 1.0.002
+	 * @version 1.0.004
 	 */
 	class QRcode {
 
@@ -2805,8 +2797,6 @@ if (!class_exists('QRcode', false)) {
 			}
 			$rs['iprim'] = (int)($iprim / $prim);
 			$rs['genpoly'][0] = 1;
-
-
 			for ($i = 0,$root=$fcr*$prim; $i < $nroots; $i++, $root += $prim) {
 				$rs['genpoly'][$i+1] = 1;
 				// Multiply rs->genpoly[] by  @**(root + x)

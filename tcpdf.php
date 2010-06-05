@@ -1,37 +1,39 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
+// Version     : 5.2.001
 // Begin       : 2002-08-03
-// Last Update : 2010-06-02
-// Author      : Nicola Asuni - info@tecnick.com - http://www.tcpdf.org
-// Version     : 5.2.000
-// License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
-// 	----------------------------------------------------------------------------
-//  Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
+// Last Update : 2010-06-05
+// Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
+// License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
+// -------------------------------------------------------------------
+// Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
 //
-// 	This program is free software: you can redistribute it and/or modify
-// 	it under the terms of the GNU Lesser General Public License as published by
-// 	the Free Software Foundation, either version 2.1 of the License, or
-// 	(at your option) any later version.
+// This file is part of TCPDF software library.
 //
-// 	This program is distributed in the hope that it will be useful,
-// 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-// 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// 	GNU Lesser General Public License for more details.
+// TCPDF is free software: you can redistribute it and/or modify it
+// under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 //
-// 	You should have received a copy of the GNU Lesser General Public License
-// 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// TCPDF is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU General Public License for more details.
 //
-// 	See LICENSE.TXT file for more information.
-//  ----------------------------------------------------------------------------
+// You should have received a copy of the GNU General Public License
+// along with TCPDF.  If not, see <http://www.gnu.org/licenses/>.
+//
+// See LICENSE.TXT file for more information.
+// -------------------------------------------------------------------
 //
 // Description : This is a PHP class for generating PDF documents without
 //               requiring external extensions.
 //
 // NOTE:
-// This class was originally derived in 2002 from the Public
-// Domain FPDF class by Olivier Plathey (http://www.fpdf.org),
-// but now is almost entirely rewritten.
+//   This class was originally derived in 2002 from the Public
+//   Domain FPDF class by Olivier Plathey (http://www.fpdf.org),
+//   but now is almost entirely rewritten.
 //
 // Main features:
 //  * no external libraries are required for the basic functions;
@@ -42,7 +44,7 @@
 //  * methods to publish some XHTML + CSS code, Javascript and Forms;
 //  * images, graphic (geometric figures) and transformation methods;
 //  * supports JPEG, PNG and SVG images natively, all images supported by GD (GD, GD2, GD2PART, GIF, JPEG, PNG, BMP, XBM, XPM) and all images supported via ImagMagick (http://www.imagemagick.org/www/formats.html)
-//  * 1D and 2D barcodes: CODE 39, ANSI MH10.8M-1983, USD-3, 3 of 9, CODE 93, USS-93, Standard 2 of 5, Interleaved 2 of 5, CODE 128 A/B/C, 2 and 5 Digits UPC-Based Extention, EAN 8, EAN 13, UPC-A, UPC-E, MSI, POSTNET, PLANET, RMS4CC (Royal Mail 4-state Customer Code), CBC (Customer Bar Code), KIX (Klant index - Customer index), Intelligent Mail Barcode, Onecode, USPS-B-3200, CODABAR, CODE 11, PHARMACODE, PHARMACODE TWO-TRACKS, QR-Code;
+//  * 1D and 2D barcodes: CODE 39, ANSI MH10.8M-1983, USD-3, 3 of 9, CODE 93, USS-93, Standard 2 of 5, Interleaved 2 of 5, CODE 128 A/B/C, 2 and 5 Digits UPC-Based Extention, EAN 8, EAN 13, UPC-A, UPC-E, MSI, POSTNET, PLANET, RMS4CC (Royal Mail 4-state Customer Code), CBC (Customer Bar Code), KIX (Klant index - Customer index), Intelligent Mail Barcode, Onecode, USPS-B-3200, CODABAR, CODE 11, PHARMACODE, PHARMACODE TWO-TRACKS, QR-Code, PDF417;
 //  * Grayscale, RGB, CMYK, Spot Colors and Transparencies;
 //  * automatic page header and footer management;
 //  * document encryption and digital signature certifications;
@@ -102,7 +104,7 @@
  * <li>methods to publish some XHTML + CSS code, Javascript and Forms;</li>
  * <li>images, graphic (geometric figures) and transformation methods;
  * <li>supports JPEG, PNG and SVG images natively, all images supported by GD (GD, GD2, GD2PART, GIF, JPEG, PNG, BMP, XBM, XPM) and all images supported via ImagMagick (http://www.imagemagick.org/www/formats.html)</li>
- * <li>1D and 2D barcodes: CODE 39, ANSI MH10.8M-1983, USD-3, 3 of 9, CODE 93, USS-93, Standard 2 of 5, Interleaved 2 of 5, CODE 128 A/B/C, 2 and 5 Digits UPC-Based Extention, EAN 8, EAN 13, UPC-A, UPC-E, MSI, POSTNET, PLANET, RMS4CC (Royal Mail 4-state Customer Code), CBC (Customer Bar Code), KIX (Klant index - Customer index), Intelligent Mail Barcode, Onecode, USPS-B-3200, CODABAR, CODE 11, PHARMACODE, PHARMACODE TWO-TRACKS, QR-Code;</li>
+ * <li>1D and 2D barcodes: CODE 39, ANSI MH10.8M-1983, USD-3, 3 of 9, CODE 93, USS-93, Standard 2 of 5, Interleaved 2 of 5, CODE 128 A/B/C, 2 and 5 Digits UPC-Based Extention, EAN 8, EAN 13, UPC-A, UPC-E, MSI, POSTNET, PLANET, RMS4CC (Royal Mail 4-state Customer Code), CBC (Customer Bar Code), KIX (Klant index - Customer index), Intelligent Mail Barcode, Onecode, USPS-B-3200, CODABAR, CODE 11, PHARMACODE, PHARMACODE TWO-TRACKS, QR-Code, PDF417;</li>
  * <li>Grayscale, RGB, CMYK, Spot Colors and Transparencies;</li>
  * <li>automatic page header and footer management;</li>
  * <li>document encryption and digital signature certifications;</li>
@@ -124,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.2.000
+ * @version 5.2.001
  */
 
 /**
@@ -148,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.2.000 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.2.001 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.2.000
+	* @version 5.2.001
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -5577,16 +5579,18 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 4.8.017 (2009-11-27)
 		 */
 		public function getImageFileType($imgfile, $iminfo=array()) {
+			$type = '';
 			if (isset($iminfo['mime']) AND !empty($iminfo['mime'])) {
 				$mime = explode('/', $iminfo['mime']);
 				if ((count($mime) > 1) AND ($mime[0] == 'image') AND (!empty($mime[1]))) {
-					return trim($mime[1]);
+					$type = trim($mime[1]);
 				}
 			}
-			$type = '';
-			$fileinfo = pathinfo($imgfile);
-			if (isset($fileinfo['extension']) AND (!$this->empty_string($fileinfo['extension']))) {
-				$type = strtolower(trim($fileinfo['extension']));
+			if (empty($type)) {
+				$fileinfo = pathinfo($imgfile);
+				if (isset($fileinfo['extension']) AND (!$this->empty_string($fileinfo['extension']))) {
+					$type = strtolower(trim($fileinfo['extension']));
+				}
 			}
 			if ($type == 'jpg') {
 				$type = 'jpeg';
@@ -7501,8 +7505,8 @@ if (!class_exists('TCPDF', false)) {
 
 		/**
 		 * Get ULONG from string (Big Endian 32-bit unsigned integer).
-		 * @parameter string $str string from where to extract value
-		 * @parameter int $offset point from where to read the data
+		 * @param string $str string from where to extract value
+		 * @param int $offset point from where to read the data
 		 * @return int 32 bit value
 		 * @author Nicola Asuni
 		 * @access protected
@@ -7516,8 +7520,8 @@ if (!class_exists('TCPDF', false)) {
 
 		/**
 		 * Get USHORT from string (Big Endian 16-bit unsigned integer).
-		 * @parameter string $str string from where to extract value
-		 * @parameter int $offset point from where to read the data
+		 * @param string $str string from where to extract value
+		 * @param int $offset point from where to read the data
 		 * @return int 16 bit value
 		 * @author Nicola Asuni
 		 * @access protected
@@ -7531,8 +7535,8 @@ if (!class_exists('TCPDF', false)) {
 
 		/**
 		 * Get SHORT from string (Big Endian 16-bit signed integer).
-		 * @parameter string $str string from where to extract value
-		 * @parameter int $offset point from where to read the data
+		 * @param string $str string from where to extract value
+		 * @param int $offset point from where to read the data
 		 * @return int 16 bit value
 		 * @author Nicola Asuni
 		 * @access protected
@@ -7546,8 +7550,8 @@ if (!class_exists('TCPDF', false)) {
 
 		/**
 		 * Get BYTE from string (8-bit unsigned integer).
-		 * @parameter string $str string from where to extract value
-		 * @parameter int $offset point from where to read the data
+		 * @param string $str string from where to extract value
+		 * @param int $offset point from where to read the data
 		 * @return int 8 bit value
 		 * @author Nicola Asuni
 		 * @access protected
@@ -7561,8 +7565,8 @@ if (!class_exists('TCPDF', false)) {
 
 		/**
 		 * Returns a subset of the TrueType font data without the unused glyphs.
-		 * @parameter string $font TrueType font data
-		 * @parameter array $subsetchars array of used characters (the glyphs to keep)
+		 * @param string $font TrueType font data
+		 * @param array $subsetchars array of used characters (the glyphs to keep)
 		 * @return string a subset of TrueType font data without the unused glyphs
 		 * @author Nicola Asuni
 		 * @access protected
@@ -7890,8 +7894,8 @@ if (!class_exists('TCPDF', false)) {
 
 		/**
 		 * Returs the checksum of a TTF table.
-		 * @parameter string $table table to check
-		 * @parameter int $length lenght of table in bytes
+		 * @param string $table table to check
+		 * @param int $length lenght of table in bytes
 		 * @return int checksum
 		 * @author Nicola Asuni
 		 * @access protected
@@ -7912,8 +7916,8 @@ if (!class_exists('TCPDF', false)) {
 
 		/**
 		 * Outputs font widths
-		 * @parameter array $font font data
-		 * @parameter int $cidoffset offset for CID values
+		 * @param array $font font data
+		 * @param int $cidoffset offset for CID values
 		 * @return PDF command string for font widths
 		 * @author Nicola Asuni
 		 * @access protected
@@ -8165,7 +8169,7 @@ if (!class_exists('TCPDF', false)) {
 		/**
 		 * Adds unicode fonts.<br>
 		 * Based on PDF Reference 1.3 (section 5)
-		 * @parameter array $font font data
+		 * @param array $font font data
 		 * @return int font object ID
 		 * @access protected
 		 * @author Nicola Asuni
@@ -11206,13 +11210,13 @@ if (!class_exists('TCPDF', false)) {
 
 		/**
 		 * Draws a grahic arrow.
-		 * @parameter float $x0 Abscissa of first point.
-		 * @parameter float $y0 Ordinate of first point.
-		 * @parameter float $x0 Abscissa of second point.
-		 * @parameter float $y1 Ordinate of second point.
-		 * @parameter int $head_style (0 = draw only arrowhead arms, 1 = draw closed arrowhead, but no fill, 2 = closed and filled arrowhead, 3 = filled arrowhead)
-		 * @parameter float $arm_size length of arrowhead arms
-		 * @parameter int $arm_angle angle between an arm and the shaft
+		 * @param float $x0 Abscissa of first point.
+		 * @param float $y0 Ordinate of first point.
+		 * @param float $x0 Abscissa of second point.
+		 * @param float $y1 Ordinate of second point.
+		 * @param int $head_style (0 = draw only arrowhead arms, 1 = draw closed arrowhead, but no fill, 2 = closed and filled arrowhead, 3 = filled arrowhead)
+		 * @param float $arm_size length of arrowhead arms
+		 * @param int $arm_angle angle between an arm and the shaft
 		 * @author Piotr Galecki, Nicola Asuni, Andy Meier
 		 * @since 4.6.018 (2009-07-10)
 		 */
@@ -14568,6 +14572,7 @@ if (!class_exists('TCPDF', false)) {
 				}
 			}
 			if (($h === '') OR ($h <= 0)) {
+				// horizontal aspect ration by default
 				$h = $w / 3;
 			}
 			if ($this->empty_string($xres)) {
@@ -14748,13 +14753,14 @@ if (!class_exists('TCPDF', false)) {
 		 * @param int $y y position in user units
 		 * @param int $w width in user units
 		 * @param int $h height in user units
-		 * @param array $style array of options:<ul><li>boolean $style['border'] if true prints a border around the barcode</li><li>int $style['padding'] padding to leave around the barcode in user units (set to 'auto' for automatic padding)</li><li>array $style['fgcolor'] color array for bars and text</li><li>mixed $style['bgcolor'] color array for background or false for transparent</li><li>string $style['position'] barcode position on the page: L = left margin; C = center; R = right margin; S = stretch</li></ul>
+		 * @param array $style array of options:<ul><li>boolean $style['border'] if true prints a border around the barcode</li><li>int $style['padding'] padding to leave around the barcode in barcode units (set to 'auto' for automatic padding)</li><li>int $style['hpadding'] horizontal padding in barcode units (set to 'auto' for automatic padding)</li><li>int $style['vpadding'] vertical padding in barcode units (set to 'auto' for automatic padding)</li><li>int $style['module_width'] width of a single module in points</li><li>int $style['module_height'] height of a single module in points</li><li>array $style['fgcolor'] color array for bars and text</li><li>mixed $style['bgcolor'] color array for background or false for transparent</li><li>string $style['position'] barcode position on the page: L = left margin; C = center; R = right margin; S = stretch</li><li>$style['module_width'] width of a single module in points</li><li>$style['module_height'] height of a single module in points</li></ul>
 		 * @param string $align Indicates the alignment of the pointer next to barcode insertion relative to barcode height. The value can be:<ul><li>T: top-right for LTR or top-left for RTL</li><li>M: middle-right for LTR or middle-left for RTL</li><li>B: bottom-right for LTR or bottom-left for RTL</li><li>N: next line</li></ul>
+		 * @param boolean $distort if true distort the barcode to fit width and height, otherwise preserve aspect ratio
 		 * @author Nicola Asuni
 		 * @since 4.5.037 (2009-04-07)
 		 * @access public
 		 */
-		public function write2DBarcode($code, $type, $x='', $y='', $w='', $h='', $style='', $align='') {
+		public function write2DBarcode($code, $type, $x='', $y='', $w='', $h='', $style='', $align='', $distort=false) {
 			if ($this->empty_string(trim($code))) {
 				return;
 			}
@@ -14780,6 +14786,29 @@ if (!class_exists('TCPDF', false)) {
 			if (!isset($style['border'])) {
 				$style['border'] = false;
 			}
+			// padding
+			if (!isset($style['padding'])) {
+				$style['padding'] = 0;
+			} elseif ($style['padding'] === 'auto') {
+				$style['padding'] = 4;
+			}
+			if (!isset($style['hpadding'])) {
+				$style['hpadding'] = $style['padding'];
+			} elseif ($style['hpadding'] === 'auto') {
+				$style['hpadding'] = 4;
+			}
+			if (!isset($style['vpadding'])) {
+				$style['vpadding'] = $style['padding'];
+			} elseif ($style['vpadding'] === 'auto') {
+				$style['vpadding'] = 4;
+			}
+			// cell (module) dimension
+			if (!isset($style['module_width'])) {
+				$style['module_width'] = 1; // width of a single module in points
+			}
+			if (!isset($style['module_height'])) {
+				$style['module_height'] = 1; // height of a single module in points
+			}
 			// set foreground color
 			$this->SetDrawColorArray($style['fgcolor']);
 			if ($x === '') {
@@ -14788,25 +14817,66 @@ if (!class_exists('TCPDF', false)) {
 			if ($y === '') {
 				$y = $this->y;
 			}
-			if (($w === '') OR ($w <= 0)) {
-				if ($this->rtl) {
-					$w = $this->x - $this->lMargin;
-				} else {
-					$w = $this->w - $this->rMargin - $this->x;
+			// number of barcode columns and rows
+			$rows = $arrcode['num_rows'];
+			$cols = $arrcode['num_cols'];
+			// module width and height
+			$mw = $style['module_width'];
+			$mh = $style['module_height'];
+			// get max dimensions
+			if ($this->rtl) {
+				$maxw = $this->x - $this->lMargin;
+			} else {
+				$maxw = $this->w - $this->rMargin - $this->x;
+			}
+			$maxh = ($this->h - $this->tMargin - $this->bMargin);
+			$ratioHW = ($rows * $mh) / ($cols * $mw);
+			$ratioWH = ($cols * $mw) / ($rows * $mh);
+			if (!$distort) {
+				if (($maxw * $ratioHW) > $maxh) {
+					$maxw = $maxh * $ratioWH;
+				}
+				if (($maxh * $ratioWH) > $maxw) {
+					$maxh = $maxw * $ratioHW;
 				}
 			}
-			if (($h === '') OR ($h <= 0)) {
-				$h = $w;
+			// set maximum dimesions
+			if ($w > $maxw) {
+				$w = $maxw;
 			}
-			// padding
-			if (!isset($style['padding'])) {
-				$style['padding'] = 0;
-			} elseif ($style['padding'] === 'auto') {
-				$style['padding'] = 4 * $w / (8 + $arrcode['num_cols']);
+			if ($h > $maxh) {
+				$h = $maxh;
 			}
-			// calculate barcode size (excluding padding)
-			$bw = $w - (2 * $style['padding']);
-			$bh = $h - (2 * $style['padding']);
+			$hpad = (2 * $style['hpadding']);
+			$vpad = (2 * $style['vpadding']);
+			// set dimensions
+			if ((($w === '') OR ($w <= 0)) AND (($h === '') OR ($h <= 0))) {
+				$w = ($cols + $hpad) * ($mw / $this->k);
+				$h = ($rows + $vpad) * ($mh / $this->k);
+			} elseif (($w === '') OR ($w <= 0)) {
+				$w = $h * $ratioWH;
+			} elseif (($h === '') OR ($h <= 0)) {
+				$h = $w * $ratioHW;
+			}
+			// barcode size (excluding padding)
+			$bw = ($w * $cols) / ($cols + $hpad);
+			$bh = ($h * $rows) / ($rows + $vpad);
+			// dimension of single barcode cell unit
+			$cw = $bw / $cols;
+			$ch = $bh / $rows;
+			if (!$distort) {
+				if (($cw / $ch) > ($mw / $mh)) {
+					// correct horizontal distortion
+					$cw = $ch * $mw / $mh;
+					$bw = $cw * $cols;
+					$style['hpadding'] = ($w - $bw) / (2 * $cw);
+				} else {
+					// correct vertical distortion
+					$ch = $cw * $mh / $mw;
+					$bh = $ch * $rows;
+					$style['vpadding'] = ($h - $bh) / (2 * $ch);
+				}
+			}
 			// Check whether we need a new page first as this does not fit
 			$prev_x = $this->x;
 			if ($this->checkPageBreak($h, $y)) {
@@ -14843,8 +14913,8 @@ if (!class_exists('TCPDF', false)) {
 				}
 				$this->img_rb_x = $xpos + $w;
 			}
-			$xstart = $xpos + $style['padding'];
-			$ystart = $y + $style['padding'];
+			$xstart = $xpos + ($style['hpadding'] * $cw);
+			$ystart = $y + ($style['vpadding'] * $ch);
 			// barcode is always printed in LTR direction
 			$tempRTL = $this->rtl;
 			$this->rtl = false;
@@ -14855,11 +14925,6 @@ if (!class_exists('TCPDF', false)) {
 				$this->Rect($xpos, $y, $w, $h, 'D');
 			}
 			// print barcode cells
-			$rows = $arrcode['num_rows'];
-			$cols = $arrcode['num_cols'];
-			// calculate dimension of single barcode cell unit
-			$cw = $bw / $cols;
-			$ch = $bh / $rows;
 			// for each row
 			for ($r = 0; $r < $rows; ++$r) {
 				$xr = $xstart;

@@ -1,42 +1,35 @@
 <?php
 //============================================================+
 // File name   : 2dbarcodes.php
+// Version     : 1.0.005
 // Begin       : 2009-04-07
-// Last Update : 2010-04-30
-// Version     : 1.0.003
-// License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
-// 	----------------------------------------------------------------------------
-//  Copyright (C) 2008-2009 Nicola Asuni - Tecnick.com S.r.l.
+// Last Update : 2010-06-05
+// Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
+// License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
+// -------------------------------------------------------------------
+// Copyright (C) 2009-2010  Nicola Asuni - Tecnick.com S.r.l.
 //
-// 	This program is free software: you can redistribute it and/or modify
-// 	it under the terms of the GNU Lesser General Public License as published by
-// 	the Free Software Foundation, either version 2.1 of the License, or
-// 	(at your option) any later version.
+// This file is part of TCPDF software library.
 //
-// 	This program is distributed in the hope that it will be useful,
-// 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-// 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// 	GNU Lesser General Public License for more details.
+// TCPDF is free software: you can redistribute it and/or modify it
+// under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 //
-// 	You should have received a copy of the GNU Lesser General Public License
-// 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// TCPDF is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU General Public License for more details.
 //
-// 	See LICENSE.TXT file for more information.
-//  ----------------------------------------------------------------------------
+// You should have received a copy of the GNU General Public License
+// along with TCPDF.  If not, see <http://www.gnu.org/licenses/>.
+//
+// See LICENSE.TXT file for more information.
+// -------------------------------------------------------------------
 //
 // Description : PHP class to creates array representations for
 //               2D barcodes to be used with TCPDF.
 //
-// Author: Nicola Asuni
-//
-// (c) Copyright:
-//               Nicola Asuni
-//               Tecnick.com S.r.l.
-//               Via della Pace, 11
-//               09044 Quartucciu (CA)
-//               ITALY
-//               www.tecnick.com
-//               info@tecnick.com
 //============================================================+
 
 /**
@@ -44,17 +37,17 @@
  * @package com.tecnick.tcpdf
  * @abstract Functions for generating string representation of 2D barcodes.
  * @author Nicola Asuni
- * @copyright 2008-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
+ * @copyright 2009-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 1.0.003
+ * @version 1.0.005
  */
 
 	/**
 	* PHP class to creates array representations for 2D barcodes to be used with TCPDF (http://www.tcpdf.org).<br>
 	* @name TCPDFBarcode
 	* @package com.tecnick.tcpdf
-	* @version 1.0.003
+	* @version 1.0.005
 	* @author Nicola Asuni
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -75,7 +68,7 @@ class TCPDF2DBarcode {
 	 * <li>$arrcode['num_cols'] required number of columns</li>
 	 * <li>$arrcode['bcode'][$r][$c] value of the cell is $r row and $c column (0 = transparent, 1 = black)</li></ul>
 	 * @param string $code code to print
- 	 * @param string $type type of barcode: <ul><li>RAW: raw mode - comma-separad list of array rows</li><li>RAW2: raw mode - array rows are surrounded by square parenthesis.</li><li>QRCODE : QR-CODE Low error correction</li><li>QRCODE,L : QR-CODE Low error correction</li><li>QRCODE,M : QR-CODE Medium error correction</li><li>QRCODE,Q : QR-CODE Better error correction</li><li>QRCODE,H : QR-CODE Best error correction</li></ul>
+ 	 * @param string $type type of barcode: <ul><li>RAW: raw mode - comma-separad list of array rows</li><li>RAW2: raw mode - array rows are surrounded by square parenthesis.</li><li>QRCODE : QR-CODE Low error correction</li><li>QRCODE,L : QR-CODE Low error correction</li><li>QRCODE,M : QR-CODE Medium error correction</li><li>QRCODE,Q : QR-CODE Better error correction</li><li>QRCODE,H : QR-CODE Best error correction</li><li>PDF417 : PDF417 (ISO/IEC 15438:2006)</li><li>PDF417,a,e : PDF417 with aspect ratio (a = width/height) and error correction level (e = 0-8)</li></ul>
 	 */
 	public function __construct($code, $type) {
 		$this->setBarcode($code, $type);
@@ -92,7 +85,7 @@ class TCPDF2DBarcode {
 	/**
 	 * Set the barcode.
 	 * @param string $code code to print
- 	 * @param string $type type of barcode: <ul><li>RAW: raw mode - comma-separad list of array rows</li><li>RAW2: raw mode - array rows are surrounded by square parenthesis.</li><li>QRCODE : QR-CODE Low error correction</li><li>QRCODE,L : QR-CODE Low error correction</li><li>QRCODE,M : QR-CODE Medium error correction</li><li>QRCODE,Q : QR-CODE Better error correction</li><li>QRCODE,H : QR-CODE Best error correction</li></ul>
+ 	 * @param string $type type of barcode: <ul><li>RAW: raw mode - comma-separad list of array rows</li><li>RAW2: raw mode - array rows are surrounded by square parenthesis.</li><li>QRCODE : QR-CODE Low error correction</li><li>QRCODE,L : QR-CODE Low error correction</li><li>QRCODE,M : QR-CODE Medium error correction</li><li>QRCODE,Q : QR-CODE Better error correction</li><li>QRCODE,H : QR-CODE Best error correction</li><li>PDF417 : PDF417 (ISO/IEC 15438:2006)</li><li>PDF417,a,e : PDF417 with aspect ratio (a = width/height) and error correction level (e = 0-8)</li></ul>
  	 * @return array
 	 */
 	public function setBarcode($code, $type) {
@@ -108,6 +101,22 @@ class TCPDF2DBarcode {
 				$this->barcode_array = $qrcode->getBarcodeArray();
 				break;
 			}
+			case 'PDF417': { // PDF417 (ISO/IEC 15438:2006)
+				require_once(dirname(__FILE__).'/pdf417.php');
+				if (!isset($mode[1]) OR ($mode[1] === '')) {
+					$aspectratio = 2; // default aspect ratio (width / height)
+				} else {
+					$aspectratio = floatval($mode[1]);
+				}
+				if (!isset($mode[2]) OR ($mode[2] === '')) {
+					$ecl = -1; // default error correction level (auto)
+				} else {
+					$ecl = intval($mode[2]);
+				}
+				$qrcode = new PDF417($code, $ecl, $aspectratio);
+				$this->barcode_array = $qrcode->getBarcodeArray();
+				break;
+			}
 			case 'RAW':
 			case 'RAW2': { // RAW MODE
 				// remove spaces
@@ -118,8 +127,8 @@ class TCPDF2DBarcode {
 				if ($qrtype == 'RAW') {
 					// comma-separated rows
 					$rows = explode(',', $code);
-				} else {
-					// rows enclosed in square parethesis
+				} else { // RAW2
+					// rows enclosed in square parentheses
 					$code = substr($code, 1, -1);
 					$rows = explode('][', $code);
 				}

@@ -1,49 +1,43 @@
 <?php
 //============================================================+
 // File name   : unicode_data.php
+// Version     : 1.0.004
 // Begin       : 2008-01-01
-// Last Update : 2009-08-17
-// License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
-// 	----------------------------------------------------------------------------
-//  Copyright (C) 2002-2009  Nicola Asuni - Tecnick.com S.r.l.
-// 	
-// 	This program is free software: you can redistribute it and/or modify
-// 	it under the terms of the GNU Lesser General Public License as published by
-// 	the Free Software Foundation, either version 2.1 of the License, or
-// 	(at your option) any later version.
-// 	
-// 	This program is distributed in the hope that it will be useful,
-// 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-// 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// 	GNU Lesser General Public License for more details.
-// 	
-// 	You should have received a copy of the GNU Lesser General Public License
-// 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
-// 	
-// 	See LICENSE.TXT file for more information.
-//  ----------------------------------------------------------------------------
+// Last Update : 2010-06-03
+// Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
+// License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
+// -------------------------------------------------------------------
+// Copyright (C) 2008-2010  Nicola Asuni - Tecnick.com S.r.l.
 //
-// Description : Unicode Include file for TCPDF.
+// This file is part of TCPDF software library.
 //
-// Author: Nicola Asuni
+// TCPDF is free software: you can redistribute it and/or modify it
+// under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 //
-// (c) Copyright:
-//               Nicola Asuni
-//               Tecnick.com s.r.l.
-//               Via Della Pace, 11
-//               09044 Quartucciu (CA)
-//               ITALY
-//               www.tecnick.com
-//               info@tecnick.com
+// TCPDF is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with TCPDF.  If not, see <http://www.gnu.org/licenses/>.
+//
+// See LICENSE.TXT file for more information.
+// -------------------------------------------------------------------
+//
+// Description : Unicode data for TCPDF library.
+//
 //============================================================+
 // THANKS TO
 // Efthimios Mavrogeorgiadis
 // Saleh AlMatrafe
 
 /**
- * Unicode Include file for TCPDF.
+ * Unicode data for TCPDF library.
  * @author Nicola Asuni
- * @copyright 2004-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
+ * @copyright 2008-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @package com.tecnick.tcpdf
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -17851,7 +17845,7 @@ $unicode = array(
 
 /**
  * Mirror unicode characters.
- * For information on bidi mirroring, see UAX #9: Bidirectional Algorithm, 
+ * For information on bidi mirroring, see UAX #9: Bidirectional Algorithm,
  * at http://www.unicode.org/unicode/reports/tr9/
  */
 global $unicode_mirror;
@@ -18306,9 +18300,8 @@ $laa_array = array (
 );
 
 /**
- * Array of character substitutions for sequences of two diacritics symbols starting with SHADDA (0651 HEX, 1617 DEC).
- * Combining characters that can occur with Shadda (U0651) are placed in UE586-UE594. 
- * Putting the combining mark and shadda in the same glyph allows us to avoid the two marks overlapping each other in an illegible manner.
+ * Array of character substitutions for sequences of two diacritics symbols.
+ * Putting the combining mark and character in the same glyph allows us to avoid the two marks overlapping each other in an illegible manner.
  * second NSM char code=>substitution char
  */
 global $diacritics;

@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_050.php
 // Begin       : 2009-04-09
-// Last Update : 2010-05-20
+// Last Update : 2010-06-05
 //
 // Description : Example 050 for TCPDF class
 //               2D Barcodes
@@ -82,9 +82,12 @@ $pdf->AddPage();
 // set style for barcode
 $style = array(
 	'border' => true,
-	'padding' => 4,
+	'vpadding' => 'auto',
+	'hpadding' => 'auto',
 	'fgcolor' => array(0,0,0),
 	'bgcolor' => false, //array(255,255,255)
+	'module_width' => 1, // width of a single module in points
+	'module_height' => 1 // height of a single module in points
 );
 
 // write RAW 2D Barcode
@@ -102,9 +105,12 @@ $pdf->write2DBarcode($code, 'RAW2', '', '', 30, 20, $style, 'N');
 // set style for barcode
 $style = array(
 	'border' => 2,
-	'padding' => 'auto',
+	'vpadding' => 'auto',
+	'hpadding' => 'auto',
 	'fgcolor' => array(0,0,0),
 	'bgcolor' => false, //array(255,255,255)
+	'module_width' => 1, // width of a single module in points
+	'module_height' => 1 // height of a single module in points
 );
 
 // QRCODE,L : QR-CODE Low error correction
@@ -128,6 +134,11 @@ $pdf->SetXY(100, 120);
 $pdf->write2DBarcode('www.tcpdf.org', 'QRCODE,H', '', '', 50, 50, $style, 'N');
 $pdf->Text(100, 115, 'QRCODE H');
 
+// PDF417 : PDF417 (ISO/IEC 15438:2006)
+$pdf->SetXY(30, 180);
+$pdf->write2DBarcode('www.tcpdf.org', 'PDF417', '', '', 0, 30, $style, 'N');
+$pdf->Text(30, 175, 'PDF417 (ISO/IEC 15438:2006)');
+
 // new style
 $style = array(
 	'border' => 2,
@@ -137,9 +148,9 @@ $style = array(
 );
 
 // QRCODE,H : QR-CODE Best error correction
-$pdf->SetXY(30, 180);
+$pdf->SetXY(30, 220);
 $pdf->write2DBarcode('www.tcpdf.org', 'QRCODE,H', '', '', 50, 50, $style, 'N');
-$pdf->Text(30, 175, 'QRCODE H - COLORED');
+$pdf->Text(30, 215, 'QRCODE H - COLORED');
 
 // new style
 $style = array(
@@ -150,9 +161,9 @@ $style = array(
 );
 
 // QRCODE,H : QR-CODE Best error correction
-$pdf->SetXY(100, 180);
+$pdf->SetXY(100, 220);
 $pdf->write2DBarcode('www.tcpdf.org', 'QRCODE,H', '', '', 50, 50, $style, 'N');
-$pdf->Text(100, 175, 'QRCODE H - NO PADDING');
+$pdf->Text(100, 215, 'QRCODE H - NO PADDING');
 
 // ---------------------------------------------------------
 
