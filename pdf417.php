@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : pdf417.php
-// Version     : 1.0.000
+// Version     : 1.0.001
 // Begin       : 2010-06-03
-// Last Update : 2010-06-05
+// Last Update : 2010-06-06
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -53,7 +53,7 @@
  * @copyright 2010-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 1.0.000
+ * @version 1.0.001
  */
 
 // definitions
@@ -99,7 +99,7 @@ if (!class_exists('PDF417', false)) {
 	 * @copyright 2010-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 	 * @link http://www.tcpdf.org
 	 * @license http://www.gnu.org/copyleft/lesser.html LGPL
-	 * @version 1.0.000
+	 * @version 1.0.001
 	 */
 	class PDF417 {
 
@@ -541,9 +541,10 @@ if (!class_exists('PDF417', false)) {
 		 * @param string $code code to represent using PDF417
 		 * @param int $ecl error correction level (0-8); default -1 = automatic correction level
 		 * @param float $aspectratio the width to height of the symbol (excluding quiet zones)
+		 * òparam array $macro information for macro block
 		 * @access public
 		 */
-		public function __construct($code, $ecl=-1, $aspectratio=2) {
+		public function __construct($code, $ecl=-1, $aspectratio=2, $macro=array()) {
 			$barcode_array = array();
 			if ((is_null($code)) OR ($code == '\0') OR ($code == '')) {
 				return false;
@@ -551,20 +552,53 @@ if (!class_exists('PDF417', false)) {
 			// get the input sequence array
 			$sequence = $this->getInputSequences($code);
 			$codewords = array(); // array of code-words
-			$numcw = 0; //number of codewords
 			foreach($sequence as $seq) {
-				$cw = $this->getCompaction($seq[0], $seq[1]);
-				$numcw += count($cw);
+				$cw = $this->getCompaction($seq[0], $seq[1], true);
 				$codewords = array_merge($codewords, $cw);
 			}
 			if ($codewords[0] == 900) {
 				// Text Alpha is the default mode, so remove the first code
 				array_shift($codewords);
-				--$numcw;
 			}
+			// count number of codewords
+			$numcw = count($codewords);
 			if ($numcw > 925) {
 				// reached maximum data codeword capacity
 				return false;
+			}
+			// build macro control block codewords
+			if (!empty($macro)) {
+				$macrocw = array();
+				// beginning of macro control block
+				$macrocw[] = 928;
+				// segment index
+				$cw = $this->getCompaction(902, sprintf('%05d', $macro['segment_index']), false);
+				$macrocw = array_merge($macrocw, $cw);
+				// file ID
+				$cw = $this->getCompaction(900, $macro['file_id'], false);
+				$macrocw = array_merge($macrocw, $cw);
+				// optional fields
+				$optmodes = array(900,902,902,900,900,902,902);
+				$optsize = array(-1,2,4,-1,-1,-1,2);
+				foreach ($optmodes as $k => $omode) {
+					if (isset($macro['option_'.$k])) {
+						$macrocw[] = 923;
+						$macrocw[] = $k;
+						if ($optsize[$k] == 2) {
+							$macro['option_'.$k] = sprintf('%05d', $macro['option_'.$k]);
+						} elseif ($optsize[$k] == 4) {
+							$macro['option_'.$k] = sprintf('%010d', $macro['option_'.$k]);
+						}
+						$cw = $this->getCompaction($omode, $macro['option_'.$k], false);
+						$macrocw = array_merge($macrocw, $cw);
+					}
+				}
+				if ($macro['segment_index'] == ($macro['segment_total'] - 1)) {
+					// end of control block
+					$macrocw[] = 922;
+				}
+				// update total codewords
+				$numcw += count($macrocw);
 			}
 			// set error correction level
 			$ecl = $this->getErrorCorrectionLevel($ecl, $numcw);
@@ -612,6 +646,10 @@ if (!class_exists('PDF417', false)) {
 					// add pading
 					$codewords = array_merge($codewords, array_fill(0, $pad, 900));
 				}
+			}
+			if (!empty($macro)) {
+				// add macro section
+				$codewords = array_merge($codewords, $macrocw);
 			}
 			// Symbol Lenght Descriptor (number of data codewords including Symbol Lenght Descriptor and pad codewords)
 			$sld = $size - $errsize;
@@ -843,10 +881,11 @@ if (!class_exists('PDF417', false)) {
 		 * Compact data by mode.
 		 * @param int $mode compaction mode number
 		 * @param string $code data to compact
+		 * @param boolean $addmode if true add the mode codeword at first position
 		 * @return array of codewords
 		 * @access protected
 		 */
-		protected function getCompaction($mode, $code) {
+		protected function getCompaction($mode, $code, $addmode=true) {
 			$cw = array(); // array of codewords to return
 			switch($mode) {
 				case 900: { // Text Compaction mode latch
@@ -953,8 +992,10 @@ if (!class_exists('PDF417', false)) {
 					break;
 				}
 			}
-			// add the compaction mode codeword at the beginning
-			array_unshift($cw, $mode);
+			if ($addmode) {
+				// add the compaction mode codeword at the beginning
+				array_unshift($cw, $mode);
+			}
 			return $cw;
 		}
 
