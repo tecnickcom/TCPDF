@@ -1,3 +1,6 @@
+5.3.001 (2010-06-06)
+	- Barcode PDF417 was improved to support Macro Code Blocks (see example n. 50).
+
 5.3.000 (2010-06-05)
 	- License was changed to GNU-LGPLv3 (see the updated LICENSE.TXT file).
 	- PDF417 barcode support was added (check the example n. 50).

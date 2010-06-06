@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_050.php
 // Begin       : 2009-04-09
-// Last Update : 2010-06-05
+// Last Update : 2010-06-06
 //
 // Description : Example 050 for TCPDF class
 //               2D Barcodes
@@ -134,11 +134,44 @@ $pdf->SetXY(100, 120);
 $pdf->write2DBarcode('www.tcpdf.org', 'QRCODE,H', '', '', 50, 50, $style, 'N');
 $pdf->Text(100, 115, 'QRCODE H');
 
-// PDF417 : PDF417 (ISO/IEC 15438:2006)
+// -------------------------------------------------------------------
+// PDF417 (ISO/IEC 15438:2006)
+
+/*
+
+ The $type parameter can be simple 'PDF417' or 'PDF417' followed by a 
+ number of comma-separated options:
+ 
+ 'PDF417,a,e,t,s,f,o0,o1,o2,o3,o4,o5,o6'
+ 
+ Possible options are:
+ 
+ 	a  = aspect ratio (width/height);
+ 	e  = error correction level (0-8);
+ 	
+ 	Macro Control Block options:
+ 	
+ 	t  = total number of macro segments;
+ 	s  = macro segment index (0-99998);
+ 	f  = file ID;
+ 	o0 = File Name (text);
+ 	o1 = Segment Count (numeric);
+ 	o2 = Time Stamp (numeric);
+ 	o3 = Sender (text);
+ 	o4 = Addressee (text);
+ 	o5 = File Size (numeric);
+ 	o6 = Checksum (numeric).
+ 
+ Parameters t, s and f are required for a Macro Control Block, all other parametrs are optional.
+ To use a comma character ',' on text options, replace it with the character 255: "\xff".
+
+*/
+
 $pdf->SetXY(30, 180);
 $pdf->write2DBarcode('www.tcpdf.org', 'PDF417', '', '', 0, 30, $style, 'N');
 $pdf->Text(30, 175, 'PDF417 (ISO/IEC 15438:2006)');
 
+// -------------------------------------------------------------------
 // new style
 $style = array(
 	'border' => 2,
