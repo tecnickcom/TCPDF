@@ -84,7 +84,7 @@ Source Location: /pdf417.php<br /><br />
                   
 <h4>Version:</h4>
 <ul>
-  <li>1.0.001</li>
+  <li>1.0.002</li>
 </ul>
 
 <h4>Copyright:</h4>
@@ -145,7 +145,7 @@ Class to create PDF417 barcode arrays for TCPDF class.<br /><br /><p>PDF417 (ISO
     <td><b>author:</b>&nbsp;&nbsp;</td><td>Nicola Asuni</td>
   </tr>
   <tr>
-    <td><b>version:</b>&nbsp;&nbsp;</td><td>1.0.001</td>
+    <td><b>version:</b>&nbsp;&nbsp;</td><td>1.0.002</td>
   </tr>
   <tr>
     <td><b>copyright:</b>&nbsp;&nbsp;</td><td>2010-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com</td>
@@ -484,13 +484,13 @@ array(//&nbsp;cluster&nbsp;6&nbsp;----------------------------------------------
 0x19f9a,0x10f0a,0x11f1a,0x13f3a,0x103ac,0x103a6,0x107a8,0x183d6,0x107a4,0x107a2,//&nbsp;920<br>
 0x10396,0x107b6,0x187d4,0x187d2,0x10794,0x10fb4,0x10792,0x10fb2,0x1c7ea)//&nbsp;929<br>
 )</span></h4>
-	<p>[line 171]</p>
+	<p>[line 167]</p>
   <br /><br />
 <h4>Tags:</h4>
 <div class="tags">
 <table border="0" cellspacing="0" cellpadding="0">
   <tr>
-    <td><b>var:</b>&nbsp;&nbsp;</td><td>of codewords (0, 3, 6)  Values are hex equivalents of binary representation of bars (1 = bar, 0 = space).  The codewords numbered from 900 to 928 have special meaning, some enable to switch between modes in order to optimise the code:<ul><li>900 : Switch to &quot;Text&quot; mode</li><li>901 : Switch to &quot;Byte&quot; mode</li><li>902 : Switch to &quot;Numeric&quot; mode</li><li>903 - 912 : Reserved</li><li>913 : Switch to &quot;Octet&quot; only for the next codeword</li><li>914 - 920 : Reserved</li><li>921 : Initialization</li><li>922 : Terminator codeword for Macro PDF control block</li><li>923 : Sequence tag to identify the beginning of optional fields in the Macro PDF control block</li><li>924 : Switch to &quot;Byte&quot; mode (If the total number of byte is multiple of 6)</li><li>925 : Identifier for a user defined Extended Channel Interpretation (ECI)</li><li>926 : Identifier for a general purpose ECI format</li><li>927 : Identifier for an ECI of a character set or code page</li><li>928 : Macro marker codeword to indicate the beginning of a Macro PDF Control Block</li></ul></td>
+    <td><b>var:</b>&nbsp;&nbsp;</td><td>of codewords (0, 3, 6)<br />  Values are hex equivalents of binary representation of bars (1 = bar, 0 = space).<br />  The codewords numbered from 900 to 928 have special meaning, some enable to switch between modes in order to optimise the code:<ul><li>900 : Switch to &quot;Text&quot; mode</li><li>901 : Switch to &quot;Byte&quot; mode</li><li>902 : Switch to &quot;Numeric&quot; mode</li><li>903 - 912 : Reserved</li><li>913 : Switch to &quot;Octet&quot; only for the next codeword</li><li>914 - 920 : Reserved</li><li>921 : Initialization</li><li>922 : Terminator codeword for Macro PDF control block</li><li>923 : Sequence tag to identify the beginning of optional fields in the Macro PDF control block</li><li>924 : Switch to &quot;Byte&quot; mode (If the total number of byte is multiple of 6)</li><li>925 : Identifier for a user defined Extended Channel Interpretation (ECI)</li><li>926 : Identifier for a general purpose ECI format</li><li>927 : Identifier for an ECI of a character set or code page</li><li>928 : Macro marker codeword to indicate the beginning of a Macro PDF Control Block</li></ul></td>
   </tr>
   <tr>
     <td><b>access:</b>&nbsp;&nbsp;</td><td>protected</td>
@@ -587,7 +587,7 @@ array(//&nbsp;ECL&nbsp;8&nbsp;(512&nbsp;factors)&nbsp;--------------------------
 0x197,0x0a4,0x14c,0x383,0x0a5,0x2d6,0x258,0x145,0x1f2,0x28f,0x165,0x2f0,0x300,0x0df,0x351,0x287,//&nbsp;496<br>
 0x03f,0x136,0x35f,0x0fb,0x16e,0x130,0x11a,0x2e2,0x2a3,0x19a,0x185,0x0f4,0x01f,0x079,0x12f,0x107)//&nbsp;512<br>
 )</span></h4>
-	<p>[line 460]</p>
+	<p>[line 456]</p>
   <br /><br />
 <h4>Tags:</h4>
 <div class="tags">
@@ -668,8 +668,12 @@ array(//&nbsp;ECL&nbsp;8&nbsp;(512&nbsp;factors)&nbsp;--------------------------
 	<a name="var$textlatch"></a>
 	<p></p>
 	<h4>$textlatch = <span class="value">array(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'01'&nbsp;=&gt;&nbsp;array(27),'02'=&gt;array(28),'03'=&gt;array(28,25),'10'=&gt;array(28,28),'12'=&gt;array(28),'13'=&gt;array(28,25),'20'=&gt;array(28),'21'=&gt;array(27),'23'=&gt;array(25),'30'=&gt;array(29),'31'=&gt;array(29,27),'32'=&gt;array(29,28))</span></h4>
-	<p>[line 143]</p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'01'&nbsp;=&gt;&nbsp;array(27),'02'=&gt;array(28),'03'=&gt;array(28,25),//<br>
+'10'=&gt;array(28,28),'12'=&gt;array(28),'13'=&gt;array(28,25),//<br>
+'20'=&gt;array(28),'21'=&gt;array(27),'23'=&gt;array(25),//<br>
+'30'=&gt;array(29),'31'=&gt;array(29,27),'32'=&gt;array(29,28)//<br>
+)</span></h4>
+	<p>[line 139]</p>
   <br /><br />
 <h4>Tags:</h4>
 <div class="tags">
@@ -696,11 +700,11 @@ array(//&nbsp;ECL&nbsp;8&nbsp;(512&nbsp;factors)&nbsp;--------------------------
 	<a name="var$textsubmodes"></a>
 	<p></p>
 	<h4>$textsubmodes = <span class="value">array(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;Alpha<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;array(0x41,0x42,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4a,0x4b,0x4c,0x4d,0x4e,0x4f,0x50,0x51,0x52,0x53,0x54,0x55,0x56,0x57,0x58,0x59,0x5a,0x20,0xFD,0xFE,0xFF),//&nbsp;Lower<br>
-array(0x61,0x62,0x63,0x64,0x65,0x66,0x67,0x68,0x69,0x6a,0x6b,0x6c,0x6d,0x6e,0x6f,0x70,0x71,0x72,0x73,0x74,0x75,0x76,0x77,0x78,0x79,0x7a,0x20,0xFD,0xFE,0xFF),//&nbsp;Mixed<br>
-array(0x30,0x31,0x32,0x33,0x34,0x35,0x36,0x37,0x38,0x39,0x26,0x0d,0x09,0x2c,0x3a,0x23,0x2d,0x2e,0x24,0x2f,0x2b,0x25,0x2a,0x3d,0x5e,0xFB,0x20,0xFD,0xFE,0xFF),//&nbsp;Puntuaction<br>
-array(0x3b,0x3c,0x3e,0x40,0x5b,0x5c,0x5d,0x5f,0x60,0x7e,0x21,0x0d,0x09,0x2c,0x3a,0x0a,0x2d,0x2e,0x24,0x2f,0x22,0x7c,0x2a,0x28,0x29,0x3f,0x7b,0x7d,0x27,0xFF))</span></h4>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;array(0x41,0x42,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4a,0x4b,0x4c,0x4d,0x4e,0x4f,0x50,0x51,0x52,0x53,0x54,0x55,0x56,0x57,0x58,0x59,0x5a,0x20,0xFD,0xFE,0xFF),//&nbsp;Alpha<br>
+array(0x61,0x62,0x63,0x64,0x65,0x66,0x67,0x68,0x69,0x6a,0x6b,0x6c,0x6d,0x6e,0x6f,0x70,0x71,0x72,0x73,0x74,0x75,0x76,0x77,0x78,0x79,0x7a,0x20,0xFD,0xFE,0xFF),//&nbsp;Lower<br>
+array(0x30,0x31,0x32,0x33,0x34,0x35,0x36,0x37,0x38,0x39,0x26,0x0d,0x09,0x2c,0x3a,0x23,0x2d,0x2e,0x24,0x2f,0x2b,0x25,0x2a,0x3d,0x5e,0xFB,0x20,0xFD,0xFE,0xFF),//&nbsp;Mixed<br>
+array(0x3b,0x3c,0x3e,0x40,0x5b,0x5c,0x5d,0x5f,0x60,0x7e,0x21,0x0d,0x09,0x2c,0x3a,0x0a,0x2d,0x2e,0x24,0x2f,0x22,0x7c,0x2a,0x28,0x29,0x3f,0x7b,0x7d,0x27,0xFF)//&nbsp;Puntuaction<br>
+)</span></h4>
 	<p>[line 128]</p>
   <br /><br />
 <h4>Tags:</h4>
@@ -734,7 +738,7 @@ array(0x3b,0x3c,0x3e,0x40,0x5b,0x5c,0x5d,0x5f,0x60,0x7e,0x21,0x0d,0x09,0x2c,0x3a
 
   <hr />
 	<a name="method__construct"></a>
-	<h3>constructor __construct <span class="smalllinenumber">[line 547]</span></h3>
+	<h3>constructor __construct <span class="smalllinenumber">[line 543]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -788,7 +792,7 @@ $macro = array()])</code>
   </div>
   <hr />
 	<a name="methodgetBarcodeArray"></a>
-	<h3>method getBarcodeArray <span class="smalllinenumber">[line 746]</span></h3>
+	<h3>method getBarcodeArray <span class="smalllinenumber">[line 742]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -816,7 +820,7 @@ $macro = array()])</code>
   </div>
   <hr />
 	<a name="methodgetCompaction"></a>
-	<h3>method getCompaction <span class="smalllinenumber">[line 888]</span></h3>
+	<h3>method getCompaction <span class="smalllinenumber">[line 884]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -867,7 +871,7 @@ $addmode = true])</code>
   </div>
   <hr />
 	<a name="methodgetErrorCorrection"></a>
-	<h3>method getErrorCorrection <span class="smalllinenumber">[line 795]</span></h3>
+	<h3>method getErrorCorrection <span class="smalllinenumber">[line 791]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -912,7 +916,7 @@ $ecl)</code>
   </div>
   <hr />
 	<a name="methodgetErrorCorrectionLevel"></a>
-	<h3>method getErrorCorrectionLevel <span class="smalllinenumber">[line 757]</span></h3>
+	<h3>method getErrorCorrectionLevel <span class="smalllinenumber">[line 753]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -957,7 +961,7 @@ $numcw)</code>
   </div>
   <hr />
 	<a name="methodgetInputSequences"></a>
-	<h3>method getInputSequences <span class="smalllinenumber">[line 831]</span></h3>
+	<h3>method getInputSequences <span class="smalllinenumber">[line 827]</span></h3>
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
@@ -999,7 +1003,7 @@ $code)</code>
 
         <div class="credit">
 		    <hr />
-		    Documentation generated on Mon, 07 Jun 2010 16:46:39 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
+		    Documentation generated on Mon, 07 Jun 2010 16:56:24 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
 	      </div>
       </td></tr></table>
     </td>
