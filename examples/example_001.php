@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_001.php
 // Begin       : 2008-03-04
-// Last Update : 2010-05-20
+// Last Update : 2010-06-07
 //
 // Description : Example 001 for TCPDF class
 //               Default Header and Footer
@@ -69,11 +69,14 @@ $pdf->setLanguageArray($l);
 
 // ---------------------------------------------------------
 
+// set default font subsetting mode
+$pdf->setFontSubsetting(true);
+
 // Set font
 // dejavusans is a UTF-8 Unicode font, if you only need to
 // print standard ASCII chars, you can use core fonts like
 // helvetica or times to reduce file size.
-$pdf->SetFont('dejavusans', '', 14, true);
+$pdf->SetFont('dejavusans', '', 14, '', true);
 
 // Add a page
 // This method has several options, check the source code documentation for more information.

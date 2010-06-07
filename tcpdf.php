@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.3.001
+// Version     : 5.3.002
 // Begin       : 2002-08-03
-// Last Update : 2010-06-06
+// Last Update : 2010-06-07
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.3.001
+ * @version 5.3.002
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.3.001 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.3.002 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.3.001
+	* @version 5.3.002
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1548,6 +1548,13 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 5.0.000 (2010-04-26)
 		 */
 		protected $rasterize_vector_images = false;
+
+		/**
+		 * @var If true enables font subsetting by default
+		 * @access protected
+		 * @since 5.3.002 (2010-06-07)
+		 */
+		protected $font_subsetting = true;
 
 		/**
 		 * @var directory used for the last SVG image
@@ -3670,12 +3677,15 @@ if (!class_exists('TCPDF', false)) {
 		 * @param string $style Font style. Possible values are (case insensitive):<ul><li>empty string: regular (default)</li><li>B: bold</li><li>I: italic</li><li>BI or IB: bold italic</li></ul>
 		 * @param string $fontfile The font definition file. By default, the name is built from the family and style, in lower case with no spaces.
 		 * @return array containing the font data, or false in case of error.
-		 * @param boolean $subset if true embedd only a subset of the font (stores only the information related to the used characters); this option is valid only for TrueTypeUnicode fonts. If you want to enable users to change the document, set this parameter to false. If you subset the font, the person who receives your PDF would need to have your same font in order to make changes to your PDF. The file size of the PDF would also be smaller because you are embedding only part of a font.
+		 * @param mixed $subset if true embedd only a subset of the font (stores only the information related to the used characters); if false embedd full font; if 'default' uses the default value set using setFontSubsetting(). This option is valid only for TrueTypeUnicode fonts. If you want to enable users to change the document, set this parameter to false. If you subset the font, the person who receives your PDF would need to have your same font in order to make changes to your PDF. The file size of the PDF would also be smaller because you are embedding only part of a font.
 		 * @access public
 		 * @since 1.5
-		 * @see SetFont()
+		 * @see SetFont(), setFontSubsetting(), setFontSubsetting()
 		 */
-		public function AddFont($family, $style='', $fontfile='', $subset=true) {
+		public function AddFont($family, $style='', $fontfile='', $subset='default') {
+			if ($subset === 'default') {
+				$subset = $this->font_subsetting;
+			}
 			if ($this->empty_string($family)) {
 				if (!$this->empty_string($this->FontFamily)) {
 					$family = $this->FontFamily;
@@ -3885,13 +3895,13 @@ if (!class_exists('TCPDF', false)) {
 		 * @param string $style Font style. Possible values are (case insensitive):<ul><li>empty string: regular</li><li>B: bold</li><li>I: italic</li><li>U: underline</li><li>D: line trough</li><li>O: overline</li></ul> or any combination. The default value is regular. Bold and italic styles do not apply to Symbol and ZapfDingbats basic fonts or other fonts when not defined.
 		 * @param float $size Font size in points. The default value is the current size. If no size has been specified since the beginning of the document, the value taken is 12
 		 * @param string $fontfile The font definition file. By default, the name is built from the family and style, in lower case with no spaces.
-		 * @param boolean $subset if true embedd only a subset of the font (stores only the information related to the used characters); this option is valid only for TrueTypeUnicode fonts. If you want to enable users to change the document, set this parameter to false. If you subset the font, the person who receives your PDF would need to have your same font in order to make changes to your PDF. The file size of the PDF would also be smaller because you are embedding only part of a font.
+		 * @param mixed $subset if true embedd only a subset of the font (stores only the information related to the used characters); if false embedd full font; if 'default' uses the default value set using setFontSubsetting(). This option is valid only for TrueTypeUnicode fonts. If you want to enable users to change the document, set this parameter to false. If you subset the font, the person who receives your PDF would need to have your same font in order to make changes to your PDF. The file size of the PDF would also be smaller because you are embedding only part of a font.
 		 * @author Nicola Asuni
 		 * @access public
 		 * @since 1.0
 		 * @see AddFont(), SetFontSize()
 		 */
-		public function SetFont($family, $style='', $size=0, $fontfile='', $subset=true) {
+		public function SetFont($family, $style='', $size=0, $fontfile='', $subset='default') {
 			//Select a font; size given in points
 			if ($size == 0) {
 				$size = $this->FontSizePt;
@@ -4530,7 +4540,7 @@ if (!class_exists('TCPDF', false)) {
 									$uniblock[$unik][] = $unicode[$i];
 									++$unik;
 									$uniblock[$unik] = array();
-									$unicode[$i] = 8203; // Unicode Character 'ZERO WIDTH SPACE' (U+200B)
+									$unicode[$i] = 0x200b; // Unicode Character 'ZERO WIDTH SPACE' (DEC:8203, U+200B)
 								} else {
 									$uniblock[$unik][] = $unicode[$i];
 								}
@@ -7819,7 +7829,8 @@ if (!class_exists('TCPDF', false)) {
 			}
 			// array of table names to preserve (loca and glyf tables will be added later)
 			//$table_names = array ('cmap', 'head', 'hhea', 'hmtx', 'maxp', 'name', 'OS/2', 'post', 'cvt ', 'fpgm', 'prep');
-			$table_names = array ('head', 'hhea', 'hmtx', 'maxp', 'OS/2', 'cvt ', 'fpgm', 'prep');
+			// the cmap table is not needed and shall not be present, since the mapping from character codes to glyph descriptions is provided separately
+			$table_names = array ('head', 'hhea', 'hmtx', 'maxp', 'cvt ', 'fpgm', 'prep'); // minimum required table names
 			// get the tables to preserve
 			$offset = 12;
 			foreach ($table as $tag => $val) {
@@ -7837,6 +7848,7 @@ if (!class_exists('TCPDF', false)) {
 					}
 					$table[$tag]['offset'] = $offset;
 					$offset += $table[$tag]['length'];
+					// check sum is not changed (so keep the following line commented)
 					//$table[$tag]['checkSum'] = $this->_getTTFtableChecksum($table[$tag]['data'], $table[$tag]['length']);
 				} else {
 					unset($table[$tag]);
@@ -9359,7 +9371,9 @@ if (!class_exists('TCPDF', false)) {
 				$outstr .= "\xFE\xFF"; // Byte Order Mark (BOM)
 			}
 			foreach ($unicode as $char) {
-				if ($char == 0xFFFD) {
+				if ($char == 0x200b) {
+					// skip Unicode Character 'ZERO WIDTH SPACE' (DEC:8203, U+200B)
+				} elseif ($char == 0xFFFD) {
 					$outstr .= "\xFF\xFD"; // replacement character
 				} elseif ($char < 0x10000) {
 					$outstr .= chr($char >> 0x08);
@@ -19992,6 +20006,28 @@ if (!class_exists('TCPDF', false)) {
 				}
 			}
 			return $op;
+		}
+
+		/**
+		 * Enable or disable default option for font subsetting.
+		 * @param boolean $enable if true enable font subsetting by default.
+		 * @author Nicola Asuni
+		 * @access public
+		 * @since 5.3.002 (2010-06-07)
+		 */
+		public function setFontSubsetting($enable=true) {
+			$this->font_subsetting = $enable ? true : false;
+		}
+
+		/**
+		 * Return the default option for font subsetting.
+		 * @return boolean default font subsetting state.
+		 * @author Nicola Asuni
+		 * @access public
+		 * @since 5.3.002 (2010-06-07)
+		 */
+		public function getFontSubsetting() {
+			return $this->font_subsetting;
 		}
 
 		// -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-

@@ -1,3 +1,8 @@
+5.3.002 (2010-06-07)
+	- The methods setFontSubsetting() and setFontSubsetting() were added to control the default font subsetting mode (see example n. 1).
+	- Bug #3012596 "Whitespace should not appeared after use Thai top characters" was fixed.
+	- Examples n. 1, 14, and 54 were updated.
+
 5.3.001 (2010-06-06)
 	- Barcode PDF417 was improved to support Macro Code Blocks (see example n. 50).
 
@@ -11,7 +16,7 @@
 5.2.000 (2010-06-02)
 	- IMPORTANT: Support for font subsetting was added by default to reduce the size of documents using large unicode font files.
 		If you embed the whole font in the PDF, the person on the other end can make changes to it even if he didn't have your font.
-		If you subset the font, file size of the PDF will be smaller but the person who receives your PDF would need to have your same font in order to make changes to your PDF. 
+		If you subset the font, file size of the PDF will be smaller but the person who receives your PDF would need to have your same font in order to make changes to your PDF.
 	- The signature of the SetFont() and AddFont() methods were changed to include the font subsetting option (subsetting is applied by default).
 	- Examples 14 and 54 were updated.
 
