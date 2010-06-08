@@ -1,3 +1,6 @@
+5.3.003 (2010-06-08)
+	- Bug #3013102 "HTML table header misaligned after page break" was fixed.
+
 5.3.002 (2010-06-07)
 	- The methods setFontSubsetting() and setFontSubsetting() were added to control the default font subsetting mode (see example n. 1).
 	- Bug #3012596 "Whitespace should not appeared after use Thai top characters" was fixed.

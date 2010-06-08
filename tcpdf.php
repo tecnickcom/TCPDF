@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.3.002
+// Version     : 5.3.003
 // Begin       : 2002-08-03
-// Last Update : 2010-06-07
+// Last Update : 2010-06-08
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.3.002
+ * @version 5.3.003
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.3.002 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.3.003 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.3.002
+	* @version 5.3.003
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -2459,7 +2459,7 @@ if (!class_exists('TCPDF', false)) {
 		 */
 		public function SetLeftMargin($margin) {
 			//Set left margin
-			$this->lMargin=$margin;
+			$this->lMargin = $margin;
 			if (($this->page > 0) AND ($this->x < $margin)) {
 				$this->x = $margin;
 			}
@@ -2474,7 +2474,7 @@ if (!class_exists('TCPDF', false)) {
 		 */
 		public function SetTopMargin($margin) {
 			//Set top margin
-			$this->tMargin=$margin;
+			$this->tMargin = $margin;
 			if (($this->page > 0) AND ($this->y < $margin)) {
 				$this->y = $margin;
 			}
@@ -2488,7 +2488,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @see SetLeftMargin(), SetTopMargin(), SetAutoPageBreak(), SetMargins()
 		 */
 		public function SetRightMargin($margin) {
-			$this->rMargin=$margin;
+			$this->rMargin = $margin;
 			if (($this->page > 0) AND ($this->x > ($this->w - $margin))) {
 				$this->x = $this->w - $margin;
 			}
@@ -3255,8 +3255,8 @@ if (!class_exists('TCPDF', false)) {
 				// set margins
 				$prev_lMargin = $this->lMargin;
 				$prev_rMargin = $this->rMargin;
-				$this->lMargin = $this->pagedim[$this->page]['olm'];
-				$this->rMargin = $this->pagedim[$this->page]['orm'];
+				$this->lMargin = $this->theadMargins['lmargin'] + ($this->pagedim[$this->page]['olm'] - $this->pagedim[($this->page - 1)]['olm']);
+				$this->rMargin = $this->theadMargins['rmargin'] + ($this->pagedim[$this->page]['orm'] - $this->pagedim[($this->page - 1)]['orm']);
 				$this->cMargin = $this->theadMargins['cmargin'];
 				if ($this->rtl) {
 					$this->x = $this->w - $this->rMargin;
@@ -17137,12 +17137,6 @@ if (!class_exists('TCPDF', false)) {
 					$this->y -= $yshift;
 				}
 			}
-			if ($ln AND (!($cell AND ($dom[$key-1]['value'] == 'table')))) {
-				$this->Ln($this->lasth);
-				if ($this->y < $maxbottomliney) {
-					$this->y = $maxbottomliney;
-				}
-			}
 			// restore previous values
 			$this->setGraphicVars($gvars);
 			if ($this->page > $prevPage) {
@@ -17155,6 +17149,12 @@ if (!class_exists('TCPDF', false)) {
 			$this->listordered = $prev_listordered;
 			$this->listcount = $prev_listcount;
 			$this->lispacer = $prev_lispacer;
+			if ($ln AND (!($cell AND ($dom[$key-1]['value'] == 'table')))) {
+				$this->Ln($this->lasth);
+				if ($this->y < $maxbottomliney) {
+					$this->y = $maxbottomliney;
+				}
+			}
 			unset($dom);
 		}
 
@@ -17216,6 +17216,8 @@ if (!class_exists('TCPDF', false)) {
 							if (!isset($this->theadMargins) OR (empty($this->theadMargins))) {
 								$this->theadMargins = array();
 								$this->theadMargins['cmargin'] = $this->cMargin;
+								$this->theadMargins['lmargin'] = $this->lMargin;
+								$this->theadMargins['rmargin'] = $this->rMargin;
 							}
 						}
 					}
