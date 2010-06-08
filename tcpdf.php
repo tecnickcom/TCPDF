@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.3.003
+// Version     : 5.3.004
 // Begin       : 2002-08-03
 // Last Update : 2010-06-08
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.3.003
+ * @version 5.3.004
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.3.003 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.3.004 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.3.003
+	* @version 5.3.004
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -16717,6 +16717,7 @@ if (!class_exists('TCPDF', false)) {
 							$this->textindent = $dom[$key]['text-indent'];
 							$this->newline = true;
 						}
+						// table
 						if ($dom[$key]['value'] == 'table') {
 							// available page width
 							if ($this->rtl) {
@@ -16734,22 +16735,8 @@ if (!class_exists('TCPDF', false)) {
 							} else {
 								$table_width = $wtmp;
 							}
-						}
-						if (($dom[$key]['value'] == 'td') OR ($dom[$key]['value'] == 'th')) {
-							$trid = $dom[$key]['parent'];
-							$table_el = $dom[$trid]['parent'];
-							if (!isset($dom[$table_el]['cols'])) {
-								$dom[$table_el]['cols'] = $dom[$trid]['cols'];
-							}
-							$oldmargin = $this->cMargin;
-							if (isset($dom[($dom[$trid]['parent'])]['attribute']['cellpadding'])) {
-								$currentcmargin = $this->getHTMLUnitToUnits($dom[($dom[$trid]['parent'])]['attribute']['cellpadding'], 1, 'px');
-							} else {
-								$currentcmargin = 0;
-							}
-							$this->cMargin = $currentcmargin;
-							if (isset($dom[($dom[$trid]['parent'])]['attribute']['cellspacing'])) {
-								$cellspacing = $this->getHTMLUnitToUnits($dom[($dom[$trid]['parent'])]['attribute']['cellspacing'], 1, 'px');
+							if (isset($dom[$key]['attribute']['cellspacing'])) {
+								$cellspacing = $this->getHTMLUnitToUnits($dom[$key]['attribute']['cellspacing'], 1, 'px');
 							} else {
 								$cellspacing = 0;
 							}
@@ -16758,14 +16745,50 @@ if (!class_exists('TCPDF', false)) {
 							} else {
 								$cellspacingx = $cellspacing;
 							}
-							$colspan = $dom[$key]['attribute']['colspan'];
-							$table_columns_width = ($table_width - ($cellspacing * ($dom[$table_el]['cols'] - 1)));
-							$wtmp = ($colspan * ($table_columns_width / $dom[$table_el]['cols'])) + (($colspan - 1) * $cellspacing);
-							if (isset($dom[$key]['width'])) {
-								$cellw = $this->getHTMLUnitToUnits($dom[$key]['width'], $table_columns_width, 'px');
-							} else {
-								$cellw = $wtmp;
+							// total table width without cellspaces
+							$table_columns_width = ($table_width - ($cellspacing * ($dom[$key]['cols'] - 1)));
+							// minimum column width
+							$table_min_column_width = ($table_columns_width / $dom[$key]['cols']);
+							// array of custom column widths
+							$table_colwidths = array_fill(0, $dom[$key]['cols'], $table_min_column_width);
+						}
+						// table row
+						if ($dom[$key]['value'] == 'tr') {
+							// reset column counter
+							$colid = 0;
+						}
+						// table cell
+						if (($dom[$key]['value'] == 'td') OR ($dom[$key]['value'] == 'th')) {
+							$trid = $dom[$key]['parent'];
+							$table_el = $dom[$trid]['parent'];
+							if (!isset($dom[$table_el]['cols'])) {
+								$dom[$table_el]['cols'] = $dom[$trid]['cols'];
 							}
+							$colspan = $dom[$key]['attribute']['colspan'];
+							$oldmargin = $this->cMargin;
+							if (isset($dom[($dom[$trid]['parent'])]['attribute']['cellpadding'])) {
+								$currentcmargin = $this->getHTMLUnitToUnits($dom[($dom[$trid]['parent'])]['attribute']['cellpadding'], 1, 'px');
+							} else {
+								$currentcmargin = 0;
+							}
+							$this->cMargin = $currentcmargin;
+							if (isset($dom[$key]['width'])) {
+								// user specified width
+								$cellw = $this->getHTMLUnitToUnits($dom[$key]['width'], $table_columns_width, 'px');
+								$tmpcw = ($cellw / $colspan);
+								for ($i = 0; $i < $colspan; ++$i) {
+									$table_colwidths[($colid + $i)] = $tmpcw;
+								}
+							} else {
+								// inherit column width
+								$cellw = 0;
+								for ($i = 0; $i < $colspan; ++$i) {
+									$cellw += $table_colwidths[($colid + $i)];
+								}
+							}
+							$cellw += (($colspan - 1) * $cellspacing);
+							// increment column indicator
+							$colid += $colspan;
 							if (isset($dom[$key]['height'])) {
 								// minimum cell height
 								$cellh = $this->getHTMLUnitToUnits($dom[$key]['height'], 0, 'px');

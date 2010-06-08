@@ -1,3 +1,8 @@
+5.3.004 (2010-06-08)
+	- Bug #3013291 "HTML table cell width" was fixed.
+	- Bug #3013294 "HTML table cell alignment" was fixed.
+	- The columns widths of HTML tables are now inherited from the first row.
+
 5.3.003 (2010-06-08)
 	- Bug #3013102 "HTML table header misaligned after page break" was fixed.
 
