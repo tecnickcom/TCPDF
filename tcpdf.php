@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.3.005
+// Version     : 5.3.006
 // Begin       : 2002-08-03
-// Last Update : 2010-06-09
+// Last Update : 2010-06-10
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.3.005
+ * @version 5.3.006
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.3.005 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.3.006 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.3.005
+	* @version 5.3.006
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1843,7 +1843,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->js_obj_id = $this->js_start_obj_id;
 			$this->default_form_prop = array('lineWidth'=>1, 'borderStyle'=>'solid', 'fillColor'=>array(255, 255, 255), 'strokeColor'=>array(128, 128, 128));
 			// set file ID for trailer
-			$this->file_id = md5(microtime().__FILE__.'TCPDF'.$orientation.$unit.$format.$encoding.uniqid());
+			$this->file_id = md5(microtime().__FILE__.'TCPDF'.$orientation.$unit.$format.$encoding.uniqid(''.rand()));
 		}
 
 		/**
@@ -4285,7 +4285,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @param mixed $subset if true embedd only a subset of the font (stores only the information related to the used characters); if false embedd full font; if 'default' uses the default value set using setFontSubsetting(). This option is valid only for TrueTypeUnicode fonts. If you want to enable users to change the document, set this parameter to false. If you subset the font, the person who receives your PDF would need to have your same font in order to make changes to your PDF. The file size of the PDF would also be smaller because you are embedding only part of a font.
 		 * @access public
 		 * @since 1.5
-		 * @see SetFont(), setFontSubsetting(), setFontSubsetting()
+		 * @see SetFont(), setFontSubsetting()
 		 */
 		public function AddFont($family, $style='', $fontfile='', $subset='default') {
 			if ($subset === 'default') {
@@ -10520,7 +10520,7 @@ if (!class_exists('TCPDF', false)) {
 				$this->encryptdata['P'] = $protection;
 			} else { // Public-Key mode
 				// random 20-byte seed
-				$seed = sha1(microtime().uniqid().$this->file_id, true);
+				$seed = sha1(microtime().uniqid(''.rand()).$this->file_id, true);
 				$recipient_bytes = '';
 				foreach ($this->encryptdata['pubkeys'] as $pubkey) {
 					// for each public certificate
@@ -10654,7 +10654,7 @@ if (!class_exists('TCPDF', false)) {
 				}
 			}
 			if ($owner_pass === null) {
-				$owner_pass = uniqid(rand());
+				$owner_pass = uniqid(''.rand());
 			}
 			$this->encryptdata['mode'] = $mode;
 			switch ($mode) {

@@ -1,3 +1,6 @@
+5.3.006 (2010-06-10)
+	- This version includes a change in uniqid calls for backward compatibility with PHP4.
+
 5.3.005 (2010-06-09)
 	- The method getPageSizeFromFormat() was changed to include all standard page formats (includes 281 page formats + variation).
 
