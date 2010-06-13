@@ -1,5 +1,5 @@
 5.3.008 (2010-06-13)
-	- This version improves support for vector image rasterization.
+	- This version fixes some problems of SVG rasterization.
 
 5.3.007 (2010-06-13)
 	- This version improves SVG support.

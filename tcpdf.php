@@ -6380,7 +6380,7 @@ if (!class_exists('TCPDF', false)) {
 						// ImageMagick library
 						$img = new Imagick();
 						if ($type == 'SVG') {
-							// get SBG file content
+							// get SVG file content
 							$svgimg = file_get_contents($file);
 							// get width and height
 							$regs = array();
@@ -6392,7 +6392,7 @@ if (!class_exists('TCPDF', false)) {
 									$owu = sprintf('%.3F', ($ow * $dpi / 72)).$this->pdfunit;
 									$svgtag = preg_replace('/[\s]+width[\s]*=[\s]*"[^"]*"/si', ' width="'.$owu.'"', $svgtag, 1);
 								} else {
-									$ow = $w * $this->k;
+									$ow = $w;
 								}
 								$tmp = array();
 								if (preg_match('/[\s]+height[\s]*=[\s]*"([^"]*)"/si', $svgtag, $tmp)) {
@@ -6400,7 +6400,7 @@ if (!class_exists('TCPDF', false)) {
 									$ohu = sprintf('%.3F', ($oh * $dpi / 72)).$this->pdfunit;
 									$svgtag = preg_replace('/[\s]+height[\s]*=[\s]*"[^"]*"/si', ' height="'.$ohu.'"', $svgtag, 1);
 								} else {
-									$oh = $h * $this->k;
+									$oh = $h;
 								}
 								$tmp = array();
 								if (!preg_match('/[\s]+viewBox[\s]*=[\s]*"[\s]*([0-9\.]+)[\s]+([0-9\.]+)[\s]+([0-9\.]+)[\s]+([0-9\.]+)[\s]*"/si', $svgtag, $tmp)) {
