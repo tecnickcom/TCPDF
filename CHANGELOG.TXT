@@ -1,3 +1,6 @@
+5.3.010 (2010-06-15)
+	- Previous release was corrupted.
+
 5.3.009 (2010-06-15)
 	- Bug #3015934 "Bullets don't display correctly" was fixed.
 
