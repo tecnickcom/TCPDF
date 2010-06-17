@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_052.php
 // Begin       : 2009-05-07
-// Last Update : 2010-05-20
+// Last Update : 2010-06-17
 //
 // Description : Example 052 for TCPDF class
 //               Certification Signature (experimental)
@@ -99,6 +99,14 @@ $pdf->AddPage();
 // print a line of text
 $text = 'This is a <b color="#FF0000">digitally signed document</b> using the default (example) <b>tcpdf.crt</b> certificate.<br />To validate this signature you have to load the <b color="#006600">tcpdf.fdf</b> on the Arobat Reader to add the certificate to <i>List of Trusted Identities</i>.<br /><br />For more information check the source code of this example and the source code documentation for the <i>setSignature()</i> method.<br /><br /><a href="http://www.tcpdf.org">www.tcpdf.org</a>';
 $pdf->writeHTML($text, true, 0, true, 0);
+
+
+// *** set signature appearance ***
+
+// create content for signature (image and/or text)
+$pdf->Image($file='../images/tcpdf_signature.png', $x=180, $y=60, $w=15, $h=15, $type='PNG');
+// define active area for signature appearance
+$pdf->setSignatureAppearance($x=180, $y=60, $w=15, $h=15);
 
 // ---------------------------------------------------------
 

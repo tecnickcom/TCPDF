@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.3.010
+// Version     : 5.3.011
 // Begin       : 2002-08-03
-// Last Update : 2010-06-15
+// Last Update : 2010-06-17
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.3.010
+ * @version 5.3.011
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.3.010 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.3.011 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.3.010
+	* @version 5.3.011
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1299,6 +1299,13 @@ if (!class_exists('TCPDF', false)) {
 		protected $signature_max_length = 11742;
 
 		/**
+		 * data for signature appearance
+		 * @access protected
+		 * @since 5.3.011 (2010-06-16)
+		 */
+		protected $signature_appearance = array('page' => 1, 'rect' => '0 0 0 0');
+
+		/**
 		 * Regular expression used to find blank characters used for word-wrapping.
 		 * @access protected
 		 * @since 4.6.006 (2009-04-28)
@@ -1819,6 +1826,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->ur_annots = '/Create/Delete/Modify/Copy/Import/Export';
 			$this->ur_form = '/Add/Delete/FillIn/Import/Export/SubmitStandalone/SpawnTemplate';
 			$this->ur_signature = '/Modify';
+			$this->signature_appearance = array('page' => 1, 'rect' => '0 0 0 0');
 			// set default JPEG quality
 			$this->jpeg_quality = 75;
 			// initialize some settings
@@ -4446,8 +4454,9 @@ if (!class_exists('TCPDF', false)) {
 				}
 			} elseif ($type == 'core') {
 				$name = $this->CoreFonts[$fontkey];
+				$subset = false;
 			} elseif (($type == 'TrueType') OR ($type == 'Type1')) {
-				// ...
+				$subset = false;
 			} elseif ($type == 'TrueTypeUnicode') {
 				$enc = 'Identity-H';
 			} else {
@@ -7474,7 +7483,7 @@ if (!class_exists('TCPDF', false)) {
 					}
 				}
 			}
-			if (($n==1) AND $this->sign AND isset($this->signature_data['cert_type'])) {
+			if ($this->sign AND ($n == $this->signature_appearance['page']) AND isset($this->signature_data['cert_type'])) {
 				// set reference for signature object
 				$out .= ' '.$this->sig_annot_ref;
 			}
@@ -8683,7 +8692,7 @@ if (!class_exists('TCPDF', false)) {
 							//Strip second binary header
 							$font = substr($font, 0, $info['length1']).substr($font, ($info['length1'] + 6));
 						}
-					} elseif ($info['subset'] AND (!$compressed) OR ($compressed AND function_exists('gzcompress'))) {
+					} elseif ($info['subset'] AND ((!$compressed) OR ($compressed AND function_exists('gzcompress')))) {
 						if ($compressed) {
 							// uncompress font
 							$font = gzuncompress($font);
@@ -9376,8 +9385,9 @@ if (!class_exists('TCPDF', false)) {
 				$this->buffer = &$pdfdoc;
 				$this->bufferlen = strlen($pdfdoc);
 				// ---
-				$out = '<< /Type /Annot /Subtype /Widget /Rect [0 0 0 0]';
-				$out .= ' /P 3 0 R'; // link to first page object
+				$out = '<< /Type /Annot /Subtype /Widget';
+				$out .= ' /Rect ['.$this->signature_appearance['rect'].']';
+				$out .= ' /P '.$this->page_obj_id[($this->signature_appearance['page'])].' 0 R'; // link to signature appearance page
 				$out .= ' /FT /Sig';
 				$out .= ' /T '.$this->_textstring('Signature');
 				$out .= ' /Ff 0';
@@ -13798,6 +13808,30 @@ if (!class_exists('TCPDF', false)) {
 			$this->signature_data['extracerts'] = $extracerts;
 			$this->signature_data['cert_type'] = $cert_type;
 			$this->signature_data['info'] = $info;
+		}
+
+		/**
+		 * Set the digital signature appearance (a cliccable rectangle area to get signature properties)
+		 * @param float $x Abscissa of the upper-left corner.
+		 * @param float $y Ordinate of the upper-left corner.
+		 * @param float $w Width of the signature area.
+		 * @param float $h Height of the signature area.
+		 * @param int $page option page number (if < 0 the current page is used).
+		 * @access public
+		 * @author Nicola Asuni
+		 * @since 5.3.011 (2010-06-17)
+		 */
+		public function setSignatureAppearance($x=0, $y=0, $w=0, $h=0, $page=-1) {
+			if (($page < 1) OR ($page > $this->numpages)) {
+				$this->signature_appearance['page'] = $this->page;
+			} else {
+				$this->signature_appearance['page'] = intval($page);
+			}
+			$a = $x * $this->k;
+			$b = $this->pagedim[($this->signature_appearance['page'])]['h'] - (($y + $h)  * $this->k);
+			$c = $w * $this->k;
+			$d = $h * $this->k;
+			$this->signature_appearance['rect'] = sprintf('%.2F %.2F %.2F %.2F', $a, $b, $a+$c, $b+$d);
 		}
 
 		/**
