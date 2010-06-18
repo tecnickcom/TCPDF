@@ -3,7 +3,7 @@
 // File name   : tcpdf.php
 // Version     : 5.4.000
 // Begin       : 2002-08-03
-// Last Update : 2010-06-17
+// Last Update : 2010-06-18
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
