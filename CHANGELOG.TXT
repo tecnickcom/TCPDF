@@ -1,3 +1,6 @@
+5.4.002 (2010-06-18)
+	- A problem related with setProtection() method was fixed.
+
 5.4.001 (2010-06-18)
 	- A problem related with setProtection() method was fixed.
 
