@@ -1,6 +1,8 @@
-5.3.011 (2010-06-17)
+5.4.000 (2010-06-17)
 	- The method setSignatureAppearance() was added, check the example n. 52.
-	- Some problems related to font subsetting were fixed.
+	- Several problems related to font subsetting were fixed.
+
+------------------------------------------------------------
 
 5.3.010 (2010-06-15)
 	- Previous release was corrupted.

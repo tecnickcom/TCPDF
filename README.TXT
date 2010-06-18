@@ -2,16 +2,16 @@ TCPDF - README
 ============================================================
 
 I WISH TO IMPROVE AND EXPAND TCPDF BUT I NEED YOUR SUPPORT.
-PLEASE MAKE A DONATION: 
+PLEASE MAKE A DONATION:
 http:  sourceforge.net/donate/index.php?group_id=128076
 
 ------------------------------------------------------------
 
 Name: TCPDF
-Version: 5.3.011
+Version: 5.4.000
 Release date: 2010-06-17
 Author:	Nicola Asuni
-	
+
 Copyright (c) 2002-2010:
 	Nicola Asuni
 	Tecnick.com s.r.l.
@@ -19,14 +19,14 @@ Copyright (c) 2002-2010:
 	09044 Quartucciu (CA)
 	ITALY
 	www.tecnick.com
-	
+
 URLs:
 	http:  www.tcpdf.org
 	http:  www.sourceforge.net/projects/tcpdf
-	
+
 Description:
 	TCPDF is a PHP class for generating PDF files on-the-fly without requiring external extensions.
-	
+
 Main Features:
     * no external libraries are required for the basic functions;
     * all standard page formats, custom page formats, custom margins and units of measure;
@@ -59,26 +59,26 @@ Installation (full instructions on http:  www.tcpdf.org):
 
 Source Code Documentation:
 	doc/index.html
-	
+
 For Additional Documentation:
 	http:  www.tcpdf.org
 
 License
-   Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
+	Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
 
-   TCPDF is free software: you can redistribute it and/or modify it
-   under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
+	TCPDF is free software: you can redistribute it and/or modify it
+	under the terms of the GNU Lesser General Public License as
+	published by the Free Software Foundation, either version 3 of the
+	License, or (at your option) any later version.
 
-   TCPDF is distributed in the hope that it will be useful, but
-   WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-   See the GNU General Public License for more details.
+	TCPDF is distributed in the hope that it will be useful, but
+	WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+	See the GNU Lesser General Public License for more details.
 
-   You should have received a copy of the GNU General Public License
-   along with TCPDF.  If not, see <http:  www.gnu.org/licenses/>.
+	You should have received a copy of the GNU Lesser General Public License
+	along with TCPDF.  If not, see <http://www.gnu.org/licenses/>.
 
-   See LICENSE.TXT file for more information.
-	
+	See LICENSE.TXT file for more information.
+
 ============================================================
