@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.4.000
+// Version     : 5.4.001
 // Begin       : 2002-08-03
 // Last Update : 2010-06-18
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.4.000
+ * @version 5.4.001
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.4.000 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.4.001 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.4.000
+	* @version 5.4.001
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -10608,7 +10608,7 @@ if (!class_exists('TCPDF', false)) {
 				'assemble' => 1024,// bit 11
 				'print-high' => 2048 // bit 12
 				);
-			$protection = 4294967293; // 32 bits (all to 1 except bit 2)
+			$protection = 3900; // (111100111100)
 			foreach ($permissions as $permission) {
 				if (!isset($options[$permission])) {
 					$this->Error('Incorrect permission: '.$permission);

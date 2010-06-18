@@ -1,3 +1,6 @@
+5.4.001 (2010-06-18)
+	- A problem related with setProtection() method was fixed.
+
 5.4.000 (2010-06-18)
 	- The method setSignatureAppearance() was added, check the example n. 52.
 	- Several problems related to font subsetting were fixed.
