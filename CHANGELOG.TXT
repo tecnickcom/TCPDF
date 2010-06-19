@@ -1,3 +1,7 @@
+5.4.003 (2010-06-19)
+	- A problem related to page boxes was fixed.
+	- Bug #3016920 "Font subsetting issues when editing pdf" was partially fixed (Note that flattening transparency layers is currently incompatible with TrueTypeUnicode fonts).
+
 5.4.002 (2010-06-18)
 	- A problem related with setProtection() method was fixed.
 

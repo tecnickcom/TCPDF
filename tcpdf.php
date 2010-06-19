@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.4.002
+// Version     : 5.4.003
 // Begin       : 2002-08-03
-// Last Update : 2010-06-18
+// Last Update : 2010-06-19
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.4.002
+ * @version 5.4.003
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.4.002 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.4.003 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.4.002
+	* @version 5.4.003
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -2599,12 +2599,12 @@ if (!class_exists('TCPDF', false)) {
 			} else {
 				// the boundaries of the physical medium on which the page shall be displayed or printed
 				if (isset($format['MediaBox'])) {
-					$this->setPageBoxes($this->page, 'MediaBox', $format['MediaBox']['llx'], $format['MediaBox']['lly'], $format['MediaBox']['urx'], $format['MediaBox']['ury']);
+					$this->setPageBoxes($this->page, 'MediaBox', $format['MediaBox']['llx'], $format['MediaBox']['lly'], $format['MediaBox']['urx'], $format['MediaBox']['ury'], false);
 					$this->fwPt = (($format['MediaBox']['urx'] - $format['MediaBox']['llx']) * $this->k);
 					$this->fhPt = (($format['MediaBox']['ury'] - $format['MediaBox']['lly']) * $this->k);
 				} else {
 					if (isset($format[0]) AND is_numeric($format[0]) AND isset($format[1]) AND is_numeric($format[1])) {
-						$pf = array($format[0], $format[1]);
+						$pf = array(($format[0] * $this->k), ($format[1] * $this->k));
 					} else {
 						if (!isset($format['format'])) {
 							// default value
@@ -2612,25 +2612,25 @@ if (!class_exists('TCPDF', false)) {
 						}
 						$pf = $this->getPageSizeFromFormat($format['format']);
 					}
-					$this->setPageBoxes($this->page, 'MediaBox', 0, 0, $pf[0], $pf[1]);
-					$this->fwPt = ($pf[0] * $this->k);
-					$this->fhPt = ($pf[1] * $this->k);
+					$this->fwPt = $pf[0];
+					$this->fhPt = $pf[1];
+					$this->setPageBoxes($this->page, 'MediaBox', 0, 0, $this->fwPt, $this->fhPt, true);
 				}
 				// the visible region of default user space
 				if (isset($format['CropBox'])) {
-					$this->setPageBoxes($this->page, 'CropBox', $format['CropBox']['llx'], $format['CropBox']['lly'], $format['CropBox']['urx'], $format['CropBox']['ury']);
+					$this->setPageBoxes($this->page, 'CropBox', $format['CropBox']['llx'], $format['CropBox']['lly'], $format['CropBox']['urx'], $format['CropBox']['ury'], false);
 				}
 				// the region to which the contents of the page shall be clipped when output in a production environment
 				if (isset($format['BleedBox'])) {
-					$this->setPageBoxes($this->page, 'BleedBox', $format['BleedBox']['llx'], $format['BleedBox']['lly'], $format['BleedBox']['urx'], $format['BleedBox']['ury']);
+					$this->setPageBoxes($this->page, 'BleedBox', $format['BleedBox']['llx'], $format['BleedBox']['lly'], $format['BleedBox']['urx'], $format['BleedBox']['ury'], false);
 				}
 				// the intended dimensions of the finished page after trimming
 				if (isset($format['TrimBox'])) {
-					$this->setPageBoxes($this->page, 'TrimBox', $format['TrimBox']['llx'], $format['TrimBox']['lly'], $format['TrimBox']['urx'], $format['TrimBox']['ury']);
+					$this->setPageBoxes($this->page, 'TrimBox', $format['TrimBox']['llx'], $format['TrimBox']['lly'], $format['TrimBox']['urx'], $format['TrimBox']['ury'], false);
 				}
 				// the page's meaningful content (including potential white space)
 				if (isset($format['ArtBox'])) {
-					$this->setPageBoxes($this->page, 'ArtBox', $format['ArtBox']['llx'], $format['ArtBox']['lly'], $format['ArtBox']['urx'], $format['ArtBox']['ury']);
+					$this->setPageBoxes($this->page, 'ArtBox', $format['ArtBox']['llx'], $format['ArtBox']['lly'], $format['ArtBox']['urx'], $format['ArtBox']['ury'], false);
 				}
 				// specify the colours and other visual characteristics that should be used in displaying guidelines on the screen for the various page boundaries
 				if (isset($format['BoxColorInfo'])) {
@@ -2696,26 +2696,32 @@ if (!class_exists('TCPDF', false)) {
 		 * Set page boundaries.
 		 * @param int $page page number
 		 * @param string $type valid values are: <ul><li>'MediaBox' : the boundaries of the physical medium on which the page shall be displayed or printed;</li><li>'CropBox' : the visible region of default user space;</li><li>'BleedBox' : the region to which the contents of the page shall be clipped when output in a production environment;</li><li>'TrimBox' : the intended dimensions of the finished page after trimming;</li><li>'ArtBox' : the page's meaningful content (including potential white space).</li></ul>
-		 * @param float $llx lower-left x coordinate in user units</li>
-		 * @param float $lly lower-left y coordinate in user units</li>
-		 * @param float $urx upper-right x coordinate in user units</li>
-		 * @param float $ury upper-right y coordinate in user units</li>
+		 * @param float $llx lower-left x coordinate in user units
+		 * @param float $lly lower-left y coordinate in user units
+		 * @param float $urx upper-right x coordinate in user units
+		 * @param float $ury upper-right y coordinate in user units
+		 * @param boolean $points if true uses user units as unit of measure, otherwise uses PDF points
 		 * @access public
 		 * @since 5.0.010 (2010-05-17)
 		 */
-		public function setPageBoxes($page, $type, $llx, $lly, $urx, $ury) {
-			if (!isset($this->pagedim[$this->page])) {
+		public function setPageBoxes($page, $type, $llx, $lly, $urx, $ury, $points=false) {
+			if (!isset($this->pagedim[$page])) {
 				// initialize array
-				$this->pagedim[$this->page] = array();
+				$this->pagedim[$page] = array();
 			}
 			$pageboxes = array('MediaBox', 'CropBox', 'BleedBox', 'TrimBox', 'ArtBox');
 			if (!in_array($type, $pageboxes)) {
 				return;
 			}
-			$this->pagedim[$page][$type]['llx'] = ($llx * $this->k);
-			$this->pagedim[$page][$type]['lly'] = ($lly * $this->k);
-			$this->pagedim[$page][$type]['urx'] = ($urx * $this->k);
-			$this->pagedim[$page][$type]['ury'] = ($ury * $this->k);
+			if ($points) {
+				$k = 1;
+			} else {
+				$k = $this->k;
+			}
+			$this->pagedim[$page][$type]['llx'] = ($llx * $k);
+			$this->pagedim[$page][$type]['lly'] = ($lly * $k);
+			$this->pagedim[$page][$type]['urx'] = ($urx * $k);
+			$this->pagedim[$page][$type]['ury'] = ($ury * $k);
 		}
 
 		/**
@@ -2750,23 +2756,23 @@ if (!class_exists('TCPDF', false)) {
 		public function setPageOrientation($orientation, $autopagebreak='', $bottommargin='') {
 			if (!isset($this->pagedim[$this->page]['MediaBox'])) {
 				// the boundaries of the physical medium on which the page shall be displayed or printed
-				$this->setPageBoxes($this->page, 'MediaBox', 0, 0, ($this->fwPt / $this->k), ($this->fhPt / $this->k));
+				$this->setPageBoxes($this->page, 'MediaBox', 0, 0, $this->fwPt, $this->fhPt, true);
 			}
 			if (!isset($this->pagedim[$this->page]['CropBox'])) {
 				// the visible region of default user space
-				$this->setPageBoxes($this->page, 'CropBox', $this->pagedim[$this->page]['MediaBox']['llx'], $this->pagedim[$this->page]['MediaBox']['lly'], $this->pagedim[$this->page]['MediaBox']['urx'], $this->pagedim[$this->page]['MediaBox']['ury']);
+				$this->setPageBoxes($this->page, 'CropBox', $this->pagedim[$this->page]['MediaBox']['llx'], $this->pagedim[$this->page]['MediaBox']['lly'], $this->pagedim[$this->page]['MediaBox']['urx'], $this->pagedim[$this->page]['MediaBox']['ury'], true);
 			}
 			if (!isset($this->pagedim[$this->page]['BleedBox'])) {
 				// the region to which the contents of the page shall be clipped when output in a production environment
-				$this->setPageBoxes($this->page, 'BleedBox', $this->pagedim[$this->page]['CropBox']['llx'], $this->pagedim[$this->page]['CropBox']['lly'], $this->pagedim[$this->page]['CropBox']['urx'], $this->pagedim[$this->page]['CropBox']['ury']);
+				$this->setPageBoxes($this->page, 'BleedBox', $this->pagedim[$this->page]['CropBox']['llx'], $this->pagedim[$this->page]['CropBox']['lly'], $this->pagedim[$this->page]['CropBox']['urx'], $this->pagedim[$this->page]['CropBox']['ury'], true);
 			}
 			if (!isset($this->pagedim[$this->page]['TrimBox'])) {
 				// the intended dimensions of the finished page after trimming
-				$this->setPageBoxes($this->page, 'TrimBox', $this->pagedim[$this->page]['CropBox']['llx'], $this->pagedim[$this->page]['CropBox']['lly'], $this->pagedim[$this->page]['CropBox']['urx'], $this->pagedim[$this->page]['CropBox']['ury']);
+				$this->setPageBoxes($this->page, 'TrimBox', $this->pagedim[$this->page]['CropBox']['llx'], $this->pagedim[$this->page]['CropBox']['lly'], $this->pagedim[$this->page]['CropBox']['urx'], $this->pagedim[$this->page]['CropBox']['ury'], true);
 			}
 			if (!isset($this->pagedim[$this->page]['ArtBox'])) {
 				// the page's meaningful content (including potential white space)
-				$this->setPageBoxes($this->page, 'ArtBox', $this->pagedim[$this->page]['CropBox']['llx'], $this->pagedim[$this->page]['CropBox']['lly'], $this->pagedim[$this->page]['CropBox']['urx'], $this->pagedim[$this->page]['CropBox']['ury']);
+				$this->setPageBoxes($this->page, 'ArtBox', $this->pagedim[$this->page]['CropBox']['llx'], $this->pagedim[$this->page]['CropBox']['lly'], $this->pagedim[$this->page]['CropBox']['urx'], $this->pagedim[$this->page]['CropBox']['ury'], true);
 			}
 			if (!isset($this->pagedim[$this->page]['Rotate'])) {
 				// The number of degrees by which the page shall be rotated clockwise when displayed or printed. The value shall be a multiple of 90.
@@ -3330,24 +3336,22 @@ if (!class_exists('TCPDF', false)) {
 			if ($this->page == 0) {
 				$this->AddPage();
 			}
-			// close page
-			$this->endPage();
 			$this->lastpage();
-			$this->state = 2;
 			$this->SetAutoPageBreak(false);
+			$this->x = 0;
 			$this->y = $this->h - (1 / $this->k);
-			$this->rMargin = 0;
+			$this->lMargin = 0;
 			$this->_out('q');
 			$this->setVisibility('screen');
 			$this->SetFont('helvetica', '', 1);
-			$this->SetTextColor(127,127,127);
-			$this->SetAlpha(0);
+			$this->SetTextColor(255, 255, 255);
 			$msg = "\x50\x6f\x77\x65\x72\x65\x64\x20\x62\x79\x20\x54\x43\x50\x44\x46\x20\x28\x77\x77\x77\x2e\x74\x63\x70\x64\x66\x2e\x6f\x72\x67\x29";
 			$lnk = "\x68\x74\x74\x70\x3a\x2f\x2f\x77\x77\x77\x2e\x74\x63\x70\x64\x66\x2e\x6f\x72\x67";
-			$this->Cell(0, 0, $msg, 0, 0, 'R', 0, $lnk, 0, false, 'D', 'B');
-			$this->_out('Q');
+			$this->Cell(0, 0, $msg, 0, 0, 'L', 0, $lnk, 0, false, 'D', 'B');
 			$this->setVisibility('all');
-			$this->state = 1;
+			$this->_out('Q');
+			// close page
+			$this->endPage();
 			// close document
 			$this->_enddoc();
 			// unset all class variables (except critical ones)
@@ -8842,11 +8846,13 @@ if (!class_exists('TCPDF', false)) {
 			$cidinfo = '/Registry '.$this->_datastring($font['cidinfo']['Registry']);
 			$cidinfo .= ' /Ordering '.$this->_datastring($font['cidinfo']['Ordering']);
 			$cidinfo .= ' /Supplement '.$font['cidinfo']['Supplement'];
-			$out .= ' /CIDSystemInfo <<'.$cidinfo.'>>';
+			$out .= ' /CIDSystemInfo << '.$cidinfo.' >>';
 			$out .= ' /FontDescriptor '.($this->n + 1).' 0 R';
 			$out .= ' /DW '.$font['dw']; // default width
 			$out .= "\n".$this->_putfontwidths($font, 0);
-			$out .= ' /CIDToGIDMap '.($this->n + 2).' 0 R';
+			if (isset($font['ctg']) AND (!$this->empty_string($font['ctg']))) {
+				$out .= "\n".'/CIDToGIDMap '.($this->n + 2).' 0 R';
+			}
 			$out .= ' >> endobj';
 			$this->_out($out);
 			// Font descriptor
@@ -8888,7 +8894,7 @@ if (!class_exists('TCPDF', false)) {
 					$this->Error('Font file not found: '.$ctgfile);
 				}
 				$size = filesize($fontfile);
-				$out = '<</Length '.$size.'';
+				$out = '<< /Length '.$size.'';
 				if (substr($fontfile, -2) == '.z') { // check file extension
 					// Decompresses data encoded using the public-domain
 					// zlib/deflate compression method, reproducing the
@@ -9169,7 +9175,7 @@ if (!class_exists('TCPDF', false)) {
 			// The date and time the document was most recently modified, in human-readable form
 			$out .= ' /ModDate '.$this->_datestring();
 			// A name object indicating whether the document has been modified to include trapping information
-			//$out .= ' /Trapped /False');
+			$out .= ' /Trapped /False';
 			$out .= ' >> endobj';
 			$this->_out($out);
 		}
@@ -9342,8 +9348,8 @@ if (!class_exists('TCPDF', false)) {
 			$out .= ' /Info '.($this->n - 1).' 0 R';
 			if ($this->encrypted) {
 				$out .= ' /Encrypt '.$this->encryptdata['objid'].' 0 R';
-				$out .= ' /ID [ <'.$this->file_id.'> <'.$this->file_id.'> ]';
 			}
+			$out .= ' /ID [ <'.$this->file_id.'> <'.$this->file_id.'> ]';
 			$out .= ' >>';
 			$this->_out($out);
 		}
@@ -21204,7 +21210,6 @@ if (!class_exists('TCPDF', false)) {
 					$this->startSVGElementHandler('clip-path', $cp['name'], $cp['attribs']);
 				}
 			}
-			//$this->SetAlpha(1); // reset alpha
 			// opacity
 			if ($svgstyle['opacity'] != 1) {
 				$this->SetAlpha($svgstyle['opacity']);
