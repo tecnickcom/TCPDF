@@ -145,10 +145,12 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_getBYTE">TCPDF::_getBYTE()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Get BYTE from string (8-bit unsigned integer).</dd>
 							<dt><b>_getfontpath</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_getfontpath">TCPDF::_getfontpath()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Return fonts path</dd>
+							<dt><b>_getrawstream</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_getrawstream">TCPDF::_getrawstream()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;get raw output stream.</dd>
 							<dt><b>_getSHORT</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_getSHORT">TCPDF::_getSHORT()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Get SHORT from string (Big Endian 16-bit signed integer).</dd>
 							<dt><b>_getstream</b></dt>
-				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_getstream">TCPDF::_getstream()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Format output stream.</dd>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_getstream">TCPDF::_getstream()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Format output stream (DEPRECATED).</dd>
 							<dt><b>_getTrueTypeFontSubset</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_getTrueTypeFontSubset">TCPDF::_getTrueTypeFontSubset()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns a subset of the TrueType font data without the unused glyphs.</dd>
 							<dt><b>_getTTFtableChecksum</b></dt>
@@ -232,9 +234,7 @@
 							<dt><b>_putspotcolors</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_putspotcolors">TCPDF::_putspotcolors()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Output Spot Colors Resources.</dd>
 							<dt><b>_putstream</b></dt>
-				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_putstream">TCPDF::_putstream()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Output a stream.</dd>
-							<dt><b>_puttrailer</b></dt>
-				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_puttrailer">TCPDF::_puttrailer()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Output trailer.</dd>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_putstream">TCPDF::_putstream()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Output a stream (DEPRECATED).</dd>
 							<dt><b>_puttruetypeunicode</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_puttruetypeunicode">TCPDF::_puttruetypeunicode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Adds unicode fonts.<br /></dd>
 							<dt><b>_putviewerpreferences</b></dt>
@@ -1525,6 +1525,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodRegularPolygon">TCPDF::RegularPolygon()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Draws a regular polygon.</dd>
 							<dt><b>removeSHY</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodremoveSHY">TCPDF::removeSHY()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Removes SHY characters from text.</dd>
+							<dt><b>replaceBuffer</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodreplaceBuffer">TCPDF::replaceBuffer()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Replace the buffer content</dd>
 							<dt><b>revstrpos</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodrevstrpos">TCPDF::revstrpos()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Find position of last occurrence of a substring in a string</dd>
 							<dt><b>rfread</b></dt>
@@ -2056,7 +2058,7 @@
 	<a href="elementindex_com-tecnick-tcpdf.html#top">top</a><br>
         <div class="credit">
 		    <hr />
-		    Documentation generated on Sat, 19 Jun 2010 14:36:12 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
+		    Documentation generated on Tue, 22 Jun 2010 21:21:49 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
 	      </div>
       </td></tr></table>
     </td>

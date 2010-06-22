@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.4.003
+// Version     : 5.5.000
 // Begin       : 2002-08-03
-// Last Update : 2010-06-19
+// Last Update : 2010-06-22
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.4.003
+ * @version 5.5.000
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.4.003 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.5.000 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.4.003
+	* @version 5.5.000
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -4763,10 +4763,11 @@ if (!class_exists('TCPDF', false)) {
 					$filter = ' /Filter /FlateDecode';
 				}
 				$this->offsets[$filedata['n']] = $this->bufferlen;
-				$out = $filedata['n'].' 0 obj';
-				$out .= ' <</Type /EmbeddedFile'.$filter.' /Length '.strlen($data).' >>';
-				$out .= ' '.$this->_getstream($data, $filedata['n']);
-				$out .= ' endobj';
+				$out = $filedata['n'].' 0 obj'."\n";
+				$stream = $this->_getrawstream($data, $filedata['n']);
+				$out .= '<< /Type /EmbeddedFile'.$filter.' /Length '.strlen($stream).' >>';
+				$out .= ' stream'."\n".$stream."\n".'endstream';
+				$out .= "\n".'endobj';
 				$this->_out($out);
 			}
 		}
@@ -7076,7 +7077,7 @@ if (!class_exists('TCPDF', false)) {
 				$signature = current(unpack('H*', $signature));
 				$signature = str_pad($signature, $this->signature_max_length, '0');
 				// Add signature to the document
-				$pdfdoc = substr($pdfdoc, 0, $byte_range[1]).'<'.$signature.'>'.substr($pdfdoc, ($byte_range[1]));
+				$pdfdoc = substr($pdfdoc, 0, $byte_range[1]).'<'.$signature.'>'.substr($pdfdoc, $byte_range[1]);
 				$this->diskcache = false;
 				$this->buffer = &$pdfdoc;
 				$this->bufferlen = strlen($pdfdoc);
@@ -7430,12 +7431,14 @@ if (!class_exists('TCPDF', false)) {
 				}
 				$out .= $this->_getannotsrefs($n);
 				$out .= ' /PZ '.$this->pagedim[$n]['PZ'];
-				$out .= ' >> endobj';
+				$out .= ' >>';
+				$out .= "\n".'endobj';
 				$this->_out($out);
 				//Page content
 				$p = ($this->compress) ? gzcompress($temppage) : $temppage;
 				$this->_newobj();
-				$this->_out('<<'.$filter.'/Length '.strlen($p).'>> '.$this->_getstream($p).' endobj');
+				$p = $this->_getrawstream($p);
+				$this->_out('<<'.$filter.'/Length '.strlen($p).'>> stream'."\n".$p."\n".'endstream'."\n".'endobj');
 				if ($this->diskcache) {
 					// remove temporary files
 					unlink($this->pages[$n]);
@@ -7443,11 +7446,13 @@ if (!class_exists('TCPDF', false)) {
 			}
 			//Pages root
 			$this->offsets[1] = $this->bufferlen;
-			$out = '1 0 obj << /Type /Pages  /Kids [';
+			$out = '1 0 obj'."\n";
+			$out .= '<< /Type /Pages  /Kids [';
 			foreach($this->page_obj_id as $page_obj) {
 				$out .= ' '.$page_obj.' 0 R';
 			}
-			$out .= ' ] /Count '.$nb.' >>  endobj';
+			$out .= ' ] /Count '.$nb.' >>';
+			$out .= "\n".'endobj';
 			$this->_out($out);
 		}
 
@@ -7532,7 +7537,7 @@ if (!class_exists('TCPDF', false)) {
 							$annots .= ' >>';
 							++$this->annot_obj_id;
 							$this->offsets[$this->annot_obj_id] = $this->bufferlen;
-							$this->_out($this->annot_obj_id.' 0 obj '.$annots.' endobj');
+							$this->_out($this->annot_obj_id.' 0 obj'."\n".$annots."\n".'endobj');
 							$this->form_obj_id[] = $this->annot_obj_id;
 							// store object id to be used on Parent entry of Kids
 							$this->radiobutton_groups[$n][$pl['txt']] = $this->annot_obj_id;
@@ -8096,7 +8101,7 @@ if (!class_exists('TCPDF', false)) {
 						// create new annotation object
 						++$this->annot_obj_id;
 						$this->offsets[$this->annot_obj_id] = $this->bufferlen;
-						$this->_out($this->annot_obj_id.' 0 obj '.$annots.' endobj');
+						$this->_out($this->annot_obj_id.' 0 obj'."\n".$annots."\n".'endobj');
 						if ($formfield AND ! isset($this->radiobutton_groups[$n][$pl['txt']])) {
 							// store reference of form object
 							$this->form_obj_id[] = $this->annot_obj_id;
@@ -8119,8 +8124,8 @@ if (!class_exists('TCPDF', false)) {
 			$stream = trim($stream);
 			++$this->apxo_obj_id;
 			$this->offsets[$this->apxo_obj_id] = $this->bufferlen;
-			$out = $this->apxo_obj_id.' 0 obj';
-			$out .= ' <<';
+			$out = $this->apxo_obj_id.' 0 obj'."\n";
+			$out .= '<<';
 			$out .= ' /Type /XObject';
 			$out .= ' /Subtype /Form';
 			$out .= ' /FormType 1';
@@ -8132,10 +8137,11 @@ if (!class_exists('TCPDF', false)) {
 			$out .= ' /BBox [0 0 '.$rect.']';
 			$out .= ' /Matrix [1 0 0 1 0 0]';
 			$out .= ' /Resources <</ProcSet [/PDF]>>';
+			$stream = $this->_getrawstream($stream);
 			$out .= ' /Length '.strlen($stream);
 			$out .= ' >>';
-			$out .= ' '.$this->_getstream($stream);
-			$out .= ' endobj';
+			$out .= ' stream'."\n".$stream."\n".'endstream';
+			$out .= "\n".'endobj';
 			$this->_out($out);
 			return $this->apxo_obj_id;
 		}
@@ -8666,7 +8672,7 @@ if (!class_exists('TCPDF', false)) {
 			foreach ($this->diffs as $diff) {
 				//Encodings
 				$this->_newobj();
-				$this->_out('<< /Type /Encoding /BaseEncoding /WinAnsiEncoding /Differences ['.$diff.'] >> endobj');
+				$this->_out('<< /Type /Encoding /BaseEncoding /WinAnsiEncoding /Differences ['.$diff.'] >>'."\n".'endobj');
 			}
 			$mqr = $this->get_mqr();
 			$this->set_mqr(false);
@@ -8715,7 +8721,8 @@ if (!class_exists('TCPDF', false)) {
 					}
 					$this->_newobj();
 					$this->FontFiles[$file]['n'] = $this->n;
-					$out = '<</Length '.strlen($font);
+					$stream = $this->_getrawstream($font);
+					$out = '<< /Length '.strlen($stream);
 					if ($compressed) {
 						$out .= ' /Filter /FlateDecode';
 					}
@@ -8724,8 +8731,8 @@ if (!class_exists('TCPDF', false)) {
 						$out .= ' /Length2 '.$info['length2'].' /Length3 0';
 					}
 					$out .= ' >>';
-					$out .= ' '.$this->_getstream($font);
-					$out .= ' endobj';
+					$out .= ' stream'."\n".$stream."\n".'endstream';
+					$out .= "\n".'endobj';
 					$this->_out($out);
 				}
 			}
@@ -8750,7 +8757,8 @@ if (!class_exists('TCPDF', false)) {
 						// add default font for annotations
 						$this->annotation_fonts['helvetica'] = $k;
 					}
-					$out .= ' >> endobj';
+					$out .= ' >>';
+					$out .= "\n".'endobj';
 					$this->_out($out);
 				} elseif (($type == 'Type1') OR ($type == 'TrueType')) {
 					// additional Type1 or TrueType font
@@ -8769,7 +8777,8 @@ if (!class_exists('TCPDF', false)) {
 							$out .= ' /Encoding /WinAnsiEncoding';
 						}
 					}
-					$out .= ' >> endobj';
+					$out .= ' >>';
+					$out .= "\n".'endobj';
 					$this->_out($out);
 					// Widths
 					$this->_newobj();
@@ -8778,7 +8787,9 @@ if (!class_exists('TCPDF', false)) {
 					for ($i = 32; $i < 256; ++$i) {
 						$s .= $cw[$i].' ';
 					}
-					$this->_out($s.'] endobj');
+					$s .= ']';
+					$s .= "\n".'endobj';
+					$this->_out($s);
 					//Descriptor
 					$this->_newobj();
 					$s = '<</Type /FontDescriptor /FontName /'.$name;
@@ -8791,7 +8802,9 @@ if (!class_exists('TCPDF', false)) {
 					if (!$this->empty_string($font['file'])) {
 						$s .= ' /FontFile'.($type == 'Type1' ? '' : '2').' '.$this->FontFiles[$font['file']]['n'].' 0 R';
 					}
-					$this->_out($s.'>> endobj');
+					$s .= '>>';
+					$s .= "\n".'endobj';
+					$this->_out($s);
 				} else {
 					// additional types
 					$mtd = '_put'.strtolower($type);
@@ -8834,7 +8847,7 @@ if (!class_exists('TCPDF', false)) {
 			$out .= ' /ToUnicode /Identity-H';
 			$out .= ' /DescendantFonts ['.($this->n + 1).' 0 R]';
 			$out .= ' >>';
-			$out .= ' endobj';
+			$out .= "\n".'endobj';
 			$this->_out($out);
 			// CIDFontType2
 			// A CIDFont whose glyph descriptions are based on TrueType font technology
@@ -8853,7 +8866,8 @@ if (!class_exists('TCPDF', false)) {
 			if (isset($font['ctg']) AND (!$this->empty_string($font['ctg']))) {
 				$out .= "\n".'/CIDToGIDMap '.($this->n + 2).' 0 R';
 			}
-			$out .= ' >> endobj';
+			$out .= ' >>';
+			$out .= "\n".'endobj';
 			$this->_out($out);
 			// Font descriptor
 			// A font descriptor describing the CIDFont default metrics other than its glyph widths
@@ -8872,7 +8886,8 @@ if (!class_exists('TCPDF', false)) {
 				$out .= ' /FontFile2 '.$this->FontFiles[$font['file']]['n'].' 0 R';
 				$fontdir = $this->FontFiles[$font['file']]['fontdir'];
 			}
-			$out .= ' >> endobj';
+			$out .= ' >>';
+			$out .= "\n".'endobj';
 			$this->_out($out);
 			if (isset($font['ctg']) AND (!$this->empty_string($font['ctg']))) {
 				$this->_newobj();
@@ -8893,8 +8908,8 @@ if (!class_exists('TCPDF', false)) {
 				if ($this->empty_string($fontfile)) {
 					$this->Error('Font file not found: '.$ctgfile);
 				}
-				$size = filesize($fontfile);
-				$out = '<< /Length '.$size.'';
+				$stream = $this->_getrawstream(file_get_contents($fontfile));
+				$out = '<< /Length '.strlen($stream).'';
 				if (substr($fontfile, -2) == '.z') { // check file extension
 					// Decompresses data encoded using the public-domain
 					// zlib/deflate compression method, reproducing the
@@ -8902,8 +8917,8 @@ if (!class_exists('TCPDF', false)) {
 					$out .= ' /Filter /FlateDecode';
 				}
 				$out .= ' >>';
-				$out .= ' '.$this->_getstream(file_get_contents($fontfile));
-				$out .= ' endobj';
+				$out .= ' stream'."\n".$stream."\n".'endstream';
+				$out .= "\n".'endobj';
 				$this->_out($out);
 			}
 			return $obj_id;
@@ -8952,7 +8967,8 @@ if (!class_exists('TCPDF', false)) {
 				$out .= ' /Encoding /'.$enc;
 			}
 			$out .= ' /DescendantFonts ['.($this->n + 1).' 0 R]';
-			$out .= ' >> endobj';
+			$out .= ' >>';
+			$out .= "\n".'endobj';
 			$this->_out($out);
 			$this->_newobj();
 			$out = '<</Type /Font';
@@ -8965,7 +8981,8 @@ if (!class_exists('TCPDF', false)) {
 			$out .= ' /FontDescriptor '.($this->n + 1).' 0 R';
 			$out .= ' /DW '.$font['dw'];
 			$out .= "\n".$this->_putfontwidths($font, $cidoffset);
-			$out .= ' >> endobj';
+			$out .= ' >>';
+			$out .= "\n".'endobj';
 			$this->_out($out);
 			$this->_newobj();
 			$s = '<</Type /FontDescriptor /FontName /'.$name;
@@ -8977,7 +8994,9 @@ if (!class_exists('TCPDF', false)) {
 					$s .= ' /'.$k.' '.$v.'';
 				}
 			}
-			$this->_out($s.'>> endobj');
+			$s .= '>>';
+			$s .= "\n".'endobj';
+			$this->_out($s);
 			return $obj_id;
 		}
 
@@ -9021,15 +9040,17 @@ if (!class_exists('TCPDF', false)) {
 					}
 					$out .= ' /Mask ['.$trns.']';
 				}
-				$out .= ' /Length '.strlen($info['data']).' >>';
-				$out .= ' '.$this->_getstream($info['data']);
-				$out .= ' endobj';
+				$stream = $this->_getrawstream($info['data']);
+				$out .= ' /Length '.strlen($stream).' >>';
+				$out .= ' stream'."\n".$stream."\n".'endstream';
+				$out .= "\n".'endobj';
 				$this->_out($out);
 				//Palette
 				if ($info['cs'] == 'Indexed') {
 					$this->_newobj();
 					$pal = ($this->compress) ? gzcompress($info['pal']) : $info['pal'];
-					$this->_out('<<'.$filter.'/Length '.strlen($pal).'>> '.$this->_getstream($pal).' endobj');
+					$pal = $this->_getrawstream($pal);
+					$this->_out('<<'.$filter.'/Length '.strlen($pal).'>> '.$pal."\n".'endobj');
 				}
 			}
 		}
@@ -9048,7 +9069,7 @@ if (!class_exists('TCPDF', false)) {
 				$out .= ' /Range [0 1 0 1 0 1 0 1] /C0 [0 0 0 0]';
 				$out .= ' '.sprintf('/C1 [%.4F %.4F %.4F %.4F] ', $color['c']/100, $color['m']/100, $color['y']/100, $color['k']/100);
 				$out .= ' /FunctionType 2 /Domain [0 1] /N 1>>]';
-				$out .= ' endobj';
+				$out .= "\n".'endobj';
 				$this->_out($out);
 			}
 		}
@@ -9058,8 +9079,8 @@ if (!class_exists('TCPDF', false)) {
 		 * @access protected
 		 */
 		protected function _putresourcedict() {
-			$out = '2 0 obj';
-			$out .= ' << /ProcSet [/PDF /Text /ImageB /ImageC /ImageI]';
+			$out = '2 0 obj'."\n";
+			$out .= '<< /ProcSet [/PDF /Text /ImageB /ImageC /ImageI]';
 			$out .= ' /Font <<';
 			foreach ($this->fontkeys as $fontkey) {
 				$font = $this->getFontBuffer($fontkey);
@@ -9109,7 +9130,8 @@ if (!class_exists('TCPDF', false)) {
 				}
 				$out .= ' >>';
 			}
-			$out .= ' >> endobj';
+			$out .= ' >>';
+			$out .= "\n".'endobj';
 			$this->_out($out);
 		}
 
@@ -9138,10 +9160,11 @@ if (!class_exists('TCPDF', false)) {
 		/**
 		 * Adds some Metadata information (Document Information Dictionary)
 		 * (see Chapter 14.3.3 Document Information Dictionary of PDF32000_2008.pdf Reference)
+		 * @return int object id
 		 * @access protected
 		 */
 		protected function _putinfo() {
-			$this->_newobj();
+			$oid = $this->_newobj();
 			$out = '<<';
 			if (!$this->empty_string($this->title)) {
 				// The document's title.
@@ -9176,16 +9199,19 @@ if (!class_exists('TCPDF', false)) {
 			$out .= ' /ModDate '.$this->_datestring();
 			// A name object indicating whether the document has been modified to include trapping information
 			$out .= ' /Trapped /False';
-			$out .= ' >> endobj';
+			$out .= ' >>';
+			$out .= "\n".'endobj';
 			$this->_out($out);
+			return $oid;
 		}
 
 		/**
 		 * Output Catalog.
+		 * @return int object id
 		 * @access protected
 		 */
 		protected function _putcatalog() {
-			$this->_newobj();
+			$oid = $this->_newobj();
 			$out = '<< /Type /Catalog';
 			$out .= ' /Pages 1 0 R';
 			if ($this->ZoomMode == 'fullpage') {
@@ -9204,7 +9230,7 @@ if (!class_exists('TCPDF', false)) {
 				$out .= ' /PageMode /'.$this->PageMode;
 			}
 			if (isset($this->l['a_meta_language'])) {
-				$out .= ' /Lang /'.$this->l['a_meta_language'];
+				$out .= ' /Lang '.$this->_textstring($this->l['a_meta_language']);
 			}
 			$out .= ' /Names <<';
 			if ((!empty($this->javascript)) OR (!empty($this->js_objects))) {
@@ -9218,11 +9244,11 @@ if (!class_exists('TCPDF', false)) {
 			$out .= ' '.$this->_putviewerpreferences();
 			$p = $this->n_ocg_print.' 0 R';
 			$v = $this->n_ocg_view.' 0 R';
-			$as = '<</Event /Print /OCGs ['.$p.' '.$v.'] /Category [/Print]>> <</Event /View /OCGs ['.$p.' '.$v.'] /Category [/View]>>';
-			$out .= ' /OCProperties <</OCGs ['.$p.' '.$v.'] /D <</ON ['.$p.'] /OFF ['.$v.'] /AS ['.$as.']>>>>';
+			$as = '<< /Event /Print /OCGs ['.$p.' '.$v.'] /Category [/Print] >> << /Event /View /OCGs ['.$p.' '.$v.'] /Category [/View] >>';
+			$out .= ' /OCProperties << /OCGs ['.$p.' '.$v.'] /D << /ON ['.$p.'] /OFF ['.$v.'] /AS ['.$as.'] >> >>';
 			// AcroForm
 			if (!empty($this->form_obj_id) OR ($this->sign AND isset($this->signature_data['cert_type']))) {
-				$out .= ' /AcroForm<<';
+				$out .= ' /AcroForm <<';
 				$objrefs = '';
 				if ($this->sign AND isset($this->signature_data['cert_type'])) {
 					$objrefs .= $this->sig_obj_id.' 0 R';
@@ -9233,7 +9259,9 @@ if (!class_exists('TCPDF', false)) {
 					}
 				}
 				$out .= ' /Fields ['.$objrefs.']';
-				$out .= ' /NeedAppearances '.(empty($this->form_obj_id)?'false':'true');
+				if (!empty($this->form_obj_id) AND !$this->sign) {
+					$out .= ' /NeedAppearances true';
+				}
 				if ($this->sign AND isset($this->signature_data['cert_type'])) {
 					$out .= ' /SigFlags 3';
 				}
@@ -9253,14 +9281,16 @@ if (!class_exists('TCPDF', false)) {
 				// signatures
 				if ($this->sign AND isset($this->signature_data['cert_type'])) {
 					if ($this->signature_data['cert_type'] > 0) {
-						$out .= ' /Perms<</DocMDP '.($this->sig_obj_id + 1).' 0 R>>';
+						$out .= ' /Perms << /DocMDP '.($this->sig_obj_id + 1).' 0 R >>';
 					} else {
-						$out .= ' /Perms<</UR3 '.($this->sig_obj_id + 1).' 0 R>>';
+						$out .= ' /Perms << /UR3 '.($this->sig_obj_id + 1).' 0 R >>';
 					}
 				}
 			}
-			$out .= ' >> endobj';
+			$out .= ' >>';
+			$out .= "\n".'endobj';
 			$this->_out($out);
+			return $oid;
 		}
 
 		/**
@@ -9338,23 +9368,6 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
-		 * Output trailer.
-		 * @access protected
-		 */
-		protected function _puttrailer() {
-			$out = 'trailer <<';
-			$out .= ' /Size '.($this->n + 1);
-			$out .= ' /Root '.$this->n.' 0 R';
-			$out .= ' /Info '.($this->n - 1).' 0 R';
-			if ($this->encrypted) {
-				$out .= ' /Encrypt '.$this->encryptdata['objid'].' 0 R';
-			}
-			$out .= ' /ID [ <'.$this->file_id.'> <'.$this->file_id.'> ]';
-			$out .= ' >>';
-			$this->_out($out);
-		}
-
-		/**
 		 * Output PDF header.
 		 * @access protected
 		 */
@@ -9391,60 +9404,89 @@ if (!class_exists('TCPDF', false)) {
 				$this->buffer = &$pdfdoc;
 				$this->bufferlen = strlen($pdfdoc);
 				// ---
-				$out = '<< /Type /Annot /Subtype /Widget';
+				$out = '<< /Type /Annot';
+				$out .= ' /Subtype /Widget';
 				$out .= ' /Rect ['.$this->signature_appearance['rect'].']';
 				$out .= ' /P '.$this->page_obj_id[($this->signature_appearance['page'])].' 0 R'; // link to signature appearance page
+				$out .= ' /F 4';
 				$out .= ' /FT /Sig';
 				$out .= ' /T '.$this->_textstring('Signature');
 				$out .= ' /Ff 0';
 				$out .= ' /V '.($this->sig_obj_id + 1).' 0 R';
-				$out .= ' >> endobj';
+				$out .= ' >>';
+				$out .= "\n".'endobj';
 				$this->_out($out);
 				// signature
 				$this->_putsignature();
 			}
 			// Info
-			$this->_putinfo();
+			$objid_info = $this->_putinfo();
 			// Catalog
-			$this->_putcatalog();
+			$objid_catalog = $this->_putcatalog();
+			// Normalize Object IDs
+			$buffer = $this->getBuffer(); // (requires a lot of memory)
+			// Embedded Files
+			if (isset($this->embeddedfiles) AND count($this->embeddedfiles) > 0) {
+				foreach ($this->embeddedfiles as $filename => $filedata) {
+					++$this->n;
+					$this->offsets[$this->n] = $this->offsets[$filedata['n']];
+					$newobjid = sprintf('% 6u', $this->n);
+					$buffer = str_replace(''.$filedata['n'].' 0 R', ''.$newobjid.' 0 R', $buffer);
+					$buffer = str_replace(''.$filedata['n'].' 0 obj', ''.$newobjid.' 0 obj', $buffer);
+				}
+			}
+			// Annotation Objects
+			if ($this->annot_obj_id > $this->annots_start_obj_id) {
+				for ($i = ($this->annots_start_obj_id + 1); $i <= $this->annot_obj_id; ++$i) {
+					++$this->n;
+					$this->offsets[$this->n] = $this->offsets[$i];
+					$newobjid = sprintf('% 6u', $this->n);
+					$buffer = str_replace($i.' 0 R', $newobjid.' 0 R', $buffer);
+					$buffer = str_replace($i.' 0 obj', $newobjid.' 0 obj', $buffer);
+				}
+			}
+			// Javascript Objects
+			if ($this->js_obj_id > $this->js_start_obj_id) {
+				for ($i = ($this->js_start_obj_id + 1); $i <= $this->js_obj_id; ++$i) {
+					++$this->n;
+					$this->offsets[$this->n] = $this->offsets[$i];
+					$newobjid = sprintf('% 6u', $this->n);
+					$buffer = str_replace($i.' 0 R', $newobjid.' 0 R', $buffer);
+					$buffer = str_replace($i.' 0 obj', $newobjid.' 0 obj', $buffer);
+				}
+			}
+			// Appearance streams XObjects
+			if ($this->apxo_obj_id > $this->apxo_start_obj_id) {
+				for ($i = ($this->apxo_start_obj_id + 1); $i <= $this->apxo_obj_id; ++$i) {
+					++$this->n;
+					$this->offsets[$this->n] = $this->offsets[$i];
+					$newobjid = sprintf('% 6u', $this->n);
+					$buffer = str_replace($i.' 0 R', $newobjid.' 0 R', $buffer);
+					$buffer = str_replace($i.' 0 obj', $newobjid.' 0 obj', $buffer);
+				}
+			}
+			// overwrite buffer
+			$this->replaceBuffer($buffer);
 			// Cross-ref
 			$o = $this->bufferlen;
+			// XREF section
 			$this->_out('xref');
 			$this->_out('0 '.($this->n + 1));
 			$this->_out('0000000000 65535 f ');
 			for ($i=1; $i <= $this->n; ++$i) {
 				$this->_out(sprintf('%010d 00000 n ', $this->offsets[$i]));
 			}
-			// Embedded Files
-			if (isset($this->embeddedfiles) AND count($this->embeddedfiles) > 0) {
-				$this->_out($this->embedded_start_obj_id.' '.count($this->embeddedfiles));
-				foreach ($this->embeddedfiles as $filename => $filedata) {
-					$this->_out(sprintf('%010d 00000 n ', $this->offsets[$filedata['n']]));
-				}
+			// TRAILER
+			$out = 'trailer <<';
+			$out .= ' /Size '.($this->n + 1);
+			$out .= ' /Root '.$objid_catalog.' 0 R';
+			$out .= ' /Info '.$objid_info.' 0 R';
+			if ($this->encrypted) {
+				$out .= ' /Encrypt '.$this->encryptdata['objid'].' 0 R';
 			}
-			// Annotation Objects
-			if ($this->annot_obj_id > $this->annots_start_obj_id) {
-				$this->_out(($this->annots_start_obj_id + 1).' '.($this->annot_obj_id - $this->annots_start_obj_id));
-				for ($i = ($this->annots_start_obj_id + 1); $i <= $this->annot_obj_id; ++$i) {
-					$this->_out(sprintf('%010d 00000 n ', $this->offsets[$i]));
-				}
-			}
-			// Javascript Objects
-			if ($this->js_obj_id > $this->js_start_obj_id) {
-				$this->_out(($this->js_start_obj_id + 1).' '.($this->js_obj_id - $this->js_start_obj_id));
-				for ($i = ($this->js_start_obj_id + 1); $i <= $this->js_obj_id; ++$i) {
-					$this->_out(sprintf('%010d 00000 n ', $this->offsets[$i]));
-				}
-			}
-			// Appearance streams XObjects
-			if ($this->apxo_obj_id > $this->apxo_start_obj_id) {
-				$this->_out(($this->apxo_start_obj_id + 1).' '.($this->apxo_obj_id - $this->apxo_start_obj_id));
-				for ($i = ($this->apxo_start_obj_id + 1); $i <= $this->apxo_obj_id; ++$i) {
-					$this->_out(sprintf('%010d 00000 n ', $this->offsets[$i]));
-				}
-			}
-			//Trailer
-			$this->_puttrailer();
+			$out .= ' /ID [ <'.$this->file_id.'> <'.$this->file_id.'> ]';
+			$out .= ' >>';
+			$this->_out($out);
 			$this->_out('startxref');
 			$this->_out($o);
 			$this->_out('%%EOF');
@@ -9709,25 +9751,38 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
-		 * Format output stream.
+		 * get raw output stream.
 		 * @param string $s string to output.
 		 * @param int $n object reference for encryption mode
 		 * @access protected
+		 * @author Nicola Asuni
+		 * @since 5.5.000 (2010-06-22)
 		 */
-		protected function _getstream($s, $n=0) {
+		protected function _getrawstream($s, $n=0) {
 			if ($n <= 0) {
 				// default to current object
 				$n = $this->n;
 			}
-			$s = $this->_encrypt_data($n, $s);
-			return "stream\n".$s."\nendstream";
+			return $this->_encrypt_data($n, $s);
 		}
 
 		/**
-		 * Output a stream.
+		 * Format output stream (DEPRECATED).
 		 * @param string $s string to output.
 		 * @param int $n object reference for encryption mode
 		 * @access protected
+		 * @deprecated
+		 */
+		protected function _getstream($s, $n=0) {
+			return 'stream'."\n".$this->_getrawstream($s, $n)."\n".'endstream';
+		}
+
+		/**
+		 * Output a stream (DEPRECATED).
+		 * @param string $s string to output.
+		 * @param int $n object reference for encryption mode
+		 * @access protected
+		 * @deprecated
 		 */
 		protected function _putstream($s, $n=0) {
 			$this->_out($this->_getstream($s, $n));
@@ -10374,7 +10429,8 @@ if (!class_exists('TCPDF', false)) {
 					$out .= ' /EncryptMetadata true';
 				}
 			}
-			$out .= ' >> endobj';
+			$out .= ' >>';
+			$out .= "\n".'endobj';
 			$this->_out($out);
 		}
 
@@ -12623,13 +12679,14 @@ if (!class_exists('TCPDF', false)) {
 					$out .= ' /Last '.($n + $o['last']).' 0 R';
 				}
 				$out .= ' '.sprintf('/Dest [%d 0 R /XYZ 0 %.2F null]', (1 + (2 * $o['p'])), ($this->pagedim[$o['p']]['h'] - ($o['y'] * $this->k)));
-				$out .= ' /Count 0 >> endobj';
+				$out .= ' /Count 0 >>';
+				$out .= "\n".'endobj';
 				$this->_out($out);
 			}
 			//Outline root
 			$this->_newobj();
 			$this->OutlineRoot = $this->n;
-			$this->_out('<< /Type /Outlines /First '.$n.' 0 R /Last '.($n + $lru[0]).' 0 R >> endobj');
+			$this->_out('<< /Type /Outlines /First '.$n.' 0 R /Last '.($n + $lru[0]).' 0 R >>'."\n".'endobj');
 		}
 
 		// --- JAVASCRIPT ------------------------------------------------------
@@ -12692,21 +12749,23 @@ if (!class_exists('TCPDF', false)) {
 					}
 				}
 			}
-			$out .= ' ] >> endobj';
+			$out .= ' ] >>';
+			$out .= "\n".'endobj';
 			$this->_out($out);
 			// default Javascript object
 			if (!empty($this->javascript)) {
 				$this->_newobj();
 				$out = '<< /S /JavaScript';
 				$out .= ' /JS '.$this->_textstring($this->javascript);
-				$out .= ' >> endobj';
+				$out .= ' >>';
+				$out .= "\n".'endobj';
 				$this->_out($out);
 			}
 			// additional Javascript objects
 			if (!empty($this->js_objects)) {
 				foreach ($this->js_objects as $key => $val) {
 					$this->offsets[$key] = $this->bufferlen;
-					$out = $key.' 0 obj'."\n".' << /S /JavaScript /JS '.$this->_textstring($val['js']).' >> endobj';
+					$out = $key.' 0 obj'."\n".' << /S /JavaScript /JS '.$this->_textstring($val['js']).' >>'."\n".'endobj';
 					$this->_out($out);
 				}
 			}
@@ -13696,25 +13755,23 @@ if (!class_exists('TCPDF', false)) {
 				return;
 			}
 			$this->_newobj();
-			$out = ' << /Type /Sig';
+			$out = '<< /Type /Sig';
 			$out .= ' /Filter /Adobe.PPKLite';
 			$out .= ' /SubFilter /adbe.pkcs7.detached';
 			$out .= ' '.$this->byterange_string;
-			$out .= ' /Contents<>'.str_repeat(' ', $this->signature_max_length);
-			$out .= ' /Reference';
-			$out .= ' [';
+			$out .= ' /Contents<'.str_repeat('0', $this->signature_max_length).'>';
+			$out .= ' /Reference ['; // array of signature reference dictionaries
 			$out .= ' << /Type /SigRef';
 			if ($this->signature_data['cert_type'] > 0) {
 				$out .= ' /TransformMethod /DocMDP';
-				$out .= ' /TransformParams';
-				$out .= ' <<';
+				$out .= ' /TransformParams <<';
 				$out .= ' /Type /TransformParams';
 				$out .= ' /V /1.2';
 				$out .= ' /P '.$this->signature_data['cert_type'];
 			} else {
 				$out .= ' /TransformMethod /UR3';
-				$out .= ' /TransformParams';
-				$out .= ' << /Type /TransformParams';
+				$out .= ' /TransformParams <<';
+				$out .= ' /Type /TransformParams';
 				$out .= ' /V /2.2';
 				if (!$this->empty_string($this->ur_document)) {
 					$out .= ' /Document['.$this->ur_document.']';
@@ -13729,7 +13786,14 @@ if (!class_exists('TCPDF', false)) {
 					$out .= ' /Signature['.$this->ur_signature.']';
 				}
 			}
-			$out .= ' >> >> ]';
+			$out .= ' >>'; // close TransformParams
+			// optional digest data (values must be calculated and replaced later)
+			//$out .= ' /Data ********** 0 R';
+			//$out .= ' /DigestMethod/MD5';
+			//$out .= ' /DigestLocation[********** 34]';
+			//$out .= ' /DigestValue<********************************>';
+			$out .= ' >>';
+			$out .= ' ]'; // end of reference
 			if (isset($this->signature_data['info']['Name']) AND !$this->empty_string($this->signature_data['info']['Name'])) {
 				$out .= ' /Name '.$this->_textstring($this->signature_data['info']['Name']);
 			}
@@ -13743,7 +13807,8 @@ if (!class_exists('TCPDF', false)) {
 				$out .= ' /ContactInfo '.$this->_textstring($this->signature_data['info']['ContactInfo']);
 			}
 			$out .= ' /M '.$this->_datestring();
-			$out .= ' >> endobj';
+			$out .= ' >>';
+			$out .= "\n".'endobj';
 			$this->_out($out);
 		}
 
@@ -14000,10 +14065,10 @@ if (!class_exists('TCPDF', false)) {
 		protected function _putocg() {
 			$this->_newobj();
 			$this->n_ocg_print = $this->n;
-			$this->_out('<< /Type /OCG /Name '.$this->_textstring('print').' /Usage << /Print <</PrintState /ON>> /View <</ViewState /OFF>> >> >> endobj');
+			$this->_out('<< /Type /OCG /Name '.$this->_textstring('print').' /Usage << /Print <</PrintState /ON>> /View <</ViewState /OFF>> >> >>'."\n".'endobj');
 			$this->_newobj();
 			$this->n_ocg_view = $this->n;
-			$this->_out('<< /Type /OCG /Name '.$this->_textstring('view').' /Usage << /Print <</PrintState /OFF>> /View <</ViewState /ON>> >> >> endobj');
+			$this->_out('<< /Type /OCG /Name '.$this->_textstring('view').' /Usage << /Print <</PrintState /OFF>> /View <</ViewState /ON>> >> >>'."\n".'endobj');
 		}
 
 		/**
@@ -14091,7 +14156,8 @@ if (!class_exists('TCPDF', false)) {
 					}
 					$out .= ' /'.$k.' '.$v;
 				}
-				$out .= ' >> endobj';
+				$out .= ' >>';
+				$out .= "\n".'endobj';
 				$this->_out($out);
 			}
 		}
@@ -14659,7 +14725,7 @@ if (!class_exists('TCPDF', false)) {
 					$out .= ' /Bounds ['.trim($bounds).']';
 					$out .= ' /Encode ['.trim($encode).']';
 					$out .= ' >>';
-					$out .= ' endobj';
+					$out .= "\n".'endobj';
 					$this->_out($out);
 					for ($i = 1; $i < $num_cols; ++$i) {
 						$this->_newobj();
@@ -14670,7 +14736,7 @@ if (!class_exists('TCPDF', false)) {
 						$out .= ' /C1 ['.$grad['colors'][$i]['color'].']';
 						$out .= ' /N '.$grad['colors'][$i]['exponent'];
 						$out .= ' >>';
-						$out .= ' endobj';
+						$out .= "\n".'endobj';
 						$this->_out($out);
 					}
 					// set transparency fuctions
@@ -14690,7 +14756,7 @@ if (!class_exists('TCPDF', false)) {
 						$out .= ' /Bounds ['.trim($bounds).']';
 						$out .= ' /Encode ['.trim($encode).']';
 						$out .= ' >>';
-						$out .= ' endobj';
+						$out .= "\n".'endobj';
 						$this->_out($out);
 						for ($i = 1; $i < $num_cols; ++$i) {
 							$this->_newobj();
@@ -14701,7 +14767,7 @@ if (!class_exists('TCPDF', false)) {
 							$out .= ' /C1 ['.$grad['colors'][$i]['opacity'].']';
 							$out .= ' /N '.$grad['colors'][$i]['exponent'];
 							$out .= ' >>';
-							$out .= ' endobj';
+							$out .= "\n".'endobj';
 							$this->_out($out);
 						}
 					}
@@ -14739,11 +14805,12 @@ if (!class_exists('TCPDF', false)) {
 					$out .= ' /BitsPerComponent 8';
 					$out .= ' /Decode[0 1 0 1 0 1 0 1 0 1]';
 					$out .= ' /BitsPerFlag 8';
-					$out .= ' /Length '.strlen($grad['stream']);
+					$stream = $this->_getrawstream($grad['stream']);
+					$out .= ' /Length '.strlen($stream);
 					$out .= ' >>';
-					$out .= ' '.$this->_getstream($grad['stream']);
+					$out .= ' stream'."\n".$stream."\n".'endstream';
 				}
-				$out .= ' endobj';
+				$out .= "\n".'endobj';
 				$this->_out($out);
 				if ($grad['transparency']) {
 					$shading_transparency = preg_replace('/\/ColorSpace \/[^\s]+/si', '/ColorSpace /DeviceGray', $out);
@@ -14754,7 +14821,8 @@ if (!class_exists('TCPDF', false)) {
 				$this->_newobj();
 				$out = '<< /Type /Pattern /PatternType 2';
 				$out .= ' /Shading '.$this->gradients[$id]['id'].' 0 R';
-				$out .= ' >> endobj';
+				$out .= ' >>';
+				$out .= "\n".'endobj';
 				$this->_out($out);
 				$this->gradients[$id]['pattern'] = $this->n;
 				// set shading and pattern for transparency mask
@@ -14767,7 +14835,8 @@ if (!class_exists('TCPDF', false)) {
 					$this->_newobj();
 					$out = '<< /Type /Pattern /PatternType 2';
 					$out .= ' /Shading '.$this->gradients[$idgs]['id'].' 0 R';
-					$out .= ' >> endobj';
+					$out .= ' >>';
+					$out .= "\n".'endobj';
 					$this->_out($out);
 					$this->gradients[$idgs]['pattern'] = $this->n;
 					// luminosity XObject
@@ -14778,6 +14847,7 @@ if (!class_exists('TCPDF', false)) {
 						$filter = ' /Filter /FlateDecode';
 						$stream = gzcompress($stream);
 					}
+					$stream = $this->_getrawstream($stream);
 					$out = '<< /Type /XObject /Subtype /Form /FormType 1'.$filter;
 					$out .= ' /Length '.strlen($stream);
 					$out .= ' /BBox [0 0 '.$this->wPt.' '.$this->hPt.']';
@@ -14787,16 +14857,16 @@ if (!class_exists('TCPDF', false)) {
 					$out .= ' /Pattern << /p'.$idgs.' '.$this->gradients[$idgs]['pattern'].' 0 R >>';
 					$out .= ' >>';
 					$out .= ' >> ';
-					$out .= $this->_getstream($stream);
-					$out .= ' endobj';
+					$out .= ' stream'."\n".$stream."\n".'endstream';
+					$out .= "\n".'endobj';
 					$this->_out($out);
 					// SMask
 					$this->_newobj();
-					$out = '<< /Type /Mask /S /Luminosity /G '.($this->n - 1).' 0 R >> endobj';
+					$out = '<< /Type /Mask /S /Luminosity /G '.($this->n - 1).' 0 R >>'."\n".'endobj';
 					$this->_out($out);
 					// ExtGState
 					$this->_newobj();
-					$out = '<< /Type /ExtGState /SMask '.($this->n - 1).' 0 R /AIS false >> endobj';
+					$out = '<< /Type /ExtGState /SMask '.($this->n - 1).' 0 R /AIS false >>'."\n".'endobj';
 					$this->_out($out);
 					$this->extgstates[] = array('n' => $this->n, 'name' => 'TGS'.$id);
 				}
@@ -19401,6 +19471,24 @@ if (!class_exists('TCPDF', false)) {
 				$this->writeDiskCache($this->buffer, $data, true);
 			} else {
 				$this->buffer .= $data;
+			}
+		}
+
+		/**
+		 * Replace the buffer content
+		 * @param string $data data
+		 * @access protected
+		 * @since 5.5.000 (2010-06-22)
+		 */
+		protected function replaceBuffer($data) {
+			$this->bufferlen = strlen($data);
+			if ($this->diskcache) {
+				if (!isset($this->buffer) OR $this->empty_string($this->buffer)) {
+					$this->buffer = $this->getObjFilename('buffer');
+				}
+				$this->writeDiskCache($this->buffer, $data, false);
+			} else {
+				$this->buffer = $data;
 			}
 		}
 

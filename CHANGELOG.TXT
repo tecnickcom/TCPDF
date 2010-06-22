@@ -1,3 +1,9 @@
+5.5.000 (2010-06-22)
+	- Several PDF syntax errors (and related bugs) were fixed.
+	- Bug #3019090 "/Length values are wrong if AES encryption is used" was fixed.
+	
+------------------------------------------------------------
+
 5.4.003 (2010-06-19)
 	- A problem related to page boxes was fixed.
 	- Bug #3016920 "Font subsetting issues when editing pdf" was partially fixed (Note that flattening transparency layers is currently incompatible with TrueTypeUnicode fonts).
