@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.5.000
+// Version     : 5.5.001
 // Begin       : 2002-08-03
-// Last Update : 2010-06-22
+// Last Update : 2010-06-23
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.5.000
+ * @version 5.5.001
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.5.000 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.5.001 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.5.000
+	* @version 5.5.001
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -8839,7 +8839,7 @@ if (!class_exists('TCPDF', false)) {
 			// Type0 Font
 			// A composite font composed of other fonts, organized hierarchically
 			$obj_id = $this->_newobj();
-			$out = '<</Type /Font';
+			$out = '<< /Type /Font';
 			$out .= ' /Subtype /Type0';
 			$out .= ' /BaseFont /'.$fontname;
 			$out .= ' /Name /F'.$font['i'];
@@ -8848,11 +8848,11 @@ if (!class_exists('TCPDF', false)) {
 			$out .= ' /DescendantFonts ['.($this->n + 1).' 0 R]';
 			$out .= ' >>';
 			$out .= "\n".'endobj';
-			$this->_out($out);
+			$this->_out($out);			
 			// CIDFontType2
 			// A CIDFont whose glyph descriptions are based on TrueType font technology
 			$this->_newobj();
-			$out = '<</Type /Font';
+			$out = '<< /Type /Font';
 			$out .= ' /Subtype /CIDFontType2';
 			$out .= ' /BaseFont /'.$fontname;
 			// A dictionary containing entries that define the character collection of the CIDFont.
@@ -8872,7 +8872,7 @@ if (!class_exists('TCPDF', false)) {
 			// Font descriptor
 			// A font descriptor describing the CIDFont default metrics other than its glyph widths
 			$this->_newobj();
-			$out = '<</Type /FontDescriptor';
+			$out = '<< /Type /FontDescriptor';
 			$out .= ' /FontName /'.$fontname;
 			foreach ($font['desc'] as $key => $value) {
 				if(is_float($value)) {
@@ -9050,7 +9050,7 @@ if (!class_exists('TCPDF', false)) {
 					$this->_newobj();
 					$pal = ($this->compress) ? gzcompress($info['pal']) : $info['pal'];
 					$pal = $this->_getrawstream($pal);
-					$this->_out('<<'.$filter.'/Length '.strlen($pal).'>> '.$pal."\n".'endobj');
+					$this->_out('<<'.$filter.'/Length '.strlen($pal).'>> stream'."\n".$pal."\n".'endstream'."\n".'endobj');
 				}
 			}
 		}

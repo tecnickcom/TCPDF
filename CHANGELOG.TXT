@@ -1,3 +1,6 @@
+5.5.001 (2010-06-23)
+	- A problem on image streams was fixed.
+
 5.5.000 (2010-06-22)
 	- Several PDF syntax errors (and related bugs) were fixed.
 	- Bug #3019090 "/Length values are wrong if AES encryption is used" was fixed.
