@@ -254,7 +254,7 @@ if (!defined('QRCODEDEFS')) {
 
 if (!class_exists('QRcode', false)) {
 
-	// for compaibility with PHP4
+	// for compatibility with PHP4
 	if (!function_exists('str_split')) {
     	/**
     	 * Convert a string to an array (needed for PHP4 compatibility)
@@ -1571,7 +1571,7 @@ if (!class_exists('QRcode', false)) {
 			$words = (int)($inputitem['size'] / 2);
 			$inputitem['bstream'] = array();
 			$inputitem['bstream'] = $this->appendNum($inputitem['bstream'], 4, 0x02);
-			$inputitem['bstream'] = $this->appendNum($inputitem['bstream'], $this->lengthIndicator(QR_MODE_AN, $version), $inputitem['size']); //DEBUG
+			$inputitem['bstream'] = $this->appendNum($inputitem['bstream'], $this->lengthIndicator(QR_MODE_AN, $version), $inputitem['size']);
 			for ($i=0; $i < $words; ++$i) {
 				$val  = (int)$this->lookAnTable(ord($inputitem['data'][$i*2  ])) * 45;
 				$val += (int)$this->lookAnTable(ord($inputitem['data'][$i*2+1]));

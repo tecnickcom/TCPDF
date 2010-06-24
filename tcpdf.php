@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.5.001
+// Version     : 5.5.002
 // Begin       : 2002-08-03
-// Last Update : 2010-06-23
+// Last Update : 2010-06-24
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.5.001
+ * @version 5.5.002
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.5.001 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.5.002 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.5.001
+	* @version 5.5.002
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -7064,9 +7064,10 @@ if (!class_exists('TCPDF', false)) {
 				}
 				unlink($tempdoc);
 				// read signature
-				$signature = file_get_contents($tempsign, false, null, $pdfdoc_length);
+				$signature = file_get_contents($tempsign);
 				unlink($tempsign);
 				// extract signature
+				$signature = substr($signature, $pdfdoc_length);
 				$signature = substr($signature, (strpos($signature, "%%EOF\n\n------") + 13));
 				$tmparr = explode("\n\n", $signature);
 				$signature = $tmparr[1];
@@ -8844,11 +8845,294 @@ if (!class_exists('TCPDF', false)) {
 			$out .= ' /BaseFont /'.$fontname;
 			$out .= ' /Name /F'.$font['i'];
 			$out .= ' /Encoding /'.$font['enc'];
-			$out .= ' /ToUnicode /Identity-H';
-			$out .= ' /DescendantFonts ['.($this->n + 1).' 0 R]';
+			$out .= ' /ToUnicode '.($this->n + 1).' 0 R';
+			$out .= ' /DescendantFonts ['.($this->n + 2).' 0 R]';
 			$out .= ' >>';
 			$out .= "\n".'endobj';
-			$this->_out($out);			
+			$this->_out($out);
+			// ToUnicode map for Identity-H
+			$stream = "/CIDInit /ProcSet findresource begin\n";
+			$stream .= "12 dict begin\n";
+			$stream .= "begincmap\n";
+			$stream .= "/CIDSystemInfo << /Registry (Adobe) /Ordering (UCS) /Supplement 0 >> def\n";
+			$stream .= "/CMapName /Adobe-Identity-UCS def\n";
+			$stream .= "/CMapType 2 def\n";
+			$stream .= "/WMode 0 def\n";
+			$stream .= "1 begincodespacerange\n";
+			$stream .= "<0000> <FFFF>\n";
+			$stream .= "endcodespacerange\n";
+			$stream .= "100 beginbfrange\n";
+			$stream .= "<0000> <00ff> <0000>\n";
+			$stream .= "<0100> <01ff> <0100>\n";
+			$stream .= "<0200> <02ff> <0200>\n";
+			$stream .= "<0300> <03ff> <0300>\n";
+			$stream .= "<0400> <04ff> <0400>\n";
+			$stream .= "<0500> <05ff> <0500>\n";
+			$stream .= "<0600> <06ff> <0600>\n";
+			$stream .= "<0700> <07ff> <0700>\n";
+			$stream .= "<0800> <08ff> <0800>\n";
+			$stream .= "<0900> <09ff> <0900>\n";
+			$stream .= "<0a00> <0aff> <0a00>\n";
+			$stream .= "<0b00> <0bff> <0b00>\n";
+			$stream .= "<0c00> <0cff> <0c00>\n";
+			$stream .= "<0d00> <0dff> <0d00>\n";
+			$stream .= "<0e00> <0eff> <0e00>\n";
+			$stream .= "<0f00> <0fff> <0f00>\n";
+			$stream .= "<1000> <10ff> <1000>\n";
+			$stream .= "<1100> <11ff> <1100>\n";
+			$stream .= "<1200> <12ff> <1200>\n";
+			$stream .= "<1300> <13ff> <1300>\n";
+			$stream .= "<1400> <14ff> <1400>\n";
+			$stream .= "<1500> <15ff> <1500>\n";
+			$stream .= "<1600> <16ff> <1600>\n";
+			$stream .= "<1700> <17ff> <1700>\n";
+			$stream .= "<1800> <18ff> <1800>\n";
+			$stream .= "<1900> <19ff> <1900>\n";
+			$stream .= "<1a00> <1aff> <1a00>\n";
+			$stream .= "<1b00> <1bff> <1b00>\n";
+			$stream .= "<1c00> <1cff> <1c00>\n";
+			$stream .= "<1d00> <1dff> <1d00>\n";
+			$stream .= "<1e00> <1eff> <1e00>\n";
+			$stream .= "<1f00> <1fff> <1f00>\n";
+			$stream .= "<2000> <20ff> <2000>\n";
+			$stream .= "<2100> <21ff> <2100>\n";
+			$stream .= "<2200> <22ff> <2200>\n";
+			$stream .= "<2300> <23ff> <2300>\n";
+			$stream .= "<2400> <24ff> <2400>\n";
+			$stream .= "<2500> <25ff> <2500>\n";
+			$stream .= "<2600> <26ff> <2600>\n";
+			$stream .= "<2700> <27ff> <2700>\n";
+			$stream .= "<2800> <28ff> <2800>\n";
+			$stream .= "<2900> <29ff> <2900>\n";
+			$stream .= "<2a00> <2aff> <2a00>\n";
+			$stream .= "<2b00> <2bff> <2b00>\n";
+			$stream .= "<2c00> <2cff> <2c00>\n";
+			$stream .= "<2d00> <2dff> <2d00>\n";
+			$stream .= "<2e00> <2eff> <2e00>\n";
+			$stream .= "<2f00> <2fff> <2f00>\n";
+			$stream .= "<3000> <30ff> <3000>\n";
+			$stream .= "<3100> <31ff> <3100>\n";
+			$stream .= "<3200> <32ff> <3200>\n";
+			$stream .= "<3300> <33ff> <3300>\n";
+			$stream .= "<3400> <34ff> <3400>\n";
+			$stream .= "<3500> <35ff> <3500>\n";
+			$stream .= "<3600> <36ff> <3600>\n";
+			$stream .= "<3700> <37ff> <3700>\n";
+			$stream .= "<3800> <38ff> <3800>\n";
+			$stream .= "<3900> <39ff> <3900>\n";
+			$stream .= "<3a00> <3aff> <3a00>\n";
+			$stream .= "<3b00> <3bff> <3b00>\n";
+			$stream .= "<3c00> <3cff> <3c00>\n";
+			$stream .= "<3d00> <3dff> <3d00>\n";
+			$stream .= "<3e00> <3eff> <3e00>\n";
+			$stream .= "<3f00> <3fff> <3f00>\n";
+			$stream .= "<4000> <40ff> <4000>\n";
+			$stream .= "<4100> <41ff> <4100>\n";
+			$stream .= "<4200> <42ff> <4200>\n";
+			$stream .= "<4300> <43ff> <4300>\n";
+			$stream .= "<4400> <44ff> <4400>\n";
+			$stream .= "<4500> <45ff> <4500>\n";
+			$stream .= "<4600> <46ff> <4600>\n";
+			$stream .= "<4700> <47ff> <4700>\n";
+			$stream .= "<4800> <48ff> <4800>\n";
+			$stream .= "<4900> <49ff> <4900>\n";
+			$stream .= "<4a00> <4aff> <4a00>\n";
+			$stream .= "<4b00> <4bff> <4b00>\n";
+			$stream .= "<4c00> <4cff> <4c00>\n";
+			$stream .= "<4d00> <4dff> <4d00>\n";
+			$stream .= "<4e00> <4eff> <4e00>\n";
+			$stream .= "<4f00> <4fff> <4f00>\n";
+			$stream .= "<5000> <50ff> <5000>\n";
+			$stream .= "<5100> <51ff> <5100>\n";
+			$stream .= "<5200> <52ff> <5200>\n";
+			$stream .= "<5300> <53ff> <5300>\n";
+			$stream .= "<5400> <54ff> <5400>\n";
+			$stream .= "<5500> <55ff> <5500>\n";
+			$stream .= "<5600> <56ff> <5600>\n";
+			$stream .= "<5700> <57ff> <5700>\n";
+			$stream .= "<5800> <58ff> <5800>\n";
+			$stream .= "<5900> <59ff> <5900>\n";
+			$stream .= "<5a00> <5aff> <5a00>\n";
+			$stream .= "<5b00> <5bff> <5b00>\n";
+			$stream .= "<5c00> <5cff> <5c00>\n";
+			$stream .= "<5d00> <5dff> <5d00>\n";
+			$stream .= "<5e00> <5eff> <5e00>\n";
+			$stream .= "<5f00> <5fff> <5f00>\n";
+			$stream .= "<6000> <60ff> <6000>\n";
+			$stream .= "<6100> <61ff> <6100>\n";
+			$stream .= "<6200> <62ff> <6200>\n";
+			$stream .= "<6300> <63ff> <6300>\n";
+			$stream .= "endbfrange\n";
+			$stream .= "100 beginbfrange\n";
+			$stream .= "<6400> <64ff> <6400>\n";
+			$stream .= "<6500> <65ff> <6500>\n";
+			$stream .= "<6600> <66ff> <6600>\n";
+			$stream .= "<6700> <67ff> <6700>\n";
+			$stream .= "<6800> <68ff> <6800>\n";
+			$stream .= "<6900> <69ff> <6900>\n";
+			$stream .= "<6a00> <6aff> <6a00>\n";
+			$stream .= "<6b00> <6bff> <6b00>\n";
+			$stream .= "<6c00> <6cff> <6c00>\n";
+			$stream .= "<6d00> <6dff> <6d00>\n";
+			$stream .= "<6e00> <6eff> <6e00>\n";
+			$stream .= "<6f00> <6fff> <6f00>\n";
+			$stream .= "<7000> <70ff> <7000>\n";
+			$stream .= "<7100> <71ff> <7100>\n";
+			$stream .= "<7200> <72ff> <7200>\n";
+			$stream .= "<7300> <73ff> <7300>\n";
+			$stream .= "<7400> <74ff> <7400>\n";
+			$stream .= "<7500> <75ff> <7500>\n";
+			$stream .= "<7600> <76ff> <7600>\n";
+			$stream .= "<7700> <77ff> <7700>\n";
+			$stream .= "<7800> <78ff> <7800>\n";
+			$stream .= "<7900> <79ff> <7900>\n";
+			$stream .= "<7a00> <7aff> <7a00>\n";
+			$stream .= "<7b00> <7bff> <7b00>\n";
+			$stream .= "<7c00> <7cff> <7c00>\n";
+			$stream .= "<7d00> <7dff> <7d00>\n";
+			$stream .= "<7e00> <7eff> <7e00>\n";
+			$stream .= "<7f00> <7fff> <7f00>\n";
+			$stream .= "<8000> <80ff> <8000>\n";
+			$stream .= "<8100> <81ff> <8100>\n";
+			$stream .= "<8200> <82ff> <8200>\n";
+			$stream .= "<8300> <83ff> <8300>\n";
+			$stream .= "<8400> <84ff> <8400>\n";
+			$stream .= "<8500> <85ff> <8500>\n";
+			$stream .= "<8600> <86ff> <8600>\n";
+			$stream .= "<8700> <87ff> <8700>\n";
+			$stream .= "<8800> <88ff> <8800>\n";
+			$stream .= "<8900> <89ff> <8900>\n";
+			$stream .= "<8a00> <8aff> <8a00>\n";
+			$stream .= "<8b00> <8bff> <8b00>\n";
+			$stream .= "<8c00> <8cff> <8c00>\n";
+			$stream .= "<8d00> <8dff> <8d00>\n";
+			$stream .= "<8e00> <8eff> <8e00>\n";
+			$stream .= "<8f00> <8fff> <8f00>\n";
+			$stream .= "<9000> <90ff> <9000>\n";
+			$stream .= "<9100> <91ff> <9100>\n";
+			$stream .= "<9200> <92ff> <9200>\n";
+			$stream .= "<9300> <93ff> <9300>\n";
+			$stream .= "<9400> <94ff> <9400>\n";
+			$stream .= "<9500> <95ff> <9500>\n";
+			$stream .= "<9600> <96ff> <9600>\n";
+			$stream .= "<9700> <97ff> <9700>\n";
+			$stream .= "<9800> <98ff> <9800>\n";
+			$stream .= "<9900> <99ff> <9900>\n";
+			$stream .= "<9a00> <9aff> <9a00>\n";
+			$stream .= "<9b00> <9bff> <9b00>\n";
+			$stream .= "<9c00> <9cff> <9c00>\n";
+			$stream .= "<9d00> <9dff> <9d00>\n";
+			$stream .= "<9e00> <9eff> <9e00>\n";
+			$stream .= "<9f00> <9fff> <9f00>\n";
+			$stream .= "<a000> <a0ff> <a000>\n";
+			$stream .= "<a100> <a1ff> <a100>\n";
+			$stream .= "<a200> <a2ff> <a200>\n";
+			$stream .= "<a300> <a3ff> <a300>\n";
+			$stream .= "<a400> <a4ff> <a400>\n";
+			$stream .= "<a500> <a5ff> <a500>\n";
+			$stream .= "<a600> <a6ff> <a600>\n";
+			$stream .= "<a700> <a7ff> <a700>\n";
+			$stream .= "<a800> <a8ff> <a800>\n";
+			$stream .= "<a900> <a9ff> <a900>\n";
+			$stream .= "<aa00> <aaff> <aa00>\n";
+			$stream .= "<ab00> <abff> <ab00>\n";
+			$stream .= "<ac00> <acff> <ac00>\n";
+			$stream .= "<ad00> <adff> <ad00>\n";
+			$stream .= "<ae00> <aeff> <ae00>\n";
+			$stream .= "<af00> <afff> <af00>\n";
+			$stream .= "<b000> <b0ff> <b000>\n";
+			$stream .= "<b100> <b1ff> <b100>\n";
+			$stream .= "<b200> <b2ff> <b200>\n";
+			$stream .= "<b300> <b3ff> <b300>\n";
+			$stream .= "<b400> <b4ff> <b400>\n";
+			$stream .= "<b500> <b5ff> <b500>\n";
+			$stream .= "<b600> <b6ff> <b600>\n";
+			$stream .= "<b700> <b7ff> <b700>\n";
+			$stream .= "<b800> <b8ff> <b800>\n";
+			$stream .= "<b900> <b9ff> <b900>\n";
+			$stream .= "<ba00> <baff> <ba00>\n";
+			$stream .= "<bb00> <bbff> <bb00>\n";
+			$stream .= "<bc00> <bcff> <bc00>\n";
+			$stream .= "<bd00> <bdff> <bd00>\n";
+			$stream .= "<be00> <beff> <be00>\n";
+			$stream .= "<bf00> <bfff> <bf00>\n";
+			$stream .= "<c000> <c0ff> <c000>\n";
+			$stream .= "<c100> <c1ff> <c100>\n";
+			$stream .= "<c200> <c2ff> <c200>\n";
+			$stream .= "<c300> <c3ff> <c300>\n";
+			$stream .= "<c400> <c4ff> <c400>\n";
+			$stream .= "<c500> <c5ff> <c500>\n";
+			$stream .= "<c600> <c6ff> <c600>\n";
+			$stream .= "<c700> <c7ff> <c700>\n";
+			$stream .= "endbfrange\n";
+			$stream .= "56 beginbfrange\n";
+			$stream .= "<c800> <c8ff> <c800>\n";
+			$stream .= "<c900> <c9ff> <c900>\n";
+			$stream .= "<ca00> <caff> <ca00>\n";
+			$stream .= "<cb00> <cbff> <cb00>\n";
+			$stream .= "<cc00> <ccff> <cc00>\n";
+			$stream .= "<cd00> <cdff> <cd00>\n";
+			$stream .= "<ce00> <ceff> <ce00>\n";
+			$stream .= "<cf00> <cfff> <cf00>\n";
+			$stream .= "<d000> <d0ff> <d000>\n";
+			$stream .= "<d100> <d1ff> <d100>\n";
+			$stream .= "<d200> <d2ff> <d200>\n";
+			$stream .= "<d300> <d3ff> <d300>\n";
+			$stream .= "<d400> <d4ff> <d400>\n";
+			$stream .= "<d500> <d5ff> <d500>\n";
+			$stream .= "<d600> <d6ff> <d600>\n";
+			$stream .= "<d700> <d7ff> <d700>\n";
+			$stream .= "<d800> <d8ff> <d800>\n";
+			$stream .= "<d900> <d9ff> <d900>\n";
+			$stream .= "<da00> <daff> <da00>\n";
+			$stream .= "<db00> <dbff> <db00>\n";
+			$stream .= "<dc00> <dcff> <dc00>\n";
+			$stream .= "<dd00> <ddff> <dd00>\n";
+			$stream .= "<de00> <deff> <de00>\n";
+			$stream .= "<df00> <dfff> <df00>\n";
+			$stream .= "<e000> <e0ff> <e000>\n";
+			$stream .= "<e100> <e1ff> <e100>\n";
+			$stream .= "<e200> <e2ff> <e200>\n";
+			$stream .= "<e300> <e3ff> <e300>\n";
+			$stream .= "<e400> <e4ff> <e400>\n";
+			$stream .= "<e500> <e5ff> <e500>\n";
+			$stream .= "<e600> <e6ff> <e600>\n";
+			$stream .= "<e700> <e7ff> <e700>\n";
+			$stream .= "<e800> <e8ff> <e800>\n";
+			$stream .= "<e900> <e9ff> <e900>\n";
+			$stream .= "<ea00> <eaff> <ea00>\n";
+			$stream .= "<eb00> <ebff> <eb00>\n";
+			$stream .= "<ec00> <ecff> <ec00>\n";
+			$stream .= "<ed00> <edff> <ed00>\n";
+			$stream .= "<ee00> <eeff> <ee00>\n";
+			$stream .= "<ef00> <efff> <ef00>\n";
+			$stream .= "<f000> <f0ff> <f000>\n";
+			$stream .= "<f100> <f1ff> <f100>\n";
+			$stream .= "<f200> <f2ff> <f200>\n";
+			$stream .= "<f300> <f3ff> <f300>\n";
+			$stream .= "<f400> <f4ff> <f400>\n";
+			$stream .= "<f500> <f5ff> <f500>\n";
+			$stream .= "<f600> <f6ff> <f600>\n";
+			$stream .= "<f700> <f7ff> <f700>\n";
+			$stream .= "<f800> <f8ff> <f800>\n";
+			$stream .= "<f900> <f9ff> <f900>\n";
+			$stream .= "<fa00> <faff> <fa00>\n";
+			$stream .= "<fb00> <fbff> <fb00>\n";
+			$stream .= "<fc00> <fcff> <fc00>\n";
+			$stream .= "<fd00> <fdff> <fd00>\n";
+			$stream .= "<fe00> <feff> <fe00>\n";
+			$stream .= "<ff00> <ffff> <ff00>\n";
+			$stream .= "endbfrange\n";
+			$stream .= "endcmap\n";
+			$stream .= "CMapName currentdict /CMap defineresource pop\n";
+			$stream .= "end\n";
+			$stream .= "end";
+			// ToUnicode Object
+			$this->_newobj();
+			$stream = ($this->compress) ? gzcompress($stream) : $stream;
+			$filter = ($this->compress) ? '/Filter /FlateDecode ' : '';
+			$stream = $this->_getrawstream($stream);
+			$this->_out('<<'.$filter.'/Length '.strlen($stream).'>> stream'."\n".$stream."\n".'endstream'."\n".'endobj');
 			// CIDFontType2
 			// A CIDFont whose glyph descriptions are based on TrueType font technology
 			$this->_newobj();
@@ -10780,14 +11064,15 @@ if (!class_exists('TCPDF', false)) {
 		 * @author Nicola Asuni
 		 */
 		protected function convertHexStringToString($bs) {
-			if ((strlen($bs) % 2) != 0) {
+			$string = ''; // string to be returned
+			$bslenght = strlen($bs);
+			if (($bslenght % 2) != 0) {
 				// padding
 				$bs .= '0';
+				++$bslenght;
 			}
-			$bytes = str_split($bs, 2);
-			$string = '';
-			foreach ($bytes as $byte) {
-				$string .= chr(hexdec($byte));
+			for ($i = 0; $i < $bslenght; $i += 2) {
+				$string .= chr(hexdec($bs{$i}.$bs{($i + 1)}));
 			}
 			return $string;
 		}
