@@ -1,3 +1,6 @@
+5.5.003 (2010-06-26)
+	- On Write() method, blank lines at the beginning of a page or column are now automatically removed.
+
 5.5.002 (2010-06-24)
 	- ToUnicode Identity-H name was replaced with a full CMap (to avoid preflight syntax error).
 	- Bug #3020638 "str_split() not available in php4" was fixed.

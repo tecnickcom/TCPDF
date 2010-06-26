@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.5.002
+// Version     : 5.5.003
 // Begin       : 2002-08-03
-// Last Update : 2010-06-24
+// Last Update : 2010-06-26
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.5.002
+ * @version 5.5.003
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.5.002 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.5.003 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.5.002
+	* @version 5.5.003
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -4911,8 +4911,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @param float $h Cell height. Default value: 0.
 		 * @param string $txt String to print. Default value: empty string.
 		 * @param mixed $border Indicates if borders must be drawn around the cell. The value can be either a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul>or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul>
-		 * @param int $ln Indicates where the current position should go after the call. Possible values are:<ul><li>0: to the right (or left for RTL languages)</li><li>1: to the beginning of the next line</li><li>2: below</li></ul>
-		Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value: 0.
+		 * @param int $ln Indicates where the current position should go after the call. Possible values are:<ul><li>0: to the right (or left for RTL languages)</li><li>1: to the beginning of the next line</li><li>2: below</li></ul> Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value: 0.
 		 * @param string $align Allows to center or align the text. Possible values are:<ul><li>L or empty string: left align (default value)</li><li>C: center</li><li>R: right align</li><li>J: justify</li></ul>
 		 * @param int $fill Indicates if the cell background must be painted (1) or transparent (0). Default value: 0.
 		 * @param mixed $link URL or identifier returned by AddLink().
@@ -5818,6 +5817,9 @@ if (!class_exists('TCPDF', false)) {
 				// a single character do not fit on column
 				return '';
 			}
+			// minimum row height
+			$row_height = max($h, $this->FontSize * $this->cell_height_ratio);
+			$start_page = $this->page;
 			$i = 0; // character position
 			$j = 0; // current starting position
 			$sep = -1; // position of the last blank space
@@ -5867,7 +5869,10 @@ if (!class_exists('TCPDF', false)) {
 					if ($firstblock AND $this->isRTLTextDir()) {
 						$tmpstr = rtrim($tmpstr);
 					}
-					$this->Cell($w, $h, $tmpstr, 0, 1, $talign, $fill, $link, $stretch);
+					// Skip newlines at the begining of a page or column
+					if (!empty($tmpstr) OR ($this->y < ($this->PageBreakTrigger - $row_height))) {
+						$this->Cell($w, $h, $tmpstr, 0, 1, $talign, $fill, $link, $stretch);
+					}
 					unset($tmpstr);
 					if ($firstline) {
 						$this->cMargin = $tmpcmargin;
