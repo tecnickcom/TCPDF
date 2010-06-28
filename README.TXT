@@ -8,8 +8,8 @@ http:  sourceforge.net/donate/index.php?group_id=128076
 ------------------------------------------------------------
 
 Name: TCPDF
-Version: 5.5.004
-Release date: 2010-06-27
+Version: 5.5.005
+Release date: 2010-06-28
 Author:	Nicola Asuni
 
 Copyright (c) 2002-2010:
@@ -32,7 +32,7 @@ Main Features:
     * all standard page formats, custom page formats, custom margins and units of measure;
     * UTF-8 Unicode and Right-To-Left languages;
     * TrueTypeUnicode, OpenTypeUnicode, TrueType, OpenType, Type1 and CID-0 fonts;
-    * Font subsetting;
+    * font subsetting;
     * methods to publish some XHTML + CSS code, Javascript and Forms;
     * images, graphic (geometric figures) and transformation methods;
     * supports JPEG, PNG and SVG images natively, all images supported by GD (GD, GD2, GD2PART, GIF, JPEG, PNG, BMP, XBM, XPM) and all images supported via ImagMagick (http:  www.imagemagick.org/www/formats.html)

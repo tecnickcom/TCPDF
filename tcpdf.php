@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.5.004
+// Version     : 5.5.005
 // Begin       : 2002-08-03
-// Last Update : 2010-06-27
+// Last Update : 2010-06-28
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -40,7 +40,7 @@
 //  * all standard page formats, custom page formats, custom margins and units of measure;
 //  * UTF-8 Unicode and Right-To-Left languages;
 //  * TrueTypeUnicode, OpenTypeUnicode, TrueType, OpenType, Type1 and CID-0 fonts;
-//  * Font subsetting;
+//  * font subsetting;
 //  * methods to publish some XHTML + CSS code, Javascript and Forms;
 //  * images, graphic (geometric figures) and transformation methods;
 //  * supports JPEG, PNG and SVG images natively, all images supported by GD (GD, GD2, GD2PART, GIF, JPEG, PNG, BMP, XBM, XPM) and all images supported via ImagMagick (http://www.imagemagick.org/www/formats.html)
@@ -100,7 +100,7 @@
  * <li>all standard page formats, custom page formats, custom margins and units of measure;</li>
  * <li>UTF-8 Unicode and Right-To-Left languages;</li>
  * <li>TrueTypeUnicode, OpenTypeUnicode, TrueType, OpenType, Type1 and CID-0 fonts;</li>
- * <li>Font subsetting;</li>
+ * <li>font subsetting;</li>
  * <li>methods to publish some XHTML + CSS code, Javascript and Forms;</li>
  * <li>images, graphic (geometric figures) and transformation methods;
  * <li>supports JPEG, PNG and SVG images natively, all images supported by GD (GD, GD2, GD2PART, GIF, JPEG, PNG, BMP, XBM, XPM) and all images supported via ImagMagick (http://www.imagemagick.org/www/formats.html)</li>
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.5.004
+ * @version 5.5.005
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.5.004 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.5.005 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.5.004
+	* @version 5.5.005
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -4565,14 +4565,16 @@ if (!class_exists('TCPDF', false)) {
 		 * @param float $size The size (in points)
 		 * @return int font descent
 		 * @access public
+		 * @author Nicola Asuni
 		 * @since 4.9.003 (2010-03-30)
 		 */
 		public function getFontDescent($font, $style='', $size=0) {
 			//Set font size in points
 			$sizek = $size / $this->k;
 			$fontdata = $this->AddFont($font, $style);
-			if (isset($fontdata['desc']['Descent']) AND ($fontdata['desc']['Descent'] <= 0)) {
-				$descent = - $fontdata['desc']['Descent'] * $sizek / 1000;
+			$fontinfo = $this->getFontBuffer($fontdata['fontkey']);
+			if (isset($fontinfo['desc']['Descent']) AND ($fontinfo['desc']['Descent'] <= 0)) {
+				$descent = - $fontinfo['desc']['Descent'] * $sizek / 1000;
 			} else {
 				$descent = 0.15 * $sizek;
 			}
@@ -4586,14 +4588,16 @@ if (!class_exists('TCPDF', false)) {
 		 * @param float $size The size (in points)
 		 * @return int font ascent
 		 * @access public
+		 * @author Nicola Asuni
 		 * @since 4.9.003 (2010-03-30)
 		 */
 		public function getFontAscent($font, $style='', $size=0) {
 			//Set font size in points
 			$sizek = $size / $this->k;
 			$fontdata = $this->AddFont($font, $style);
-			if (isset($fontdata['desc']['Ascent']) AND ($fontdata['desc']['Ascent'] > 0)) {
-				$ascent = $fontdata['desc']['Ascent'] * $sizek / 1000;
+			$fontinfo = $this->getFontBuffer($fontdata['fontkey']);
+			if (isset($fontinfo['desc']['Ascent']) AND ($fontinfo['desc']['Ascent'] > 0)) {
+				$ascent = $fontinfo['desc']['Ascent'] * $sizek / 1000;
 			} else {
 				$ascent = 0.85 * $sizek;
 			}
@@ -6306,9 +6310,10 @@ if (!class_exists('TCPDF', false)) {
 					$w = $h * $pixw / $pixh;
 				}
 			}
-			// Check whether we need a new page first as this does not fit
+			// Check whether we need a new page or new column first as this does not fit
 			$prev_x = $this->x;
-			if ($this->checkPageBreak($h, $y)) {
+			$prev_y = $this->y;
+			if ($this->checkPageBreak($h, $y) OR ($this->y < $prev_y)) {
 				$y = $this->y;
 				if ($this->rtl) {
 					$x += ($prev_x - $this->x);
@@ -15304,9 +15309,10 @@ if (!class_exists('TCPDF', false)) {
 			} elseif ($h <= 0) {
 				$h = ($y2 - $y1) / $k * ($w / (($x2 - $x1) / $k));
 			}
-			// Check whether we need a new page first as this does not fit
+			// Check whether we need a new page or new column first as this does not fit
 			$prev_x = $this->x;
-			if ($this->checkPageBreak($h, $y)) {
+			$prev_y = $this->y;
+			if ($this->checkPageBreak($h, $y) OR ($this->y < $prev_y)) {
 				$y = $this->y;
 				if ($this->rtl) {
 					$x += ($prev_x - $this->x);
@@ -15621,9 +15627,10 @@ if (!class_exists('TCPDF', false)) {
 			// maximum bar height
 			$barh = $h;
 			$h += $extraspace;
-			// Check whether we need a new page first as this does not fit
+			// Check whether we need a new page or new column first as this does not fit
 			$prev_x = $this->x;
-			if ($this->checkPageBreak($h, $y)) {
+			$prev_y = $this->y;
+			if ($this->checkPageBreak($h, $y) OR ($this->y < $prev_y)) {
 				$y = $this->y;
 				if ($this->rtl) {
 					$x += ($prev_x - $this->x);
@@ -15909,9 +15916,10 @@ if (!class_exists('TCPDF', false)) {
 					$style['vpadding'] = ($h - $bh) / (2 * $ch);
 				}
 			}
-			// Check whether we need a new page first as this does not fit
+			// Check whether we need a new page or new column first as this does not fit
 			$prev_x = $this->x;
-			if ($this->checkPageBreak($h, $y)) {
+			$prev_y = $this->y;
+			if ($this->checkPageBreak($h, $y) OR ($this->y < $prev_y)) {
 				$y = $this->y;
 				if ($this->rtl) {
 					$x += ($prev_x - $this->x);
@@ -18274,7 +18282,8 @@ if (!class_exists('TCPDF', false)) {
 					if (isset($tag['attribute']['cellspacing'])) {
 						$cs = $this->getHTMLUnitToUnits($tag['attribute']['cellspacing'], 1, 'px');
 					}
-					if ($this->checkPageBreak(((2 * $cp) + (2 * $cs) + $this->lasth), '', false)) {
+					$prev_y = $this->y;
+					if ($this->checkPageBreak(((2 * $cp) + (2 * $cs) + $this->lasth), '', false) OR ($this->y < $prev_y)) {
 						$this->inthead = true;
 						// add a page (or trig AcceptPageBreak() for multicolumn mode)
 						$this->checkPageBreak($this->PageBreakTrigger + 1);
@@ -21208,9 +21217,10 @@ if (!class_exists('TCPDF', false)) {
 			} elseif ($h <= 0) {
 				$h = $w * $oh / $ow;
 			}
-			// Check whether we need a new page first as this does not fit
+			// Check whether we need a new page or new column first as this does not fit
 			$prev_x = $this->x;
-			if ($this->checkPageBreak($h, $y)) {
+			$prev_y = $this->y;
+			if ($this->checkPageBreak($h, $y) OR ($this->y < $prev_y)) {
 				$y = $this->y;
 				if ($this->rtl) {
 					$x += ($prev_x - $this->x);
