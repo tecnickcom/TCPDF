@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.5.005
+// Version     : 5.5.006
 // Begin       : 2002-08-03
-// Last Update : 2010-06-28
+// Last Update : 2010-06-29
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.5.005
+ * @version 5.5.006
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.5.005 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.5.006 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.5.005
+	* @version 5.5.006
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -5660,17 +5660,16 @@ if (!class_exists('TCPDF', false)) {
 			}
 			$lines = 1;
 			$sum = 0;
-			$chars = $this->UTF8StringToArray($txt);
-			$charsWidth = $this->GetStringWidth($txt, '', '', 0, true);
+			$chars = $this->utf8Bidi($this->UTF8StringToArray($txt), $txt, $this->tmprtl);
+			$charsWidth = $this->GetArrStringWidth($chars, '', '', 0, true);
 			$length = count($chars);
-			$charWidth;
 			$lastSeparator = -1;
 			for ($i = 0; $i < $length; ++$i) {
 				$charWidth = $charsWidth[$i];
 				if (preg_match($this->re_spaces, $this->unichr($chars[$i]))) {
 					$lastSeparator = $i;
 				}
-				if ($sum + $charWidth > $wmax) {
+				if ((($sum + $charWidth) > $wmax) OR ($chars[$i] == 10)) {
 					++$lines;
 					if ($lastSeparator != -1) {
 						$i = $lastSeparator;
@@ -5682,6 +5681,9 @@ if (!class_exists('TCPDF', false)) {
 				} else {
 					$sum += $charWidth;
 				}
+			}
+			if ($chars[($length - 1)] == 10) {
+				--$lines;
 			}
 			return $lines;
 		}

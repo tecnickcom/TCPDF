@@ -1,3 +1,6 @@
+5.5.006 (2010-06-29)
+	- getStringHeight() and getNumLines() methods were fixed.
+
 5.5.005 (2010-06-28)
 	- Bug #3022170 "getFontDescent() does not return correct descent value" was fixed.
 	- Some problems with multicolumn mode were fixed.
