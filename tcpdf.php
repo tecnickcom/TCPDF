@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.5.007
+// Version     : 5.5.008
 // Begin       : 2002-08-03
 // Last Update : 2010-07-02
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.5.007
+ * @version 5.5.008
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.5.007 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.5.008 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.5.007
+	* @version 5.5.008
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1564,6 +1564,13 @@ if (!class_exists('TCPDF', false)) {
 		protected $font_subsetting = true;
 
 		/**
+		 * @var Array of default graphic settings
+		 * @access protected
+		 * @since 5.5.008 (2010-07-02)
+		 */
+		protected $default_graphic_vars = array();
+
+		/**
 		 * @var directory used for the last SVG image
 		 * @access protected
 		 * @since 5.0.000 (2010-05-05)
@@ -1852,6 +1859,8 @@ if (!class_exists('TCPDF', false)) {
 			$this->default_form_prop = array('lineWidth'=>1, 'borderStyle'=>'solid', 'fillColor'=>array(255, 255, 255), 'strokeColor'=>array(128, 128, 128));
 			// set file ID for trailer
 			$this->file_id = md5(microtime().__FILE__.'TCPDF'.$orientation.$unit.$format.$encoding.uniqid(''.rand()));
+			// get default graphic vars
+			$this->default_graphic_vars = $this->getGraphicVars();
 		}
 
 		/**
@@ -3777,6 +3786,7 @@ if (!class_exists('TCPDF', false)) {
 		 */
 		protected function setHeader() {
 			if ($this->print_header) {
+				$this->setGraphicVars($this->default_graphic_vars);
 				$temp_thead = $this->thead;
     			$temp_theadMargins = $this->theadMargins;
 				$lasth = $this->lasth;
@@ -3872,8 +3882,8 @@ if (!class_exists('TCPDF', false)) {
 				// set margins
 				$prev_lMargin = $this->lMargin;
 				$prev_rMargin = $this->rMargin;
-				$this->lMargin = $this->theadMargins['lmargin'] + ($this->pagedim[$this->page]['olm'] - $this->pagedim[($this->page - 1)]['olm']);
-				$this->rMargin = $this->theadMargins['rmargin'] + ($this->pagedim[$this->page]['orm'] - $this->pagedim[($this->page - 1)]['orm']);
+				$this->lMargin = $this->theadMargins['lmargin'] + ($this->pagedim[$this->page]['olm'] - $this->pagedim[$this->theadMargins['page']]['olm']);
+				$this->rMargin = $this->theadMargins['rmargin'] + ($this->pagedim[$this->page]['orm'] - $this->pagedim[$this->theadMargins['page']]['orm']);
 				$this->cMargin = $this->theadMargins['cmargin'];
 				if ($this->rtl) {
 					$this->x = $this->w - $this->rMargin;
@@ -18314,6 +18324,7 @@ if (!class_exists('TCPDF', false)) {
 								$this->theadMargins['cmargin'] = $this->cMargin;
 								$this->theadMargins['lmargin'] = $this->lMargin;
 								$this->theadMargins['rmargin'] = $this->rMargin;
+								$this->theadMargins['page'] = $this->page;
 							}
 						}
 					}
