@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_005.php
 // Begin       : 2008-03-04
-// Last Update : 2010-05-20
+// Last Update : 2010-07-02
 //
 // Description : Example 005 for TCPDF class
 //               Multicell
@@ -90,6 +90,18 @@ $pdf->MultiCell(55, 5, '[CENTER] '.$txt, 1, 'C', 0, 0, '', '', true);
 $pdf->MultiCell(55, 5, '[JUSTIFY] '.$txt."\n", 1, 'J', 1, 2, '' ,'', true);
 $pdf->MultiCell(55, 5, '[DEFAULT] '.$txt, 1, '', 0, 1, '', '', true);
 
+$pdf->Ln(4);
+
+// set color for background
+$pdf->SetFillColor(220, 255, 220);
+
+// Vertical alignment
+$pdf->MultiCell(55, 40, '[VERTICAL ALIGNMENT - TOP] '.$txt, 1, 'J', 1, 0, '', '', true, 0, false, true, 40, 'T');
+$pdf->MultiCell(55, 40, '[VERTICAL ALIGNMENT - MIDDLE] '.$txt, 1, 'J', 1, 0, '', '', true, 0, false, true, 40, 'M');
+$pdf->MultiCell(55, 40, '[VERTICAL ALIGNMENT - BOTTOM] '.$txt, 1, 'J', 1, 1, '', '', true, 0, false, true, 40, 'B');
+
+$pdf->Ln(4);
+
 // set color for background
 $pdf->SetFillColor(215, 235, 255);
 
@@ -101,6 +113,12 @@ Fusce et felis vitae diam lobortis sollicitudin. Aenean tincidunt accumsan nisi,
 // print a blox of text using multicell()
 $pdf->MultiCell(80, 5, $txt."\n", 1, 'J', 1, 1, '' ,'', true);
 
+// set color for background
+$pdf->SetFillColor(255, 235, 235);
+
+// Fit text on cell by reducing font size
+$pdf->MultiCell(55, 60, '[FIT CELL] '.$txt."\n", 1, 'J', 1, 1, 125, 135, true, 0, false, true, 60, 'M', true);
+
 // move pointer to last page
 $pdf->lastPage();
 
@@ -110,6 +128,6 @@ $pdf->lastPage();
 $pdf->Output('example_005.pdf', 'I');
 
 //============================================================+
-// END OF FILE                                                
+// END OF FILE
 //============================================================+
 ?>

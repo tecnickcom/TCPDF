@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.5.006
+// Version     : 5.5.007
 // Begin       : 2002-08-03
-// Last Update : 2010-06-29
+// Last Update : 2010-07-02
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.5.006
+ * @version 5.5.007
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.5.006 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.5.007 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.5.006
+	* @version 5.5.007
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -4535,11 +4535,12 @@ if (!class_exists('TCPDF', false)) {
 		/**
 		 * Defines the size of the current font.
 		 * @param float $size The size (in points)
+		 * @param boolean $out if true output the font size command, otherwise only set the font properties.
 		 * @access public
 		 * @since 1.0
 		 * @see SetFont()
 		 */
-		public function SetFontSize($size) {
+		public function SetFontSize($size, $out=true) {
 			//Set font size in points
 			$this->FontSizePt = $size;
 			$this->FontSize = $size / $this->k;
@@ -4553,7 +4554,7 @@ if (!class_exists('TCPDF', false)) {
 			} else {
 				$this->FontDescent = 0.15 * $this->FontSize;
 			}
-			if (($this->page > 0) AND (isset($this->CurrentFont['i']))) {
+			if ($out AND ($this->page > 0) AND (isset($this->CurrentFont['i']))) {
 				$this->_out(sprintf('BT /F%d %.2F Tf ET', $this->CurrentFont['i'], $this->FontSizePt));
 			}
 		}
@@ -5362,12 +5363,14 @@ if (!class_exists('TCPDF', false)) {
 		 * @param boolean $ishtml set to true if $txt is HTML content (default = false).
 		 * @param boolean $autopadding if true, uses internal padding and automatically adjust it to account for line width.
 		 * @param float $maxh maximum height. It should be >= $h and less then remaining space to the bottom of the page, or 0 for disable this feature. This feature works only when $ishtml=false.
+		 * @param string $valign Vertical alignment of text (requires $maxh = $h > 0). Possible values are:<ul><li>T: TOP</li><li>M: middle</li><li>B: bottom</li></ul>. This feature works only when $ishtml=false.
+		 * @param boolean $fitcell if true attempt to fit all the text within the cell by reducing the font size.
 		 * @return int Return the number of cells or 1 for html mode.
 		 * @access public
 		 * @since 1.3
 		 * @see SetFont(), SetDrawColor(), SetFillColor(), SetTextColor(), SetLineWidth(), Cell(), Write(), SetAutoPageBreak()
 		 */
-		public function MultiCell($w, $h, $txt, $border=0, $align='J', $fill=0, $ln=1, $x='', $y='', $reseth=true, $stretch=0, $ishtml=false, $autopadding=true, $maxh=0) {
+		public function MultiCell($w, $h, $txt, $border=0, $align='J', $fill=0, $ln=1, $x='', $y='', $reseth=true, $stretch=0, $ishtml=false, $autopadding=true, $maxh=0, $valign='T', $fitcell=false) {
 			if ($this->empty_string($this->lasth) OR $reseth) {
 				//set row height
 				$this->lasth = $this->FontSize * $this->cell_height_ratio;
@@ -5421,13 +5424,51 @@ if (!class_exists('TCPDF', false)) {
 				// add top padding
 				$this->y += $this->cMargin;
 			}
-			if ($ishtml) {
-				// ******* Write HTML text
+			if ($ishtml) { // ******* Write HTML text
 				$this->writeHTML($txt, true, 0, $reseth, true, $align);
 				$nl = 1;
-			} else {
-				// ******* Write text
+			} else { // ******* Write simple text
+				// vertical alignment
+				if ($maxh > 0) {
+					// get text height
+					$text_height = $this->getStringHeight($w, $txt, $reseth, $autopadding, '', '');
+					if ($fitcell) {
+						$prev_FontSizePt = $this->FontSizePt;
+						// try to reduce font size to fit text on cell (use a quick search algorithm)
+						$fmin = 1;
+						$fmax = $this->FontSizePt;
+						$prev_text_height = $text_height;
+						$maxit = 100; // max number of iterations
+						while ($maxit > 0) {
+							$fmid = (($fmax + $fmin) / 2);
+							$this->SetFontSize($fmid, false);
+							$text_height = $this->getStringHeight($w, $txt, $reseth, $autopadding, '', '');
+							if (($text_height == $maxh) OR (($text_height < $maxh) AND ($fmin >= ($fmax - 0.01)))) {
+								break;
+							} elseif ($text_height < $maxh) {
+								$fmin = $fmid;
+							} else {
+								$fmax = $fmid;
+							}
+							--$maxit;
+						}
+						$this->SetFontSize($this->FontSizePt);
+					}
+					if ($text_height < $maxh) {
+						if ($valign == 'M') {
+							// text vertically aligned on middle
+							$this->y += (($maxh - $text_height) / 2);
+						} elseif ($valign == 'B') {
+							// text vertically aligned on bottom
+							$this->y += ($maxh - $text_height);
+						}
+					}
+				}
 				$nl = $this->Write($this->lasth, $txt, '', 0, $align, true, $stretch, false, true, $maxh);
+				if ($fitcell) {
+					// restore font size
+					$this->SetFontSize($prev_FontSizePt);
+				}
 			}
 			if ($autopadding) {
 				// add bottom padding
@@ -5690,7 +5731,7 @@ if (!class_exists('TCPDF', false)) {
 
 		/**
 		 * This method return the estimated needed height for print a simple text string in Multicell() method.
-		 * Generally, if you want to know the exact height for a block of content you can use the following technique:
+		 * Generally, if you want to know the exact height for a block of content you can use the following alternative technique:
 		 * <pre>
 		 *  // store current object
 		 *  $pdf->startTransaction();
@@ -5807,8 +5848,8 @@ if (!class_exists('TCPDF', false)) {
 			// widht for SHY replacement
 			$shy_replacement_width = $this->GetCharWidth($shy_replacement);
 			// store current position
-			$prevx = $this->x;
-			$prevy = $this->y;
+			//$prevx = $this->x;
+			//$prevy = $this->y;
 			// max Y
 			$maxy = $this->y + $maxh - $h - (2 * $this->cMargin);
 			// calculate remaining line width ($w)
@@ -16426,7 +16467,7 @@ if (!class_exists('TCPDF', false)) {
 			// define block tags
 			$blocktags = array('blockquote','br','dd','dl','div','dt','h1','h2','h3','h4','h5','h6','hr','li','ol','p','pre','ul','tcpdf','table','tr','td');
 			// remove all unsupported tags (the line below lists all supported tags)
-			$html = strip_tags($html, '<marker/><a><b><blockquote><body><br><br/><dd><del><div><dl><dt><em><font><form><h1><h2><h3><h4><h5><h6><hr><i><img><input><label><li><ol><option><p><pre><select><small><span><strong><sub><sup><table><tablehead><tcpdf><td><textarea><th><thead><tr><tt><u><ul>');
+			$html = strip_tags($html, '<marker/><a><b><blockquote><body><br><br/><dd><del><div><dl><dt><em><font><form><h1><h2><h3><h4><h5><h6><hr><hr/><i><img><input><label><li><ol><option><p><pre><select><small><span><strong><sub><sup><table><tablehead><tcpdf><td><textarea><th><thead><tr><tt><u><ul>');
 			//replace some blank characters
 			$html = preg_replace('/<pre/', '<xre', $html); // preserve pre tag
 			$html = preg_replace('/<(table|tr|td|th|tcpdf|blockquote|dd|div|dl|dt|form|h1|h2|h3|h4|h5|h6|br|hr|li|ol|ul|p)([^\>]*)>[\n\r\t]+/', '<\\1\\2>', $html);
@@ -18583,6 +18624,9 @@ if (!class_exists('TCPDF', false)) {
 					}
 					$prop = array();
 					$opt = array();
+					if (isset($tag['attribute']['readonly']) AND !$this->empty_string($tag['attribute']['readonly'])) {
+						$prop['readonly'] = true;
+					}
 					if (isset($tag['attribute']['value']) AND !$this->empty_string($tag['attribute']['value'])) {
 						$value = $tag['attribute']['value'];
 					}
@@ -18703,6 +18747,9 @@ if (!class_exists('TCPDF', false)) {
 				case 'textarea': {
 					$prop = array();
 					$opt = array();
+					if (isset($tag['attribute']['readonly']) AND !$this->empty_string($tag['attribute']['readonly'])) {
+						$prop['readonly'] = true;
+					}
 					if (isset($tag['attribute']['name']) AND !$this->empty_string($tag['attribute']['name'])) {
 						$name = $tag['attribute']['name'];
 					} else {

@@ -1,3 +1,8 @@
+5.5.007 (2010-07-02)
+	- Attribute "readonly" was added to input and textarea form fields.
+	- Vertical alignment feature was added on MultiCell() method only for simple text mode (see example n. 5).
+	- Text-Fit feature was added on MultiCell() method only for simple text mode (see example n. 5).
+
 5.5.006 (2010-06-29)
 	- getStringHeight() and getNumLines() methods were fixed.
 
