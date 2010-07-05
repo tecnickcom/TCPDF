@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.5.008
+// Version     : 5.5.009
 // Begin       : 2002-08-03
-// Last Update : 2010-07-02
+// Last Update : 2010-07-05
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.5.008
+ * @version 5.5.009
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.5.008 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.5.009 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.5.008
+	* @version 5.5.009
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -3345,6 +3345,9 @@ if (!class_exists('TCPDF', false)) {
 			if ($this->page == 0) {
 				$this->AddPage();
 			}
+
+			// save current graphic settings
+			$gvars = $this->getGraphicVars();
 			$this->lastpage();
 			$this->SetAutoPageBreak(false);
 			$this->x = 0;
@@ -3359,6 +3362,8 @@ if (!class_exists('TCPDF', false)) {
 			$this->Cell(0, 0, $msg, 0, 0, 'L', 0, $lnk, 0, false, 'D', 'B');
 			$this->setVisibility('all');
 			$this->_out('Q');
+			// restore graphic settings
+			$this->setGraphicVars($gvars);
 			// close page
 			$this->endPage();
 			// close document
@@ -3788,7 +3793,7 @@ if (!class_exists('TCPDF', false)) {
 			if ($this->print_header) {
 				$this->setGraphicVars($this->default_graphic_vars);
 				$temp_thead = $this->thead;
-    			$temp_theadMargins = $this->theadMargins;
+				$temp_theadMargins = $this->theadMargins;
 				$lasth = $this->lasth;
 				$this->_out('q');
 				$this->rMargin = $this->original_rMargin;
@@ -3829,8 +3834,9 @@ if (!class_exists('TCPDF', false)) {
 			$this->footerpos[$this->page] = $this->pagelen[$this->page];
 			$this->_out("\n");
 			if ($this->print_footer) {
+				$this->setGraphicVars($this->default_graphic_vars);
 				$temp_thead = $this->thead;
-    			$temp_theadMargins = $this->theadMargins;
+				$temp_theadMargins = $this->theadMargins;
 				$lasth = $this->lasth;
 				$this->_out('q');
 				$this->rMargin = $this->original_rMargin;
@@ -6290,6 +6296,61 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
+		 * Set the block dimensions accounting for page breaks and page/column fitting
+		 * @param float $w width
+		 * @param float $h height
+		 * @param float $x X coordinate
+		 * @param float $y Y coodiante
+		 * @param boolean $fitonpage if true the block is resized to not exceed page dimensions.
+		 * @access protected
+		 * @since 5.5.009 (2010-07-05)
+		 */
+		protected function fitBlock(&$w, &$h, &$x, &$y, $fitonpage=false) {
+			// resize the block to be vertically contained on a single page or single column
+			if ($fitonpage OR $this->AutoPageBreak) {
+				$ratio_wh = ($w / $h);
+				if ($h > ($this->PageBreakTrigger - $this->tMargin)) {
+					$h = $this->PageBreakTrigger - $this->tMargin;
+					$w = ($h * $ratio_wh);
+				}
+				// resize the block to be horizontally contained on a single page or single column
+				if ($fitonpage) {
+					$maxw = ($this->w - $this->lMargin - $this->rMargin);
+					if ($w > $maxw) {
+						$w = $maxw;
+						$h = ($w / $ratio_wh);
+					}
+				}
+			}
+			// Check whether we need a new page or new column first as this does not fit
+			$prev_x = $this->x;
+			$prev_y = $this->y;
+			if ($this->checkPageBreak($h, $y) OR ($this->y < $prev_y)) {
+				$y = $this->y;
+				if ($this->rtl) {
+					$x += ($prev_x - $this->x);
+				} else {
+					$x += ($this->x - $prev_x);
+				}
+			}
+			// resize the block to be contained on the remaining available page or column space
+			if ($fitonpage) {
+				$ratio_wh = ($w / $h);
+				if (($y + $h) > $this->PageBreakTrigger) {
+					$h = $this->PageBreakTrigger - $y;
+					$w = ($h * $ratio_wh);
+				}
+				if ((!$this->rtl) AND (($x + $w) > ($this->w - $this->rMargin))) {
+					$w = $this->w - $this->rMargin - $x;
+					$h = ($w / $ratio_wh);
+				} elseif (($this->rtl) AND (($x - $w) < ($this->lMargin))) {
+					$w = $x - $this->lMargin;
+					$h = ($w / $ratio_wh);
+				}
+			}
+		}
+
+		/**
 		 * Puts an image in the page.
 		 * The upper-left corner must be given.
 		 * The dimensions can be specified in different ways:<ul>
@@ -6363,32 +6424,8 @@ if (!class_exists('TCPDF', false)) {
 					$w = $h * $pixw / $pixh;
 				}
 			}
-			// Check whether we need a new page or new column first as this does not fit
-			$prev_x = $this->x;
-			$prev_y = $this->y;
-			if ($this->checkPageBreak($h, $y) OR ($this->y < $prev_y)) {
-				$y = $this->y;
-				if ($this->rtl) {
-					$x += ($prev_x - $this->x);
-				} else {
-					$x += ($this->x - $prev_x);
-				}
-			}
-			// resize image to be contained on a single page
-			if ($fitonpage) {
-				$ratio_wh = $w / $h;
-				if (($y + $h) > $this->PageBreakTrigger) {
-					$h = $this->PageBreakTrigger - $y;
-					$w = $h * $ratio_wh;
-				}
-				if ((!$this->rtl) AND (($x + $w) > ($this->w - $this->rMargin))) {
-					$w = $this->w - $this->rMargin - $x;
-					$h = $w / $ratio_wh;
-				} elseif (($this->rtl) AND (($x - $w) < ($this->lMargin))) {
-					$w = $x - $this->lMargin;
-					$h = $w / $ratio_wh;
-				}
-			}
+			// fit the image on available space
+			$this->fitBlock($w, $h, $x, $y, $fitonpage);
 			// calculate new minimum dimensions in pixels
 			$neww = round($w * $this->k * $dpi / $this->dpi);
 			$newh = round($h * $this->k * $dpi / $this->dpi);
@@ -7071,7 +7108,6 @@ if (!class_exists('TCPDF', false)) {
 		public function Output($name='doc.pdf', $dest='I') {
 			//Output PDF to some destination
 			//Finish document if necessary
-			$this->lastpage();
 			if ($this->state < 3) {
 				$this->Close();
 			}
@@ -10366,7 +10402,7 @@ if (!class_exists('TCPDF', false)) {
 	 	 * <pre>
 		 *   Encoding UTF-16:
 		 *
- 		 *   Encoding of a single character from an ISO 10646 character value to
+		 *   Encoding of a single character from an ISO 10646 character value to
 		 *    UTF-16 proceeds as follows. Let U be the character number, no greater
 		 *    than 0x10FFFF.
 		 *
@@ -10795,7 +10831,7 @@ if (!class_exists('TCPDF', false)) {
 			if (function_exists('mcrypt_decrypt') AND ($out = @mcrypt_decrypt(@MCRYPT_ARCFOUR, $key, $text, @MCRYPT_MODE_STREAM))) {
 				// try to use mcrypt function if exist
 				return $out;
-		    }
+			}
 			if ($this->last_enc_key != $key) {
 				$k = str_repeat($key, ((256 / strlen($key)) + 1));
 				$rc4 = range(0, 255);
@@ -10990,7 +11026,7 @@ if (!class_exists('TCPDF', false)) {
 					// store signature on recipients array
 					$this->encryptdata['Recipients'][] = $hexsignature;
 					// The bytes of each item in the Recipients array of PKCS#7 objects in the order in which they appear in the array
-		            $recipient_bytes .= $signature;
+					$recipient_bytes .= $signature;
 				}
 				// calculate encryption key
 				$this->encryptdata['key'] = substr(sha1($seed.$recipient_bytes, true), 0, $keybytelen);
@@ -14281,7 +14317,7 @@ if (!class_exists('TCPDF', false)) {
 
 		/**
 		 * Returns the string alias used for the total number of pages.
-         * If the current font is unicode type, the returned string is surrounded by additional curly braces.
+		 * If the current font is unicode type, the returned string is surrounded by additional curly braces.
 		 * @return string
 		 * @access public
 		 * @since 4.0.018 (2008-08-08)
@@ -14290,7 +14326,7 @@ if (!class_exists('TCPDF', false)) {
 		public function getAliasNbPages() {
 			if (($this->CurrentFont['type'] == 'TrueTypeUnicode') OR ($this->CurrentFont['type'] == 'cidfont0')) {
 				return '{'.$this->AliasNbPages.'}';
-            }
+			}
 			return $this->AliasNbPages;
 		}
 
@@ -14309,7 +14345,7 @@ if (!class_exists('TCPDF', false)) {
 
 		/**
 		 * Returns the string alias used for the page number.
-         * If the current font is unicode type, the returned string is surrounded by additional curly braces.
+		 * If the current font is unicode type, the returned string is surrounded by additional curly braces.
 		 * @return string
 		 * @access public
 		 * @since 4.5.000 (2009-01-02)
@@ -14318,7 +14354,7 @@ if (!class_exists('TCPDF', false)) {
 		public function getAliasNumPage() {
 			if (($this->CurrentFont['type'] == 'TrueTypeUnicode') OR ($this->CurrentFont['type'] == 'cidfont0')) {
 				return '{'.$this->AliasNumPage.'}';
-            }
+			}
 			return $this->AliasNumPage;
 		}
 
@@ -14340,11 +14376,11 @@ if (!class_exists('TCPDF', false)) {
 		 */
 		public function getGroupPageNoFormatted() {
 			return $this->formatPageNumber($this->getGroupPageNo());
-        }
+		}
 
 		/**
 		 * Return the alias of the current page group
-         * If the current font is unicode type, the returned string is surrounded by additional curly braces.
+		 * If the current font is unicode type, the returned string is surrounded by additional curly braces.
 		 * (will be replaced by the total number of pages in this group).
 		 * @return alias of the current page group
 		 * @access public
@@ -14353,13 +14389,13 @@ if (!class_exists('TCPDF', false)) {
 		public function getPageGroupAlias() {
 			if (($this->CurrentFont['type'] == 'TrueTypeUnicode') OR ($this->CurrentFont['type'] == 'cidfont0')) {
 				return '{'.$this->currpagegroup.'}';
-            }
+			}
 			return $this->currpagegroup;
 		}
 
 		/**
 		 * Return the alias for the page number on the current page group
-         * If the current font is unicode type, the returned string is surrounded by additional curly braces.
+		 * If the current font is unicode type, the returned string is surrounded by additional curly braces.
 		 * (will be replaced by the total number of pages in this group).
 		 * @return alias of the current page group
 		 * @access public
@@ -14368,7 +14404,7 @@ if (!class_exists('TCPDF', false)) {
 		public function getPageNumGroupAlias() {
 			if (($this->CurrentFont['type'] == 'TrueTypeUnicode') OR ($this->CurrentFont['type'] == 'cidfont0')) {
 				return '{'.str_replace('{nb', '{pnb', $this->currpagegroup).'}';
-            }
+			}
 			return str_replace('{nb', '{pnb', $this->currpagegroup);
 		}
 
@@ -14395,7 +14431,7 @@ if (!class_exists('TCPDF', false)) {
 			return number_format((float)$num, 0, '', '.');
 		}
 
-        /**
+		/**
 		 * Returns the current page number formatted as a string.
 		 * @access public
 		 * @since 4.2.005 (2008-11-06)
@@ -14403,9 +14439,9 @@ if (!class_exists('TCPDF', false)) {
 		 */
 		public function PageNoFormatted() {
 			return $this->formatPageNumber($this->PageNo());
-        }
+		}
 
-        /**
+		/**
 		 * Put visibility settings.
 		 * @access protected
 		 * @since 3.0.000 (2008-03-27)
@@ -15362,32 +15398,8 @@ if (!class_exists('TCPDF', false)) {
 			} elseif ($h <= 0) {
 				$h = ($y2 - $y1) / $k * ($w / (($x2 - $x1) / $k));
 			}
-			// Check whether we need a new page or new column first as this does not fit
-			$prev_x = $this->x;
-			$prev_y = $this->y;
-			if ($this->checkPageBreak($h, $y) OR ($this->y < $prev_y)) {
-				$y = $this->y;
-				if ($this->rtl) {
-					$x += ($prev_x - $this->x);
-				} else {
-					$x += ($this->x - $prev_x);
-				}
-			}
-			// resize image to be contained on a single page
-			if ($fitonpage) {
-				$ratio_wh = $w / $h;
-				if (($y + $h) > $this->PageBreakTrigger) {
-					$h = $this->PageBreakTrigger - $y;
-					$w = $h * $ratio_wh;
-				}
-				if ((!$this->rtl) AND (($x + $w) > ($this->w - $this->rMargin))) {
-					$w = $this->w - $this->rMargin - $x;
-					$h = $w / $ratio_wh;
-				} elseif (($this->rtl) AND (($x - $w) < ($this->lMargin))) {
-					$w = $x - $this->lMargin;
-					$h = $w / $ratio_wh;
-				}
-			}
+			// fit the image on available space
+			$this->fitBlock($w, $h, $x, $y, $fitonpage);
 			if ($this->rasterize_vector_images) {
 				// convert EPS to raster image using GD or ImageMagick libraries
 				return $this->Image($file, $x, $y, $w, $h, 'EPS', $link, $align, true, 300, $palign, false, false, $border, false, false, $fitonpage);
@@ -15680,17 +15692,8 @@ if (!class_exists('TCPDF', false)) {
 			// maximum bar height
 			$barh = $h;
 			$h += $extraspace;
-			// Check whether we need a new page or new column first as this does not fit
-			$prev_x = $this->x;
-			$prev_y = $this->y;
-			if ($this->checkPageBreak($h, $y) OR ($this->y < $prev_y)) {
-				$y = $this->y;
-				if ($this->rtl) {
-					$x += ($prev_x - $this->x);
-				} else {
-					$x += ($this->x - $prev_x);
-				}
-			}
+			// fit the barcode on available space
+			$this->fitBlock($w, $h, $x, $y, false);
 			// set alignment
 			$this->img_rb_y = $y + $h;
 			// set alignment
@@ -15969,17 +15972,8 @@ if (!class_exists('TCPDF', false)) {
 					$style['vpadding'] = ($h - $bh) / (2 * $ch);
 				}
 			}
-			// Check whether we need a new page or new column first as this does not fit
-			$prev_x = $this->x;
-			$prev_y = $this->y;
-			if ($this->checkPageBreak($h, $y) OR ($this->y < $prev_y)) {
-				$y = $this->y;
-				if ($this->rtl) {
-					$x += ($prev_x - $this->x);
-				} else {
-					$x += ($this->x - $prev_x);
-				}
-			}
+			// fit the barcode on available space
+			$this->fitBlock($w, $h, $x, $y, false);
 			// set alignment
 			$this->img_rb_y = $y + $h;
 			// set alignment
@@ -17326,6 +17320,7 @@ if (!class_exists('TCPDF', false)) {
 								$startlinepos = $this->cntmrk[$this->page];
 								$startlinepage = $this->page;
 								$startliney = $this->y;
+								$this->newline = false;
 							}
 							$this->y += ((($curfontsize * $this->cell_height_ratio / $this->k) + $curfontascent - $curfontdescent) / 2) - $imgh;
 							$minstartliney = min($this->y, $minstartliney);
@@ -19360,7 +19355,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->tagvspaces = $tagvs;
 		}
 
-        /**
+		/**
 		 * Set custom width for list indentation.
 		 * @param float $width width of the indentation. Use negative value to disable it.
 		 * @access public
@@ -19368,9 +19363,9 @@ if (!class_exists('TCPDF', false)) {
 		 */
 		public function setListIndentWidth($width) {
 			return $this->customlistindent = floatval($width);
-        }
+		}
 
-        /**
+		/**
 		 * Set the top/bottom cell sides to be open or closed when the cell cross the page.
 		 * @param boolean $isopen if true keeps the top/bottom border open for the cell sides that cross the page.
 		 * @access public
@@ -19378,9 +19373,9 @@ if (!class_exists('TCPDF', false)) {
 		 */
 		public function setOpenCell($isopen) {
 			$this->opencell = $isopen;
-        }
+		}
 
-        /**
+		/**
 		 * Set the color and font style for HTML links.
 		 * @param array $color RGB array of colors
 		 * @param string $fontstyle additional font styles to add
@@ -19390,9 +19385,9 @@ if (!class_exists('TCPDF', false)) {
 		public function setHtmlLinksStyle($color=array(0,0,255), $fontstyle='U') {
 			$this->htmlLinkColorArray = $color;
 			$this->htmlLinkFontStyle = $fontstyle;
-        }
+		}
 
-        /**
+		/**
 		 * Convert HTML string containing value and unit of measure to user's units or points.
 		 * @param string $htmlval string containing values and unit
 		 * @param string $refsize reference value in points
@@ -19402,7 +19397,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @access public
 		 * @since 4.4.004 (2008-12-10)
 		 */
-        public function getHTMLUnitToUnits($htmlval, $refsize=1, $defaultunit='px', $points=false) {
+		public function getHTMLUnitToUnits($htmlval, $refsize=1, $defaultunit='px', $points=false) {
 			$supportedunits = array('%', 'em', 'ex', 'px', 'in', 'cm', 'mm', 'pc', 'pt');
 			$retval = 0;
 			$value = 0;
@@ -19566,8 +19561,8 @@ if (!class_exists('TCPDF', false)) {
 				// set default list type for ordered list
 				$listtype = 'decimal';
 			}
-        	switch ($listtype) {
-        		// unordered types
+			switch ($listtype) {
+				// unordered types
 				case 'none': {
 					break;
 				}
@@ -19685,7 +19680,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->lispacer = '^';
 		}
 
-        /**
+		/**
 		 * Returns current graphic variables as array.
 		 * @return array graphic variables
 		 * @access protected
@@ -19724,7 +19719,7 @@ if (!class_exists('TCPDF', false)) {
 			return $grapvars;
 		}
 
-        /**
+		/**
 		 * Set graphic variables.
 		 * @param $gvars array graphic variables
 		 * @access protected
@@ -19775,7 +19770,7 @@ if (!class_exists('TCPDF', false)) {
 			return tempnam(K_PATH_CACHE, $name.'_');
 		}
 
-        /**
+		/**
 		 * Writes data to a temporary file on filesystem.
 		 * @param string $file file name
 		 * @param mixed $data data to write on file
@@ -19804,7 +19799,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 		}
 
-        /**
+		/**
 		 * Read data from a temporary file on filesystem.
 		 * @param string $file file name
 		 * @return mixed retrieved data
@@ -19851,7 +19846,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 		}
 
-        /**
+		/**
 		 * Get buffer content.
 		 * @return string buffer content
 		 * @access protected
@@ -19865,7 +19860,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 		}
 
-        /**
+		/**
 		 * Set page buffer content.
 		 * @param int $page page number
 		 * @param string $data page data
@@ -19893,7 +19888,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 		}
 
-        /**
+		/**
 		 * Get page buffer content.
 		 * @param int $page page number
 		 * @return string page buffer content or false in case of error
@@ -19909,7 +19904,7 @@ if (!class_exists('TCPDF', false)) {
 			return false;
 		}
 
-        /**
+		/**
 		 * Set image buffer content.
 		 * @param string $image image key
 		 * @param array $data image data
@@ -19931,7 +19926,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 		}
 
-        /**
+		/**
 		 * Set image buffer content for a specified sub-key.
 		 * @param string $image image key
 		 * @param string $key image sub-key
@@ -19952,7 +19947,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 		}
 
-        /**
+		/**
 		 * Get image buffer content.
 		 * @param string $image image key
 		 * @return string image buffer content or false in case of error
@@ -19989,7 +19984,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 		}
 
-        /**
+		/**
 		 * Set font buffer content.
 		 * @param string $font font key
 		 * @param string $key font sub-key
@@ -20010,7 +20005,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 		}
 
-        /**
+		/**
 		 * Get font buffer content.
 		 * @param string $font font key
 		 * @return string font buffer content or false in case of error
@@ -20164,7 +20159,7 @@ if (!class_exists('TCPDF', false)) {
 			return true;
 		}
 
-        /**
+		/**
 		 * Remove the specified page.
 		 * @param int $page page to remove
 		 * @return true in case of success, false in case of error.
@@ -21277,32 +21272,8 @@ if (!class_exists('TCPDF', false)) {
 			} elseif ($h <= 0) {
 				$h = $w * $oh / $ow;
 			}
-			// Check whether we need a new page or new column first as this does not fit
-			$prev_x = $this->x;
-			$prev_y = $this->y;
-			if ($this->checkPageBreak($h, $y) OR ($this->y < $prev_y)) {
-				$y = $this->y;
-				if ($this->rtl) {
-					$x += ($prev_x - $this->x);
-				} else {
-					$x += ($this->x - $prev_x);
-				}
-			}
-			// resize image to be contained on a single page
-			if ($fitonpage) {
-				$ratio_wh = $w / $h;
-				if (($y + $h) > $this->PageBreakTrigger) {
-					$h = $this->PageBreakTrigger - $y;
-					$w = $h * $ratio_wh;
-				}
-				if ((!$this->rtl) AND (($x + $w) > ($this->w - $this->rMargin))) {
-					$w = $this->w - $this->rMargin - $x;
-					$h = $w / $ratio_wh;
-				} elseif (($this->rtl) AND (($x - $w) < ($this->lMargin))) {
-					$w = $x - $this->lMargin;
-					$h = $w / $ratio_wh;
-				}
-			}
+			// fit the image on available space
+			$this->fitBlock($w, $h, $x, $y, $fitonpage);
 			if ($this->rasterize_vector_images) {
 				// convert SVG to raster image using GD or ImageMagick libraries
 				return $this->Image($file, $x, $y, $w, $h, 'SVG', $link, $align, true, 300, $palign, false, false, $border, false, false, false);
