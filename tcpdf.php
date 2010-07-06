@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.5.009
+// Version     : 5.5.010
 // Begin       : 2002-08-03
-// Last Update : 2010-07-05
+// Last Update : 2010-07-06
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.5.009
+ * @version 5.5.010
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.5.009 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.5.010 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.5.009
+	* @version 5.5.010
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -6595,8 +6595,8 @@ if (!class_exists('TCPDF', false)) {
 			$xkimg = $ximg * $this->k;
 			$this->_out(sprintf('q %.2F 0 0 %.2F %.2F %.2F cm /I%d Do Q', ($w * $this->k), ($h * $this->k), $xkimg, (($this->h - ($y + $h)) * $this->k), $info['i']));
 			if (!empty($border)) {
-				$bx = $x;
-				$by = $y;
+				$bx = $this->x;
+				$by = $this->y;
 				$this->x = $ximg;
 				if ($this->rtl) {
 					$this->x += $w;
@@ -15543,8 +15543,8 @@ if (!class_exists('TCPDF', false)) {
 			// restore previous graphic state
 			$this->_out($this->epsmarker.'Q');
 			if (!empty($border)) {
-				$bx = $x;
-				$by = $y;
+				$bx = $this->x;
+				$by = $this->y;
 				$this->x = $ximg;
 				if ($this->rtl) {
 					$this->x += $w;
@@ -21403,8 +21403,8 @@ if (!class_exists('TCPDF', false)) {
 			// restore  graphic vars
 			$this->setGraphicVars($gvars);
 			if (!empty($border)) {
-				$bx = $x;
-				$by = $y;
+				$bx = $this->x;
+				$by = $this->y;
 				$this->x = $ximg;
 				if ($this->rtl) {
 					$this->x += $w;
