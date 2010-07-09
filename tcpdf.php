@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.5.010
+// Version     : 5.5.011
 // Begin       : 2002-08-03
-// Last Update : 2010-07-06
+// Last Update : 2010-07-09
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.5.010
+ * @version 5.5.011
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.5.010 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.5.011 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.5.010
+	* @version 5.5.011
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1313,6 +1313,13 @@ if (!class_exists('TCPDF', false)) {
 		protected $re_spaces = '/[\s]/';
 
 		/**
+		 * Array of parts $re_spaces
+		 * @access protected
+		 * @since 5.5.011 (2010-07-09)
+		 */
+		protected $re_space = array('p' => '[\s]', 'm' => '');
+
+		/**
 		 * Signature object ID
 		 * @access protected
 		 * @since 4.6.022 (2009-06-23)
@@ -1846,11 +1853,11 @@ if (!class_exists('TCPDF', false)) {
 				// \p{Z} or \p{Separator}: any kind of Unicode whitespace or invisible separator.
 				// \p{Lo} or \p{Other_Letter}: a Unicode letter or ideograph that does not have lowercase and uppercase variants.
 				// \p{Lo} is needed because Chinese characters are packed next to each other without spaces in between.
-				//$this->re_spaces = '/[\s\p{Z}\p{Lo}]/u';
-				$this->re_spaces = '/[\s\p{Z}]/u';
+				//$this->setSpacesRE('/[\s\p{Z}\p{Lo}]/u');
+				$this->setSpacesRE('/[\s\p{Z}]/u');
 			} else {
 				// PCRE unicode support is turned OFF
-				$this->re_spaces = '/[\s]/';
+				$this->setSpacesRE('/[\s]/');
 			}
 			$this->annot_obj_id = $this->annots_start_obj_id;
 			$this->curr_annot_obj_id = $this->annots_start_obj_id;
@@ -2852,16 +2859,33 @@ if (!class_exists('TCPDF', false)) {
 
 		/**
 		 * Set regular expression to detect withespaces or word separators.
+		 * The pattern delimiter must be the forward-slash character '/'.
+		 * <pre>
+		 * if PCRE unicode support is turned ON:
+		 * 	\p{Z} or \p{Separator}: any kind of Unicode whitespace or invisible separator.
+		 * 	\p{Lo} or \p{Other_Letter}: a Unicode letter or ideograph that does not have lowercase and uppercase variants.
+		 * 	\p{Lo} is needed because Chinese characters are packed next to each other without spaces in between.
+		 * </pre>
 		 * @param string $re regular expression (leave empty for default).
 		 * @access public
 		 * @since 4.6.016 (2009-06-15)
 		 */
 		public function setSpacesRE($re='/[\s]/') {
-			// if PCRE unicode support is turned ON:
-			// 	\p{Z} or \p{Separator}: any kind of Unicode whitespace or invisible separator.
-			// 	\p{Lo} or \p{Other_Letter}: a Unicode letter or ideograph that does not have lowercase and uppercase variants.
-			// 	\p{Lo} is needed because Chinese characters are packed next to each other without spaces in between.
 			$this->re_spaces = $re;
+			$re_parts = explode('/', $re);
+			// get pattern parts
+			$this->re_space = array();
+			if (isset($re_parts[1]) AND !empty($re_parts[1])) {
+				$this->re_space['p'] = $re_parts[1];
+			} else {
+				$this->re_space['p'] = '[\s]';
+			}
+			// set pattern modifiers
+			if (isset($re_parts[2]) AND !empty($re_parts[2])) {
+				$this->re_space['m'] = $re_parts[2];
+			} else {
+				$this->re_space['m'] = '';
+			}
 		}
 
 		/**
@@ -16242,9 +16266,9 @@ if (!class_exists('TCPDF', false)) {
 		protected function isValidCSSSelectorForTag($dom, $key, $selector) {
 			$valid = false; // value to be returned
 			$tag = $dom[$key]['value'];
-			$class = '';
+			$class = array();
 			if (isset($dom[$key]['attribute']['class']) AND !empty($dom[$key]['attribute']['class'])) {
-				$class = strtolower($dom[$key]['attribute']['class']);
+				$class = explode(' ', strtolower($dom[$key]['attribute']['class']));
 			}
 			$id = '';
 			if (isset($dom[$key]['attribute']['id']) AND !empty($dom[$key]['attribute']['id'])) {
@@ -16265,7 +16289,7 @@ if (!class_exists('TCPDF', false)) {
 						// check if matches class, id, attribute, pseudo-class or pseudo-element
 						switch ($attrib{0}) {
 							case '.': { // class
-								if (substr($attrib, 1) == $class) {
+								if (in_array(substr($attrib, 1), $class)) {
 									$valid = true;
 								}
 								break;
@@ -16501,8 +16525,8 @@ if (!class_exists('TCPDF', false)) {
 				$html = $html_a.$html_b.substr($html, $pos + 11);
 				$offset = strlen($html_a.$html_b);
 			}
-			$html = preg_replace("'([\s]*)<option'si", "<option", $html);
-			$html = preg_replace("'</option>([\s]*)'si", "</option>", $html);
+			$html = preg_replace('/([\s]*)<option/si', '<option', $html);
+			$html = preg_replace('/<\/option>([\s]*)/si', '</option>', $html);
 			$offset = 0;
 			while (($offset < strlen($html)) AND ($pos = strpos($html, '</option>', $offset)) !== false) {
 				$html_a = substr($html, 0, $offset);
@@ -16520,19 +16544,21 @@ if (!class_exists('TCPDF', false)) {
 			// restore textarea newlines
 			$html = str_replace('<TBR>', "\n", $html);
 			// remove extra spaces from code
-			$html = preg_replace('/[\s]+<\/(table|tr|td|th|ul|ol|li|dl|dt|dd)>/', '</\\1>', $html);
-			$html = preg_replace('/[\s]+<(tr|td|th|ul|ol|li|dl|dt|dd|br)/', '<\\1', $html);
+			$html = preg_replace('/[\s]+<\/(table|tr|ul|ol|dl)>/', '</\\1>', $html);
+			$html = preg_replace('/'.$this->re_space['p'].'+<\/(td|th|li|dt|dd)>/'.$this->re_space['m'], '</\\1>', $html);
+			$html = preg_replace('/[\s]+<(tr|td|th|li|dt|dd)/', '<\\1', $html);
+			$html = preg_replace('/'.$this->re_space['p'].'+<(ul|ol|dl|br)/'.$this->re_space['m'], '<\\1', $html);
 			$html = preg_replace('/<\/(table|tr|td|th|blockquote|dd|dt|dl|div|dt|h1|h2|h3|h4|h5|h6|hr|li|ol|ul|p)>[\s]+</', '</\\1><', $html);
 			$html = preg_replace('/<\/(td|th)>/', '<marker style="font-size:0"/></\\1>', $html);
 			$html = preg_replace('/<\/table>([\s]*)<marker style="font-size:0"\/>/', '</table>', $html);
-			$html = preg_replace('/[\s]*<img/', ' <img', $html);
+			$html = preg_replace('/'.$this->re_space['p'].'*<img/'.$this->re_space['m'], ' <img', $html);
 			$html = preg_replace('/<img([^\>]*)>/xi', '<img\\1><span><marker style="font-size:0"/></span>', $html);
 			$html = preg_replace('/<xre/', '<pre', $html); // restore pre tag
 			$html = preg_replace('/<textarea([^\>]*)>/xi', '<textarea\\1 value="', $html);
 			$html = preg_replace('/<\/textarea>/', '" />', $html);
 			// trim string
-			$html = preg_replace('/^[\s]+/', '', $html);
-			$html = preg_replace('/[\s]+$/', '', $html);
+			$html = preg_replace('/^'.$this->re_space['p'].'+/'.$this->re_space['m'], '', $html);
+			$html = preg_replace('/'.$this->re_space['p'].'+$/'.$this->re_space['m'], '', $html);
 			// pattern for generic tag
 			$tagpattern = '/(<[^>]+>)/';
 			// explodes the string
@@ -20805,6 +20831,16 @@ if (!class_exists('TCPDF', false)) {
 				// print table header
 				$this->writeHTML($this->thead, false, false, false, false, '');
 			}
+		}
+
+		/**
+		 * Return the current column number
+		 * @return int current column number
+		 * @access public
+	 	 * @since 5.5.011 (2010-07-08)
+		 */
+		public function getColumn() {
+			return $this->current_column;
 		}
 
 		/**

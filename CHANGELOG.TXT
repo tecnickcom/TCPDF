@@ -1,3 +1,8 @@
+5.5.011 (2010-07-09)
+	- Support for multiple CSS classes was added.
+	- The method getColumn() was added to return the current column number.
+	- Some regular Expressions were fixed to be more compatible with UTF-8.
+
 5.5.010 (2010-07-06)
 	- Bug item #3025772 "Borders in all image functions are still flawed" was fixed.
 
