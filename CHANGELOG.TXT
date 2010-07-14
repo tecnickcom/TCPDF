@@ -1,3 +1,7 @@
+5.5.012 (2010-07-14)
+	- Bug #3029310 "Font baseline inconsistencies with line-height and font-size" was fixed.
+	- Bug #3029338 "FI and FO output destination filename bug" was fixed.
+
 5.5.011 (2010-07-09)
 	- Support for multiple CSS classes was added.
 	- The method getColumn() was added to return the current column number.

@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.5.011
+// Version     : 5.5.012
 // Begin       : 2002-08-03
-// Last Update : 2010-07-09
+// Last Update : 2010-07-14
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.5.011
+ * @version 5.5.012
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.5.011 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.5.012 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.5.011
+	* @version 5.5.012
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -7140,7 +7140,7 @@ if (!class_exists('TCPDF', false)) {
 				$dest = $dest ? 'D' : 'F';
 			}
 			$dest = strtoupper($dest);
-			if ($dest != 'F') {
+			if (strpos($dest, 'F') !== FALSE) {
 				$name = preg_replace('/[\s]+/', '_', $name);
 				$name = preg_replace('/[^a-zA-Z0-9_\.-]/', '', $name);
 			}
@@ -17270,11 +17270,6 @@ if (!class_exists('TCPDF', false)) {
 					}
 				}
 				if ($dom[$key]['tag'] OR ($key == 0)) {
-					if (isset($dom[$key]['line-height'])) {
-						// set line height
-						$this->cell_height_ratio = $dom[$key]['line-height'];
-						$this->lasth = $this->FontSize * $this->cell_height_ratio;
-					}
 					if ((($dom[$key]['value'] == 'table') OR ($dom[$key]['value'] == 'tr')) AND (isset($dom[$key]['align']))) {
 						$dom[$key]['align'] = ($this->rtl) ? 'R' : 'L';
 					}
@@ -17352,7 +17347,7 @@ if (!class_exists('TCPDF', false)) {
 							$minstartliney = min($this->y, $minstartliney);
 							$maxbottomliney = ($startliney + ($this->FontSize * $this->cell_height_ratio));
 						}
-					} elseif (isset($dom[$key]['fontname']) OR isset($dom[$key]['fontstyle']) OR isset($dom[$key]['fontsize'])) {
+					} elseif (isset($dom[$key]['fontname']) OR isset($dom[$key]['fontstyle']) OR isset($dom[$key]['fontsize']) OR isset($dom[$key]['line-height'])) {
 						// account for different font size
 						$pfontname = $curfontname;
 						$pfontstyle = $curfontstyle;
@@ -17362,13 +17357,11 @@ if (!class_exists('TCPDF', false)) {
 						$fontsize = isset($dom[$key]['fontsize']) ? $dom[$key]['fontsize'] : $curfontsize;
 						$fontascent = $this->getFontAscent($fontname, $fontstyle, $fontsize);
 						$fontdescent = $this->getFontDescent($fontname, $fontstyle, $fontsize);
-						if (($fontname != $curfontname) OR ($fontstyle != $curfontstyle) OR ($fontsize != $curfontsize)) {
-							if (is_numeric($fontsize) AND ($fontsize >= 0)
-								AND is_numeric($curfontsize) AND ($curfontsize >= 0)
-								AND ($fontsize != $curfontsize) AND (!$this->newline)
-								AND ($key < ($maxel - 1))
-								) {
-								if ((!$this->newline) AND ($this->page > $startlinepage)) {
+						if (($fontname != $curfontname) OR ($fontstyle != $curfontstyle) OR ($fontsize != $curfontsize) OR ($this->cell_height_ratio != $dom[$key]['line-height'])) {
+							if ((!$this->newline) AND ($key < ($maxel - 1))
+								AND ((is_numeric($fontsize) AND ($fontsize >= 0) AND is_numeric($curfontsize) AND ($curfontsize >= 0) AND ($fontsize != $curfontsize))
+									OR ($this->cell_height_ratio != $dom[$key]['line-height']))) {
+								if ($this->page > $startlinepage) {
 									// fix lines splitted over two pages
 									if (isset($this->footerlen[$startlinepage])) {
 										$curpos = $this->pagelen[$startlinepage] - $this->footerlen[$startlinepage];
@@ -17408,13 +17401,17 @@ if (!class_exists('TCPDF', false)) {
 									$startlinepage = $this->page;
 									$startliney = $this->y;
 								}
+								if (!isset($dom[$key]['line-height'])) {
+									$dom[$key]['line-height'] = $this->cell_height_ratio;
+								}
 								if (!$dom[$key]['block']) {
-									$this->y += ((($curfontsize - $fontsize) * $this->cell_height_ratio / $this->k) + $curfontascent - $fontascent - $curfontdescent + $fontdescent) / 2;
+									$this->y += (((($curfontsize * $this->cell_height_ratio ) - ($fontsize * $dom[$key]['line-height'])) / $this->k) + $curfontascent - $fontascent - $curfontdescent + $fontdescent) / 2;
 									if (($dom[$key]['value'] != 'sup') AND ($dom[$key]['value'] != 'sub')) {
 										$minstartliney = min($this->y, $minstartliney);
 										$maxbottomliney = max(($this->y + (($fontsize * $this->cell_height_ratio) / $this->k)), $maxbottomliney);
 									}
 								}
+								$this->cell_height_ratio = $dom[$key]['line-height'];
 								$fontaligned = true;
 							}
 							$this->SetFont($fontname, $fontstyle, $fontsize);
