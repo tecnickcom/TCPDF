@@ -1,3 +1,6 @@
+5.5.013 (2010-07-14)
+	- Bug #3029338 "FI and FO output destination filename bug" was fixed (previous fix was wrong).
+
 5.5.012 (2010-07-14)
 	- Bug #3029310 "Font baseline inconsistencies with line-height and font-size" was fixed.
 	- Bug #3029338 "FI and FO output destination filename bug" was fixed.
