@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.5.013
+// Version     : 5.5.014
 // Begin       : 2002-08-03
-// Last Update : 2010-07-14
+// Last Update : 2010-07-15
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.5.013
+ * @version 5.5.014
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.5.013 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.5.014 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.5.013
+	* @version 5.5.014
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -6413,21 +6413,49 @@ if (!class_exists('TCPDF', false)) {
 			if ($y === '') {
 				$y = $this->y;
 			}
+			$cached_file = false; // true when the file is cached
 			// get image dimensions
 			$imsize = @getimagesize($file);
 			if ($imsize === FALSE) {
-				// encode spaces on filename
+				// try to encode spaces on filename
 				$file = str_replace(' ', '%20', $file);
 				$imsize = @getimagesize($file);
 				if ($imsize === FALSE) {
-					if (($w > 0) AND ($h > 0)) {
+					if (function_exists('curl_init')) {
+						// try to get remote file data using cURL
+						$cs = curl_init(); // curl session
+						curl_setopt($cs, CURLOPT_URL, $file);
+						curl_setopt($cs, CURLOPT_BINARYTRANSFER, true);
+						curl_setopt($cs, CURLOPT_FAILONERROR, true);
+						curl_setopt($cs, CURLOPT_RETURNTRANSFER, true);
+						curl_setopt($cs, CURLOPT_CONNECTTIMEOUT, 5);
+						curl_setopt($cs, CURLOPT_TIMEOUT, 30);
+						$imgdata = curl_exec($cs);
+						curl_close($cs);
+						if($imgdata !== FALSE) {
+							// copy image to cache
+							$file = tempnam(K_PATH_CACHE, 'img_');
+							$fp = fopen($file, 'w');
+							fwrite($fp, $imgdata);
+							fclose($fp);
+							unset($imgdata);
+							$cached_file = true;
+							$imsize = @getimagesize($file);
+							if ($imsize === FALSE) {
+								unlink($file);
+								$cached_file = false;
+							}
+						}
+					} elseif (($w > 0) AND ($h > 0)) {
+						// get measures from specified data
 						$pw = $this->getHTMLUnitToUnits($w, 0, $this->pdfunit, true) * $this->imgscale * $this->k;
 						$ph = $this->getHTMLUnitToUnits($h, 0, $this->pdfunit, true) * $this->imgscale * $this->k;
 						$imsize = array($pw, $ph);
-					} else {
-						$this->Error('[Image] Unable to get image width and height: '.$file);
 					}
 				}
+			}
+			if ($imsize === FALSE) {
+				$this->Error('[Image] Unable to get image: '.$file);
 			}
 			// get original image width and height in pixels
 			list($pixw, $pixh) = $imsize;
@@ -6489,7 +6517,7 @@ if (!class_exists('TCPDF', false)) {
 					// TCPDF image functions
 					$info = $this->$mtd($file);
 					if ($info == 'pngalpha') {
-						return $this->ImagePngAlpha($file, $x, $y, $w, $h, 'PNG', $link, $align, $resize, $dpi, $palign);
+						return $this->ImagePngAlpha($file, $x, $y, $pixw, $pixh, $w, $h, 'PNG', $link, $align, $resize, $dpi, $palign);
 					}
 				}
 				if (!$info) {
@@ -6585,6 +6613,10 @@ if (!class_exists('TCPDF', false)) {
 				}
 				// add image to document
 				$this->setImageBuffer($file, $info);
+			}
+			if ($cached_file) {
+				// remove cached file
+				unlink($file);
 			}
 			// set alignment
 			$this->img_rb_y = $y + $h;
@@ -6907,6 +6939,8 @@ if (!class_exists('TCPDF', false)) {
 		 * @param string $file Name of the file containing the image.
 		 * @param float $x Abscissa of the upper-left corner.
 		 * @param float $y Ordinate of the upper-left corner.
+		 * @param float $wpx Original width of the image in pixels.
+		 * @param float $hpx original height of the image in pixels.
 		 * @param float $w Width of the image in the page. If not specified or equal to zero, it is automatically calculated.
 		 * @param float $h Height of the image in the page. If not specified or equal to zero, it is automatically calculated.
 		 * @param string $type Image format. Possible values are (case insensitive): JPEG and PNG (whitout GD library) and all images supported by GD: GD, GD2, GD2PART, GIF, JPEG, PNG, BMP, XBM, XPM;. If not specified, the type is inferred from the file extension.
@@ -6920,9 +6954,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 4.3.007 (2008-12-04)
 		 * @see Image()
 		 */
-		protected function ImagePngAlpha($file, $x='', $y='', $w=0, $h=0, $type='', $link='', $align='', $resize=false, $dpi=300, $palign='') {
-			// get image size
-			list($wpx, $hpx) = getimagesize($file);
+		protected function ImagePngAlpha($file, $x, $y, $wpx, $hpx, $w, $h, $type, $link, $align, $resize, $dpi, $palign) {
 			// generate images
 			$img = imagecreatefrompng($file);
 			$imgalpha = imagecreate($wpx, $hpx);
