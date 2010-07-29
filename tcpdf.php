@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.5.014
+// Version     : 5.5.015
 // Begin       : 2002-08-03
-// Last Update : 2010-07-15
+// Last Update : 2010-07-29
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.5.014
+ * @version 5.5.015
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.5.014 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.5.015 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.5.014
+	* @version 5.5.015
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -3261,7 +3261,7 @@ if (!class_exists('TCPDF', false)) {
 		public function SetCompression($compress) {
 			//Set page compression
 			if (function_exists('gzcompress')) {
-				$this->compress = $compress;
+				$this->compress = $compress ? true : false;
 			} else {
 				$this->compress = false;
 			}
@@ -6505,6 +6505,8 @@ if (!class_exists('TCPDF', false)) {
 				//First use of image, get info
 				if ($type == '') {
 					$type = $this->getImageFileType($file, $imsize);
+				} elseif ($type == 'jpg') {
+					$type = 'jpeg';
 				}
 				$mqr = $this->get_mqr();
 				$this->set_mqr(false);
@@ -15371,7 +15373,7 @@ if (!class_exists('TCPDF', false)) {
 
 		/**
 		 * Embed vector-based Adobe Illustrator (AI) or AI-compatible EPS files.
-		 * NOTE: EPS is not yet fully implemented, use the setRasterizeVectorImages() method to enable/disable rasterization of SVG images using ImageMagick library.
+		 * NOTE: EPS is not yet fully implemented, use the setRasterizeVectorImages() method to enable/disable rasterization of vector images using ImageMagick library.
 		 * Only vector drawing is supported, not text or bitmap.
 		 * Although the script was successfully tested with various AI format versions, best results are probably achieved with files that were exported in the AI3 format (tested with Illustrator CS2, Freehand MX and Photoshop CS2).
 		 * @param string $file Name of the file containing the image.
@@ -16526,8 +16528,10 @@ if (!class_exists('TCPDF', false)) {
 			$html = preg_replace('/<style([^\>]*)>([^\<]*)<\/style>/isU', '', $html);
 			// define block tags
 			$blocktags = array('blockquote','br','dd','dl','div','dt','h1','h2','h3','h4','h5','h6','hr','li','ol','p','pre','ul','tcpdf','table','tr','td');
+			// define self-closing tags
+			$selfclosingtags = array('area','base','basefont','br','hr','input','img','link','meta');
 			// remove all unsupported tags (the line below lists all supported tags)
-			$html = strip_tags($html, '<marker/><a><b><blockquote><body><br><br/><dd><del><div><dl><dt><em><font><form><h1><h2><h3><h4><h5><h6><hr><hr/><i><img><input><label><li><ol><option><p><pre><select><small><span><strong><sub><sup><table><tablehead><tcpdf><td><textarea><th><thead><tr><tt><u><ul>');
+			$html = strip_tags($html, '<marker/><a><b><blockquote><body><br><br/><dd><del><div><dl><dt><em><font><form><h1><h2><h3><h4><h5><h6><hr><hr/><i><img><input><label><li><ol><option><p><pre><s><select><small><span><strike><strong><sub><sup><table><tablehead><tcpdf><td><textarea><th><thead><tr><tt><u><ul>');
 			//replace some blank characters
 			$html = preg_replace('/<pre/', '<xre', $html); // preserve pre tag
 			$html = preg_replace('/<(table|tr|td|th|tcpdf|blockquote|dd|div|dl|dt|form|h1|h2|h3|h4|h5|h6|br|hr|li|ol|ul|p)([^\>]*)>[\n\r\t]+/', '<\\1\\2>', $html);
@@ -16588,6 +16592,7 @@ if (!class_exists('TCPDF', false)) {
 			$html = preg_replace('/<xre/', '<pre', $html); // restore pre tag
 			$html = preg_replace('/<textarea([^\>]*)>/xi', '<textarea\\1 value="', $html);
 			$html = preg_replace('/<\/textarea>/', '" />', $html);
+			$html = preg_replace('/<li([^\>]*)><\/li>/', '<li\\1>&nbsp;</li>', $html);
 			// trim string
 			$html = preg_replace('/^'.$this->re_space['p'].'+/'.$this->re_space['m'], '', $html);
 			$html = preg_replace('/'.$this->re_space['p'].'+$/'.$this->re_space['m'], '', $html);
@@ -16707,15 +16712,16 @@ if (!class_exists('TCPDF', false)) {
 							$dom[($dom[$key]['parent'])]['thead'] .= '</tablehead>';
 						}
 					} else {
-						// *** opening html tag
+						// *** opening or self-closing html tag
 						$dom[$key]['opening'] = true;
 						$dom[$key]['parent'] = end($level);
-						if (substr($element, -1, 1) != '/') {
-							// not self-closing tag
+						if ((substr($element, -1, 1) == '/') OR (in_array($dom[$key]['value'], $selfclosingtags))) {
+							// self-closing tag
+							$dom[$key]['self'] = true;
+						} else {
+							// opening tag
 							array_push($level, $key);
 							$dom[$key]['self'] = false;
-						} else {
-							$dom[$key]['self'] = true;
 						}
 						// copy some values from parent
 						$parentkey = 0;
@@ -16976,7 +16982,7 @@ if (!class_exists('TCPDF', false)) {
 						if ($dom[$key]['value'] == 'u') {
 							$dom[$key]['fontstyle'] .= 'U';
 						}
-						if ($dom[$key]['value'] == 'del') {
+						if (($dom[$key]['value'] == 'del') OR ($dom[$key]['value'] == 's') OR ($dom[$key]['value'] == 'strike')) {
 							$dom[$key]['fontstyle'] .= 'D';
 						}
 						if (!isset($dom[$key]['style']['text-decoration']) AND ($dom[$key]['value'] == 'a')) {
@@ -21105,7 +21111,7 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
-		 * Enable/disable rasterization of SVG images using ImageMagick library.
+		 * Enable/disable rasterization of vector images using ImageMagick library.
 		 * @param boolean $mode if true enable rasterization, false otherwise.
 		 * @access public
 		 * @since 5.0.000 (2010-04-27)
@@ -21234,7 +21240,7 @@ if (!class_exists('TCPDF', false)) {
 
 		/**
 		 * Embedd a Scalable Vector Graphics (SVG) image.
-		 * NOTE: SVG standard is not yet fully implemented, use the setRasterizeVectorImages() method to enable/disable rasterization of SVG images using ImageMagick library.
+		 * NOTE: SVG standard is not yet fully implemented, use the setRasterizeVectorImages() method to enable/disable rasterization of vector images using ImageMagick library.
 		 * @param string $file Name of the SVG file.
 		 * @param float $x Abscissa of the upper-left corner.
 		 * @param float $y Ordinate of the upper-left corner.

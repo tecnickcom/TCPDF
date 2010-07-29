@@ -1,3 +1,8 @@
+5.5.015 (2010-07-29)
+	- Automatic fix for unclosed self-closing tag.
+	- Support for deprecated 's' and 'strike' tags was added.
+	- Empty list items problem was fixed.
+
 5.5.014 (2010-07-15)
 	- Support for external images was improved.
 
