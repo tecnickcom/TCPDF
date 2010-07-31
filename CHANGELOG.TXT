@@ -1,3 +1,9 @@
+5.6.000 (2010-07-31)
+	- A bug with object IDs was fixes.
+	- Performances were improved.
+
+------------------------------------------------------------
+
 5.5.015 (2010-07-29)
 	- Automatic fix for unclosed self-closing tag.
 	- Support for deprecated 's' and 'strike' tags was added.
