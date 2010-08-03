@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_020.php
 // Begin       : 2008-03-04
-// Last Update : 2010-05-20
+// Last Update : 2010-08-03
 //
 // Description : Example 020 for TCPDF class
 //               Two columns composed by MultiCell of different
@@ -132,7 +132,7 @@ $text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In sed imperdi
 Fusce et felis vitae diam lobortis sollicitudin. Aenean tincidunt accumsan nisi, id vehicula quam laoreet elementum. Phasellus egestas interdum erat, et viverra ipsum ultricies ac. Praesent sagittis augue at augue volutpat eleifend. Cras nec orci neque. Mauris bibendum posuere blandit. Donec feugiat mollis dui sit amet pellentesque. Sed a enim justo. Donec tincidunt, nisl eget elementum aliquam, odio ipsum ultrices quam, eu porttitor ligula urna at lorem. Donec varius, eros et convallis laoreet, ligula tellus consequat felis, ut ornare metus tellus sodales velit. Duis sed diam ante. Ut rutrum malesuada massa, vitae consectetur ipsum rhoncus sed. Suspendisse potenti. Pellentesque a congue massa.';
 
 // print some rows just as example
-for ($i = 0; $i < 7; ++$i) {
+for ($i = 0; $i < 10; ++$i) {
 	$pdf->MultiRow('Row '.($i+1), $text."\n");
 }
 

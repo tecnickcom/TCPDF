@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_006.php
 // Begin       : 2008-03-04
-// Last Update : 2010-05-20
+// Last Update : 2010-08-03
 //
 // Description : Example 006 for TCPDF class
 //               WriteHTML and RTL support
@@ -152,10 +152,10 @@ $pdf->lastPage();
 $pdf->AddPage();
 
 // create some HTML content
-$subtable = '<table border="1" cellspacing="1" cellpadding="1"><tr><td>a</td><td>b</td></tr><tr><td>c</td><td>d</td></tr></table>';
+$subtable = '<table border="1" cellspacing="6" cellpadding="4"><tr><td>a</td><td>b</td></tr><tr><td>c</td><td>d</td></tr></table>';
 
 $html = '<h2>HTML TABLE:</h2>
-<table border="1" cellspacing="2" cellpadding="2">
+<table border="1" cellspacing="3" cellpadding="4">
 	<tr>
 		<th>#</th>
 		<th align="right">RIGHT align</th>

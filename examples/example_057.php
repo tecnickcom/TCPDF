@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_057.php
 // Begin       : 2010-04-03
-// Last Update : 2010-05-20
+// Last Update : 2010-08-02
 //
 // Description : Example 057 for TCPDF class
 //               Cell vertical alignments
@@ -125,6 +125,102 @@ $linestyle = array('width' => 0.1, 'cap' => 'butt', 'join' => 'miter', 'dash' =>
 $pdf->Line(15, 60, 195, 60, $linestyle);
 $pdf->Line(15, 90, 195, 90, $linestyle);
 $pdf->Line(15, 120, 195, 120, $linestyle);
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// CELL BORDERS
+
+// add a page
+$pdf->AddPage();
+
+$pdf->SetFont('helvetica', 'B', 20);
+
+$pdf->Write(0, 'Example of borders for Cell()', '', 0, 'L', true, 0, false, false, 0);
+
+$pdf->SetFont('helvetica', '', 11);
+
+// set border width
+$pdf->SetLineWidth(1);
+
+// set color for cell border
+$pdf->SetDrawColor(0,128,255);
+
+// set filling color
+$pdf->SetFillColor(255,255,128);
+
+$pdf->Cell(30, 0, '1', 1, 1, 'C', 1, '', 0, false, 'T', 'C');
+$pdf->Ln(2);
+$pdf->Cell(30, 0, 'LTRB', 'LTRB', 1, 'C', 1, '', 0, false, 'T', 'C');
+$pdf->Ln(2);
+$pdf->Cell(30, 0, 'LTR', 'LTR', 1, 'C', 1, '', 0, false, 'T', 'C');
+$pdf->Ln(2);
+$pdf->Cell(30, 0, 'TRB', 'TRB', 1, 'C', 1, '', 0, false, 'T', 'C');
+$pdf->Ln(2);
+$pdf->Cell(30, 0, 'LRB', 'LRB', 1, 'C', 1, '', 0, false, 'T', 'C');
+$pdf->Ln(2);
+$pdf->Cell(30, 0, 'LTB', 'LTB', 1, 'C', 1, '', 0, false, 'T', 'C');
+$pdf->Ln(2);
+$pdf->Cell(30, 0, 'LT', 'LT', 1, 'C', 1, '', 0, false, 'T', 'C');
+$pdf->Ln(2);
+$pdf->Cell(30, 0, 'TR', 'TR', 1, 'C', 1, '', 0, false, 'T', 'C');
+$pdf->Ln(2);
+$pdf->Cell(30, 0, 'RB', 'RB', 1, 'C', 1, '', 0, false, 'T', 'C');
+$pdf->Ln(2);
+$pdf->Cell(30, 0, 'LB', 'LB', 1, 'C', 1, '', 0, false, 'T', 'C');
+$pdf->Ln(2);
+$pdf->Cell(30, 0, 'LR', 'LR', 1, 'C', 1, '', 0, false, 'T', 'C');
+$pdf->Ln(2);
+$pdf->Cell(30, 0, 'TB', 'TB', 1, 'C', 1, '', 0, false, 'T', 'C');
+$pdf->Ln(2);
+$pdf->Cell(30, 0, 'L', 'L', 1, 'C', 1, '', 0, false, 'T', 'C');
+$pdf->Ln(2);
+$pdf->Cell(30, 0, 'T', 'T', 1, 'C', 1, '', 0, false, 'T', 'C');
+$pdf->Ln(2);
+$pdf->Cell(30, 0, 'R', 'R', 1, 'C', 1, '', 0, false, 'T', 'C');
+$pdf->Ln(2);
+$pdf->Cell(30, 0, 'B', 'B', 1, 'C', 1, '', 0, false, 'T', 'C');
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// ADVANCED SETTINGS FOR CELL BORDERS
+
+// add a page
+$pdf->AddPage();
+
+$pdf->SetFont('helvetica', 'B', 20);
+
+$pdf->Write(0, 'Example of advanced border settings for Cell()', '', 0, 'L', true, 0, false, false, 0);
+
+$pdf->SetFont('helvetica', '', 11);
+
+// set border width
+$pdf->SetLineWidth(1);
+
+// set color for cell border
+$pdf->SetDrawColor(0,128,255);
+
+// set filling color
+$pdf->SetFillColor(255,255,128);
+
+$border = array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(255, 0, 0)));
+$pdf->Cell(30, 0, 'LTRB', $border, 1, 'C', 1, '', 0, false, 'T', 'C');
+$pdf->Ln(5);
+
+$border = array(
+'L' => array('width' => 2, 'cap' => 'square', 'join' => 'miter', 'dash' => 0, 'color' => array(255, 0, 0)),
+'R' => array('width' => 2, 'cap' => 'square', 'join' => 'miter', 'dash' => 0, 'color' => array(255, 0, 255)),
+'T' => array('width' => 2, 'cap' => 'square', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 255, 0)),
+'B' => array('width' => 2, 'cap' => 'square', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 255)));
+$pdf->Cell(30, 0, 'LTRB', $border, 1, 'C', 1, '', 0, false, 'T', 'C');
+$pdf->Ln(5);
+
+$border = array('mode' => 'ext', 'LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(255, 0, 0)));
+$pdf->Cell(30, 0, 'LTRB EXT', $border, 1, 'C', 1, '', 0, false, 'T', 'C');
+$pdf->Ln(5);
+
+$border = array('mode' => 'int', 'LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(255, 0, 0)));
+$pdf->Cell(30, 0, 'LTRB INT', $border, 1, 'C', 1, '', 0, false, 'T', 'C');
+$pdf->Ln(5);
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

@@ -346,9 +346,9 @@
 							<dt><b>$barcode_array</b></dt>
 				<dd>in file pdf417.php, variable <a href="com-tecnick-tcpdf/PDF417.html#var$barcode_array">PDF417::$barcode_array</a></dd>
 							<dt><b>$barcode_array</b></dt>
-				<dd>in file barcodes.php, variable <a href="com-tecnick-tcpdf/TCPDFBarcode.html#var$barcode_array">TCPDFBarcode::$barcode_array</a></dd>
-							<dt><b>$barcode_array</b></dt>
 				<dd>in file qrcode.php, variable <a href="com-tecnick-tcpdf/QRcode.html#var$barcode_array">QRcode::$barcode_array</a></dd>
+							<dt><b>$barcode_array</b></dt>
+				<dd>in file barcodes.php, variable <a href="com-tecnick-tcpdf/TCPDFBarcode.html#var$barcode_array">TCPDFBarcode::$barcode_array</a></dd>
 							<dt><b>$bgcolor</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$bgcolor">TCPDF::$bgcolor</a></dd>
 							<dt><b>$bit</b></dt>
@@ -359,6 +359,8 @@
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$bMargin">TCPDF::$bMargin</a></dd>
 							<dt><b>$booklet</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$booklet">TCPDF::$booklet</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Booklet mode for double-sided pages</dd>
+							<dt><b>$bordermrk</b></dt>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$bordermrk">TCPDF::$bordermrk</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Array used to store positions inside the pages buffer.</dd>
 							<dt><b>$buffer</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$buffer">TCPDF::$buffer</a></dd>
 							<dt><b>$bufferlen</b></dt>
@@ -557,6 +559,8 @@
 				<dd>in file barcodes.php, method <a href="com-tecnick-tcpdf/TCPDFBarcode.html#methoddec_to_hex">TCPDFBarcode::dec_to_hex()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Convert large integer number to hexadecimal representation.</dd>
 							<dt><b>deletePage</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methoddeletePage">TCPDF::deletePage()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Remove the specified page.</dd>
+							<dt><b>drawHTMLTagBorder</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methoddrawHTMLTagBorder">TCPDF::drawHTMLTagBorder()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Draw an HTML block border and fill</dd>
 					</dl>
 	</div>
 	<a href="elementindex_com-tecnick-tcpdf.html#top">top</a><br>
@@ -742,23 +746,27 @@
 							<dt><b>getBarcode</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetBarcode">TCPDF::getBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Get current barcode.</dd>
 							<dt><b>getBarcodeArray</b></dt>
-				<dd>in file barcodes.php, method <a href="com-tecnick-tcpdf/TCPDFBarcode.html#methodgetBarcodeArray">TCPDFBarcode::getBarcodeArray()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Return an array representations of barcode.</dd>
-							<dt><b>getBarcodeArray</b></dt>
-				<dd>in file pdf417.php, method <a href="com-tecnick-tcpdf/PDF417.html#methodgetBarcodeArray">PDF417::getBarcodeArray()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns a barcode array which is readable by TCPDF</dd>
+				<dd>in file qrcode.php, method <a href="com-tecnick-tcpdf/QRcode.html#methodgetBarcodeArray">QRcode::getBarcodeArray()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns a barcode array which is readable by TCPDF</dd>
 							<dt><b>getBarcodeArray</b></dt>
 				<dd>in file 2dbarcodes.php, method <a href="com-tecnick-tcpdf/TCPDF2DBarcode.html#methodgetBarcodeArray">TCPDF2DBarcode::getBarcodeArray()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Return an array representations of barcode.</dd>
 							<dt><b>getBarcodeArray</b></dt>
-				<dd>in file qrcode.php, method <a href="com-tecnick-tcpdf/QRcode.html#methodgetBarcodeArray">QRcode::getBarcodeArray()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns a barcode array which is readable by TCPDF</dd>
+				<dd>in file pdf417.php, method <a href="com-tecnick-tcpdf/PDF417.html#methodgetBarcodeArray">PDF417::getBarcodeArray()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns a barcode array which is readable by TCPDF</dd>
+							<dt><b>getBarcodeArray</b></dt>
+				<dd>in file barcodes.php, method <a href="com-tecnick-tcpdf/TCPDFBarcode.html#methodgetBarcodeArray">TCPDFBarcode::getBarcodeArray()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Return an array representations of barcode.</dd>
 							<dt><b>getBitStream</b></dt>
 				<dd>in file qrcode.php, method <a href="com-tecnick-tcpdf/QRcode.html#methodgetBitStream">QRcode::getBitStream()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns a stream of bits.</dd>
 							<dt><b>getBorderMode</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetBorderMode">TCPDF::getBorderMode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Get the border mode accounting for multicell position (opens bottom side of multicell crossing pages)</dd>
+							<dt><b>getBorderStartPosition</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetBorderStartPosition">TCPDF::getBorderStartPosition()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Return the starting coordinates to draw an html border</dd>
 							<dt><b>getBreakMargin</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetBreakMargin">TCPDF::getBreakMargin()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns the page break margin.</dd>
 							<dt><b>getBuffer</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetBuffer">TCPDF::getBuffer()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Get buffer content.</dd>
 							<dt><b>getByteStream</b></dt>
 				<dd>in file qrcode.php, method <a href="com-tecnick-tcpdf/QRcode.html#methodgetByteStream">QRcode::getByteStream()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Pack all bit streams padding bits into a byte array.</dd>
+							<dt><b>getCellBorder</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetCellBorder">TCPDF::getCellBorder()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns the code to draw the cell border</dd>
 							<dt><b>getCellCode</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetCellCode">TCPDF::getCellCode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns the PDF string code to print a cell (rectangular area) with optional borders, background color and character string. The upper-left corner of the cell corresponds to the current position. The text can be aligned or centered. After the call, the current position moves to the right or to the next line. It is possible to put a link on the text.<br />  If automatic page breaking is enabled and the cell goes beyond the limit, a page break is done before outputting.</dd>
 							<dt><b>getCellHeightRatio</b></dt>
@@ -771,6 +779,12 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetColumn">TCPDF::getColumn()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Return the current column number</dd>
 							<dt><b>getCompaction</b></dt>
 				<dd>in file pdf417.php, method <a href="com-tecnick-tcpdf/PDF417.html#methodgetCompaction">PDF417::getCompaction()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Compact data by mode.</dd>
+							<dt><b>getCSSBorderDashStyle</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetCSSBorderDashStyle">TCPDF::getCSSBorderDashStyle()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns the border dash style from CSS property</dd>
+							<dt><b>getCSSBorderStyle</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetCSSBorderStyle">TCPDF::getCSSBorderStyle()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns the border style array from CSS border properties</dd>
+							<dt><b>getCSSBorderWidth</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetCSSBorderWidth">TCPDF::getCSSBorderWidth()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns the border width from CSS property</dd>
 							<dt><b>getDataLength</b></dt>
 				<dd>in file qrcode.php, method <a href="com-tecnick-tcpdf/QRcode.html#methodgetDataLength">QRcode::getDataLength()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Return maximum data code length (bytes) for the version.</dd>
 							<dt><b>getECCLength</b></dt>
@@ -2046,7 +2060,7 @@
 	<a href="elementindex_com-tecnick-tcpdf.html#top">top</a><br>
         <div class="credit">
 		    <hr />
-		    Documentation generated on Sat, 31 Jul 2010 14:40:11 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
+		    Documentation generated on Wed, 04 Aug 2010 01:50:12 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
 	      </div>
       </td></tr></table>
     </td>

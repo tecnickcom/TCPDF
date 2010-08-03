@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.6.000
+// Version     : 5.7.000
 // Begin       : 2002-08-03
-// Last Update : 2010-07-31
+// Last Update : 2010-08-03
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.6.000
+ * @version 5.7.000
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.6.000 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.7.000 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.6.000
+	* @version 5.7.000
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -966,6 +966,14 @@ if (!class_exists('TCPDF', false)) {
 		protected $intmrk = array();
 
 		/**
+		 * Array used to store positions inside the pages buffer.
+		 * keys are the page numbers
+		 * @access protected
+		 * @since 5.7.000 (2010-08-03)
+		 */
+		protected $bordermrk = array();
+
+		/**
 		 * Array used to store content positions inside the pages buffer.
 		 * keys are the page numbers
 		 * @access protected
@@ -1450,7 +1458,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @access protected
 		 * @since 4.9.001 (2010-03-28)
 		 */
-		protected $num_columns = 0;
+		protected $num_columns = 1;
 
 		/**
 		 * Current column number
@@ -3546,6 +3554,7 @@ if (!class_exists('TCPDF', false)) {
 		 */
 		public function setPageMark() {
 			$this->intmrk[$this->page] = $this->pagelen[$this->page];
+			$this->bordermrk[$this->page] = $this->intmrk[$this->page];
 			$this->setContentMark();
 		}
 
@@ -3911,21 +3920,24 @@ if (!class_exists('TCPDF', false)) {
 		 * It can be expressed in RGB components or gray scale.
 		 * The method can be called before the first page is created and the value is retained from page to page.
 		 * @param array $color array of colors
+		 * @param boolean $ret if true do not send the command.
+		 * @return string the PDF command
 		 * @access public
 		 * @since 3.1.000 (2008-06-11)
 		 * @see SetDrawColor()
 		 */
-		public function SetDrawColorArray($color) {
-			if (isset($color)) {
+		public function SetDrawColorArray($color, $ret=false) {
+			if (is_array($color)) {
 				$color = array_values($color);
 				$r = isset($color[0]) ? $color[0] : -1;
 				$g = isset($color[1]) ? $color[1] : -1;
 				$b = isset($color[2]) ? $color[2] : -1;
 				$k = isset($color[3]) ? $color[3] : -1;
 				if ($r >= 0) {
-					$this->SetDrawColor($r, $g, $b, $k);
+					return $this->SetDrawColor($r, $g, $b, $k, $ret);
 				}
 			}
+			return '';
 		}
 
 		/**
@@ -3934,11 +3946,13 @@ if (!class_exists('TCPDF', false)) {
 		 * @param int $col2 Green color for RGB, or Magenta color for CMYK. Value between 0 and 255
 		 * @param int $col3 Blue color for RGB, or Yellow color for CMYK. Value between 0 and 255
 		 * @param int $col4 Key (Black) color for CMYK. Value between 0 and 255
+		 * @param boolean $ret if true do not send the command.
+		 * @return string the PDF command
 		 * @access public
 		 * @since 1.3
 		 * @see SetDrawColorArray(), SetFillColor(), SetTextColor(), Line(), Rect(), Cell(), MultiCell()
 		 */
-		public function SetDrawColor($col1=0, $col2=-1, $col3=-1, $col4=-1) {
+		public function SetDrawColor($col1=0, $col2=-1, $col3=-1, $col4=-1, $ret=false) {
 			// set default values
 			if (!is_numeric($col1)) {
 				$col1 = 0;
@@ -3967,8 +3981,12 @@ if (!class_exists('TCPDF', false)) {
 				$this->strokecolor = array('C' => $col1, 'M' => $col2, 'Y' => $col3, 'K' => $col4);
 			}
 			if ($this->page > 0) {
-				$this->_out($this->DrawColor);
+				if (!$ret) {
+					$this->_out($this->DrawColor);
+				}
+				return $this->DrawColor;
 			}
+			return '';
 		}
 
 		/**
@@ -3999,7 +4017,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @see SetFillColor()
 		 */
 		public function SetFillColorArray($color) {
-			if (isset($color)) {
+			if (is_array($color)) {
 				$color = array_values($color);
 				$r = isset($color[0]) ? $color[0] : -1;
 				$g = isset($color[1]) ? $color[1] : -1;
@@ -4083,7 +4101,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @see SetFillColor()
 		 */
 		public function SetTextColorArray($color) {
-			if (isset($color)) {
+			if (is_array($color)) {
 				$color = array_values($color);
 				$r = isset($color[0]) ? $color[0] : -1;
 				$g = isset($color[1]) ? $color[1] : -1;
@@ -4770,7 +4788,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @param int $fstroke outline size in user units (false = disable)
 		 * @param boolean $fclip if true activate clipping mode (you must call StartTransform() before this function and StopTransform() to stop the clipping tranformation).
 		 * @param boolean $ffill if true fills the text
-		 * @param mixed $border Indicates if borders must be drawn around the cell. The value can be either a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul>or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul>
+		 * @param mixed $border Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
 		 * @param int $ln Indicates where the current position should go after the call. Possible values are:<ul><li>0: to the right (or left for RTL languages)</li><li>1: to the beginning of the next line</li><li>2: below</li></ul>Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value: 0.
 		 * @param string $align Allows to center or align the text. Possible values are:<ul><li>L or empty string: left align (default value)</li><li>C: center</li><li>R: right align</li><li>J: justify</li></ul>
 		 * @param int $fill Indicates if the cell background must be painted (1) or transparent (0). Default value: 0.
@@ -4898,7 +4916,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @param float $w Cell width. If 0, the cell extends up to the right margin.
 		 * @param float $h Cell height. Default value: 0.
 		 * @param string $txt String to print. Default value: empty string.
-		 * @param mixed $border Indicates if borders must be drawn around the cell. The value can be either a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul>or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul>
+		 * @param mixed $border Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
 		 * @param int $ln Indicates where the current position should go after the call. Possible values are:<ul><li>0: to the right (or left for RTL languages)</li><li>1: to the beginning of the next line</li><li>2: below</li></ul> Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value: 0.
 		 * @param string $align Allows to center or align the text. Possible values are:<ul><li>L or empty string: left align (default value)</li><li>C: center</li><li>R: right align</li><li>J: justify</li></ul>
 		 * @param int $fill Indicates if the cell background must be painted (1) or transparent (0). Default value: 0.
@@ -4928,7 +4946,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @param float $w Cell width. If 0, the cell extends up to the right margin.
 		 * @param float $h Cell height. Default value: 0.
 		 * @param string $txt String to print. Default value: empty string.
-		 * @param mixed $border Indicates if borders must be drawn around the cell. The value can be either a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul>or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul>
+		 * @param mixed $border Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
 		 * @param int $ln Indicates where the current position should go after the call. Possible values are:<ul><li>0: to the right (or left for RTL languages)</li><li>1: to the beginning of the next line</li><li>2: below</li></ul>Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value: 0.
 		 * @param string $align Allows to center or align the text. Possible values are:<ul><li>L or empty string: left align (default value)</li><li>C: center</li><li>R: right align</li><li>J: justify</li></ul>
 		 * @param int $fill Indicates if the cell background must be painted (1) or transparent (0). Default value: 0.
@@ -4937,6 +4955,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @param boolean $ignore_min_height if true ignore automatic minimum height value.
 		 * @param string $calign cell vertical alignment relative to the specified Y value. Possible values are:<ul><li>T : cell top</li><li>C : center</li><li>B : cell bottom</li><li>A : font top</li><li>L : font baseline</li><li>D : font bottom</li></ul>
 		 * @param string $valign text vertical alignment inside the cell. Possible values are:<ul><li>T : top</li><li>C : center</li><li>B : bottom</li></ul>
+		 * @return string containing cell code
 		 * @access protected
 		 * @since 1.0
 		 * @see Cell()
@@ -5065,6 +5084,10 @@ if (!class_exists('TCPDF', false)) {
 			}
 			$s = '';
 			// fill and borders
+			if (is_string($border) AND (strlen($border) == 4)) {
+				// full border
+				$border = 1;
+			}
 			if (($fill == 1) OR ($border == 1)) {
 				if ($fill == 1) {
 					$op = ($border == 1) ? 'B' : 'f';
@@ -5078,45 +5101,8 @@ if (!class_exists('TCPDF', false)) {
 				}
 				$s .= sprintf('%.2F %.2F %.2F %.2F re %s ', $xk, (($this->h - $y) * $k), ($w * $k), (-$h * $k), $op);
 			}
-			if (is_string($border)) {
-				$lm = ($this->LineWidth / 2);
-				if (strpos($border,'L') !== false) {
-					if ($this->rtl) {
-						$xk = ($x - $w) * $k;
-					} else {
-						$xk = $x * $k;
-					}
-					$s .= sprintf('%.2F %.2F m %.2F %.2F l S ', $xk, (($this->h - $y + $lm) * $k), $xk, (($this->h - ($y + $h + $lm)) * $k));
-				}
-				if (strpos($border,'T') !== false) {
-					if ($this->rtl) {
-						$xk = ($x - $w + $lm) * $k;
-						$xwk = ($x - $lm) * $k;
-					} else {
-						$xk = ($x - $lm) * $k;
-						$xwk = ($x + $w + $lm) * $k;
-					}
-					$s .= sprintf('%.2F %.2F m %.2F %.2F l S ', $xk, (($this->h - $y) * $k), $xwk, (($this->h - $y) * $k));
-				}
-				if (strpos($border,'R') !== false) {
-					if ($this->rtl) {
-						$xk = $x * $k;
-					} else {
-						$xk = ($x + $w) * $k;
-					}
-					$s .= sprintf('%.2F %.2F m %.2F %.2F l S ', $xk, (($this->h - $y + $lm) * $k), $xk, (($this->h - ($y + $h + $lm))* $k));
-				}
-				if (strpos($border,'B') !== false) {
-					if ($this->rtl) {
-						$xk = ($x - $w + $lm) * $k;
-						$xwk = ($x - $lm) * $k;
-					} else {
-						$xk = ($x - $lm) * $k;
-						$xwk = ($x + $w + $lm) * $k;
-					}
-					$s .= sprintf('%.2F %.2F m %.2F %.2F l S ', $xk, (($this->h - ($y + $h)) * $k), $xwk, (($this->h - ($y + $h)) * $k));
-				}
-			}
+			// draw borders
+			$s .= $this->getCellBorder($x, $y, $w, $h, $border);
 			if ($txt != '') {
 				$txt2 = $txt;
 				if ($this->isunicode) {
@@ -5329,13 +5315,204 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
+		 * Returns the code to draw the cell border
+		 * @param float $x X coordinate.
+		 * @param float $y Y coordinate.
+		 * @param float $w Cell width.
+		 * @param float $h Cell height.
+		 * @param mixed $brd Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
+		 * @param string $mode border position respect the square edge: normal: centered; ext: external; int: internal;
+		 * @return string containing cell border code
+		 * @access protected
+		 * @see SetLineStyle()
+		 * @since 5.7.000 (2010-08-02)
+		 */
+		protected function getCellBorder($x, $y, $w, $h, $brd) {
+			$s = ''; // string to be returned
+			if (empty($brd)) {
+				return $s;
+			}
+			if ($brd == 1) {
+				$brd = array('LRTB' => true);
+			}
+			// calculate coordinates for border
+			$k = $this->k;
+			if ($this->rtl) {
+				$xeL = ($x - $w) * $k;
+				$xeR = $x * $k;
+			} else {
+				$xeL = $x * $k;
+				$xeR = ($x + $w) * $k;
+			}
+			$yeL = (($this->h - ($y + $h)) * $k);
+			$yeT = (($this->h - $y) * $k);
+			$xeT = $xeL;
+			$xeB = $xeR;
+			$yeR = $yeT;
+			$yeB = $yeL;
+			if (is_string($brd)) {
+				// convert string to array
+				$slen = strlen($brd);
+				$newbrd = array();
+				for ($i = 0; $i < $slen; ++$i) {
+					$newbrd[$brd{$i}] = array('cap' => 'square', 'join' => 'miter');
+				}
+				$brd = $newbrd;
+			}
+			if (isset($brd['mode'])) {
+				$mode = $brd['mode'];
+				unset($brd['mode']);
+			} else {
+				$mode = 'normal';
+			}
+			foreach ($brd as $border => $style) {
+				if (is_array($style) AND !empty($style)) {
+					// apply border style
+					$prev_style = $this->linestyleWidth.' '.$this->linestyleCap.' '.$this->linestyleJoin.' '.$this->linestyleDash.' '.$this->DrawColor.' ';
+					$s .= $this->SetLineStyle($style, true)."\n";
+				}
+				switch ($mode) {
+					case 'ext': {
+						$off = (($this->LineWidth / 2) * $k);
+						$xL = $xeL - $off;
+						$xR = $xeR + $off;
+						$yT = $yeT + $off;
+						$yL = $yeL - $off;
+						$xT = $xL;
+						$xB = $xR;
+						$yR = $yT;
+						$yB = $yL;
+						$w += $this->LineWidth;
+						$h += $this->LineWidth;
+						break;
+					}
+					case 'int': {
+						$off = ($this->LineWidth / 2) * $k;
+						$xL = $xeL + $off;
+						$xR = $xeR - $off;
+						$yT = $yeT - $off;
+						$yL = $yeL + $off;
+						$xT = $xL;
+						$xB = $xR;
+						$yR = $yT;
+						$yB = $yL;
+						$w -= $this->LineWidth;
+						$h -= $this->LineWidth;
+						break;
+					}
+					case 'normal':
+					default: {
+						$xL = $xeL;
+						$xT = $xeT;
+						$xB = $xeB;
+						$xR = $xeR;
+						$yL = $yeL;
+						$yT = $yeT;
+						$yB = $yeB;
+						$yR = $yeR;
+						break;
+					}
+				}
+				// draw borders by case
+				if (strlen($border) == 4) {
+					$s .= sprintf('%.2F %.2F %.2F %.2F re S ', $xT, $yT, ($w * $k), (-$h * $k));
+				} elseif (strlen($border) == 3) {
+					if (strpos($border,'B') === false) { // LTR
+						$s .= sprintf('%.2F %.2F m ', $xL, $yL);
+						$s .= sprintf('%.2F %.2F l ', $xT, $yT);
+						$s .= sprintf('%.2F %.2F l ', $xR, $yR);
+						$s .= sprintf('%.2F %.2F l ', $xB, $yB);
+						$s .= 'S ';
+					} elseif (strpos($border,'L') === false) { // TRB
+						$s .= sprintf('%.2F %.2F m ', $xT, $yT);
+						$s .= sprintf('%.2F %.2F l ', $xR, $yR);
+						$s .= sprintf('%.2F %.2F l ', $xB, $yB);
+						$s .= sprintf('%.2F %.2F l ', $xL, $yL);
+						$s .= 'S ';
+					} elseif (strpos($border,'T') === false) { // RBL
+						$s .= sprintf('%.2F %.2F m ', $xR, $yR);
+						$s .= sprintf('%.2F %.2F l ', $xB, $yB);
+						$s .= sprintf('%.2F %.2F l ', $xL, $yL);
+						$s .= sprintf('%.2F %.2F l ', $xT, $yT);
+						$s .= 'S ';
+					} elseif (strpos($border,'R') === false) { // BLT
+						$s .= sprintf('%.2F %.2F m ', $xB, $yB);
+						$s .= sprintf('%.2F %.2F l ', $xL, $yL);
+						$s .= sprintf('%.2F %.2F l ', $xT, $yT);
+						$s .= sprintf('%.2F %.2F l ', $xR, $yR);
+						$s .= 'S ';
+					}
+				} elseif (strlen($border) == 2) {
+					if ((strpos($border,'L') !== false) AND (strpos($border,'T') !== false)) { // LT
+						$s .= sprintf('%.2F %.2F m ', $xL, $yL);
+						$s .= sprintf('%.2F %.2F l ', $xT, $yT);
+						$s .= sprintf('%.2F %.2F l ', $xR, $yR);
+						$s .= 'S ';
+					} elseif ((strpos($border,'T') !== false) AND (strpos($border,'R') !== false)) { // TR
+						$s .= sprintf('%.2F %.2F m ', $xT, $yT);
+						$s .= sprintf('%.2F %.2F l ', $xR, $yR);
+						$s .= sprintf('%.2F %.2F l ', $xB, $yB);
+						$s .= 'S ';
+					} elseif ((strpos($border,'R') !== false) AND (strpos($border,'B') !== false)) { // RB
+						$s .= sprintf('%.2F %.2F m ', $xR, $yR);
+						$s .= sprintf('%.2F %.2F l ', $xB, $yB);
+						$s .= sprintf('%.2F %.2F l ', $xL, $yL);
+						$s .= 'S ';
+					} elseif ((strpos($border,'B') !== false) AND (strpos($border,'L') !== false)) { // BL
+						$s .= sprintf('%.2F %.2F m ', $xB, $yB);
+						$s .= sprintf('%.2F %.2F l ', $xL, $yL);
+						$s .= sprintf('%.2F %.2F l ', $xT, $yT);
+						$s .= 'S ';
+					} elseif ((strpos($border,'L') !== false) AND (strpos($border,'R') !== false)) { // LR
+						$s .= sprintf('%.2F %.2F m ', $xL, $yL);
+						$s .= sprintf('%.2F %.2F l ', $xT, $yT);
+						$s .= 'S ';
+						$s .= sprintf('%.2F %.2F m ', $xR, $yR);
+						$s .= sprintf('%.2F %.2F l ', $xB, $yB);
+						$s .= 'S ';
+					} elseif ((strpos($border,'T') !== false) AND (strpos($border,'B') !== false)) { // TB
+						$s .= sprintf('%.2F %.2F m ', $xT, $yT);
+						$s .= sprintf('%.2F %.2F l ', $xR, $yR);
+						$s .= 'S ';
+						$s .= sprintf('%.2F %.2F m ', $xB, $yB);
+						$s .= sprintf('%.2F %.2F l ', $xL, $yL);
+						$s .= 'S ';
+					}
+				} else { // strlen($border) == 1
+					if (strpos($border,'L') !== false) { // L
+						$s .= sprintf('%.2F %.2F m ', $xL, $yL);
+						$s .= sprintf('%.2F %.2F l ', $xT, $yT);
+						$s .= 'S ';
+					} elseif (strpos($border,'T') !== false) { // T
+						$s .= sprintf('%.2F %.2F m ', $xT, $yT);
+						$s .= sprintf('%.2F %.2F l ', $xR, $yR);
+						$s .= 'S ';
+					} elseif (strpos($border,'R') !== false) { // R
+						$s .= sprintf('%.2F %.2F m ', $xR, $yR);
+						$s .= sprintf('%.2F %.2F l ', $xB, $yB);
+						$s .= 'S ';
+					} elseif (strpos($border,'B') !== false) { // B
+						$s .= sprintf('%.2F %.2F m ', $xB, $yB);
+						$s .= sprintf('%.2F %.2F l ', $xL, $yL);
+						$s .= 'S ';
+					}
+				}
+				if (is_array($style) AND !empty($style)) {
+					// reset border style to previous value
+					$s .= "\n".$this->linestyleWidth.' '.$this->linestyleCap.' '.$this->linestyleJoin.' '.$this->linestyleDash.' '.$this->DrawColor."\n";
+				}
+			}
+			return $s;
+		}
+
+		/**
 		 * This method allows printing text with line breaks.
 		 * They can be automatic (as soon as the text reaches the right border of the cell) or explicit (via the \n character). As many cells as necessary are output, one below the other.<br />
 		 * Text can be aligned, centered or justified. The cell block can be framed and the background painted.
 		 * @param float $w Width of cells. If 0, they extend up to the right margin of the page.
 		 * @param float $h Cell minimum height. The cell extends automatically if needed.
 		 * @param string $txt String to print
-		 * @param mixed $border Indicates if borders must be drawn around the cell block. The value can be either a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul>or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul>
+		 * @param mixed $border Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
 		 * @param string $align Allows to center or align the text. Possible values are:<ul><li>L or empty string: left align</li><li>C: center</li><li>R: right align</li><li>J: justification (default value when $ishtml=false)</li></ul>
 		 * @param int $fill Indicates if the cell background must be painted (1) or transparent (0). Default value: 0.
 		 * @param int $ln Indicates where the current position should go after the call. Possible values are:<ul><li>0: to the right</li><li>1: to the beginning of the next line [DEFAULT]</li><li>2: below</li></ul>
@@ -5365,13 +5542,15 @@ if (!class_exists('TCPDF', false)) {
 			}
 			$resth = 0;
 			if ((!$this->InFooter) AND (($y + $h) > $this->PageBreakTrigger)) {
-				// spit cell in two pages
+				// spit cell in more pages/columns
 				$newh = $this->PageBreakTrigger - $y;
-				$resth = $h - $newh; // cell to be printed on the next page
+				$resth = $h - $newh; // cell to be printed on the next page/column
 				$h = $newh;
 			}
 			// get current page number
 			$startpage = $this->page;
+			// get current column
+			$startcolumn = $this->current_column;
 			if (!$this->empty_string($x)) {
 				$this->SetX($x);
 			} else {
@@ -5473,63 +5652,110 @@ if (!class_exists('TCPDF', false)) {
 						// add a page (or trig AcceptPageBreak() for multicolumn mode)
 						$this->checkPageBreak($this->PageBreakTrigger + 1);
 					}
-					$tmpresth -= ($this->h - $this->tMargin - $this->bMargin);
+					if ($this->num_columns > 1) {
+						$tmpresth -= ($this->h - $this->y - $this->bMargin);
+					} else {
+						$tmpresth -= ($this->h - $this->tMargin - $this->bMargin);
+					}
 					--$skip;
 				}
 				$currentY = $this->y;
 				$endpage = $this->page;
 			}
-			// check if a new page has been created
-			if ($endpage > $startpage) {
-				// design borders around HTML cells.
-				for ($page=$startpage; $page <= $endpage; ++$page) {
-					$this->setPage($page);
-					if ($page == $startpage) {
-						// first page
-						$this->y = $starty; // put cursor at the beginning of cell on the first page
-						$h = $this->h - $starty - $this->bMargin;
-						$cborder = $this->getBorderMode($border, $position='start');
-					} elseif ($page == $endpage) {
-						// last page
-						$this->y = $this->tMargin; // put cursor at the beginning of last page
-						$h = $currentY - $this->tMargin;
-						if ($resth > $h) {
-							$h = $resth;
-						}
-						$cborder = $this->getBorderMode($border, $position='end');
-					} else {
-						$this->y = $this->tMargin; // put cursor at the beginning of the current page
-						$h = $this->h - $this->tMargin - $this->bMargin;
-						$resth -= $h;
-						$cborder = $this->getBorderMode($border, $position='middle');
-					}
-					$nx = $x;
-					// account for margin changes
-					if ($page > $startpage) {
-						if (($this->rtl) AND ($this->pagedim[$page]['orm'] != $this->pagedim[$startpage]['orm'])) {
-							$nx = $x + ($this->pagedim[$page]['orm'] - $this->pagedim[$startpage]['orm']);
-						} elseif ((!$this->rtl) AND ($this->pagedim[$page]['olm'] != $this->pagedim[$startpage]['olm'])) {
-							$nx = $x + ($this->pagedim[$page]['olm'] - $this->pagedim[$startpage]['olm']);
-						}
-					}
-					$this->SetX($nx);
-					$ccode = $this->getCellCode($w, $h, '', $cborder, 1, '', $fill, '', 0, false);
-					if ($cborder OR $fill) {
-						$pagebuff = $this->getPageBuffer($this->page);
-						$pstart = substr($pagebuff, 0, $this->intmrk[$this->page]);
-						$pend = substr($pagebuff, $this->intmrk[$this->page]);
-						$this->setPageBuffer($this->page, $pstart.$ccode."\n".$pend);
-						$this->intmrk[$this->page] += strlen($ccode."\n");
+			// get latest column
+			$endcolumn = $this->current_column;
+			if ($this->num_columns == 0) {
+				$this->num_columns = 1;
+			}
+			// get border modes
+			$border_start = $this->getBorderMode($border, $position='start');
+			$border_end = $this->getBorderMode($border, $position='end');
+			$border_middle = $this->getBorderMode($border, $position='middle');
+			// design borders around HTML cells.
+			for ($page = $startpage; $page <= $endpage; ++$page) { // for each page
+				$ccode = '';
+				$this->setPage($page);
+				if ($this->num_columns < 2) {
+					// single-column mode
+					$this->SetX($x);
+					$this->y = $this->tMargin;
+				}
+				// account for margin changes
+				if ($page > $startpage) {
+					if (($this->rtl) AND ($this->pagedim[$page]['orm'] != $this->pagedim[$startpage]['orm'])) {
+						$this->x -= ($this->pagedim[$page]['orm'] - $this->pagedim[$startpage]['orm']);
+					} elseif ((!$this->rtl) AND ($this->pagedim[$page]['olm'] != $this->pagedim[$startpage]['olm'])) {
+						$this->x += ($this->pagedim[$page]['olm'] - $this->pagedim[$startpage]['olm']);
 					}
 				}
-			} else {
-				$h = max($h, ($currentY - $y));
-				// put cursor at the beginning of text
-				$this->SetY($y);
-				$this->SetX($x);
-				// design a cell around the text
-				$ccode = $this->getCellCode($w, $h, '', $border, 1, '', $fill, '', 0, true);
-				if ($border OR $fill) {
+				if ($startpage == $endpage) {
+					// single page
+					for ($column = $startcolumn; $column <= $endcolumn; ++$column) { // for each column
+						$this->selectColumn($column);
+						if ($startcolumn == $endcolumn) { // single column
+							$cborder = $border;
+							$h = max($h, ($currentY - $y));
+							$this->y = $y;
+						} elseif ($column == $startcolumn) { // first column
+							$cborder = $border_start;
+							$this->y = $starty;
+							$h = $this->h - $this->y - $this->bMargin;
+						} elseif ($column == $endcolumn) { // end column
+							$cborder = $border_end;
+							$h = $currentY - $this->y;
+							if ($resth > $h) {
+								$h = $resth;
+							}
+						} else { // middle column
+							$cborder = $border_middle;
+							$h = $this->h - $this->y - $this->bMargin;
+							$resth -= $h;
+						}
+						$ccode .= $this->getCellCode($w, $h, '', $cborder, 1, '', $fill, '', 0, true)."\n";
+					} // end for each column
+				} elseif ($page == $startpage) { // first page
+					for ($column = $startcolumn; $column < $this->num_columns; ++$column) { // for each column
+						$this->selectColumn($column);
+						if ($column == $startcolumn) { // first column
+							$cborder = $border_start;
+							$this->y = $starty;
+							$h = $this->h - $this->y - $this->bMargin;
+						} else { // middle column
+							$cborder = $border_middle;
+							$h = $this->h - $this->y - $this->bMargin;
+							$resth -= $h;
+						}
+						$ccode .= $this->getCellCode($w, $h, '', $cborder, 1, '', $fill, '', 0, true)."\n";
+					} // end for each column
+				} elseif ($page == $endpage) { // last page
+					for ($column = 0; $column <= $endcolumn; ++$column) { // for each column
+						$this->selectColumn($column);
+						if ($column == $endcolumn) {
+							// end column
+							$cborder = $border_end;
+							$h = $currentY - $this->y;
+							if ($resth > $h) {
+								$h = $resth;
+							}
+						} else {
+							// middle column
+							$cborder = $border_middle;
+							$h = $this->h - $this->y - $this->bMargin;
+							$resth -= $h;
+						}
+						$ccode .= $this->getCellCode($w, $h, '', $cborder, 1, '', $fill, '', 0, true)."\n";
+					} // end for each column
+				} else { // middle page
+					for ($column = 0; $column < $this->num_columns; ++$column) { // for each column
+						$this->selectColumn($column);
+						$cborder = $border_middle;
+						$h = $this->h - $this->y - $this->bMargin;
+						$resth -= $h;
+						$ccode .= $this->getCellCode($w, $h, '', $cborder, 1, '', $fill, '', 0, true)."\n";
+					} // end for each column
+				}
+				if ($cborder OR $fill) {
+					// draw border and fill
 					if (end($this->transfmrk[$this->page]) !== false) {
 						$pagemarkkey = key($this->transfmrk[$this->page]);
 						$pagemark = &$this->transfmrk[$this->page][$pagemarkkey];
@@ -5541,10 +5767,10 @@ if (!class_exists('TCPDF', false)) {
 					$pagebuff = $this->getPageBuffer($this->page);
 					$pstart = substr($pagebuff, 0, $pagemark);
 					$pend = substr($pagebuff, $pagemark);
-					$this->setPageBuffer($this->page, $pstart.$ccode."\n".$pend);
-					$pagemark += strlen($ccode."\n");
+					$this->setPageBuffer($this->page, $pstart.$ccode.$pend);
+					$pagemark += strlen($ccode);
 				}
-			}
+			} // end for each page
 			// Get end-of-cell Y position
 			$currentY = $this->GetY();
 			// restore original margin values
@@ -5568,81 +5794,75 @@ if (!class_exists('TCPDF', false)) {
 
 		/**
 		 * Get the border mode accounting for multicell position (opens bottom side of multicell crossing pages)
-		 * @param mixed $border Indicates if borders must be drawn around the cell block. The value can be either a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul>or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul>
+		 * @param mixed $brd Indicates if borders must be drawn around the cell block. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul>or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
 		 * @param string multicell position: 'start', 'middle', 'end'
-		 * @return border mode
+		 * @return border mode array
 		 * @access protected
 		 * @since 4.4.002 (2008-12-09)
 		 */
-		protected function getBorderMode($border, $position='start') {
-			if ((!$this->opencell) AND ($border == 1)) {
-				return 1;
+		protected function getBorderMode($brd, $position='start') {
+			if ((!$this->opencell) OR empty($brd)) {
+				return $brd;
 			}
-			$cborder = '';
-			switch ($position) {
-				case 'start': {
-					if ($border == 1) {
-						$cborder = 'LTR';
-					} else {
-						if (!(false === strpos($border, 'L'))) {
-							$cborder .= 'L';
-						}
-						if (!(false === strpos($border, 'T'))) {
-							$cborder .= 'T';
-						}
-						if (!(false === strpos($border, 'R'))) {
-							$cborder .= 'R';
-						}
-						if ((!$this->opencell) AND (!(false === strpos($border, 'B')))) {
-							$cborder .= 'B';
-						}
-					}
-					break;
+			if ($brd == 1) {
+				$brd = 'LTRB';
+			}
+			if (is_string($brd)) {
+				// convert string to array
+				$slen = strlen($brd);
+				$newbrd = array();
+				for ($i = 0; $i < $slen; ++$i) {
+					$newbrd[$brd{$i}] = array('cap' => 'square', 'join' => 'miter');
 				}
-				case 'middle': {
-					if ($border == 1) {
-						$cborder = 'LR';
-					} else {
-						if (!(false === strpos($border, 'L'))) {
-							$cborder .= 'L';
+				$brd = $newbrd;
+			}
+			foreach ($brd as $border => $style) {
+				switch ($position) {
+					case 'start': {
+						if (strpos($border, 'B') !== false) {
+							// remove bottom line
+							$newkey = str_replace('B', '', $border);
+							if (strlen($newkey) > 0) {
+								$brd[$newkey] = $style;
+							}
+							unset($brd[$border]);
 						}
-						if ((!$this->opencell) AND (!(false === strpos($border, 'T')))) {
-							$cborder .= 'T';
-						}
-						if (!(false === strpos($border, 'R'))) {
-							$cborder .= 'R';
-						}
-						if ((!$this->opencell) AND (!(false === strpos($border, 'B')))) {
-							$cborder .= 'B';
-						}
+						break;
 					}
-					break;
-				}
-				case 'end': {
-					if ($border == 1) {
-						$cborder = 'LRB';
-					} else {
-						if (!(false === strpos($border, 'L'))) {
-							$cborder .= 'L';
+					case 'middle': {
+						if (strpos($border, 'B') !== false) {
+							// remove bottom line
+							$newkey = str_replace('B', '', $border);
+							if (strlen($newkey) > 0) {
+								$brd[$newkey] = $style;
+							}
+							unset($brd[$border]);
+							$border = $newkey;
 						}
-						if ((!$this->opencell) AND (!(false === strpos($border, 'T')))) {
-							$cborder .= 'T';
+						if (strpos($border, 'T') !== false) {
+							// remove bottom line
+							$newkey = str_replace('T', '', $border);
+							if (strlen($newkey) > 0) {
+								$brd[$newkey] = $style;
+							}
+							unset($brd[$border]);
 						}
-						if (!(false === strpos($border, 'R'))) {
-							$cborder .= 'R';
-						}
-						if (!(false === strpos($border, 'B'))) {
-							$cborder .= 'B';
-						}
+						break;
 					}
-					break;
-				}
-				default: {
-					$cborder = $border;
-					break;
+					case 'end': {
+						if (strpos($border, 'T') !== false) {
+							// remove bottom line
+							$newkey = str_replace('T', '', $border);
+							if (strlen($newkey) > 0) {
+								$brd[$newkey] = $style;
+							}
+							unset($brd[$border]);
+						}
+						break;
+					}
 				}
 			}
-			return $cborder;
+			return $brd;
 		}
 
 		/**
@@ -6341,7 +6561,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @param string $palign Allows to center or align the image on the current line. Possible values are:<ul><li>L : left align</li><li>C : center</li><li>R : right align</li><li>'' : empty string : left for LTR or right for RTL</li></ul>
 		 * @param boolean $ismask true if this image is a mask, false otherwise
 		 * @param mixed $imgmask image object returned by this function or false
-		 * @param mixed $border Indicates if borders must be drawn around the image. The value can be either a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul>or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul>
+		 * @param mixed $border Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
 		 * @param boolean $fitbox If true scale image dimensions proportionally to fit within the ($w, $h) box.
 		 * @param boolean $hidden if true do not display the image.
 		 * @param boolean $fitonpage if true the image is resized to not exceed page dimensions.
@@ -6957,7 +7177,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @see Cell()
 		 */
 		public function Ln($h='', $cell=false) {
-			if (($this->num_columns > 0) AND ($this->y == $this->columns[$this->current_column]['y']) AND isset($this->columns[$this->current_column]['x']) AND ($this->x == $this->columns[$this->current_column]['x'])) {
+			if (($this->num_columns > 1) AND ($this->y == $this->columns[$this->current_column]['y']) AND isset($this->columns[$this->current_column]['x']) AND ($this->x == $this->columns[$this->current_column]['x'])) {
 				// revove vertical space from the top of the column
 				return;
 			}
@@ -11499,31 +11719,34 @@ if (!class_exists('TCPDF', false)) {
 		 * the point at which the pattern starts.</li>
 		 *	 <li>color (array): Draw color. Format: array(GREY) or array(R,G,B) or array(C,M,Y,K).</li>
 		 * </ul>
+		 * @param boolean $ret if true do not send the command.
+		 * @return string the PDF command
 		 * @access public
 		 * @since 2.1.000 (2008-01-08)
 		 */
-		public function SetLineStyle($style) {
+		public function SetLineStyle($style, $ret=false) {
+			$s = ''; // string to be returned
 			if (!is_array($style)) {
 				return;
 			}
 			extract($style);
 			if (isset($width)) {
-				$width_prev = $this->LineWidth;
-				$this->SetLineWidth($width);
-				$this->LineWidth = $width_prev;
+				$this->LineWidth = $width;
+				$this->linestyleWidth = sprintf('%.2F w', ($width * $this->k));
+				$s .= $this->linestyleWidth.' ';
 			}
 			if (isset($cap)) {
 				$ca = array('butt' => 0, 'round'=> 1, 'square' => 2);
 				if (isset($ca[$cap])) {
 					$this->linestyleCap = $ca[$cap].' J';
-					$this->_out($this->linestyleCap);
+					$s .= $this->linestyleCap.' ';
 				}
 			}
 			if (isset($join)) {
 				$ja = array('miter' => 0, 'round' => 1, 'bevel' => 2);
 				if (isset($ja[$join])) {
 					$this->linestyleJoin = $ja[$join].' j';
-					$this->_out($this->linestyleJoin);
+					$s .= $this->linestyleJoin.' ';
 				}
 			}
 			if (isset($dash)) {
@@ -11546,11 +11769,15 @@ if (!class_exists('TCPDF', false)) {
 					$phase = 0;
 				}
 				$this->linestyleDash = sprintf('[%s] %.2F d', $dash_string, $phase);
-				$this->_out($this->linestyleDash);
+				$s .= $this->linestyleDash.' ';
 			}
 			if (isset($color)) {
-				$this->SetDrawColorArray($color);
+				$s .= $this->SetDrawColorArray($color, true).' ';
 			}
+			if (!$ret) {
+				$this->_out($s);
+			}
+			return $s;
 		}
 
 		/**
@@ -15255,7 +15482,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @param boolean useBoundingBox specifies whether to position the bounding box (true) or the complete canvas (false) at location (x,y). Default value is true.
 		 * @param string $align Indicates the alignment of the pointer next to image insertion relative to image height. The value can be:<ul><li>T: top-right for LTR or top-left for RTL</li><li>M: middle-right for LTR or middle-left for RTL</li><li>B: bottom-right for LTR or bottom-left for RTL</li><li>N: next line</li></ul>
 		 * @param string $palign Allows to center or align the image on the current line. Possible values are:<ul><li>L : left align</li><li>C : center</li><li>R : right align</li><li>'' : empty string : left for LTR or right for RTL</li></ul>
-		 * @param mixed $border Indicates if borders must be drawn around the image. The value can be either a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul>or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul>
+		 * @param mixed $border Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
 		 * @param boolean $fitonpage if true the image is resized to not exceed page dimensions.
 		 * @author Valentin Schmidt, Nicola Asuni
 		 * @since 3.1.000 (2008-06-09)
@@ -16348,6 +16575,109 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
+	 	 * Returns the border width from CSS property
+		 * @param string $width border width
+		 * @return int with in user units
+		 * @access protected
+		 * @since 5.7.000 (2010-08-02)
+		 */
+		protected function getCSSBorderWidth($width) {
+			if ($width == 'thin') {
+				$width = (2 / $this->k);
+			} elseif ($width == 'medium') {
+				$width = (4 / $this->k);
+			} elseif ($width == 'thick') {
+				$width = (6 / $this->k);
+			} else {
+				$width = $this->getHTMLUnitToUnits($width, 1, 'px', false);
+			}
+			return $width;
+		}
+
+		/**
+	 	 * Returns the border dash style from CSS property
+		 * @param string $style border style to convert
+		 * @return int sash style (return -1 in case of none or hidden border)
+		 * @access protected
+		 * @since 5.7.000 (2010-08-02)
+		 */
+		protected function getCSSBorderDashStyle($style) {
+			switch (strtolower($style)) {
+				case 'none':
+				case 'hidden': {
+					$dash = -1;
+					break;
+				}
+				case 'dotted': {
+					$dash = 1;
+					break;
+				}
+				case 'dashed': {
+					$dash = 3;
+					break;
+				}
+				case 'double':
+				case 'groove':
+				case 'ridge':
+				case 'inset':
+				case 'outset':
+				case 'solid':
+				default: {
+					$dash = 0;
+					break;
+				}
+			}
+			return $dash;
+		}
+
+		/**
+	 	 * Returns the border style array from CSS border properties
+		 * @param string $cssborder border properties
+		 * @return array containing border properties
+		 * @access protected
+		 * @since 5.7.000 (2010-08-02)
+		 */
+		protected function getCSSBorderStyle($cssborder) {
+			$bprop = preg_split('/[\s]+/', trim($cssborder));
+			$border = array(); // value to be returned
+			switch (count($bprop)) {
+				case 3: {
+					$width = $bprop[0];
+					$style = $bprop[1];
+					$color = $bprop[2];
+					break;
+				}
+				case 2: {
+					$width = 'medium';
+					$style = $bprop[0];
+					$color = $bprop[1];
+					break;
+				}
+				case 1: {
+					$width = 'medium';
+					$style = $bprop[0];
+					$color = 'black';
+					break;
+				}
+				default: {
+					$width = 'medium';
+					$style = 'solid';
+					$color = 'black';
+					break;
+				}
+			}
+			$border['cap'] = 'square';
+			$border['join'] = 'miter';
+			$border['dash'] = $this->getCSSBorderDashStyle($style);
+			if ($border['dash'] < 0) {
+				return array();
+			}
+			$border['width'] = $this->getCSSBorderWidth($width);
+			$border['color'] = $this->convertHTMLColorToDec($color);
+			return $border;
+		}
+
+		/**
 	 	 * Returns the HTML DOM array.
 	 	 * <ul><li>$dom[$key]['tag'] = true if tag, false otherwise;</li><li>$dom[$key]['value'] = tag name or text;</li><li>$dom[$key]['opening'] = true if opening tag, false otherwise;</li><li>$dom[$key]['attribute'] = array of attributes (attribute name is the key);</li><li>$dom[$key]['style'] = array of style attributes (attribute name is the key);</li><li>$dom[$key]['parent'] = id of parent element;</li><li>$dom[$key]['fontname'] = font family name;</li><li>$dom[$key]['fontstyle'] = font style;</li><li>$dom[$key]['fontsize'] = font size in points;</li><li>$dom[$key]['bgcolor'] = RGB array of background color;</li><li>$dom[$key]['fgcolor'] = RGB array of foreground color;</li><li>$dom[$key]['width'] = width in pixels;</li><li>$dom[$key]['height'] = height in pixels;</li><li>$dom[$key]['align'] = text alignment;</li><li>$dom[$key]['cols'] = number of colums in table;</li><li>$dom[$key]['rows'] = number of rows in table;</li></ul>
 		 * @param string $html html code
@@ -16496,6 +16826,7 @@ if (!class_exists('TCPDF', false)) {
 			$dom[$key]['align'] = '';
 			$dom[$key]['listtype'] = '';
 			$dom[$key]['text-indent'] = 0;
+			$dom[$key]['border'] = array();
 			$thead = false; // true when we are inside the THEAD tag
 			++$key;
 			$level = array();
@@ -16556,8 +16887,13 @@ if (!class_exists('TCPDF', false)) {
 								$dom[($dom[$key]['parent'])]['content'] .= $a[$dom[$i]['elkey']];
 							}
 							$key = $i;
+							$parent_table = $dom[$dom[$dom[($dom[$key]['parent'])]['parent']]['parent']];
+							$parent_padding = 0;
+							if (isset($parent_table['attribute']['cellpadding'])) {
+								$parent_padding = $this->getHTMLUnitToUnits($parent_table['attribute']['cellpadding'], 1, 'px');
+							}
 							// mark nested tables
-							$dom[($dom[$key]['parent'])]['content'] = str_replace('<table', '<table nested="true"', $dom[($dom[$key]['parent'])]['content']);
+							$dom[($dom[$key]['parent'])]['content'] = str_replace('<table', '<table nested="true" pcellpadding="'.$parent_padding.'"', $dom[($dom[$key]['parent'])]['content']);
 							// remove thead sections from nested tables
 							$dom[($dom[$key]['parent'])]['content'] = str_replace('<thead>', '', $dom[($dom[$key]['parent'])]['content']);
 							$dom[($dom[$key]['parent'])]['content'] = str_replace('</thead>', '', $dom[($dom[$key]['parent'])]['content']);
@@ -16610,6 +16946,7 @@ if (!class_exists('TCPDF', false)) {
 							$dom[$key]['align'] = $dom[$parentkey]['align'];
 							$dom[$key]['listtype'] = $dom[$parentkey]['listtype'];
 							$dom[$key]['text-indent'] = $dom[$parentkey]['text-indent'];
+							$dom[$key]['border'] = array();
 						}
 						// get attributes
 						preg_match_all('/([^=\s]*)[\s]*=[\s]*"([^"]*)"/', $element, $attr_array, PREG_PATTERN_ORDER);
@@ -16772,9 +17109,92 @@ if (!class_exists('TCPDF', false)) {
 							if (isset($dom[$key]['style']['text-align'])) {
 								$dom[$key]['align'] = strtoupper($dom[$key]['style']['text-align']{0});
 							}
-							// check for border attribute
+							// check for CSS border properties
 							if (isset($dom[$key]['style']['border'])) {
-								$dom[$key]['attribute']['border'] = $dom[$key]['style']['border'];
+								$dom[$key]['border']['LTRB'] = $this->getCSSBorderStyle($dom[$key]['style']['border']);
+							}
+							if (isset($dom[$key]['style']['border-color'])) {
+								$brd_colors = preg_split('/[\s]+/', trim($dom[$key]['style']['border-color']));
+								if (isset($brd_colors[3])) {
+									$dom[$key]['border']['L']['color'] = $this->convertHTMLColorToDec($brd_colors[3]);
+								}
+								if (isset($brd_colors[1])) {
+									$dom[$key]['border']['R']['color'] = $this->convertHTMLColorToDec($brd_colors[1]);
+								}
+								if (isset($brd_colors[0])) {
+									$dom[$key]['border']['T']['color'] = $this->convertHTMLColorToDec($brd_colors[0]);
+								}
+								if (isset($brd_colors[2])) {
+									$dom[$key]['border']['B']['color'] = $this->convertHTMLColorToDec($brd_colors[2]);
+								}
+							}
+							if (isset($dom[$key]['style']['border-width'])) {
+								$brd_widths = preg_split('/[\s]+/', trim($dom[$key]['style']['border-width']));
+								if (isset($brd_widths[3])) {
+									$dom[$key]['border']['L']['width'] = $this->getCSSBorderWidth($brd_widths[3]);
+								}
+								if (isset($brd_widths[1])) {
+									$dom[$key]['border']['R']['width'] = $this->getCSSBorderWidth($brd_widths[1]);
+								}
+								if (isset($brd_widths[0])) {
+									$dom[$key]['border']['T']['width'] = $this->getCSSBorderWidth($brd_widths[0]);
+								}
+								if (isset($brd_widths[2])) {
+									$dom[$key]['border']['B']['width'] = $this->getCSSBorderWidth($brd_widths[2]);
+								}
+							}
+							if (isset($dom[$key]['style']['border-style'])) {
+								$brd_styles = preg_split('/[\s]+/', trim($dom[$key]['style']['border-style']));
+								if (isset($brd_styles[3])) {
+									$dom[$key]['border']['L']['cap'] = 'square';
+									$dom[$key]['border']['L']['join'] = 'miter';
+									$dom[$key]['border']['L']['dash'] = $this->getCSSBorderDashStyle($brd_styles[3]);
+									if ($dom[$key]['border']['L']['dash'] < 0) {
+										$dom[$key]['border']['L'] = array();
+									}
+								}
+								if (isset($brd_styles[1])) {
+									$dom[$key]['border']['R']['cap'] = 'square';
+									$dom[$key]['border']['R']['join'] = 'miter';
+									$dom[$key]['border']['R']['dash'] = $this->getCSSBorderDashStyle($brd_styles[1]);
+									if ($dom[$key]['border']['R']['dash'] < 0) {
+										$dom[$key]['border']['R'] = array();
+									}
+								}
+								if (isset($brd_styles[0])) {
+									$dom[$key]['border']['T']['cap'] = 'square';
+									$dom[$key]['border']['T']['join'] = 'miter';
+									$dom[$key]['border']['T']['dash'] = $this->getCSSBorderDashStyle($brd_styles[0]);
+									if ($dom[$key]['border']['T']['dash'] < 0) {
+										$dom[$key]['border']['T'] = array();
+									}
+								}
+								if (isset($brd_styles[2])) {
+									$dom[$key]['border']['B']['cap'] = 'square';
+									$dom[$key]['border']['B']['join'] = 'miter';
+									$dom[$key]['border']['B']['dash'] = $this->getCSSBorderDashStyle($brd_styles[2]);
+									if ($dom[$key]['border']['B']['dash'] < 0) {
+										$dom[$key]['border']['B'] = array();
+									}
+								}
+							}
+							$borderside = array('L' => 'left', 'R' => 'right', 'T' => 'top', 'B' => 'bottom');
+							foreach ($borderside as $bsk => $bsv) {
+								if (isset($dom[$key]['style']['border-'.$bsv])) {
+									$dom[$key]['border'][$bsk] = $this->getCSSBorderStyle($dom[$key]['style']['border-'.$bsv]);
+								}
+								if (isset($dom[$key]['style']['border-'.$bsv.'-color'])) {
+									$dom[$key]['border'][$bsk]['color'] = $this->convertHTMLColorToDec($dom[$key]['style']['border-'.$bsv.'-color']);
+								}
+								if (isset($dom[$key]['style']['border-'.$bsv.'-width'])) {
+									$dom[$key]['border'][$bsk]['width'] = $this->getCSSBorderWidth($dom[$key]['style']['border-'.$bsv.'-width']);
+								}
+								if (isset($dom[$key]['style']['border-'.$bsv.'-style'])) {
+									$dom[$key]['border'][$bsk]['dash'] = $this->getCSSBorderDashStyle($dom[$key]['style']['border-'.$bsv.'-style']);
+									if ($dom[$key]['border'][$bsk]['dash'] < 0) {
+										$dom[$key]['border'][$bsk] = array();
+									}
+								}
 							}
 							// page-break-inside
 							if (isset($dom[$key]['style']['page-break-inside']) AND ($dom[$key]['style']['page-break-inside'] == 'avoid')) {
@@ -16800,6 +17220,9 @@ if (!class_exists('TCPDF', false)) {
 									$dom[$key]['attribute']['pagebreakafter'] = 'right';
 								}
 							}
+						}
+						if (isset($dom[$key]['attribute']['border']) AND ($dom[$key]['attribute']['border'] != 0)) {
+							$dom[$key]['border']['LTRB'] = $this->getCSSBorderStyle($dom[$key]['attribute']['border'].' solid black');
 						}
 						// check for font tag
 						if ($dom[$key]['value'] == 'font') {
@@ -16983,7 +17406,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @param float $x upper-left corner X coordinate
 		 * @param float $y upper-left corner Y coordinate
 		 * @param string $html html text to print. Default value: empty string.
-		 * @param mixed $border Indicates if borders must be drawn around the cell. The value can be either a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul>or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul>
+		 * @param mixed $border Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
 		 * @param int $ln Indicates where the current position should go after the call. Possible values are:<ul><li>0: to the right (or left for RTL language)</li><li>1: to the beginning of the next line</li><li>2: below</li></ul>
 	Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value: 0.
 		 * @param int $fill Indicates if the cell background must be painted (1) or transparent (0). Default value: 0.
@@ -17061,8 +17484,10 @@ if (!class_exists('TCPDF', false)) {
 			if ($cell) {
 				if ($this->rtl) {
 					$this->x -= $this->cMargin;
+					$this->lMargin += $this->cMargin;
 				} else {
 					$this->x += $this->cMargin;
+					$this->rMargin += $this->cMargin;
 				}
 			}
 			if ($this->customlistindent >= 0) {
@@ -17160,6 +17585,9 @@ if (!class_exists('TCPDF', false)) {
 							foreach ($this_method_vars as $vkey => $vval) {
 								$$vkey = $vval;
 							}
+							// disable table header
+							$tmp_thead = $this->thead;
+							$this->thead = '';
 							// add a page (or trig AcceptPageBreak() for multicolumn mode)
 							$pre_y = $this->y;
 							if ((!$this->checkPageBreak($this->PageBreakTrigger + 1)) AND ($this->y < $pre_y)) {
@@ -17168,6 +17596,22 @@ if (!class_exists('TCPDF', false)) {
 							}
 							$this->start_transaction_page = $this->page;
 							$this->start_transaction_y = $this->y;
+							// restore table header
+							$this->thead = $tmp_thead;
+							// fix table border properties
+							if (isset($dom[$dom[$key]['parent']]['attribute']['cellspacing'])) {
+								$tmp_cellspacing = $this->getHTMLUnitToUnits($dom[$dom[$key]['parent']]['attribute']['cellspacing'], 1, 'px');
+							} else {
+								$tmp_cellspacing = 0;
+							}
+							$dom[$dom[$key]['parent']]['borderposition']['page'] = $this->page;
+							$dom[$dom[$key]['parent']]['borderposition']['column'] = $this->current_column;
+							$dom[$dom[$key]['parent']]['borderposition']['y'] = $this->y + $tmp_cellspacing;
+							$xoffset = ($this->x - $dom[$dom[$key]['parent']]['borderposition']['x']);
+							$dom[$dom[$key]['parent']]['borderposition']['x'] += $xoffset;
+							$dom[$dom[$key]['parent']]['borderposition']['xmax'] += $xoffset;
+							// print table header (thead)
+							$this->writeHTML($this->thead, false, false, false, false, '');
 						}
 					}
 					// move $key index forward to skip THEAD block
@@ -17734,9 +18178,14 @@ if (!class_exists('TCPDF', false)) {
 							} else {
 								$wtmp = $this->w - $this->rMargin - $this->x;
 							}
+							if (isset($dom[$key]['attribute']['cellspacing'])) {
+								$cellspacing = $this->getHTMLUnitToUnits($dom[$key]['attribute']['cellspacing'], 1, 'px');
+							} else {
+								$cellspacing = 0;
+							}
 							if (isset($dom[$key]['attribute']['nested']) AND ($dom[$key]['attribute']['nested'] == 'true')) {
 								// add margin for nested tables
-								$wtmp -= $this->cMargin;
+								$wtmp -= ($dom[$key]['attribute']['pcellpadding'] + (2 * $cellspacing));
 							}
 							// table width
 							if (isset($dom[$key]['width'])) {
@@ -17744,10 +18193,9 @@ if (!class_exists('TCPDF', false)) {
 							} else {
 								$table_width = $wtmp;
 							}
-							if (isset($dom[$key]['attribute']['cellspacing'])) {
-								$cellspacing = $this->getHTMLUnitToUnits($dom[$key]['attribute']['cellspacing'], 1, 'px');
-							} else {
-								$cellspacing = 0;
+							$table_width -= (2 * $cellspacing);
+							if (!$this->inthead) {
+								$this->y += $cellspacing;
 							}
 							if ($this->rtl) {
 								$cellspacingx = -$cellspacing;
@@ -17772,6 +18220,11 @@ if (!class_exists('TCPDF', false)) {
 							$table_el = $dom[$trid]['parent'];
 							if (!isset($dom[$table_el]['cols'])) {
 								$dom[$table_el]['cols'] = $dom[$trid]['cols'];
+							}
+							// store border info
+							$tdborder = 0;
+							if (isset($dom[$key]['border']) AND !empty($dom[$key]['border'])) {
+								$tdborder = $dom[$key]['border'];
 							}
 							$colspan = $dom[$key]['attribute']['colspan'];
 							$oldmargin = $this->cMargin;
@@ -17817,8 +18270,12 @@ if (!class_exists('TCPDF', false)) {
 							}
 							if (!isset($dom[$trid]['startpage'])) {
 								$dom[$trid]['startpage'] = $this->page;
+								$dom[$trid]['startcolumn'] = $this->current_column;
 							} else {
 								$this->setPage($dom[$trid]['startpage']);
+								$tmpx = $this->x;
+								$this->selectColumn($dom[$trid]['startcolumn']);
+								$this->x = $tmpx;
 							}
 							if (!isset($dom[$trid]['starty'])) {
 								$dom[$trid]['starty'] = $this->y;
@@ -17827,6 +18284,7 @@ if (!class_exists('TCPDF', false)) {
 							}
 							if (!isset($dom[$trid]['startx'])) {
 								$dom[$trid]['startx'] = $this->x;
+								$this->x += $cellspacingx;
 							} else {
 								$this->x += ($cellspacingx / 2);
 							}
@@ -17887,6 +18345,10 @@ if (!class_exists('TCPDF', false)) {
 							if (isset($dom[$parentid]['bgcolor']) AND ($dom[$parentid]['bgcolor'] !== false)) {
 								$dom[$trid]['cellpos'][($cellid - 1)]['bgcolor'] = $dom[$parentid]['bgcolor'];
 							}
+							// store border info
+							if (isset($tdborder) AND !empty($tdborder)) {
+								$dom[$trid]['cellpos'][($cellid - 1)]['border'] = $tdborder;
+							}
 							$prevLastH = $this->lasth;
 							// ****** write the cell content ******
 							$this->MultiCell($cellw, $cellh, $cell_content, false, $lalign, false, 2, '', '', true, 0, true);
@@ -17909,6 +18371,7 @@ if (!class_exists('TCPDF', false)) {
 								} else {
 									$dom[$trid]['endpage'] = $this->page;
 								}
+								$dom[$trid]['endcolumn'] = $this->current_column;
 							} else {
 								// account for row-spanned cells
 								$dom[$table_el]['rowspans'][($trsid - 1)]['endx'] = $this->x;
@@ -17950,7 +18413,11 @@ if (!class_exists('TCPDF', false)) {
 					} else {
 						// closing tag
 						$prev_numpages = $this->numpages;
+						$old_bordermrk = $this->bordermrk[$this->page];
 						$this->closeHTMLTagHandler($dom, $key, $cell, $maxbottomliney);
+						if ($this->bordermrk[$this->page] > $old_bordermrk) {
+							$startlinepos += ($this->bordermrk[$this->page] - $old_bordermrk);
+						}
 						if ($prev_numpages > $this->numpages) {
 							$startlinepage = $this->page;
 						}
@@ -18372,9 +18839,9 @@ if (!class_exists('TCPDF', false)) {
 							}
 						}
 						$border = 0;
-						if (isset($tag['attribute']['border']) AND !empty($tag['attribute']['border'])) {
+						if (isset($tag['border']) AND !empty($tag['border'])) {
 							// currently only support 1 (frame) or a combination of 'LTRB'
-							$border = $tag['attribute']['border'];
+							$border = $tag['border'];
 						}
 						$iw = '';
 						if (isset($tag['attribute']['width'])) {
@@ -18769,6 +19236,12 @@ if (!class_exists('TCPDF', false)) {
 					break;
 				}
 			}
+			// define tags that support borders and background colors
+			$bordertags = array('blockquote','br','dd','dl','div','dt','h1','h2','h3','h4','h5','h6','hr','li','ol','p','pre','ul','tcpdf','table');
+			if (in_array($tag['value'], $bordertags)) {
+				// set border
+				$dom[$key]['borderposition'] = $this->getBorderStartPosition();
+			}
 			if ($dom[$key]['self'] AND isset($dom[$key]['attribute']['pagebreakafter'])) {
 				$pba = $dom[$key]['attribute']['pagebreakafter'];
 				// check for pagebreak
@@ -18797,6 +19270,12 @@ if (!class_exists('TCPDF', false)) {
 			$parent = $dom[($dom[$key]['parent'])];
 			$firstorlast = ((!isset($dom[($key + 1)])) OR ((!isset($dom[($key + 2)])) AND ($dom[($key + 1)]['value'] == 'marker')));
 			$in_table_head = false;
+			// maximum x position (used to draw borders)
+			if ($this->rtl) {
+				$xmax = $this->w;
+			} else {
+				$xmax = 0;
+			}
 			if ($tag['block']) {
 				$hbz = 0; // distance from y to line bottom
 				$hb = 0; // vertical space between block tags
@@ -18890,13 +19369,14 @@ if (!class_exists('TCPDF', false)) {
 					$this->inthead = false;
 				case 'table': {
 					$table_el = $parent;
-					// draw borders
-					if ((isset($table_el['attribute']['border']) AND ($table_el['attribute']['border'] > 0))
-						OR (isset($table_el['style']['border']) AND ($table_el['style']['border'] > 0))) {
-							$border = 1;
+					// set default border
+					if (isset($table_el['attribute']['border']) AND ($table_el['attribute']['border'] > 0)) {
+						// set default border
+						$border = array('LTRB' => array('width' => $this->getCSSBorderWidth($table_el['attribute']['border']), 'cap'=>'square', 'join'=>'miter', 'dash'=> 0, 'color'=>array(0,0,0)));
 					} else {
 						$border = 0;
 					}
+					$default_border = $border;
 					// fix bottom line alignment of last line before page break
 					foreach ($dom[($dom[$key]['parent'])]['trids'] as $j => $trkey) {
 						// update row-spanned cells
@@ -18927,8 +19407,12 @@ if (!class_exists('TCPDF', false)) {
 						$table_el = $dom[($dom[$key]['parent'])];
 					}
 					// for each row
+					unset($xmax);
 					foreach ($table_el['trids'] as $j => $trkey) {
 						$parent = $dom[$trkey];
+						if (!isset($xmax)) {
+							$xmax = $parent['cellpos'][(count($parent['cellpos']) - 1)]['endx'];
+						}
 						// for each cell on the row
 						foreach ($parent['cellpos'] as $k => $cellpos) {
 							if (isset($cellpos['rowspanid']) AND ($cellpos['rowspanid'] >= 0)) {
@@ -18942,64 +19426,105 @@ if (!class_exists('TCPDF', false)) {
 								$startpage = $parent['startpage'];
 								$endpage = $parent['endpage'];
 							}
-							if ($endpage > $startpage) {
-								// design borders around HTML cells.
-								for ($page=$startpage; $page <= $endpage; ++$page) {
-									$this->setPage($page);
-									if ($page == $startpage) {
-										$this->y = $parent['starty']; // put cursor at the beginning of row on the first page
-										$ch = $this->getPageHeight() - $parent['starty'] - $this->getBreakMargin();
-										$cborder = $this->getBorderMode($border, $position='start');
-									} elseif ($page == $endpage) {
-										$this->y = $this->tMargin; // put cursor at the beginning of last page
-										$ch = $endy - $this->tMargin;
-										$cborder = $this->getBorderMode($border, $position='end');
-									} else {
-										$this->y = $this->tMargin; // put cursor at the beginning of the current page
-										$ch = $this->getPageHeight() - $this->tMargin - $this->getBreakMargin();
-										$cborder = $this->getBorderMode($border, $position='middle');
-									}
-									if (isset($cellpos['bgcolor']) AND ($cellpos['bgcolor']) !== false) {
-										$this->SetFillColorArray($cellpos['bgcolor']);
-										$fill = true;
-									} else {
-										$fill = false;
-									}
-									$cw = abs($cellpos['endx'] - $cellpos['startx']);
-									$this->x = $cellpos['startx'];
-									// account for margin changes
-									if ($page > $startpage) {
-										if (($this->rtl) AND ($this->pagedim[$page]['orm'] != $this->pagedim[$startpage]['orm'])) {
-											$this->x -= ($this->pagedim[$page]['orm'] - $this->pagedim[$startpage]['orm']);
-										} elseif ((!$this->rtl) AND ($this->pagedim[$page]['lm'] != $this->pagedim[$startpage]['olm'])) {
-											$this->x += ($this->pagedim[$page]['olm'] - $this->pagedim[$startpage]['olm']);
-										}
-									}
-									// design a cell around the text
-									$ccode = $this->FillColor."\n".$this->getCellCode($cw, $ch, '', $cborder, 1, '', $fill, '', 0, true);
-									if ($cborder OR $fill) {
-										$pagebuff = $this->getPageBuffer($this->page);
-										$pstart = substr($pagebuff, 0, $this->intmrk[$this->page]);
-										$pend = substr($pagebuff, $this->intmrk[$this->page]);
-										$this->setPageBuffer($this->page, $pstart.$ccode."\n".$pend);
-										$this->intmrk[$this->page] += strlen($ccode."\n");
-									}
-								}
+							if (isset($cellpos['border'])) {
+								$border = $cellpos['border'];
+							}
+							if (isset($cellpos['bgcolor']) AND ($cellpos['bgcolor']) !== false) {
+								$this->SetFillColorArray($cellpos['bgcolor']);
+								$fill = true;
 							} else {
-								$this->setPage($startpage);
-								if (isset($cellpos['bgcolor']) AND ($cellpos['bgcolor']) !== false) {
-									$this->SetFillColorArray($cellpos['bgcolor']);
-									$fill = true;
-								} else {
-									$fill = false;
+								$fill = false;
+							}
+							// get latest column
+							$startcolumn = $parent['startcolumn'];
+							$endcolumn = $parent['endcolumn'];
+							if ($this->num_columns == 0) {
+								$this->num_columns = 1;
+							}
+							$x = $cellpos['startx'];
+							$y = $parent['starty'];
+							$starty = $y;
+							$w = abs($cellpos['endx'] - $cellpos['startx']);
+							// get border modes
+							$border_start = $this->getBorderMode($border, $position='start');
+							$border_end = $this->getBorderMode($border, $position='end');
+							$border_middle = $this->getBorderMode($border, $position='middle');
+							// design borders around HTML cells.
+							for ($page = $startpage; $page <= $endpage; ++$page) { // for each page
+								$ccode = '';
+								$this->setPage($page);
+								if ($this->num_columns < 2) {
+									// single-column mode
+									$this->x = $x;
+									$this->y = $this->tMargin;
 								}
-								$this->x = $cellpos['startx'];
-								$this->y = $parent['starty'];
-								$cw = abs($cellpos['endx'] - $cellpos['startx']);
-								$ch = $endy - $parent['starty'];
-								// design a cell around the text
-								$ccode = $this->FillColor."\n".$this->getCellCode($cw, $ch, '', $border, 1, '', $fill, '', 0, true);
-								if ($border OR $fill) {
+								// account for margin changes
+								if ($page > $startpage) {
+									if (($this->rtl) AND ($this->pagedim[$page]['orm'] != $this->pagedim[$startpage]['orm'])) {
+										$this->x -= ($this->pagedim[$page]['orm'] - $this->pagedim[$startpage]['orm']);
+									} elseif ((!$this->rtl) AND ($this->pagedim[$page]['olm'] != $this->pagedim[$startpage]['olm'])) {
+										$this->x += ($this->pagedim[$page]['olm'] - $this->pagedim[$startpage]['olm']);
+									}
+								}
+								if ($startpage == $endpage) {
+									// single page
+									for ($column = $startcolumn; $column <= $endcolumn; ++$column) { // for each column
+										$this->selectColumn($column);
+										if ($startcolumn == $endcolumn) { // single column
+											$cborder = $border;
+											$h = $endy - $parent['starty'];
+											$this->y = $y;
+											$this->x = $x;
+										} elseif ($column == $startcolumn) { // first column
+											$cborder = $border_start;
+											$this->y = $starty;
+											$h = $this->h - $this->y - $this->bMargin;
+										} elseif ($column == $endcolumn) { // end column
+											$cborder = $border_end;
+											$h = $endy - $this->y;
+										} else { // middle column
+											$cborder = $border_middle;
+											$h = $this->h - $this->y - $this->bMargin;
+										}
+										$ccode .= $this->getCellCode($w, $h, '', $cborder, 1, '', $fill, '', 0, true)."\n";
+									} // end for each column
+								} elseif ($page == $startpage) { // first page
+									for ($column = $startcolumn; $column < $this->num_columns; ++$column) { // for each column
+										$this->selectColumn($column);
+										if ($column == $startcolumn) { // first column
+											$cborder = $border_start;
+											$this->y = $starty;
+											$h = $this->h - $this->y - $this->bMargin;
+										} else { // middle column
+											$cborder = $border_middle;
+											$h = $this->h - $this->y - $this->bMargin;
+										}
+										$ccode .= $this->getCellCode($w, $h, '', $cborder, 1, '', $fill, '', 0, true)."\n";
+									} // end for each column
+								} elseif ($page == $endpage) { // last page
+									for ($column = 0; $column <= $endcolumn; ++$column) { // for each column
+										$this->selectColumn($column);
+										if ($column == $endcolumn) {
+											// end column
+											$cborder = $border_end;
+											$h = $endy - $this->y;
+										} else {
+											// middle column
+											$cborder = $border_middle;
+											$h = $this->h - $this->y - $this->bMargin;
+										}
+										$ccode .= $this->getCellCode($w, $h, '', $cborder, 1, '', $fill, '', 0, true)."\n";
+									} // end for each column
+								} else { // middle page
+									for ($column = 0; $column < $this->num_columns; ++$column) { // for each column
+										$this->selectColumn($column);
+										$cborder = $border_middle;
+										$h = $this->h - $this->y - $this->bMargin;
+										$ccode .= $this->getCellCode($w, $h, '', $cborder, 1, '', $fill, '', 0, true)."\n";
+									} // end for each column
+								}
+								if ($cborder OR $fill) {
+									// draw border and fill
 									if (end($this->transfmrk[$this->page]) !== false) {
 										$pagemarkkey = key($this->transfmrk[$this->page]);
 										$pagemark = &$this->transfmrk[$this->page][$pagemarkkey];
@@ -19011,11 +19536,13 @@ if (!class_exists('TCPDF', false)) {
 									$pagebuff = $this->getPageBuffer($this->page);
 									$pstart = substr($pagebuff, 0, $pagemark);
 									$pend = substr($pagebuff, $pagemark);
-									$this->setPageBuffer($this->page, $pstart.$ccode."\n".$pend);
-									$pagemark += strlen($ccode."\n");
+									$this->setPageBuffer($this->page, $pstart.$ccode.$pend);
+									$pagemark += strlen($ccode);
 								}
-							}
-						}
+							} // end for each page
+							// restore default border
+							$border = $default_border;
+						} // end for each cell on the row
 						if (isset($table_el['attribute']['cellspacing'])) {
 							$cellspacing = $this->getHTMLUnitToUnits($table_el['attribute']['cellspacing'], 1, 'px');
 							$this->y += $cellspacing;
@@ -19051,6 +19578,7 @@ if (!class_exists('TCPDF', false)) {
 							$this->theadMargins = array();
 						}
 					}
+					$parent = $table_el;
 					break;
 				}
 				case 'a': {
@@ -19158,6 +19686,8 @@ if (!class_exists('TCPDF', false)) {
 					break;
 				}
 			}
+			// draw border and background (if any)
+			$this->drawHTMLTagBorder($parent, $xmax);
 			if (isset($dom[($dom[$key]['parent'])]['attribute']['pagebreakafter'])) {
 				$pba = $dom[($dom[$key]['parent'])]['attribute']['pagebreakafter'];
 				// check for pagebreak
@@ -19195,6 +19725,200 @@ if (!class_exists('TCPDF', false)) {
 				$this->htmlvspace = $hb;
 			}
 			$this->Ln(($hbz + $hd), $cell);
+		}
+
+		/**
+		 * Return the starting coordinates to draw an html border
+		 * @return array containing top-left border coordinates
+		 * @access protected
+		 * @since 5.7.000 (2010-08-03)
+		 */
+		protected function getBorderStartPosition() {
+			if ($this->rtl) {
+				$xmax = $this->lMargin;
+			} else {
+				$xmax = $this->w - $this->rMargin;
+			}
+			return array('page' => $this->page, 'column' => $this->current_column, 'x' => $this->x, 'y' => $this->y, 'xmax' => $xmax);
+		}
+
+		/**
+		 * Draw an HTML block border and fill
+		 * @param array $tag array of tag properties
+		 * @param $xmax end X coordinate for border
+		 * @access protected
+		 * @since 5.7.000 (2010-08-03)
+		 */
+		protected function drawHTMLTagBorder($tag, $xmax) {
+			if (!isset($tag['borderposition'])) {
+				// nothing to draw
+				return;
+			}
+			$prev_x = $this->x;
+			$prev_y = $this->y;
+			$prev_lasth = $this->lasth;
+			$border = 0;
+			$fill = false;
+			if (isset($tag['border']) AND !empty($tag['border'])) {
+				// get border style
+				$border = $tag['border'];
+				if (!$this->empty_string($this->thead) AND (!$this->inthead)) {
+					// border for table header
+					$border = $this->getBorderMode($border, $position='middle');
+				}
+			}
+			if (isset($tag['bgcolor']) AND ($tag['bgcolor'] !== false)) {
+				// get background color
+				$old_bgcolor = $this->bgcolor;
+				$this->SetFillColorArray($tag['bgcolor']);
+				$fill = true;
+			}
+			if (!$border AND !$fill) {
+				// nothing to draw
+				return;
+			}
+			if (isset($tag['attribute']['cellspacing'])) {
+				$cellspacing = $this->getHTMLUnitToUnits($tag['attribute']['cellspacing'], 1, 'px');
+			} else {
+				$cellspacing = 0;
+			}
+			if (($tag['value'] != 'table') AND (is_array($border)) AND (!empty($border))) {
+				// draw the border externally respect the sqare edge.
+				$border['mode'] = 'ext';
+			}
+			if ($this->rtl) {
+				if ($xmax >= $tag['borderposition']['x']) {
+					$xmax = $tag['borderposition']['xmax'];
+				}
+				$w = ($tag['borderposition']['x'] - $xmax);
+			} else {
+				if ($xmax <= $tag['borderposition']['x']) {
+					$xmax = $tag['borderposition']['xmax'];
+				}
+				$w = ($xmax - $tag['borderposition']['x']);
+			}
+			if ($w <= 0) {
+				return;
+			}
+			$w += $cellspacing;
+			$startpage = $tag['borderposition']['page'];
+			$startcolumn = $tag['borderposition']['column'];
+			$x = $tag['borderposition']['x'];
+			$y = $tag['borderposition']['y'];
+			$endpage = $this->page;
+			$starty = $tag['borderposition']['y'] - $cellspacing;
+			$currentY = $this->y;
+			$this->x = $x;
+			// get latest column
+			$endcolumn = $this->current_column;
+			if ($this->num_columns == 0) {
+				$this->num_columns = 1;
+			}
+			// get border modes
+			$border_start = $this->getBorderMode($border, $position='start');
+			$border_end = $this->getBorderMode($border, $position='end');
+			$border_middle = $this->getBorderMode($border, $position='middle');
+			// design borders around HTML cells.
+			for ($page = $startpage; $page <= $endpage; ++$page) { // for each page
+				$ccode = '';
+				$this->setPage($page);
+				if ($this->num_columns < 2) {
+					// single-column mode
+					$this->x = $x;
+					$this->y = $this->tMargin;
+				}
+				// account for margin changes
+				if ($page > $startpage) {
+					if (($this->rtl) AND ($this->pagedim[$page]['orm'] != $this->pagedim[$startpage]['orm'])) {
+						$this->x -= ($this->pagedim[$page]['orm'] - $this->pagedim[$startpage]['orm']);
+					} elseif ((!$this->rtl) AND ($this->pagedim[$page]['olm'] != $this->pagedim[$startpage]['olm'])) {
+						$this->x += ($this->pagedim[$page]['olm'] - $this->pagedim[$startpage]['olm']);
+					}
+				}
+				if ($startpage == $endpage) {
+					// single page
+					for ($column = $startcolumn; $column <= $endcolumn; ++$column) { // for each column
+						$this->selectColumn($column);
+						if ($startcolumn == $endcolumn) { // single column
+							$cborder = $border;
+							$h = ($currentY - $y) + $cellspacing;
+							$this->y = $starty;
+						} elseif ($column == $startcolumn) { // first column
+							$cborder = $border_start;
+							$this->y = $starty;
+							$h = $this->h - $this->y - $this->bMargin;
+						} elseif ($column == $endcolumn) { // end column
+							$cborder = $border_end;
+							$h = $currentY - $this->y;
+						} else { // middle column
+							$cborder = $border_middle;
+							$h = $this->h - $this->y - $this->bMargin;
+						}
+						$ccode .= $this->getCellCode($w, $h, '', $cborder, 1, '', $fill, '', 0, true)."\n";
+					} // end for each column
+				} elseif ($page == $startpage) { // first page
+					for ($column = $startcolumn; $column < $this->num_columns; ++$column) { // for each column
+						$this->selectColumn($column);
+						if ($column == $startcolumn) { // first column
+							$cborder = $border_start;
+							$this->y = $starty;
+							$h = $this->h - $this->y - $this->bMargin;
+						} else { // middle column
+							$cborder = $border_middle;
+							$h = $this->h - $this->y - $this->bMargin;
+						}
+						$ccode .= $this->getCellCode($w, $h, '', $cborder, 1, '', $fill, '', 0, true)."\n";
+					} // end for each column
+				} elseif ($page == $endpage) { // last page
+					for ($column = 0; $column <= $endcolumn; ++$column) { // for each column
+						$this->selectColumn($column);
+						if ($column == $endcolumn) {
+							// end column
+							$cborder = $border_end;
+							$h = $currentY - $this->y;
+						} else {
+							// middle column
+							$cborder = $border_middle;
+							$h = $this->h - $this->y - $this->bMargin;
+						}
+						$ccode .= $this->getCellCode($w, $h, '', $cborder, 1, '', $fill, '', 0, true)."\n";
+					} // end for each column
+				} else { // middle page
+					for ($column = 0; $column < $this->num_columns; ++$column) { // for each column
+						$this->selectColumn($column);
+						$cborder = $border_middle;
+						$h = $this->h - $this->y - $this->bMargin;
+						$ccode .= $this->getCellCode($w, $h, '', $cborder, 1, '', $fill, '', 0, true)."\n";
+					} // end for each column
+				}
+				if ($cborder OR $fill) {
+					// draw border and fill
+					if (end($this->transfmrk[$this->page]) !== false) {
+						$pagemarkkey = key($this->transfmrk[$this->page]);
+						$pagemark = &$this->transfmrk[$this->page][$pagemarkkey];
+					} elseif ($this->InFooter) {
+						$pagemark = &$this->footerpos[$this->page];
+					} else {
+						$pagemark = &$this->intmrk[$this->page];
+					}
+					$pagebuff = $this->getPageBuffer($this->page);
+					$pstart = substr($pagebuff, 0, $this->bordermrk[$this->page]);
+					$pend = substr($pagebuff, $this->bordermrk[$this->page]);
+					$this->setPageBuffer($this->page, $pstart.$ccode.$pend);
+					$offsetlen = strlen($ccode);
+					$this->bordermrk[$this->page] += $offsetlen;
+					$this->cntmrk[$this->page] += $offsetlen;
+					$pagemark += $offsetlen;
+				}
+			} // end for each page
+			if (isset($old_bgcolor)) {
+				// restore background color
+				$this->SetFillColorArray($old_bgcolor);
+			}
+			// restore pointer position
+			$this->x = $prev_x;
+			$this->y = $prev_y;
+			$this->lasth = $prev_lasth;
 		}
 
 		/**
@@ -19645,6 +20369,7 @@ if (!class_exists('TCPDF', false)) {
 				'listordered' => $this->listordered,
 				'listcount' => $this->listcount,
 				'lispacer' => $this->lispacer,
+				'cell_height_ratio' => $this->cell_height_ratio,
 				'lasth' => $this->lasth
 				);
 			return $grapvars;
@@ -19683,6 +20408,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->listordered = $gvars['listordered'];
 			$this->listcount = $gvars['listcount'];
 			$this->lispacer = $gvars['lispacer'];
+			$this->cell_height_ratio = $gvars['cell_height_ratio'];
 			//$this->lasth = $gvars['lasth'];
 			$this->_out(''.$this->linestyleWidth.' '.$this->linestyleCap.' '.$this->linestyleJoin.' '.$this->linestyleDash.' '.$this->DrawColor.' '.$this->FillColor.'');
 			if (!$this->empty_string($this->FontFamily)) {
@@ -20700,6 +21426,7 @@ if (!class_exists('TCPDF', false)) {
 			} elseif($col >= $this->num_columns) {
 				$col = 0;
 			}
+			$enable_thead = false;
 			if ($this->num_columns > 1) {
 				if ($col != $this->current_column) {
 					// move pointer at column top on the first page
@@ -20708,6 +21435,7 @@ if (!class_exists('TCPDF', false)) {
 					} else {
 						$this->y = $this->tMargin;
 					}
+					$enable_thead = true;
 				}
 				// set X position of the current column by case
 				$listindent = ($this->listindentlevel * $this->listindent);
@@ -20732,7 +21460,7 @@ if (!class_exists('TCPDF', false)) {
 			// fix for HTML mode
 			$this->newline = true;
 			// print HTML table header (if any)
-			if (!$this->empty_string($this->thead) AND (!$this->inthead)) {
+			if ($enable_thead AND (!$this->empty_string($this->thead)) AND (!$this->inthead)) {
 				// print table header
 				$this->writeHTML($this->thead, false, false, false, false, '');
 			}
@@ -21119,7 +21847,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @param mixed $link URL or identifier returned by AddLink().
 		 * @param string $align Indicates the alignment of the pointer next to image insertion relative to image height. The value can be:<ul><li>T: top-right for LTR or top-left for RTL</li><li>M: middle-right for LTR or middle-left for RTL</li><li>B: bottom-right for LTR or bottom-left for RTL</li><li>N: next line</li></ul>
 		 * @param string $palign Allows to center or align the image on the current line. Possible values are:<ul><li>L : left align</li><li>C : center</li><li>R : right align</li><li>'' : empty string : left for LTR or right for RTL</li></ul>
-		 * @param mixed $border Indicates if borders must be drawn around the image. The value can be either a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul>or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul>
+		 * @param mixed $border Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
 		 * @param boolean $fitonpage if true the image is resized to not exceed page dimensions.
 		 * @author Nicola Asuni
 		 * @since 5.0.000 (2010-05-02)
@@ -21182,7 +21910,7 @@ if (!class_exists('TCPDF', false)) {
 					// get aspect ratio
 					$tmp = array();
 					if (preg_match('/[\s]+preserveAspectRatio[\s]*=[\s]*"([^"]*)"/si', $regs[1], $tmp)) {
-						$aspect_ratio = preg_split("/[\s]+/si", $tmp[1]);
+						$aspect_ratio = preg_split('/[\s]+/si', $tmp[1]);
 						switch (count($aspect_ratio)) {
 							case 3: {
 								$aspect_ratio_align = $aspect_ratio[1];

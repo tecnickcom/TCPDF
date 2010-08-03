@@ -1,3 +1,10 @@
+5.7.000 (2010-08-03)
+	- CSS borders are now supported for HTML tables and other block tags (see example n. 61);
+	- Cell borders were improved (see example n. 57);
+	- Minor bugs were fixed.
+
+------------------------------------------------------------
+
 5.6.000 (2010-07-31)
 	- A bug with object IDs was fixes.
 	- Performances were improved.
