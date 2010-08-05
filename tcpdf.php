@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.7.000
+// Version     : 5.7.001
 // Begin       : 2002-08-03
-// Last Update : 2010-08-03
+// Last Update : 2010-08-05
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.7.000
+ * @version 5.7.001
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.7.000 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.7.001 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.7.000
+	* @version 5.7.001
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -3322,7 +3322,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 			// save current graphic settings
 			$gvars = $this->getGraphicVars();
-			$this->lastpage();
+			$this->lastpage(true);
 			$this->SetAutoPageBreak(false);
 			$this->x = 0;
 			$this->y = $this->h - (1 / $this->k);
@@ -3355,7 +3355,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @see getPage(), lastpage(), getNumPages()
 		 */
 		public function setPage($pnum, $resetmargins=false) {
-			if ($pnum == $this->page) {
+			if (($pnum == $this->page) AND (!$resetmargins)) {
 				return;
 			}
 			if (($pnum > 0) AND ($pnum <= $this->numpages)) {
@@ -4791,7 +4791,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @param mixed $border Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
 		 * @param int $ln Indicates where the current position should go after the call. Possible values are:<ul><li>0: to the right (or left for RTL languages)</li><li>1: to the beginning of the next line</li><li>2: below</li></ul>Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value: 0.
 		 * @param string $align Allows to center or align the text. Possible values are:<ul><li>L or empty string: left align (default value)</li><li>C: center</li><li>R: right align</li><li>J: justify</li></ul>
-		 * @param int $fill Indicates if the cell background must be painted (1) or transparent (0). Default value: 0.
+		 * @param boolean $fill Indicates if the cell background must be painted (true) or transparent (false).
 		 * @param mixed $link URL or identifier returned by AddLink().
 		 * @param int $stretch stretch carachter mode: <ul><li>0 = disabled</li><li>1 = horizontal scaling only if necessary</li><li>2 = forced horizontal scaling</li><li>3 = character spacing only if necessary</li><li>4 = forced character spacing</li></ul>
 		 * @param boolean $ignore_min_height if true ignore automatic minimum height value.
@@ -4802,7 +4802,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 1.0
 		 * @see Cell(), Write(), MultiCell(), WriteHTML(), WriteHTMLCell()
 		 */
-		public function Text($x, $y, $txt, $fstroke=false, $fclip=false, $ffill=true, $border=0, $ln=0, $align='', $fill=0, $link='', $stretch=0, $ignore_min_height=false, $calign='T', $valign='M', $rtloff=false) {
+		public function Text($x, $y, $txt, $fstroke=false, $fclip=false, $ffill=true, $border=0, $ln=0, $align='', $fill=false, $link='', $stretch=0, $ignore_min_height=false, $calign='T', $valign='M', $rtloff=false) {
 			$textrendermode = $this->textrendermode;
 			$textstrokewidth = $this->textstrokewidth;
 			$this->setTextRenderingMode($fstroke, $ffill, $fclip);
@@ -4919,7 +4919,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @param mixed $border Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
 		 * @param int $ln Indicates where the current position should go after the call. Possible values are:<ul><li>0: to the right (or left for RTL languages)</li><li>1: to the beginning of the next line</li><li>2: below</li></ul> Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value: 0.
 		 * @param string $align Allows to center or align the text. Possible values are:<ul><li>L or empty string: left align (default value)</li><li>C: center</li><li>R: right align</li><li>J: justify</li></ul>
-		 * @param int $fill Indicates if the cell background must be painted (1) or transparent (0). Default value: 0.
+		 * @param boolean $fill Indicates if the cell background must be painted (true) or transparent (false).
 		 * @param mixed $link URL or identifier returned by AddLink().
 		 * @param int $stretch stretch carachter mode: <ul><li>0 = disabled</li><li>1 = horizontal scaling only if necessary</li><li>2 = forced horizontal scaling</li><li>3 = character spacing only if necessary</li><li>4 = forced character spacing</li></ul>
 		 * @param boolean $ignore_min_height if true ignore automatic minimum height value.
@@ -4929,7 +4929,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 1.0
 		 * @see SetFont(), SetDrawColor(), SetFillColor(), SetTextColor(), SetLineWidth(), AddLink(), Ln(), MultiCell(), Write(), SetAutoPageBreak()
 		 */
-		public function Cell($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=0, $link='', $stretch=0, $ignore_min_height=false, $calign='T', $valign='M') {
+		public function Cell($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=false, $link='', $stretch=0, $ignore_min_height=false, $calign='T', $valign='M') {
 			if (!$ignore_min_height) {
 				$min_cell_height = $this->FontSize * $this->cell_height_ratio;
 				if ($h < $min_cell_height) {
@@ -4949,7 +4949,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @param mixed $border Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
 		 * @param int $ln Indicates where the current position should go after the call. Possible values are:<ul><li>0: to the right (or left for RTL languages)</li><li>1: to the beginning of the next line</li><li>2: below</li></ul>Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value: 0.
 		 * @param string $align Allows to center or align the text. Possible values are:<ul><li>L or empty string: left align (default value)</li><li>C: center</li><li>R: right align</li><li>J: justify</li></ul>
-		 * @param int $fill Indicates if the cell background must be painted (1) or transparent (0). Default value: 0.
+		 * @param boolean $fill Indicates if the cell background must be painted (true) or transparent (false).
 		 * @param mixed $link URL or identifier returned by AddLink().
 		 * @param int $stretch stretch carachter mode: <ul><li>0 = disabled</li><li>1 = horizontal scaling only if necessary</li><li>2 = forced horizontal scaling</li><li>3 = character spacing only if necessary</li><li>4 = forced character spacing</li></ul>
 		 * @param boolean $ignore_min_height if true ignore automatic minimum height value.
@@ -4960,7 +4960,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 1.0
 		 * @see Cell()
 		 */
-		protected function getCellCode($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=0, $link='', $stretch=0, $ignore_min_height=false, $calign='T', $valign='M') {
+		protected function getCellCode($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=false, $link='', $stretch=0, $ignore_min_height=false, $calign='T', $valign='M') {
 			$txt = $this->removeSHY($txt);
 			$rs = ''; //string to be returned
 			if (!$ignore_min_height) {
@@ -5088,8 +5088,8 @@ if (!class_exists('TCPDF', false)) {
 				// full border
 				$border = 1;
 			}
-			if (($fill == 1) OR ($border == 1)) {
-				if ($fill == 1) {
+			if ($fill OR ($border == 1)) {
+				if ($fill) {
 					$op = ($border == 1) ? 'B' : 'f';
 				} else {
 					$op = 'S';
@@ -5514,7 +5514,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @param string $txt String to print
 		 * @param mixed $border Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
 		 * @param string $align Allows to center or align the text. Possible values are:<ul><li>L or empty string: left align</li><li>C: center</li><li>R: right align</li><li>J: justification (default value when $ishtml=false)</li></ul>
-		 * @param int $fill Indicates if the cell background must be painted (1) or transparent (0). Default value: 0.
+		 * @param boolean $fill Indicates if the cell background must be painted (true) or transparent (false).
 		 * @param int $ln Indicates where the current position should go after the call. Possible values are:<ul><li>0: to the right</li><li>1: to the beginning of the next line [DEFAULT]</li><li>2: below</li></ul>
 		 * @param float $x x position in user units
 		 * @param float $y y position in user units
@@ -5530,7 +5530,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 1.3
 		 * @see SetFont(), SetDrawColor(), SetFillColor(), SetTextColor(), SetLineWidth(), Cell(), Write(), SetAutoPageBreak()
 		 */
-		public function MultiCell($w, $h, $txt, $border=0, $align='J', $fill=0, $ln=1, $x='', $y='', $reseth=true, $stretch=0, $ishtml=false, $autopadding=true, $maxh=0, $valign='T', $fitcell=false) {
+		public function MultiCell($w, $h, $txt, $border=0, $align='J', $fill=false, $ln=1, $x='', $y='', $reseth=true, $stretch=0, $ishtml=false, $autopadding=true, $maxh=0, $valign='T', $fitcell=false) {
 			if ($this->empty_string($this->lasth) OR $reseth) {
 				//set row height
 				$this->lasth = $this->FontSize * $this->cell_height_ratio;
@@ -5943,7 +5943,7 @@ if (!class_exists('TCPDF', false)) {
 		 *  $start_page = $pdf->getPage();
 		 *  // call your printing functions with your parameters
 		 *  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		 *  $pdf->MultiCell($w=0, $h=0, $txt, $border=1, $align='L', $fill=0, $ln=1, $x='', $y='', $reseth=true, $stretch=0, $ishtml=false, $autopadding=true, $maxh=0);
+		 *  $pdf->MultiCell($w=0, $h=0, $txt, $border=1, $align='L', $fill=false, $ln=1, $x='', $y='', $reseth=true, $stretch=0, $ishtml=false, $autopadding=true, $maxh=0);
 		 *  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		 *  // get the new Y
 		 *  $end_y = $pdf->GetY();
@@ -6008,7 +6008,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @param float $h Line height
 		 * @param string $txt String to print
 		 * @param mixed $link URL or identifier returned by AddLink()
-		 * @param int $fill Indicates if the background must be painted (1) or transparent (0). Default value: 0.
+		 * @param boolean $fill Indicates if the cell background must be painted (true) or transparent (false).
 		 * @param string $align Allows to center or align the text. Possible values are:<ul><li>L or empty string: left align (default value)</li><li>C: center</li><li>R: right align</li><li>J: justify</li></ul>
 		 * @param boolean $ln if true set cursor at the bottom of the line, otherwise set cursor at the top of the line.
 		 * @param int $stretch stretch carachter mode: <ul><li>0 = disabled</li><li>1 = horizontal scaling only if necessary</li><li>2 = forced horizontal scaling</li><li>3 = character spacing only if necessary</li><li>4 = forced character spacing</li></ul>
@@ -6019,7 +6019,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @access public
 		 * @since 1.5
 		 */
-		public function Write($h, $txt, $link='', $fill=0, $align='', $ln=false, $stretch=0, $firstline=false, $firstblock=false, $maxh=0) {
+		public function Write($h, $txt, $link='', $fill=false, $align='', $ln=false, $stretch=0, $firstline=false, $firstblock=false, $maxh=0) {
 			if (strlen($txt) == 0) {
 				$txt = ' ';
 			}
@@ -10685,7 +10685,7 @@ if (!class_exists('TCPDF', false)) {
 		 * Output anchor link.
 		 * @param string $url link URL or internal link (i.e.: &lt;a href="#23"&gt;link to page 23&lt;/a&gt;)
 		 * @param string $name link name
-		 * @param int $fill Indicates if the cell background must be painted (1) or transparent (0). Default value: 0.
+		 * @param boolean $fill Indicates if the cell background must be painted (true) or transparent (false).
 		 * @param boolean $firstline if true prints only the first line and return the remaining string.
 		 * @param array $color array of RGB text color
 		 * @param string $style font style (U, D, B, I)
@@ -10693,7 +10693,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @return the number of cells used or the remaining text if $firstline = true;
 		 * @access public
 		 */
-		public function addHtmlLink($url, $name, $fill=0, $firstline=false, $color='', $style=-1, $firstblock=false) {
+		public function addHtmlLink($url, $name, $fill=false, $firstline=false, $color='', $style=-1, $firstblock=false) {
 			if (!$this->empty_string($url) AND ($url{0} == '#')) {
 				// convert url to internal link
 				$page = intval(substr($url, 1));
@@ -17409,7 +17409,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @param mixed $border Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
 		 * @param int $ln Indicates where the current position should go after the call. Possible values are:<ul><li>0: to the right (or left for RTL language)</li><li>1: to the beginning of the next line</li><li>2: below</li></ul>
 	Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value: 0.
-		 * @param int $fill Indicates if the cell background must be painted (1) or transparent (0). Default value: 0.
+		 * @param boolean $fill Indicates if the cell background must be painted (true) or transparent (false).
 		 * @param boolean $reseth if true reset the last cell height (default true).
 		 * @param string $align Allows to center or align the text. Possible values are:<ul><li>L : left align</li><li>C : center</li><li>R : right align</li><li>'' : empty string : left for LTR or right for RTL</li></ul>
 		 * @param boolean $autopadding if true, uses internal padding and automatically adjust it to account for line width.
@@ -17417,7 +17417,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @uses MultiCell()
 		 * @see Multicell(), writeHTML()
 		 */
-		public function writeHTMLCell($w, $h, $x, $y, $html='', $border=0, $ln=0, $fill=0, $reseth=true, $align='', $autopadding=true) {
+		public function writeHTMLCell($w, $h, $x, $y, $html='', $border=0, $ln=0, $fill=false, $reseth=true, $align='', $autopadding=true) {
 			return $this->MultiCell($w, $h, $html, $border, $align, $fill, $ln, $x, $y, $reseth, 0, true, $autopadding, 0);
 		}
 
@@ -17427,7 +17427,7 @@ if (!class_exists('TCPDF', false)) {
 		 * Supported tags are: a, b, blockquote, br, dd, del, div, dl, dt, em, font, h1, h2, h3, h4, h5, h6, hr, i, img, li, ol, p, pre, small, span, strong, sub, sup, table, tcpdf, td, th, thead, tr, tt, u, ul
 		 * @param string $html text to display
 		 * @param boolean $ln if true add a new line after text (default = true)
-		 * @param int $fill Indicates if the background must be painted (true) or transparent (false).
+		 * @param boolean $fill Indicates if the background must be painted (true) or transparent (false).
 		 * @param boolean $reseth if true reset the last cell height (default false).
 		 * @param boolean $cell if true add the default cMargin space to each Write (default false).
 		 * @param string $align Allows to center or align the text. Possible values are:<ul><li>L : left align</li><li>C : center</li><li>R : right align</li><li>'' : empty string : left for LTR or right for RTL</li></ul>

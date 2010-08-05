@@ -1,3 +1,6 @@
+5.7.001 (2010-08-05)
+	- Bug #3040105 "Broken PDF when using TOC (example 45)" was fixed.
+
 5.7.000 (2010-08-03)
 	- CSS borders are now supported for HTML tables and other block tags (see example n. 61);
 	- Cell borders were improved (see example n. 57);

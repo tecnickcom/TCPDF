@@ -83,7 +83,7 @@ Source Location: /tcpdf.php<br /><br />
                 
 <h4>Version:</h4>
 <ul>
-  <li>5.7.000</li>
+  <li>5.7.001</li>
 </ul>
 
         
@@ -733,7 +733,7 @@ This is a PHP class for generating PDF documents without requiring external exte
     <td><b>author:</b>&nbsp;&nbsp;</td><td>Nicola Asuni - info@tecnick.com</td>
   </tr>
   <tr>
-    <td><b>version:</b>&nbsp;&nbsp;</td><td>5.7.000</td>
+    <td><b>version:</b>&nbsp;&nbsp;</td><td>5.7.001</td>
   </tr>
   <tr>
     <td><b>link:</b>&nbsp;&nbsp;</td><td><a href="http://www.tcpdf.org">http://www.tcpdf.org</a></td>
@@ -6975,8 +6975,8 @@ $subset = 'default'])</code>
 		<code>the addHtmlLink(
 string
 $url, string
-$name, [int
-$fill = 0], [boolean
+$name, [boolean
+$fill = false], [boolean
 $firstline = false], [array
 $color = ''], [string
 $style = -1], [boolean
@@ -7013,9 +7013,9 @@ $firstblock = false])</code>
         <td>link name</td>
       </tr>
           <tr>
-        <td class="type">int&nbsp;&nbsp;</td>
+        <td class="type">boolean&nbsp;&nbsp;</td>
         <td><b>$fill</b>&nbsp;&nbsp;</td>
-        <td>Indicates if the cell background must be painted (1) or transparent (0). Default value: 0.</td>
+        <td>Indicates if the cell background must be painted (true) or transparent (false).</td>
       </tr>
           <tr>
         <td class="type">boolean&nbsp;&nbsp;</td>
@@ -7964,8 +7964,8 @@ $h = 0], [string
 $txt = ''], [mixed
 $border = 0], [int
 $ln = 0], [string
-$align = ''], [int
-$fill = 0], [mixed
+$align = ''], [boolean
+$fill = false], [mixed
 $link = ''], [int
 $stretch = 0], [boolean
 $ignore_min_height = false], [string
@@ -8026,9 +8026,9 @@ $valign = 'M'])</code>
         <td>Allows to center or align the text. Possible values are:<ul><li>L or empty string: left align (default value)</li><li>C: center</li><li>R: right align</li><li>J: justify</li></ul></td>
       </tr>
           <tr>
-        <td class="type">int&nbsp;&nbsp;</td>
+        <td class="type">boolean&nbsp;&nbsp;</td>
         <td><b>$fill</b>&nbsp;&nbsp;</td>
-        <td>Indicates if the cell background must be painted (1) or transparent (0). Default value: 0.</td>
+        <td>Indicates if the cell background must be painted (true) or transparent (false).</td>
       </tr>
           <tr>
         <td class="type">mixed&nbsp;&nbsp;</td>
@@ -10269,8 +10269,8 @@ $h = 0], [string
 $txt = ''], [mixed
 $border = 0], [int
 $ln = 0], [string
-$align = ''], [int
-$fill = 0], [mixed
+$align = ''], [boolean
+$fill = false], [mixed
 $link = ''], [int
 $stretch = 0], [boolean
 $ignore_min_height = false], [string
@@ -10334,9 +10334,9 @@ $valign = 'M'])</code>
         <td>Allows to center or align the text. Possible values are:<ul><li>L or empty string: left align (default value)</li><li>C: center</li><li>R: right align</li><li>J: justify</li></ul></td>
       </tr>
           <tr>
-        <td class="type">int&nbsp;&nbsp;</td>
+        <td class="type">boolean&nbsp;&nbsp;</td>
         <td><b>$fill</b>&nbsp;&nbsp;</td>
-        <td>Indicates if the cell background must be painted (1) or transparent (0). Default value: 0.</td>
+        <td>Indicates if the cell background must be painted (true) or transparent (false).</td>
       </tr>
           <tr>
         <td class="type">mixed&nbsp;&nbsp;</td>
@@ -12479,7 +12479,7 @@ $lineWidth = ''])</code>
   $start_page = $pdf->getPage();
   // call your printing functions with your parameters
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  $pdf->MultiCell($w=0, $h=0, $txt, $border=1, $align='L', $fill=0, $ln=1, $x='', $y='', $reseth=true, $stretch=0, $ishtml=false, $autopadding=true, $maxh=0);
+  $pdf->MultiCell($w=0, $h=0, $txt, $border=1, $align='L', $fill=false, $ln=1, $x='', $y='', $reseth=true, $stretch=0, $ishtml=false, $autopadding=true, $maxh=0);
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // get the new Y
   $end_y = $pdf->GetY();
@@ -14492,8 +14492,8 @@ $w, float
 $h, string
 $txt, [mixed
 $border = 0], [string
-$align = 'J'], [int
-$fill = 0], [int
+$align = 'J'], [boolean
+$fill = false], [int
 $ln = 1], [float
 $x = ''], [float
 $y = ''], [boolean
@@ -14560,9 +14560,9 @@ $fitcell = false])</code>
         <td>Allows to center or align the text. Possible values are:<ul><li>L or empty string: left align</li><li>C: center</li><li>R: right align</li><li>J: justification (default value when $ishtml=false)</li></ul></td>
       </tr>
           <tr>
-        <td class="type">int&nbsp;&nbsp;</td>
+        <td class="type">boolean&nbsp;&nbsp;</td>
         <td><b>$fill</b>&nbsp;&nbsp;</td>
-        <td>Indicates if the cell background must be painted (1) or transparent (0). Default value: 0.</td>
+        <td>Indicates if the cell background must be painted (true) or transparent (false).</td>
       </tr>
           <tr>
         <td class="type">int&nbsp;&nbsp;</td>
@@ -21393,8 +21393,8 @@ $fclip = false], [boolean
 $ffill = true], [mixed
 $border = 0], [int
 $ln = 0], [string
-$align = ''], [int
-$fill = 0], [mixed
+$align = ''], [boolean
+$fill = false], [mixed
 $link = ''], [int
 $stretch = 0], [boolean
 $ignore_min_height = false], [string
@@ -21471,9 +21471,9 @@ $rtloff = false])</code>
         <td>Allows to center or align the text. Possible values are:<ul><li>L or empty string: left align (default value)</li><li>C: center</li><li>R: right align</li><li>J: justify</li></ul></td>
       </tr>
           <tr>
-        <td class="type">int&nbsp;&nbsp;</td>
+        <td class="type">boolean&nbsp;&nbsp;</td>
         <td><b>$fill</b>&nbsp;&nbsp;</td>
-        <td>Indicates if the cell background must be painted (1) or transparent (0). Default value: 0.</td>
+        <td>Indicates if the cell background must be painted (true) or transparent (false).</td>
       </tr>
           <tr>
         <td class="type">mixed&nbsp;&nbsp;</td>
@@ -22380,8 +22380,8 @@ $setbom = true])</code>
 float
 $h, string
 $txt, [mixed
-$link = ''], [int
-$fill = 0], [string
+$link = ''], [boolean
+$fill = false], [string
 $align = ''], [boolean
 $ln = false], [int
 $stretch = 0], [boolean
@@ -22428,9 +22428,9 @@ $maxh = 0])</code>
         <td>URL or identifier returned by AddLink()</td>
       </tr>
           <tr>
-        <td class="type">int&nbsp;&nbsp;</td>
+        <td class="type">boolean&nbsp;&nbsp;</td>
         <td><b>$fill</b>&nbsp;&nbsp;</td>
-        <td>Indicates if the background must be painted (1) or transparent (0). Default value: 0.</td>
+        <td>Indicates if the cell background must be painted (true) or transparent (false).</td>
       </tr>
           <tr>
         <td class="type">string&nbsp;&nbsp;</td>
@@ -22802,7 +22802,7 @@ $file)</code>
 		<code>void writeHTML(
 string
 $html, [boolean
-$ln = true], [int
+$ln = true], [boolean
 $fill = false], [boolean
 $reseth = false], [boolean
 $cell = false], [string
@@ -22836,7 +22836,7 @@ $align = ''])</code>
         <td>if true add a new line after text (default = true)</td>
       </tr>
           <tr>
-        <td class="type">int&nbsp;&nbsp;</td>
+        <td class="type">boolean&nbsp;&nbsp;</td>
         <td><b>$fill</b>&nbsp;&nbsp;</td>
         <td>Indicates if the background must be painted (true) or transparent (false).</td>
       </tr>
@@ -22873,8 +22873,8 @@ $x, float
 $y, [string
 $html = ''], [mixed
 $border = 0], [int
-$ln = 0], [int
-$fill = 0], [boolean
+$ln = 0], [boolean
+$fill = false], [boolean
 $reseth = true], [string
 $align = ''], [boolean
 $autopadding = true])</code>
@@ -22938,9 +22938,9 @@ $autopadding = true])</code>
         <td>Indicates where the current position should go after the call. Possible values are:<ul><li>0: to the right (or left for RTL language)</li><li>1: to the beginning of the next line</li><li>2: below</li></ul></td>
       </tr>
           <tr>
-        <td class="type">int&nbsp;&nbsp;</td>
+        <td class="type">boolean&nbsp;&nbsp;</td>
         <td><b>$fill</b>&nbsp;&nbsp;</td>
-        <td>Indicates if the cell background must be painted (1) or transparent (0). Default value: 0.</td>
+        <td>Indicates if the cell background must be painted (true) or transparent (false).</td>
       </tr>
           <tr>
         <td class="type">boolean&nbsp;&nbsp;</td>
@@ -26255,7 +26255,7 @@ $file)</code>
 
         <div class="credit">
 		    <hr />
-		    Documentation generated on Wed, 04 Aug 2010 01:50:14 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
+		    Documentation generated on Thu, 05 Aug 2010 18:24:01 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
 	      </div>
       </td></tr></table>
     </td>
