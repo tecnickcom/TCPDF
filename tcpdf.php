@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.7.001
+// Version     : 5.7.002
 // Begin       : 2002-08-03
-// Last Update : 2010-08-05
+// Last Update : 2010-08-06
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.7.001
+ * @version 5.7.002
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.7.001 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.7.002 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.7.001
+	* @version 5.7.002
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -3355,7 +3355,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @see getPage(), lastpage(), getNumPages()
 		 */
 		public function setPage($pnum, $resetmargins=false) {
-			if (($pnum == $this->page) AND (!$resetmargins)) {
+			if (($pnum == $this->page) AND ($this->state == 2)) {
 				return;
 			}
 			if (($pnum > 0) AND ($pnum <= $this->numpages)) {
@@ -20699,6 +20699,8 @@ if (!class_exists('TCPDF', false)) {
 			$tmppagedim = $this->pagedim[$frompage];
 			$tmppagelen = $this->pagelen[$frompage];
 			$tmpintmrk = $this->intmrk[$frompage];
+			$tmpbordermrk = $this->bordermrk[$frompage];
+			$tmpcntmrk = $this->cntmrk[$frompage];
 			if (isset($this->footerpos[$frompage])) {
 				$tmpfooterpos = $this->footerpos[$frompage];
 			}
@@ -20721,6 +20723,8 @@ if (!class_exists('TCPDF', false)) {
 				$this->pagedim[$i] = $this->pagedim[$j];
 				$this->pagelen[$i] = $this->pagelen[$j];
 				$this->intmrk[$i] = $this->intmrk[$j];
+				$this->bordermrk[$i] = $this->bordermrk[$j];
+				$this->cntmrk[$i] = $this->cntmrk[$j];
 				if (isset($this->footerpos[$j])) {
 					$this->footerpos[$i] = $this->footerpos[$j];
 				} elseif (isset($this->footerpos[$i])) {
@@ -20751,6 +20755,8 @@ if (!class_exists('TCPDF', false)) {
 			$this->pagedim[$topage] = $tmppagedim;
 			$this->pagelen[$topage] = $tmppagelen;
 			$this->intmrk[$topage] = $tmpintmrk;
+			$this->bordermrk[$topage] = $tmpbordermrk;
+			$this->cntmrk[$topage] = $tmpcntmrk;
 			if (isset($tmpfooterpos)) {
 				$this->footerpos[$topage] = $tmpfooterpos;
 			} elseif (isset($this->footerpos[$topage])) {
@@ -20832,6 +20838,8 @@ if (!class_exists('TCPDF', false)) {
 			unset($this->pagedim[$page]);
 			unset($this->pagelen[$page]);
 			unset($this->intmrk[$page]);
+			unset($this->bordermrk[$page]);
+			unset($this->cntmrk[$page]);
 			if (isset($this->footerpos[$page])) {
 				unset($this->footerpos[$page]);
 			}
@@ -20858,6 +20866,8 @@ if (!class_exists('TCPDF', false)) {
 				$this->pagedim[$i] = $this->pagedim[$j];
 				$this->pagelen[$i] = $this->pagelen[$j];
 				$this->intmrk[$i] = $this->intmrk[$j];
+				$this->bordermrk[$i] = $this->bordermrk[$j];
+				$this->cntmrk[$i] = $this->cntmrk[$j];
 				if (isset($this->footerpos[$j])) {
 					$this->footerpos[$i] = $this->footerpos[$j];
 				} elseif (isset($this->footerpos[$i])) {
@@ -20894,6 +20904,8 @@ if (!class_exists('TCPDF', false)) {
 			unset($this->pagedim[$this->numpages]);
 			unset($this->pagelen[$this->numpages]);
 			unset($this->intmrk[$this->numpages]);
+			unset($this->bordermrk[$this->numpages]);
+			unset($this->cntmrk[$this->numpages]);
 			if (isset($this->footerpos[$this->numpages])) {
 				unset($this->footerpos[$this->numpages]);
 			}
@@ -20979,6 +20991,8 @@ if (!class_exists('TCPDF', false)) {
 			$this->pagedim[$this->page] = $this->pagedim[$page];
 			$this->pagelen[$this->page] = $this->pagelen[$page];
 			$this->intmrk[$this->page] = $this->intmrk[$page];
+			$this->bordermrk[$this->page] = $this->bordermrk[$page];
+			$this->cntmrk[$this->page] = $this->cntmrk[$page];
 			$this->pageopen[$this->page] = false;
 			if (isset($this->footerpos[$page])) {
 				$this->footerpos[$this->page] = $this->footerpos[$page];

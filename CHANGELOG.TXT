@@ -1,3 +1,6 @@
+5.7.002 (2010-08-06)
+	- Methods copyPage(), movePage() and deletePage() were changed to account for internal markings.
+
 5.7.001 (2010-08-05)
 	- Bug #3040105 "Broken PDF when using TOC (example 45)" was fixed.
 
