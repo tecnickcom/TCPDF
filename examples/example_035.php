@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_035.php
 // Begin       : 2008-07-22
-// Last Update : 2010-05-20
+// Last Update : 2010-08-08
 //
 // Description : Example 035 for TCPDF class
 //               Line styles with cells and multicells
@@ -112,4 +112,3 @@ $pdf->Output('example_035.pdf', 'I');
 //============================================================+
 // END OF FILE                                                
 //============================================================+
-?>

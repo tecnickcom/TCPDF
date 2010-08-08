@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : qrcode.php
-// Version     : 1.0.004
+// Version     : 1.0.005
 // Begin       : 2010-03-22
-// Last Update : 2010-06-03
+// Last Update : 2010-08-08
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -79,7 +79,7 @@
  * @copyright 2010-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 1.0.004
+ * @version 1.0.005
  */
 
 // definitions
@@ -295,7 +295,7 @@ if (!class_exists('QRcode', false)) {
 	 * @copyright 2010-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 	 * @link http://www.tcpdf.org
 	 * @license http://www.gnu.org/copyleft/lesser.html LGPL
-	 * @version 1.0.004
+	 * @version 1.0.005
 	 */
 	class QRcode {
 
@@ -2862,4 +2862,6 @@ if (!class_exists('QRcode', false)) {
 	} // end QRcode class
 
 } // END OF "class_exists QRcode"
-?>
+//============================================================+
+// END OF FILE
+//============================================================+

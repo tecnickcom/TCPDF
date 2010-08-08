@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : barcodes.php
-// Version     : 1.0.010
+// Version     : 1.0.011
 // Begin       : 2008-06-09
-// Last Update : 2010-06-03
+// Last Update : 2010-08-08
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -40,14 +40,14 @@
  * @copyright 2008-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 1.0.008
+ * @version 1.0.011
  */
 
 	/**
 	* PHP class to creates array representations for common 1D barcodes to be used with TCPDF (http://www.tcpdf.org).<br>
 	* @name TCPDFBarcode
 	* @package com.tecnick.tcpdf
-	* @version 1.0.008
+	* @version 1.0.011
 	* @author Nicola Asuni
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1964,8 +1964,6 @@ class TCPDFBarcode {
 	}
 
 } // end of class
-
 //============================================================+
 // END OF FILE
 //============================================================+
-?>

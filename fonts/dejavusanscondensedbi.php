@@ -455,4 +455,4 @@ $diff='';
 $file='dejavusanscondensedbi.z';
 $ctg='dejavusanscondensedbi.ctg.z';
 $originalsize=493196;
-?>
+// --- EOF ---

@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : makefont.php
 // Begin       : 2004-12-31
-// Last Update : 2010-06-17
+// Last Update : 2010-08-08
 // Version     : 1.2.006
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
@@ -201,7 +201,7 @@ function MakeFont($fontfile, $fmfile, $embedded=true, $enc='cp1252', $patch=arra
 		//Not embedded font
 		$s .= '$file='."'';\n";
 	}
-	$s .= "?>";
+	$s .= '// --- EOF ---';
 	SaveToFile($basename.'.php',$s);
 	print "Font definition file generated (".$basename.".php)\n";
 }
@@ -609,4 +609,7 @@ if (count($arg) >= 3) {
 } else {
 	print "Usage: makefont.php <ttf/otf/pfb file> <afm/ufm file> <encoding> <patch>\n";
 }
-?>
+
+//============================================================+
+// END OF FILE                                                 
+//============================================================+

@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : makeallttffonts.php
 // Begin       : 2008-12-07
-// Last Update : 2010-06-17
+// Last Update : 2010-08-08
 //
 // Description : Process all TTF files on current directory to 
 //               build TCPDF compatible font files.
@@ -67,4 +67,3 @@ closedir($handle);
 //============================================================+
 // END OF FILE                                                 
 //============================================================+
-?>

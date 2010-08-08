@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_008.php
 // Begin       : 2008-03-04
-// Last Update : 2010-05-20
+// Last Update : 2010-08-08
 //
 // Description : Example 008 for TCPDF class
 //               Include external UTF-8 text file
@@ -95,4 +95,3 @@ $pdf->Output('example_008.pdf', 'I');
 //============================================================+
 // END OF FILE                                                
 //============================================================+
-?>

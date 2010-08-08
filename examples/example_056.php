@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_056.php
 // Begin       : 2010-03-26
-// Last Update : 2010-05-20
+// Last Update : 2010-08-08
 //
 // Description : Example 056 for TCPDF class
 //               Crop marks and color registration bars
@@ -118,4 +118,3 @@ $pdf->Output('example_056.pdf', 'I');
 //============================================================+
 // END OF FILE                                             
 //============================================================+
-?>

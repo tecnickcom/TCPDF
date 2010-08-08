@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_016.php
 // Begin       : 2008-03-04
-// Last Update : 2010-05-20
+// Last Update : 2010-08-08
 //
 // Description : Example 016 for TCPDF class
 //               Document Encryption / Security
@@ -134,4 +134,3 @@ $pdf->Output('example_016.pdf', 'I');
 //============================================================+
 // END OF FILE
 //============================================================+
-?>

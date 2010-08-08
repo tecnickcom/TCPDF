@@ -345,4 +345,4 @@ $diff='';
 $file='freemono.z';
 $ctg='freemono.ctg.z';
 $originalsize=314348;
-?>
+// --- EOF ---

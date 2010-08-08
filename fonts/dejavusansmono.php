@@ -317,4 +317,4 @@ $diff='';
 $file='dejavusansmono.z';
 $ctg='dejavusansmono.ctg.z';
 $originalsize=321524;
-?>
+// --- EOF ---

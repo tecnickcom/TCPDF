@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_014.php
 // Begin       : 2008-03-04
-// Last Update : 2010-06-07
+// Last Update : 2010-08-08
 //
 // Description : Example 014 for TCPDF class
 //               Javascript Form and user rights (only works on Adobe Acrobat)
@@ -191,4 +191,3 @@ $pdf->Output('example_014.pdf', 'I');
 //============================================================+
 // END OF FILE
 //============================================================+
-?>

@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tcpdf_config.php
 // Begin       : 2004-06-11
-// Last Update : 2010-04-28
+// Last Update : 2010-08-08
 //
 // Description : Alternative configuration file for TCPDF.
 //
@@ -235,4 +235,3 @@ define('K_TCPDF_CALLS_IN_HTML', true);
 //============================================================+
 // END OF FILE
 //============================================================+
-?>

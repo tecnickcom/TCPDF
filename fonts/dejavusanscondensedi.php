@@ -468,4 +468,4 @@ $diff='';
 $file='dejavusanscondensedi.z';
 $ctg='dejavusanscondensedi.ctg.z';
 $originalsize=488440;
-?>
+// --- EOF ---

@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_055.php
 // Begin       : 2009-10-21
-// Last Update : 2010-05-20
+// Last Update : 2010-08-08
 //
 // Description : Example 055 for TCPDF class
 //               Display all characters available on core fonts.
@@ -110,4 +110,3 @@ $pdf->Output('example_055.pdf', 'I');
 //============================================================+
 // END OF FILE                                                
 //============================================================+
-?>

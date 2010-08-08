@@ -1,3 +1,6 @@
+5.7.003 (2010-08-08)
+	- Bug #3041263 "php source ending is bad" was fixed (all PHP files were updated, including fonts).
+
 5.7.002 (2010-08-06)
 	- Methods copyPage(), movePage() and deletePage() were changed to account for internal markings.
 

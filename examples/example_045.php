@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_045.php
 // Begin       : 2008-03-04
-// Last Update : 2010-05-20
+// Last Update : 2010-08-08
 //
 // Description : Example 045 for TCPDF class
 //               Bookmarks and Table of Content
@@ -131,4 +131,3 @@ $pdf->Output('example_045.pdf', 'I');
 //============================================================+
 // END OF FILE                                                
 //============================================================+
-?>

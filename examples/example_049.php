@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_049.php
 // Begin       : 2009-04-03
-// Last Update : 2010-05-20
+// Last Update : 2010-08-08
 //
 // Description : Example 049 for TCPDF class
 //               WriteHTML with TCPDF callback functions
@@ -127,4 +127,3 @@ $pdf->Output('example_049.pdf', 'I');
 //============================================================+
 // END OF FILE
 //============================================================+
-?>

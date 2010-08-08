@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_029.php
 // Begin       : 2008-06-09
-// Last Update : 2010-05-20
+// Last Update : 2010-08-08
 //
 // Description : Example 029 for TCPDF class
 //               Set PDF viewer display preferences.
@@ -125,4 +125,3 @@ $pdf->Output('example_029.pdf', 'I');
 //============================================================+
 // END OF FILE                                                
 //============================================================+
-?>

@@ -75,7 +75,7 @@ echo '<'.'?'.'xml version="1.0" encoding="UTF-8"'.'?'.'>';
 <li>XHTML Form: [<a href="example_054.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Font Dump: [<a href="example_055.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Crop Marks and Registration Marks: [<a href="example_056.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
-<li>Cell vertical alignments: [<a href="example_057.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
+<li>Cell vertical alignments and borders: [<a href="example_057.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>SVG Image: [<a href="example_058.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Table Of Content with HTML templates: [<a href="example_059.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Advanced page settings: [<a href="example_060.php" title="PDF [new window]" target="_blank">PDF</a>]</li>

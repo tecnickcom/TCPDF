@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : unicode_data.php
-// Version     : 1.0.004
+// Version     : 1.0.005
 // Begin       : 2008-01-01
-// Last Update : 2010-06-03
+// Last Update : 2010-08-08
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -18350,4 +18350,3 @@ $utf8tolatin = array (
 //============================================================+
 // END OF FILE
 //============================================================+
-?>

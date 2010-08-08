@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_017.php
 // Begin       : 2008-03-04
-// Last Update : 2010-05-20
+// Last Update : 2010-08-08
 //
 // Description : Example 017 for TCPDF class
 //               Two independent columns with MultiCell
@@ -118,4 +118,3 @@ $pdf->Output('example_017.pdf', 'I');
 //============================================================+
 // END OF FILE                                                
 //============================================================+
-?>

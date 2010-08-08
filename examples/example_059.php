@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_059.php
 // Begin       : 2010-05-06
-// Last Update : 2010-05-20
+// Last Update : 2010-08-08
 //
 // Description : Example 059 for TCPDF class
 //               Table Of Content using HTML templates.
@@ -190,4 +190,3 @@ $pdf->Output('example_059.pdf', 'I');
 //============================================================+
 // END OF FILE
 //============================================================+
-?>

@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_026.php
 // Begin       : 2008-03-04
-// Last Update : 2010-05-20
+// Last Update : 2010-08-08
 //
 // Description : Example 026 for TCPDF class
 //               Text Rendering Modes and Text Clipping
@@ -146,4 +146,3 @@ $pdf->Output('example_026.pdf', 'I');
 //============================================================+
 // END OF FILE
 //============================================================+
-?>

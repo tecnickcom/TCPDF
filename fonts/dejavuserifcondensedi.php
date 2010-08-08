@@ -309,4 +309,4 @@ $diff='';
 $file='dejavuserifcondensedi.z';
 $ctg='dejavuserifcondensedi.ctg.z';
 $originalsize=301244;
-?>
+// --- EOF ---
