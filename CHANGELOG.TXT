@@ -1,3 +1,13 @@
+5.8.000 (2010-08-11)
+	- A control to avoid bookmarking page 0 was added.
+	- addTOC() method now includes support for multicolumn mode.
+	- Support for tables in multicolumn mode was improved.
+	- Example n.10 was updated.
+	- All trimming functions were replaced with stringLeftTrim(), stringRightTrim() and stringTrim().
+	- HTML alignments were improved.
+
+------------------------------------------------------------
+
 5.7.003 (2010-08-08)
 	- Bug #3041263 "php source ending is bad" was fixed (all PHP files were updated, including fonts).
 

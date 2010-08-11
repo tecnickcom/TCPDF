@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_010.php
 // Begin       : 2008-03-04
-// Last Update : 2010-08-08
+// Last Update : 2010-08-11
 //
 // Description : Example 010 for TCPDF class
 //               Text on multiple columns
@@ -94,7 +94,7 @@ class MC_TCPDF extends TCPDF {
 			$this->writeHTML($content, true, false, true, false, 'J');
 		} else {
 			// ------ TEXT MODE ------
-			$this->Write(0, $content, '', 0, 'J', true, 0, false, false, 0);
+			$this->Write(0, $content, '', 0, 'J', true, 0, false, true, 0);
 		}
 		$this->Ln();
 	}
