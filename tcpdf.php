@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.8.000
+// Version     : 5.8.001
 // Begin       : 2002-08-03
-// Last Update : 2010-08-11
+// Last Update : 2010-08-12
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.8.000
+ * @version 5.8.001
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.8.000 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.8.001 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.8.000
+	* @version 5.8.001
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -10394,15 +10394,31 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 1.53.0.TC005 (2005-01-05)
 		 */
 		protected function UTF8StringToArray($str) {
-			if (isset($this->cache_UTF8StringToArray['_'.$str])) {
+			// build a unique string key
+			$strkey = md5($str);
+			if (isset($this->cache_UTF8StringToArray[$strkey])) {
 				// return cached value
-				return($this->cache_UTF8StringToArray['_'.$str]);
+				$chrarray = $this->cache_UTF8StringToArray[$strkey]['s'];
+				if (!isset($this->cache_UTF8StringToArray[$strkey]['f'][$this->CurrentFont['fontkey']])) {
+					if ($this->isunicode) {
+						foreach ($chrarray as $chr) {
+							// store this char for font subsetting
+							$this->CurrentFont['subsetchars'][$chr] = true;
+						}
+						// update font subsetchars
+						$this->setFontSubBuffer($this->CurrentFont['fontkey'], 'subsetchars', $this->CurrentFont['subsetchars']);
+					}
+					$this->cache_UTF8StringToArray[$strkey]['f'][$this->CurrentFont['fontkey']] = true;
+				}
+				return $chrarray;
 			}
 			// check cache size
 			if ($this->cache_size_UTF8StringToArray >= $this->cache_maxsize_UTF8StringToArray) {
 				// remove first element
 				array_shift($this->cache_UTF8StringToArray);
 			}
+			// new cache array for selected string
+			$this->cache_UTF8StringToArray[$strkey] = array('s' => array(), 'f' => array());
 			++$this->cache_size_UTF8StringToArray;
 			if (!$this->isunicode) {
 				// split string into array of equivalent codes
@@ -10412,7 +10428,8 @@ if (!class_exists('TCPDF', false)) {
 					$strarr[] = ord($str{$i});
 				}
 				// insert new value on cache
-				$this->cache_UTF8StringToArray['_'.$str] = $strarr;
+				$this->cache_UTF8StringToArray[$strkey]['s'] = $strarr;
+				$this->cache_UTF8StringToArray[$strkey]['f'][$this->CurrentFont['fontkey']] = true;
 				return $strarr;
 			}
 			$unichar = -1; // last unicode char
@@ -10480,7 +10497,8 @@ if (!class_exists('TCPDF', false)) {
 			// update font subsetchars
 			$this->setFontSubBuffer($this->CurrentFont['fontkey'], 'subsetchars', $this->CurrentFont['subsetchars']);
 			// insert new value on cache
-			$this->cache_UTF8StringToArray['_'.$str] = $unicode;
+			$this->cache_UTF8StringToArray[$strkey]['s'] = $unicode;
+			$this->cache_UTF8StringToArray[$strkey]['f'][$this->CurrentFont['fontkey']] = true;
 			return $unicode;
 		}
 
@@ -18028,7 +18046,7 @@ if (!class_exists('TCPDF', false)) {
 												$currentxpos = $xmatches[1];
 												$textpos = $currentxpos;
 												if (($strcount <= $maxkk) AND ($strpiece[2][0] == 'Td')) {
-													$ns += substr_count($lnstring[1][$strcount], $spacestr);
+													$ns = $lnstring[3][$strcount];
 													if ($this->isRTLTextDir()) {
 														$spacew = ($spacewidth * ($nsmax - $ns));
 													}
