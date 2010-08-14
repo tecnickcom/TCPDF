@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.8.001
+// Version     : 5.8.002
 // Begin       : 2002-08-03
-// Last Update : 2010-08-12
+// Last Update : 2010-08-14
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.8.001
+ * @version 5.8.002
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.8.001 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.8.002 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.8.001
+	* @version 5.8.002
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1318,14 +1318,14 @@ if (!class_exists('TCPDF', false)) {
 		 * @access protected
 		 * @since 4.6.006 (2009-04-28)
 		 */
-		protected $re_spaces = '/[\s]/';
+		protected $re_spaces = '/[^\S\xa0]/';
 
 		/**
 		 * Array of parts $re_spaces
 		 * @access protected
 		 * @since 5.5.011 (2010-07-09)
 		 */
-		protected $re_space = array('p' => '[\s]', 'm' => '');
+		protected $re_space = array('p' => '[^\S\xa0]', 'm' => '');
 
 		/**
 		 * Signature object ID
@@ -1822,11 +1822,11 @@ if (!class_exists('TCPDF', false)) {
 				// \p{Z} or \p{Separator}: any kind of Unicode whitespace or invisible separator.
 				// \p{Lo} or \p{Other_Letter}: a Unicode letter or ideograph that does not have lowercase and uppercase variants.
 				// \p{Lo} is needed because Chinese characters are packed next to each other without spaces in between.
-				//$this->setSpacesRE('/[\s\p{Z}\p{Lo}]/u');
-				$this->setSpacesRE('/[\s\p{Z}]/u');
+				//$this->setSpacesRE('/[^\S\P{Z}\P{Lo}\xa0]/u');
+				$this->setSpacesRE('/[^\S\P{Z}\xa0]/u');
 			} else {
 				// PCRE unicode support is turned OFF
-				$this->setSpacesRE('/[\s]/');
+				$this->setSpacesRE('/[^\S\xa0]/');
 			}
 			$this->default_form_prop = array('lineWidth'=>1, 'borderStyle'=>'solid', 'fillColor'=>array(255, 255, 255), 'strokeColor'=>array(128, 128, 128));
 			// set file ID for trailer
@@ -2825,17 +2825,21 @@ if (!class_exists('TCPDF', false)) {
 		/**
 		 * Set regular expression to detect withespaces or word separators.
 		 * The pattern delimiter must be the forward-slash character '/'.
+		 * Some example patterns are:
 		 * <pre>
-		 * if PCRE unicode support is turned ON:
+		 * Non-Unicode or missing PCRE unicode support: '/[^\S\xa0]/'
+		 * Unicode and PCRE unicode support: '/[^\S\P{Z}\xa0]/u'
+		 * Unicode and PCRE unicode support in Chinese mode: '/[^\S\P{Z}\P{Lo}\xa0]/u'
+		 * if PCRE unicode support is turned ON (\P is the negate class of \p):
 		 * 	\p{Z} or \p{Separator}: any kind of Unicode whitespace or invisible separator.
 		 * 	\p{Lo} or \p{Other_Letter}: a Unicode letter or ideograph that does not have lowercase and uppercase variants.
-		 * 	\p{Lo} is needed because Chinese characters are packed next to each other without spaces in between.
+		 * 	\p{Lo} is needed for Chinese characters because are packed next to each other without spaces in between.
 		 * </pre>
 		 * @param string $re regular expression (leave empty for default).
 		 * @access public
 		 * @since 4.6.016 (2009-06-15)
 		 */
-		public function setSpacesRE($re='/[\s]/') {
+		public function setSpacesRE($re='/[^\S\xa0]/') {
 			$this->re_spaces = $re;
 			$re_parts = explode('/', $re);
 			// get pattern parts
@@ -3877,6 +3881,7 @@ if (!class_exists('TCPDF', false)) {
 				// set margins
 				$prev_lMargin = $this->lMargin;
 				$prev_rMargin = $this->rMargin;
+				$prev_cMargin = $this->cMargin;
 				$this->lMargin = $this->theadMargins['lmargin'] + ($this->pagedim[$this->page]['olm'] - $this->pagedim[$this->theadMargins['page']]['olm']);
 				$this->rMargin = $this->theadMargins['rmargin'] + ($this->pagedim[$this->page]['orm'] - $this->pagedim[$this->theadMargins['page']]['orm']);
 				$this->cMargin = $this->theadMargins['cmargin'];
@@ -3896,6 +3901,7 @@ if (!class_exists('TCPDF', false)) {
 				$this->lasth = 0;
 				$this->lMargin = $prev_lMargin;
 				$this->rMargin = $prev_rMargin;
+				$this->cMargin = $prev_cMargin;
 			}
 		}
 
@@ -4279,7 +4285,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 2.0.0001 (2008-01-07)
 		 */
 		public function GetNumChars($s) {
-			if (($this->CurrentFont['type'] == 'TrueTypeUnicode') OR ($this->CurrentFont['type'] == 'cidfont0')) {
+			if ($this->isUnicodeFont()) {
 				return count($this->UTF8StringToArray($s));
 			}
 			return strlen($s);
@@ -5196,14 +5202,14 @@ if (!class_exists('TCPDF', false)) {
 				// Justification
 				$spacewidth = 0;
 				if (($align == 'J') AND ($ns > 0)) {
-					if (($this->CurrentFont['type'] == 'TrueTypeUnicode') OR ($this->CurrentFont['type'] == 'cidfont0')) {
-							// get string width without spaces
-							$width = $this->GetStringWidth(str_replace(' ', '', $txt));
-							// calculate average space width
-							$spacewidth = -1000 * ($w - $width - (2 * $this->cMargin)) / ($ns?$ns:1) / $this->FontSize;
-							// set word position to be used with TJ operator
-							$txt2 = str_replace(chr(0).chr(32), ') '.sprintf('%.3F', $spacewidth).' (', $txt2);
-							$unicode_justification = true;
+					if ($this->isUnicodeFont()) {
+						// get string width without spaces
+						$width = $this->GetStringWidth(str_replace(' ', '', $txt));
+						// calculate average space width
+						$spacewidth = -1000 * ($w - $width - (2 * $this->cMargin)) / ($ns?$ns:1) / $this->FontSize;
+						// set word position to be used with TJ operator
+						$txt2 = str_replace(chr(0).chr(32), ') '.sprintf('%.3F', $spacewidth).' (', $txt2);
+						$unicode_justification = true;
 					} else {
 						// get string width
 						$width = $txwidth;
@@ -5301,7 +5307,7 @@ if (!class_exists('TCPDF', false)) {
 				}
 			}
 			// reset word spacing
-			if (!(($this->CurrentFont['type'] == 'TrueTypeUnicode') OR ($this->CurrentFont['type'] == 'cidfont0')) AND ($align == 'J')) {
+			if (!$this->isUnicodeFont() AND ($align == 'J')) {
 				$rs .= ' BT 0 Tw ET';
 			}
 			$this->lasth = $h;
@@ -6174,7 +6180,7 @@ if (!class_exists('TCPDF', false)) {
 						}
 					}
 					// update string length
-					if ((($this->CurrentFont['type'] == 'TrueTypeUnicode') OR ($this->CurrentFont['type'] == 'cidfont0')) AND ($arabic)) {
+					if ($this->isUnicodeFont() AND ($arabic)) {
 						// with bidirectional algorithm some chars may be changed affecting the line length
 						// *** very slow ***
 						$l = $this->GetArrStringWidth($this->utf8Bidi(array_slice($chars, $j, ($i - $j)), '', $this->tmprtl));
@@ -6229,7 +6235,7 @@ if (!class_exists('TCPDF', false)) {
 							}
 						} else {
 							// word wrapping
-							if ($this->rtl AND (!$firstblock)) {
+							if ($this->rtl AND (!$firstblock) AND ($sep < $i)) {
 								$endspace = 1;
 							} else {
 								$endspace = 0;
@@ -6478,7 +6484,7 @@ if (!class_exists('TCPDF', false)) {
 			if (isset($iminfo['mime']) AND !empty($iminfo['mime'])) {
 				$mime = explode('/', $iminfo['mime']);
 				if ((count($mime) > 1) AND ($mime[0] == 'image') AND (!empty($mime[1]))) {
-					$type = trim($mime[1]);
+					$type = strtolower(trim($mime[1]));
 				}
 			}
 			if (empty($type)) {
@@ -6677,6 +6683,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 			if ($newimage) {
 				//First use of image, get info
+				$type = strtolower($type);
 				if ($type == '') {
 					$type = $this->getImageFileType($file, $imsize);
 				} elseif ($type == 'jpg') {
@@ -10560,8 +10567,8 @@ if (!class_exists('TCPDF', false)) {
 		 */
 		protected function UTF8ArrToLatin1($unicode) {
 			global $utf8tolatin;
-			if ((!$this->isunicode) OR ($this->CurrentFont['type'] == 'TrueTypeUnicode') OR ($this->CurrentFont['type'] == 'cidfont0')) {
-				return $unicode; // string is not in unicode
+			if ((!$this->isunicode) OR $this->isUnicodeFont()) {
+				return $unicode;
 			}
 			$outarr = array(); // array to be returned
 			foreach ($unicode as $char) {
@@ -14519,7 +14526,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @see AliasNbPages(), PageNo(), Footer()
 		 */
 		public function getAliasNbPages() {
-			if (($this->CurrentFont['type'] == 'TrueTypeUnicode') OR ($this->CurrentFont['type'] == 'cidfont0')) {
+			if ($this->isUnicodeFont()) {
 				return '{'.$this->AliasNbPages.'}';
 			}
 			return $this->AliasNbPages;
@@ -14547,7 +14554,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @see AliasNbPages(), PageNo(), Footer()
 		 */
 		public function getAliasNumPage() {
-			if (($this->CurrentFont['type'] == 'TrueTypeUnicode') OR ($this->CurrentFont['type'] == 'cidfont0')) {
+			if ($this->isUnicodeFont()) {
 				return '{'.$this->AliasNumPage.'}';
 			}
 			return $this->AliasNumPage;
@@ -14582,7 +14589,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 3.0.000 (2008-03-27)
 		 */
 		public function getPageGroupAlias() {
-			if (($this->CurrentFont['type'] == 'TrueTypeUnicode') OR ($this->CurrentFont['type'] == 'cidfont0')) {
+			if ($this->isUnicodeFont()) {
 				return '{'.$this->currpagegroup.'}';
 			}
 			return $this->currpagegroup;
@@ -14597,7 +14604,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 4.5.000 (2009-01-02)
 		 */
 		public function getPageNumGroupAlias() {
-			if (($this->CurrentFont['type'] == 'TrueTypeUnicode') OR ($this->CurrentFont['type'] == 'cidfont0')) {
+			if ($this->isUnicodeFont()) {
 				return '{'.str_replace('{nb', '{pnb', $this->currpagegroup).'}';
 			}
 			return str_replace('{nb', '{pnb', $this->currpagegroup);
@@ -16758,7 +16765,7 @@ if (!class_exists('TCPDF', false)) {
 					}
 				}
 			}
-			// remove heade and style blocks
+			// remove head and style blocks
 			$html = preg_replace('/<head([^\>]*)>(.*?)<\/head>/siU', '', $html);
 			$html = preg_replace('/<style([^\>]*)>([^\<]*)<\/style>/isU', '', $html);
 			// define block tags
@@ -16822,12 +16829,15 @@ if (!class_exists('TCPDF', false)) {
 			$html = preg_replace('/<\/(table|tr|td|th|blockquote|dd|dt|dl|div|dt|h1|h2|h3|h4|h5|h6|hr|li|ol|ul|p)>[\s]+</', '</\\1><', $html);
 			$html = preg_replace('/<\/(td|th)>/', '<marker style="font-size:0"/></\\1>', $html);
 			$html = preg_replace('/<\/table>([\s]*)<marker style="font-size:0"\/>/', '</table>', $html);
-			$html = preg_replace('/'.$this->re_space['p'].'*<img/'.$this->re_space['m'], ' <img', $html);
+			$html = preg_replace('/'.$this->re_space['p'].'+<img/'.$this->re_space['m'], chr(32).'<img', $html);
 			$html = preg_replace('/<img([^\>]*)>/xi', '<img\\1><span><marker style="font-size:0"/></span>', $html);
 			$html = preg_replace('/<xre/', '<pre', $html); // restore pre tag
 			$html = preg_replace('/<textarea([^\>]*)>/xi', '<textarea\\1 value="', $html);
 			$html = preg_replace('/<\/textarea>/', '" />', $html);
 			$html = preg_replace('/<li([^\>]*)><\/li>/', '<li\\1>&nbsp;</li>', $html);
+			$html = preg_replace('/<li([^\>]*)>'.$this->re_space['p'].'*<img/'.$this->re_space['m'], '<li\\1><font size="1">&nbsp;</font><img', $html);
+			$html = preg_replace('/<([^\>\/]*)>[\s]/', '<\\1>&nbsp;', $html); // preserve some spaces
+			$html = preg_replace('/[\s]<\/([^\>]*)>/', '&nbsp;</\\1>', $html); // preserve some spaces
 			// trim string
 			$html = $this->stringTrim($html);
 			// pattern for generic tag
@@ -17407,6 +17417,7 @@ if (!class_exists('TCPDF', false)) {
 					// text
 					$dom[$key]['tag'] = false;
 					$dom[$key]['block'] = false;
+					$element = str_replace('$nbsp;', $this->unichr(160), $element);
 					$dom[$key]['value'] = stripslashes($this->unhtmlentities($element));
 					$dom[$key]['parent'] = end($level);
 				}
@@ -17425,7 +17436,7 @@ if (!class_exists('TCPDF', false)) {
 		 */
 		protected function getSpaceString() {
 			$spacestr = chr(32);
-			if (($this->CurrentFont['type'] == 'TrueTypeUnicode') OR ($this->CurrentFont['type'] == 'cidfont0')) {
+			if ($this->isUnicodeFont()) {
 				$spacestr = chr(0).chr(32);
 			}
 			return $spacestr;
@@ -17479,13 +17490,13 @@ if (!class_exists('TCPDF', false)) {
 			$curfontascent = $this->getFontAscent($curfontname, $curfontstyle, $curfontsize);
 			$curfontdescent = $this->getFontDescent($curfontname, $curfontstyle, $curfontsize);
 			$this->newline = true;
+			$newline = true;
 			$startlinepage = $this->page;
 			$minstartliney = $this->y;
 			$maxbottomliney = 0;
 			$startlinex = $this->x;
 			$startliney = $this->y;
 			$yshift = 0;
-			$newline = true;
 			$loop = 0;
 			$curpos = 0;
 			$this_method_vars = array();
@@ -17883,70 +17894,47 @@ if (!class_exists('TCPDF', false)) {
 								$tw += ($prevrMargin - $this->rMargin);
 							}
 							$one_space_width = $this->GetStringWidth(chr(32));
-							$mdiff = abs($tw - $linew);
-							if ($this->rtl) { // RTL
+							$no = 0; // number of spaces on a line contained on a single block
+							if ($this->isRTLTextDir()) { // RTL
 								// remove left space if exist
 								$pos1 = $this->revstrpos($pmid, '[(');
 								if ($pos1 > 0) {
 									$pos1 = intval($pos1);
-									$pos2 = intval($this->revstrpos($pmid, '[('.chr(32)));
-									$pos3 = intval($this->revstrpos($pmid, '[('.chr(0).chr(32)));
-									if ($pos1 == $pos3) {
-										$pmid = substr($pmid, 0, ($pos1 + 2)).substr($pmid, ($pos1 + 4));
-									} elseif ($pos1 == $pos2) {
-										$pmid = substr($pmid, 0, ($pos1 + 2)).substr($pmid, ($pos1 + 3));
+									if ($this->isUnicodeFont()) {
+										$pos2 = intval($this->revstrpos($pmid, '[('.chr(0).chr(32)));
+										$spacelen = 2;
+									} else {
+										$pos2 = intval($this->revstrpos($pmid, '[('.chr(32)));
+										$spacelen = 1;
 									}
-								}
-								// remove right space if exist
-								$pos1 = strpos($pmid, ')]');
-								if ($pos1 > 0) {
-									$pos1 = intval($pos1);
-									$pos2 = intval(strpos($pmid, chr(32).')]')) + 1;
-									$pos3 = intval(strpos($pmid, chr(0).chr(32).')]')) + 2;
-									if ($pos1 == $pos3) {
-										$pmid = substr($pmid, 0, ($pos1 - 2)).substr($pmid, $pos1);
-										$linew -= $one_space_width;
-										$mdiff = abs($tw - $linew);
-									} elseif ($pos1 == $pos2) {
-										$pmid = substr($pmid, 0, ($pos1 - 1)).substr($pmid, $pos1);
-										$linew -= $one_space_width;
-										$mdiff = abs($tw - $linew);
+									if ($pos1 == $pos2) {
+										$pmid = substr($pmid, 0, ($pos1 + 2)).substr($pmid, ($pos1 + 2 + $spacelen));
+										if (substr($pmid, $pos1, 4) == '[()]') {
+											$linew -= $one_space_width;
+										} elseif ($pos1 == strpos($pmid, '[(')) {
+											$no = 1;
+										}
 									}
 								}
 							} else { // LTR
-								// remove left space if exist
-								$pos1 = strpos($pmid, '[(');
-								if ($pos1 > 0) {
-									$pos1 = intval($pos1);
-									$pos2 = intval(strpos($pmid, '[('.chr(32)));
-									$pos3 = intval(strpos($pmid, '[('.chr(0).chr(32)));
-									if ($pos1 == $pos3) {
-										$pmid = substr($pmid, 0, ($pos1 + 2)).substr($pmid, ($pos1 + 4));
-										$linew -= $one_space_width;
-										$mdiff = abs($tw - $linew);
-									} elseif ($pos1 == $pos2) {
-										$pmid = substr($pmid, 0, ($pos1 + 2)).substr($pmid, ($pos1 + 3));
-										$linew -= $one_space_width;
-										$mdiff = abs($tw - $linew);
-									}
-								}
 								// remove right space if exist
 								$pos1 = $this->revstrpos($pmid, ')]');
 								if ($pos1 > 0) {
 									$pos1 = intval($pos1);
-									$pos2 = intval($this->revstrpos($pmid, chr(32).')]')) + 1;
-									$pos3 = intval($this->revstrpos($pmid, chr(0).chr(32).')]')) + 2;
-									if ($pos1 == $pos3) {
-										$pmid = substr($pmid, 0, ($pos1 - 2)).substr($pmid, $pos1);
+									if ($this->isUnicodeFont()) {
+										$pos2 = intval($this->revstrpos($pmid, chr(0).chr(32).')]')) + 2;
+										$spacelen = 2;
+									} else {
+										$pos2 = intval($this->revstrpos($pmid, chr(32).')]')) + 1;
+										$spacelen = 1;
+									}
+									if ($pos1 == $pos2) {
+										$pmid = substr($pmid, 0, ($pos1 - $spacelen)).substr($pmid, $pos1);
 										$linew -= $one_space_width;
-										$mdiff = abs($tw - $linew);
-									} elseif ($pos1 == $pos2) {
-										$pmid = substr($pmid, 0, ($pos1 - 1)).substr($pmid, $pos1);
-										$linew -= $one_space_width;
-										$mdiff = abs($tw - $linew);
 									}
 								}
 							}
+							$mdiff = ($tw - $linew);
 							if ($plalign == 'C') {
 								if ($this->rtl) {
 									$t_x = -($mdiff / 2);
@@ -17965,7 +17953,7 @@ if (!class_exists('TCPDF', false)) {
 									// align text on the left
 									$t_x = -$mdiff;
 								}
-								$ns = 0; // spaces
+								$ns = 0; // number of spaces
 								$pmidtemp = $pmid;
 								// escape special characters
 								$pmidtemp = preg_replace('/[\\\][\(]/x', '\\#!#OP#!#', $pmidtemp);
@@ -17984,9 +17972,12 @@ if (!class_exists('TCPDF', false)) {
 										$ns += $lnstring[2][$kk];
 										$lnstring[3][$kk] = $ns;
 									}
+									if ($ns == 0) {
+										$ns = 1;
+									}
 									// calculate additional space to add to each existing space
-									$spacewidth = (($tw - $linew) / ($ns?$ns:1)) * $this->k;
-									$spacewidthu = -1000 * (($tw - $linew) + ($ns * $one_space_width)) / ($ns?$ns:1) / $this->FontSize;
+									$spacewidth = ($mdiff / ($ns - $no)) * $this->k;
+									$spacewidthu = -1000 * ($mdiff + (($ns + $no) * $one_space_width)) / $ns / $this->FontSize;
 									$nsmax = $ns;
 									$ns = 0;
 									reset($lnstring);
@@ -18135,7 +18126,7 @@ if (!class_exists('TCPDF', false)) {
 									} // end of while
 									// remove markers
 									$pmid = str_replace('x*#!#*x', '', $pmid);
-									if (($this->CurrentFont['type'] == 'TrueTypeUnicode') OR ($this->CurrentFont['type'] == 'cidfont0')) {
+									if ($this->isUnicodeFont()) {
 										// multibyte characters
 										$spacew = $spacewidthu;
 										$pmidtemp = $pmid;
@@ -18516,25 +18507,24 @@ if (!class_exists('TCPDF', false)) {
 					$this->htmlvspace = 0;
 					if ((!$this->premode) AND $this->isRTLTextDir()) {
 						// reverse spaces order
-						$len1 = strlen($dom[$key]['value']);
-						$lsp = $len1 - strlen($this->stringLeftTrim($dom[$key]['value']));
-						$rsp = $len1 - strlen($this->stringRightTrim($dom[$key]['value']));
-						$tmpstr = '';
-						if ($rsp > 0) {
-							$tmpstr .= substr($dom[$key]['value'], -$rsp);
+						$lsp = ''; // left spaces
+						$rsp = ''; // right spaces
+						if (preg_match('/^('.$this->re_space['p'].'+)/'.$this->re_space['m'], $dom[$key]['value'], $matches)) {
+							$lsp = $matches[1];
 						}
-						$tmpstr .= $this->stringTrim($dom[$key]['value']);
-						if ($lsp > 0) {
-							$tmpstr .= substr($dom[$key]['value'], 0, $lsp);
+						if (preg_match('/('.$this->re_space['p'].'+)$/'.$this->re_space['m'], $dom[$key]['value'], $matches)) {
+							$rsp = $matches[1];
 						}
-						$dom[$key]['value'] = $tmpstr;
+						$dom[$key]['value'] = $rsp.$this->stringTrim($dom[$key]['value']).$lsp;
 					}
 					if ($newline) {
 						if (!$this->premode) {
 							$prelen = strlen($dom[$key]['value']);
 							if ($this->isRTLTextDir()) {
+								// right trim except non-breaking space
 								$dom[$key]['value'] = $this->stringRightTrim($dom[$key]['value']);
 							} else {
+								// left trim except non-breaking space
 								$dom[$key]['value'] = $this->stringLeftTrim($dom[$key]['value']);
 							}
 							$postlen = strlen($dom[$key]['value']);
@@ -18546,6 +18536,8 @@ if (!class_exists('TCPDF', false)) {
 						$firstblock = true;
 					} else {
 						$firstblock = false;
+						// replace empty multiple spaces string with a single space
+						$dom[$key]['value'] = preg_replace('/^'.$this->re_space['p'].'+$/'.$this->re_space['m'], chr(32), $dom[$key]['value']);
 					}
 					$strrest = '';
 					if ($this->rtl) {
@@ -18553,20 +18545,22 @@ if (!class_exists('TCPDF', false)) {
 					} else {
 						$this->x += $this->textindent;
 					}
-					if (!empty($this->HREF) AND (isset($this->HREF['url']))) {
-						// HTML <a> Link
-						$hrefcolor = '';
-						if (isset($dom[($dom[$key]['parent'])]['fgcolor']) AND ($dom[($dom[$key]['parent'])]['fgcolor'] !== false)) {
-							$hrefcolor = $dom[($dom[$key]['parent'])]['fgcolor'];
+					if (!isset($dom[$key]['trimmed_space']) OR !$dom[$key]['trimmed_space']) {
+						if (!empty($this->HREF) AND (isset($this->HREF['url']))) {
+							// HTML <a> Link
+							$hrefcolor = '';
+							if (isset($dom[($dom[$key]['parent'])]['fgcolor']) AND ($dom[($dom[$key]['parent'])]['fgcolor'] !== false)) {
+								$hrefcolor = $dom[($dom[$key]['parent'])]['fgcolor'];
+							}
+							$hrefstyle = -1;
+							if (isset($dom[($dom[$key]['parent'])]['fontstyle']) AND ($dom[($dom[$key]['parent'])]['fontstyle'] !== false)) {
+								$hrefstyle = $dom[($dom[$key]['parent'])]['fontstyle'];
+							}
+							$strrest = $this->addHtmlLink($this->HREF['url'], $dom[$key]['value'], $wfill, true, $hrefcolor, $hrefstyle, true);
+						} else {
+							// ****** write only until the end of the line and get the rest ******
+							$strrest = $this->Write($this->lasth, $dom[$key]['value'], '', $wfill, '', false, 0, true, $firstblock, 0);
 						}
-						$hrefstyle = -1;
-						if (isset($dom[($dom[$key]['parent'])]['fontstyle']) AND ($dom[($dom[$key]['parent'])]['fontstyle'] !== false)) {
-							$hrefstyle = $dom[($dom[$key]['parent'])]['fontstyle'];
-						}
-						$strrest = $this->addHtmlLink($this->HREF['url'], $dom[$key]['value'], $wfill, true, $hrefcolor, $hrefstyle, true);
-					} else {
-						// ****** write only until the end of the line and get the rest ******
-						$strrest = $this->Write($this->lasth, $dom[$key]['value'], '', $wfill, '', false, 0, true, $firstblock, 0);
 					}
 					$this->textindent = 0;
 					if (strlen($strrest) > 0) {
@@ -18578,27 +18572,19 @@ if (!class_exists('TCPDF', false)) {
 						} else {
 							$loop = 0;
 						}
-						if (!empty($this->HREF) AND (isset($this->HREF['url']))) {
-							$dom[$key]['value'] = $this->stringTrim($strrest);
-						} elseif ($this->premode) {
-							$dom[$key]['value'] = $strrest;
-						} elseif ($this->isRTLTextDir()) {
-							$dom[$key]['value'] = $this->stringRightTrim($strrest);
-						} else {
-							$dom[$key]['value'] = $this->stringLeftTrim($strrest);
+						$dom[$key]['value'] = $strrest;
+						if ($cell) {
+							if ($this->rtl) {
+								$this->x -= $this->cMargin;
+							} else {
+								$this->x += $this->cMargin;
+							}
 						}
 						if ($loop < 3) {
 							--$key;
 						}
 					} else {
 						$loop = 0;
-					}
-					if ($cell) {
-						if ($this->rtl) {
-							$this->x -= $this->cMargin;
-						} else {
-							$this->x += $this->cMargin;
-						}
 					}
 				}
 				++$key;
@@ -18659,70 +18645,47 @@ if (!class_exists('TCPDF', false)) {
 						$tw += ($prevrMargin - $this->rMargin);
 					}
 					$one_space_width = $this->GetStringWidth(chr(32));
-					$mdiff = abs($tw - $linew);
-					if ($this->rtl) { // RTL
+					$no = 0; // number of spaces on a line contained on a single block
+					if ($this->isRTLTextDir()) { // RTL
 						// remove left space if exist
 						$pos1 = $this->revstrpos($pmid, '[(');
 						if ($pos1 > 0) {
 							$pos1 = intval($pos1);
-							$pos2 = intval($this->revstrpos($pmid, '[('.chr(32)));
-							$pos3 = intval($this->revstrpos($pmid, '[('.chr(0).chr(32)));
-							if ($pos1 == $pos3) {
-								$pmid = substr($pmid, 0, ($pos1 + 2)).substr($pmid, ($pos1 + 4));
-							} elseif ($pos1 == $pos2) {
-								$pmid = substr($pmid, 0, ($pos1 + 2)).substr($pmid, ($pos1 + 3));
+							if ($this->isUnicodeFont()) {
+								$pos2 = intval($this->revstrpos($pmid, '[('.chr(0).chr(32)));
+								$spacelen = 2;
+							} else {
+								$pos2 = intval($this->revstrpos($pmid, '[('.chr(32)));
+								$spacelen = 1;
 							}
-						}
-						// remove right space if exist
-						$pos1 = strpos($pmid, ')]');
-						if ($pos1 > 0) {
-							$pos1 = intval($pos1);
-							$pos2 = intval(strpos($pmid, chr(32).')]')) + 1;
-							$pos3 = intval(strpos($pmid, chr(0).chr(32).')]')) + 2;
-							if ($pos1 == $pos3) {
-								$pmid = substr($pmid, 0, ($pos1 - 2)).substr($pmid, $pos1);
-								$linew -= $one_space_width;
-								$mdiff = abs($tw - $linew);
-							} elseif ($pos1 == $pos2) {
-								$pmid = substr($pmid, 0, ($pos1 - 1)).substr($pmid, $pos1);
-								$linew -= $one_space_width;
-								$mdiff = abs($tw - $linew);
+							if ($pos1 == $pos2) {
+								$pmid = substr($pmid, 0, ($pos1 + 2)).substr($pmid, ($pos1 + 2 + $spacelen));
+								if (substr($pmid, $pos1, 4) == '[()]') {
+									$linew -= $one_space_width;
+								} elseif ($pos1 == strpos($pmid, '[(')) {
+									$no = 1;
+								}
 							}
 						}
 					} else { // LTR
-						// remove left space if exist
-						$pos1 = strpos($pmid, '[(');
-						if ($pos1 > 0) {
-							$pos1 = intval($pos1);
-							$pos2 = intval(strpos($pmid, '[('.chr(32)));
-							$pos3 = intval(strpos($pmid, '[('.chr(0).chr(32)));
-							if ($pos1 == $pos3) {
-								$pmid = substr($pmid, 0, ($pos1 + 2)).substr($pmid, ($pos1 + 4));
-								$linew -= $one_space_width;
-								$mdiff = abs($tw - $linew);
-							} elseif ($pos1 == $pos2) {
-								$pmid = substr($pmid, 0, ($pos1 + 2)).substr($pmid, ($pos1 + 3));
-								$linew -= $one_space_width;
-								$mdiff = abs($tw - $linew);
-							}
-						}
 						// remove right space if exist
 						$pos1 = $this->revstrpos($pmid, ')]');
 						if ($pos1 > 0) {
 							$pos1 = intval($pos1);
-							$pos2 = intval($this->revstrpos($pmid, chr(32).')]')) + 1;
-							$pos3 = intval($this->revstrpos($pmid, chr(0).chr(32).')]')) + 2;
-							if ($pos1 == $pos3) {
-								$pmid = substr($pmid, 0, ($pos1 - 2)).substr($pmid, $pos1);
+							if ($this->isUnicodeFont()) {
+								$pos2 = intval($this->revstrpos($pmid, chr(0).chr(32).')]')) + 2;
+								$spacelen = 2;
+							} else {
+								$pos2 = intval($this->revstrpos($pmid, chr(32).')]')) + 1;
+								$spacelen = 1;
+							}
+							if ($pos1 == $pos2) {
+								$pmid = substr($pmid, 0, ($pos1 - $spacelen)).substr($pmid, $pos1);
 								$linew -= $one_space_width;
-								$mdiff = abs($tw - $linew);
-							} elseif ($pos1 == $pos2) {
-								$pmid = substr($pmid, 0, ($pos1 - 1)).substr($pmid, $pos1);
-								$linew -= $one_space_width;
-								$mdiff = abs($tw - $linew);
 							}
 						}
 					}
+					$mdiff = ($tw - $linew);
 					if ($plalign == 'C') {
 						if ($this->rtl) {
 							$t_x = -($mdiff / 2);
@@ -21268,7 +21231,7 @@ if (!class_exists('TCPDF', false)) {
 				} else {
 					// placemark to be replaced with the correct number
 					$pagenum = '{#'.($outline['p']).'}';
-					if (($this->CurrentFont['type'] == 'TrueTypeUnicode') OR ($this->CurrentFont['type'] == 'cidfont0')) {
+					if ($this->isUnicodeFont()) {
 						$pagenum = '{'.$pagenum.'}';
 					}
 				}
@@ -21387,7 +21350,7 @@ if (!class_exists('TCPDF', false)) {
 				} else {
 					// placemark to be replaced with the correct number
 					$pagenum = '{#'.($outline['p']).'}';
-					if (($this->CurrentFont['type'] == 'TrueTypeUnicode') OR ($this->CurrentFont['type'] == 'cidfont0')) {
+					if ($this->isUnicodeFont()) {
 						$pagenum = '{'.$pagenum.'}';
 					}
 				}
@@ -22058,39 +22021,53 @@ if (!class_exists('TCPDF', false)) {
 		/**
 		 * Left trim the input string
 		 * @param string $str string to trim
+		 * @param string $replace string that replace spaces.
 		 * @return left trimmed string
 		 * @author Nicola Asuni
 		 * @access public
 		 * @since 5.8.000 (2010-08-11)
 		 */
-		public function stringLeftTrim($str) {
-			return preg_replace('/^'.$this->re_space['p'].'+/'.$this->re_space['m'], '', $str);
+		public function stringLeftTrim($str, $replace='') {
+			return preg_replace('/^'.$this->re_space['p'].'+/'.$this->re_space['m'], $replace, $str);
 		}
 
 		/**
 		 * Right trim the input string
 		 * @param string $str string to trim
+		 * @param string $replace string that replace spaces.
 		 * @return right trimmed string
 		 * @author Nicola Asuni
 		 * @access public
 		 * @since 5.8.000 (2010-08-11)
 		 */
-		public function stringRightTrim($str) {
-			return preg_replace('/'.$this->re_space['p'].'+$/'.$this->re_space['m'], '', $str);
+		public function stringRightTrim($str, $replace='') {
+			return preg_replace('/'.$this->re_space['p'].'+$/'.$this->re_space['m'], $replace, $str);
 		}
 
 		/**
 		 * Trim the input string
 		 * @param string $str string to trim
+		 * @param string $replace string that replace spaces.
 		 * @return trimmed string
 		 * @author Nicola Asuni
 		 * @access public
 		 * @since 5.8.000 (2010-08-11)
 		 */
-		public function stringTrim($str) {
-			$str = $this->stringLeftTrim($str);
-			$str = $this->stringRightTrim($str);
+		public function stringTrim($str, $replace='') {
+			$str = $this->stringLeftTrim($str, $replace);
+			$str = $this->stringRightTrim($str, $replace);
 			return $str;
+		}
+
+		/**
+		 * Return true if the current font is unicode type.
+		 * @return true for unicode font, false otherwise.
+		 * @author Nicola Asuni
+		 * @access public
+		 * @since 5.8.002 (2010-08-14)
+		 */
+		public function isUnicodeFont() {
+			return (($this->CurrentFont['type'] == 'TrueTypeUnicode') OR ($this->CurrentFont['type'] == 'cidfont0'));
 		}
 
 		// -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-

@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_001.php
 // Begin       : 2008-03-04
-// Last Update : 2010-08-08
+// Last Update : 2010-08-14
 //
 // Description : Example 001 for TCPDF class
 //               Default Header and Footer
@@ -84,7 +84,7 @@ $pdf->AddPage();
 
 // Set some content to print
 $html = <<<EOD
-<h1>Welcome to <a href="http://www.tcpdf.org" style="text-decoration:none;color:black;"><span style="background-color:#CC0000;"> TC<span style="color:white;">PDF</span> </span></a>!</h1>
+<h1>Welcome to <a href="http://www.tcpdf.org" style="text-decoration:none;background-color:#CC0000;color:black;">&nbsp;<span style="color:black;">TC</span><span style="color:white;">PDF</span>&nbsp;</a>!</h1>
 <i>This is the first example of TCPDF library.</i>
 <p>This text is printed using the <i>writeHTMLCell()</i> method but you can also use: <i>Multicell(), writeHTML(), Write(), Cell() and Text()</i>.</p>
 <p>Please check the source code documentation and other examples for further information.</p>
