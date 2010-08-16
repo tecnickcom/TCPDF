@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.8.002
+// Version     : 5.8.003
 // Begin       : 2002-08-03
-// Last Update : 2010-08-14
+// Last Update : 2010-08-16
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.8.002
+ * @version 5.8.003
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.8.002 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.8.003 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.8.002
+	* @version 5.8.003
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -17015,9 +17015,9 @@ if (!class_exists('TCPDF', false)) {
 							if (isset($dom[$key]['style']['font-family'])) {
 								// font family
 								if (isset($dom[$key]['style']['font-family'])) {
-									$fontslist = preg_split('/[,]/', strtolower($dom[$key]['style']['font-family']));
+									$fontslist = preg_split('/[,]/', $dom[$key]['style']['font-family']);
 									foreach ($fontslist as $font) {
-										$font = trim(strtolower($font));
+										$font = preg_replace('/[\s\'\"]/', '', strtolower($font));
 										if (in_array($font, $this->fontlist) OR in_array($font, $this->fontkeys)) {
 											$dom[$key]['fontname'] = $font;
 											break;
@@ -17272,9 +17272,9 @@ if (!class_exists('TCPDF', false)) {
 						if ($dom[$key]['value'] == 'font') {
 							// font family
 							if (isset($dom[$key]['attribute']['face'])) {
-								$fontslist = preg_split('/[,]/', strtolower($dom[$key]['attribute']['face']));
+								$fontslist = preg_split('/[,]/', $dom[$key]['attribute']['face']);
 								foreach ($fontslist as $font) {
-									$font = trim(strtolower($font));
+									$font = preg_replace('/[\s\'\"]/', '', strtolower($font));
 									if (in_array($font, $this->fontlist) OR in_array($font, $this->fontkeys)) {
 										$dom[$key]['fontname'] = $font;
 										break;

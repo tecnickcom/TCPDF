@@ -1,3 +1,6 @@
+5.8.003 (2010-08-16)
+	- Better support for HTML "font-family" property.
+
 5.8.002 (2010-08-14)
 	- HTML alignments were improved
 	- IMPORTANT: Default regular expression to find spaces has been changed to exclude the non-breaking-space (160 DEC- A0 HEX). If you are using setSpacesRE() method, please read the new documentation.
