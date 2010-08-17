@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.8.005
+// Version     : 5.8.006
 // Begin       : 2002-08-03
 // Last Update : 2010-08-17
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.8.005
+ * @version 5.8.006
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.8.005 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.8.006 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.8.005
+	* @version 5.8.006
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -290,14 +290,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @var cell internal padding
 		 * @access protected
 		 */
-		//protected
 		public $cMargin;
-
-		/**
-		 * @var cell internal padding (previous value)
-		 * @access protected
-		 */
-		protected $oldcMargin;
 
 		/**
 		 * @var current horizontal position in user unit for cell positioning
@@ -16945,11 +16938,15 @@ if (!class_exists('TCPDF', false)) {
 							$key = $i;
 							$parent_table = $dom[$dom[$dom[($dom[$key]['parent'])]['parent']]['parent']];
 							$parent_padding = 0;
+							$parent_spacing = 0;
 							if (isset($parent_table['attribute']['cellpadding'])) {
 								$parent_padding = $this->getHTMLUnitToUnits($parent_table['attribute']['cellpadding'], 1, 'px');
 							}
+							if (isset($parent_table['attribute']['cellspacing'])) {
+								$parent_spacing = $this->getHTMLUnitToUnits($parent_table['attribute']['cellspacing'], 1, 'px');
+							}
 							// mark nested tables
-							$dom[($dom[$key]['parent'])]['content'] = str_replace('<table', '<table nested="true" pcellpadding="'.$parent_padding.'"', $dom[($dom[$key]['parent'])]['content']);
+							$dom[($dom[$key]['parent'])]['content'] = str_replace('<table', '<table nested="true" pcellpadding="'.$parent_padding.'" pcellspacing="'.$parent_spacing.'"', $dom[($dom[$key]['parent'])]['content']);
 							// remove thead sections from nested tables
 							$dom[($dom[$key]['parent'])]['content'] = str_replace('<thead>', '', $dom[($dom[$key]['parent'])]['content']);
 							$dom[($dom[$key]['parent'])]['content'] = str_replace('</thead>', '', $dom[($dom[$key]['parent'])]['content']);
@@ -18473,8 +18470,7 @@ if (!class_exists('TCPDF', false)) {
 							}
 							$this->openHTMLTagHandler($dom, $key, $cell);
 						}
-					} else {
-						// closing tag
+					} else { // closing tag
 						$prev_numpages = $this->numpages;
 						$old_bordermrk = $this->bordermrk[$this->page];
 						$this->closeHTMLTagHandler($dom, $key, $cell, $maxbottomliney);
@@ -18804,10 +18800,10 @@ if (!class_exists('TCPDF', false)) {
 							}
 						}
 					}
+					// store current margins and page
+					$dom[$key]['oldcmargin'] = $this->cMargin;
 					if (isset($tag['attribute']['cellpadding'])) {
-						$cp = $this->getHTMLUnitToUnits($tag['attribute']['cellpadding'], 1, 'px');
-						$this->oldcMargin = $this->cMargin;
-						$this->cMargin = $cp;
+						$this->cMargin = $this->getHTMLUnitToUnits($tag['attribute']['cellpadding'], 1, 'px');
 					}
 					if (isset($tag['attribute']['cellspacing'])) {
 						$cs = $this->getHTMLUnitToUnits($tag['attribute']['cellspacing'], 1, 'px');
@@ -19433,7 +19429,9 @@ if (!class_exists('TCPDF', false)) {
 						}
 					}
 					$this->setPage($dom[($dom[$key]['parent'])]['endpage']);
-					$this->selectColumn($dom[($dom[$key]['parent'])]['endcolumn']);
+					if ($this->num_columns > 1) {
+						$this->selectColumn($dom[($dom[$key]['parent'])]['endcolumn']);
+					}
 					$this->y = $dom[($dom[$key]['parent'])]['endy'];
 					if (isset($dom[$table_el]['attribute']['cellspacing'])) {
 						$cellspacing = $this->getHTMLUnitToUnits($dom[$table_el]['attribute']['cellspacing'], 1, 'px');
@@ -19694,11 +19692,8 @@ if (!class_exists('TCPDF', false)) {
 							}
 						}
 					}
-					if (!$in_table_head) {
-						// we are not inside a thead section
-						if (isset($parent['cellpadding'])) {
-							$this->cMargin = $this->oldcMargin;
-						}
+					if (!$in_table_head) { // we are not inside a thead section
+						$this->cMargin = $table_el['oldcmargin'];
 						$this->lasth = $this->FontSize * $this->cell_height_ratio;
 						if (($this->page == ($this->numpages - 1)) AND ($this->pageopen[$this->numpages])) {
 							// remove last blank page
@@ -21620,10 +21615,6 @@ if (!class_exists('TCPDF', false)) {
 					$this->x = $x + $listindent;
 				}
 				$this->columns[$col]['x'] = $x;
-			} else {
-				// restore original margins
-				$this->lMargin = $this->original_lMargin;
-				$this->rMargin = $this->original_rMargin;
 			}
 			$this->current_column = $col;
 			// fix for HTML mode
