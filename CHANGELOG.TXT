@@ -1,3 +1,6 @@
+5.8.005 (2010-08-17)
+	- A bug affecting the HTML 'select' tag in certain conditions was fixed.
+
 5.8.004 (2010-08-17)
 	- Better support for HTML and SVG "font-family" property.
 	- A bug related to HTML multicolumn was fixed.

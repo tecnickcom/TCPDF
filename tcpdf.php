@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.8.004
+// Version     : 5.8.005
 // Begin       : 2002-08-03
 // Last Update : 2010-08-17
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.8.003
+ * @version 5.8.005
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.8.003 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.8.005 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.8.003
+	* @version 5.8.005
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -16820,14 +16820,16 @@ if (!class_exists('TCPDF', false)) {
 				$html_a = substr($html, 0, $offset);
 				$html_b = substr($html, $offset, ($pos - $offset + 9));
 				while (preg_match("'<option([^\>]*)>(.*?)</option>'si", $html_b)) {
-					$html_b = preg_replace("'<option([\s]+)value=\"([^\"]*)\"([^\>]*)>(.*?)</option>'si", "\\2\t\\4\r", $html_b);
-					$html_b = preg_replace("'<option([^\>]*)>(.*?)</option>'si", "\\2\r", $html_b);
+					$html_b = preg_replace("'<option([\s]+)value=\"([^\"]*)\"([^\>]*)>(.*?)</option>'si", "\\2#!TaB!#\\4#!NwL!#", $html_b);
+					$html_b = preg_replace("'<option([^\>]*)>(.*?)</option>'si", "\\2#!NwL!#", $html_b);
 				}
 				$html = $html_a.$html_b.substr($html, $pos + 9);
 				$offset = strlen($html_a.$html_b);
 			}
-			$html = preg_replace("'<select([^\>]*)>'si", "<select\\1 opt=\"", $html);
-			$html = preg_replace("'([\s]+)</select>'si", "\" />", $html);
+			if (preg_match("'</select'si", $html)) {
+				$html = preg_replace("'<select([^\>]*)>'si", "<select\\1 opt=\"", $html);
+				$html = preg_replace("'#!NwL!#</select>'si", "\" />", $html);
+			}
 			$html = str_replace("\n", ' ', $html);
 			// restore textarea newlines
 			$html = str_replace('<TBR>', "\n", $html);
@@ -19271,11 +19273,11 @@ if (!class_exists('TCPDF', false)) {
 					}
 					$w = 0;
 					if (isset($tag['attribute']['opt']) AND !$this->empty_string($tag['attribute']['opt'])) {
-						$options = explode ("\r", $tag['attribute']['opt']);
+						$options = explode('#!NwL!#', $tag['attribute']['opt']);
 						$values = array();
 						foreach ($options as $val) {
-							if (strpos($val, "\t") !== false) {
-								$opts = explode("\t", $val);
+							if (strpos($val, '#!TaB!#') !== false) {
+								$opts = explode('#!TaB!#', $val);
 								$values[] = $opts;
 								$w = max($w, $this->GetStringWidth($opts[1]));
 							} else {
