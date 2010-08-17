@@ -1,3 +1,7 @@
+5.8.004 (2010-08-17)
+	- Better support for HTML and SVG "font-family" property.
+	- A bug related to HTML multicolumn was fixed.
+
 5.8.003 (2010-08-16)
 	- Better support for HTML "font-family" property.
 

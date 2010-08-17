@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.8.003
+// Version     : 5.8.004
 // Begin       : 2002-08-03
-// Last Update : 2010-08-16
+// Last Update : 2010-08-17
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -4330,6 +4330,16 @@ if (!class_exists('TCPDF', false)) {
 					$this->Error('Empty font family');
 				}
 			}
+			// move embedded styles on $style
+			if (substr($family, -1) == 'I') {
+				$style .= 'I';
+				$family = substr($family, 0, -1);
+			}
+			if (substr($family, -1) == 'B') {
+				$style .= 'B';
+				$family = substr($family, 0, -1);
+			}
+			// normalize family name
 			$family = strtolower($family);
 			if ((!$this->isunicode) AND ($family == 'arial')) {
 				$family = 'helvetica';
@@ -17015,14 +17025,7 @@ if (!class_exists('TCPDF', false)) {
 							if (isset($dom[$key]['style']['font-family'])) {
 								// font family
 								if (isset($dom[$key]['style']['font-family'])) {
-									$fontslist = preg_split('/[,]/', $dom[$key]['style']['font-family']);
-									foreach ($fontslist as $font) {
-										$font = preg_replace('/[\s\'\"]/', '', strtolower($font));
-										if (in_array($font, $this->fontlist) OR in_array($font, $this->fontkeys)) {
-											$dom[$key]['fontname'] = $font;
-											break;
-										}
-									}
+									$dom[$key]['fontname'] = $this->getFontFamilyName($dom[$key]['style']['font-family']);
 								}
 							}
 							// list-style-type
@@ -17272,14 +17275,7 @@ if (!class_exists('TCPDF', false)) {
 						if ($dom[$key]['value'] == 'font') {
 							// font family
 							if (isset($dom[$key]['attribute']['face'])) {
-								$fontslist = preg_split('/[,]/', $dom[$key]['attribute']['face']);
-								foreach ($fontslist as $font) {
-									$font = preg_replace('/[\s\'\"]/', '', strtolower($font));
-									if (in_array($font, $this->fontlist) OR in_array($font, $this->fontkeys)) {
-										$dom[$key]['fontname'] = $font;
-										break;
-									}
-								}
+								$dom[$key]['fontname'] = $this->getFontFamilyName($dom[$key]['attribute']['face']);
 							}
 							// font size
 							if (isset($dom[$key]['attribute']['size'])) {
@@ -18276,23 +18272,6 @@ if (!class_exists('TCPDF', false)) {
 								$currentcmargin = 0;
 							}
 							$this->cMargin = $currentcmargin;
-							if (isset($dom[$key]['width'])) {
-								// user specified width
-								$cellw = $this->getHTMLUnitToUnits($dom[$key]['width'], $table_columns_width, 'px');
-								$tmpcw = ($cellw / $colspan);
-								for ($i = 0; $i < $colspan; ++$i) {
-									$table_colwidths[($colid + $i)] = $tmpcw;
-								}
-							} else {
-								// inherit column width
-								$cellw = 0;
-								for ($i = 0; $i < $colspan; ++$i) {
-									$cellw += $table_colwidths[($colid + $i)];
-								}
-							}
-							$cellw += (($colspan - 1) * $cellspacing);
-							// increment column indicator
-							$colid += $colspan;
 							if (isset($dom[$key]['height'])) {
 								// minimum cell height
 								$cellh = $this->getHTMLUnitToUnits($dom[$key]['height'], 0, 'px');
@@ -18364,6 +18343,8 @@ if (!class_exists('TCPDF', false)) {
 										AND (($trwsp['starty'] < ($this->y - $this->feps)) OR ($trwsp['startpage'] < $this->page) OR ($trwsp['startcolumn'] < $this->current_column))) {
 										// set the starting X position of the current cell
 										$this->x = $rsendx + $cellspacingx;
+										// increment column indicator
+										$colid += $trwsp['colspan'];
 										if (($trwsp['rowspan'] == 1)
 											AND (isset($dom[$trid]['endy']))
 											AND (isset($dom[$trid]['endpage']))
@@ -18380,6 +18361,23 @@ if (!class_exists('TCPDF', false)) {
 									}
 								}
 							}
+							if (isset($dom[$parentid]['width'])) {
+								// user specified width
+								$cellw = $this->getHTMLUnitToUnits($dom[$parentid]['width'], $table_columns_width, 'px');
+								$tmpcw = ($cellw / $colspan);
+								for ($i = 0; $i < $colspan; ++$i) {
+									$table_colwidths[($colid + $i)] = $tmpcw;
+								}
+							} else {
+								// inherit column width
+								$cellw = 0;
+								for ($i = 0; $i < $colspan; ++$i) {
+									$cellw += $table_colwidths[($colid + $i)];
+								}
+							}
+							$cellw += (($colspan - 1) * $cellspacing);
+							// increment column indicator
+							$colid += $colspan;
 							// add rowspan information to table element
 							if ($rowspan > 1) {
 								$trsid = array_push($dom[$table_el]['rowspans'], array('trid' => $trid, 'rowspan' => $rowspan, 'mrowspan' => $rowspan, 'colspan' => $colspan, 'startpage' => $this->page, 'startcolumn' => $this->current_column, 'startx' => $this->x, 'starty' => $this->y));
@@ -18719,7 +18717,9 @@ if (!class_exists('TCPDF', false)) {
 			}
 			// restore previous values
 			$this->setGraphicVars($gvars);
-			if ($this->page > $prevPage) {
+			if ($this->num_columns > 1) {
+				$this->selectColumn();
+			} elseif ($this->page > $prevPage) {
 				$this->lMargin = $this->pagedim[$this->page]['olm'];
 				$this->rMargin = $this->pagedim[$this->page]['orm'];
 			}
@@ -22070,6 +22070,43 @@ if (!class_exists('TCPDF', false)) {
 			return (($this->CurrentFont['type'] == 'TrueTypeUnicode') OR ($this->CurrentFont['type'] == 'cidfont0'));
 		}
 
+		/**
+		 * Return normalized font name
+		 * @param string $fontfamily property string containing font family names
+		 * @return string normalized font name
+		 * @author Nicola Asuni
+		 * @access public
+		 * @since 5.8.004 (2010-08-17)
+		 */
+		public function getFontFamilyName($fontfamily) {
+			// remove spaces and symbols
+			$fontfamily = preg_replace('/[^a-z0-9\,]/', '', strtolower($fontfamily));
+			// extract all font names
+			$fontslist = preg_split('/[,]/', $fontfamily);
+			// find first valid font name
+			foreach ($fontslist as $font) {
+				// replace font variations
+				$font = preg_replace('/italic$/', 'I', $font);
+				$font = preg_replace('/oblique$/', 'I', $font);
+				$font = preg_replace('/bold([I]?)$/', 'B\\1', $font);
+				// replace common family names and core fonts
+				$pattern = array();
+				$replacement = array();
+				$pattern[] = '/^serif|^cursive|^fantasy|^timesnewroman/';
+				$replacement[] = 'times';
+				$pattern[] = '/^sansserif/';
+				$replacement[] = 'helvetica';
+				$pattern[] = '/^monospace/';
+				$replacement[] = 'courier';
+				$font = preg_replace($pattern, $replacement, $font);
+				if (in_array(strtolower($font), $this->fontlist) OR in_array($font, $this->fontkeys)) {
+					return $font;
+				}
+			}
+			// return current font as default
+			return $this->CurrentFont['fontkey'];
+		}
+
 		// -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
 		// SVG METHODS
 		// -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
@@ -22690,7 +22727,7 @@ if (!class_exists('TCPDF', false)) {
 			$regs = array();
 			if (!empty($svgstyle['font'])) {
 				if (preg_match('/font-family[\s]*:[\s]*([^\s\;\"]*)/si', $svgstyle['font'], $regs)) {
-					$font_family = trim($regs[1]);
+					$font_family = $this->getFontFamilyName($regs[1]);
 				} else {
 					$font_family = $svgstyle['font-family'];
 				}
