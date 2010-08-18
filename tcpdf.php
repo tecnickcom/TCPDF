@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.8.006
+// Version     : 5.8.007
 // Begin       : 2002-08-03
-// Last Update : 2010-08-17
+// Last Update : 2010-08-18
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.8.006
+ * @version 5.8.007
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.8.006 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.8.007 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.8.006
+	* @version 5.8.007
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -965,6 +965,14 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 5.7.000 (2010-08-03)
 		 */
 		protected $bordermrk = array();
+
+		/**
+		 * Array used to store page positions to track empty pages.
+		 * keys are the page numbers
+		 * @access protected
+		 * @since 5.8.007 (2010-08-18)
+		 */
+		protected $emptypagemrk = array();
 
 		/**
 		 * Array used to store content positions inside the pages buffer.
@@ -3401,7 +3409,7 @@ if (!class_exists('TCPDF', false)) {
 					}
 				}
 			} else {
-				$this->Error('Wrong page number on setPage() function.');
+				$this->Error('Wrong page number on setPage() function: '.$pnum);
 			}
 		}
 
@@ -3553,6 +3561,8 @@ if (!class_exists('TCPDF', false)) {
 			$this->setPageMark();
 			// print table header (if any)
 			$this->setTableHeader();
+			// set mark for empty page check
+			$this->emptypagemrk[$this->page]= $this->pagelen[$this->page];
 		}
 
 		/**
@@ -13165,7 +13175,7 @@ if (!class_exists('TCPDF', false)) {
 		 * Adds a bookmark.
 		 * @param string $txt bookmark description.
 		 * @param int $level bookmark level (minimum value is 0).
-		 * @param float $y Ordinate of the boorkmark position (default = -1 = current position).
+		 * @param float $y Y position in user units of the bookmark on the selected page (default = -1 = current position; 0 = page start;).
 		 * @param int $page target page number (leave empty for current page).
 		 * @access public
 		 * @author Olivier Plathey, Nicola Asuni
@@ -19695,7 +19705,7 @@ if (!class_exists('TCPDF', false)) {
 					if (!$in_table_head) { // we are not inside a thead section
 						$this->cMargin = $table_el['oldcmargin'];
 						$this->lasth = $this->FontSize * $this->cell_height_ratio;
-						if (($this->page == ($this->numpages - 1)) AND ($this->pageopen[$this->numpages])) {
+						if (($this->page == ($this->numpages - 1)) AND ($this->pageopen[$this->numpages]) AND ($this->emptypagemrk[$this->numpages] == $this->pagelen[$this->numpages])) {
 							// remove last blank page
 							$this->deletePage($this->numpages);
 						}
@@ -20962,7 +20972,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 4.6.004 (2009-04-23)
 		 */
 		public function deletePage($page) {
-			if ($page > $this->numpages) {
+			if (($page < 1) OR ($page > $this->numpages)) {
 				return false;
 			}
 			// delete current page
@@ -21109,7 +21119,7 @@ if (!class_exists('TCPDF', false)) {
 				// default value
 				$page = $this->page;
 			}
-			if ($page > $this->numpages) {
+			if (($page < 1) OR ($page > $this->numpages)) {
 				return false;
 			}
 			if ($page == $this->page) {
@@ -21196,6 +21206,9 @@ if (!class_exists('TCPDF', false)) {
 				$gap = ' ';
 			} else {
 				$gap = '';
+				if ($page < 1) {
+					$page = 1;
+				}
 			}
 			foreach ($this->outlines as $key => $outline) {
 				if ($this->rtl) {
@@ -22815,6 +22828,8 @@ if (!class_exists('TCPDF', false)) {
 				return;
 			}
 			$paths = array();
+			$d = str_replace('-', ' -', $d);
+			$d = str_replace('+', ' +', $d);
 			preg_match_all('/([a-zA-Z])[\s]*([^a-zA-Z\"]*)/si', $d, $paths, PREG_SET_ORDER);
 			$x = 0;
 			$y = 0;

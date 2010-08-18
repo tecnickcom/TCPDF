@@ -1,3 +1,7 @@
+5.8.007 (2010-08-18)
+	- A bug affecting HTML tables was fixed.
+	- Bug #3047500 "SVG not rendering paths properly" was fixed.
+
 5.8.006 (2010-08-17)
 	- A bug affecting HTML table nesting was fixed.
 
