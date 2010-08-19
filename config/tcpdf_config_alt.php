@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tcpdf_config.php
 // Begin       : 2004-06-11
-// Last Update : 2010-08-08
+// Last Update : 2010-08-19
 //
 // Description : Alternative configuration file for TCPDF.
 //
@@ -61,7 +61,7 @@ if (isset($_SERVER['HTTP_HOST']) AND (!empty($_SERVER['HTTP_HOST']))) {
 		$k_path_url = 'http://';
 	}
 	$k_path_url .= $_SERVER['HTTP_HOST'];
-	$k_path_url .= str_replace( '\\', '/', substr($_SERVER['PHP_SELF'], 0, -24));
+	$k_path_url .= str_replace( '\\', '/', substr(K_PATH_MAIN, (strlen($_SERVER['DOCUMENT_ROOT']) - 1)));
 }
 
 /**

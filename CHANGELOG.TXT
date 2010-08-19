@@ -1,3 +1,13 @@
+5.8.008 (2010-08-19)
+	- Method write1DBarcode() was changed, check the example n. 27.
+	- Method Footer() was changed to account for barcode changes.
+	- Automatic calculation of K_PATH_URL constant was fixed on configuration file.
+	- Method setEqualColumns() was fixed for $width=0 case.
+	- Method AddTOC() was fixed for multipage and multicolumn modes.
+	- Better support for SVG "font-family" property.
+	- A problem on default Page Zoom mode was fixed.
+	- Several Annotation bugs were fixed.
+
 5.8.007 (2010-08-18)
 	- A bug affecting HTML tables was fixed.
 	- Bug #3047500 "SVG not rendering paths properly" was fixed.
@@ -9,7 +19,7 @@
 	- A bug affecting the HTML 'select' tag in certain conditions was fixed.
 
 5.8.004 (2010-08-17)
-	- Better support for HTML and SVG "font-family" property.
+	- Better support for HTML "font-family" property.
 	- A bug related to HTML multicolumn was fixed.
 
 5.8.003 (2010-08-16)
@@ -46,7 +56,7 @@
 	- CSS borders are now supported for HTML tables and other block tags (see example n. 61);
 	- Cell borders were improved (see example n. 57);
 	- Minor bugs were fixed.
-
+encry
 ------------------------------------------------------------
 
 5.6.000 (2010-07-31)
