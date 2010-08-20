@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_027.php
 // Begin       : 2008-03-04
-// Last Update : 2010-08-19
+// Last Update : 2010-08-20
 //
 // Description : Example 027 for TCPDF class
 //               1D Barcodes
@@ -82,6 +82,7 @@ $pdf->AddPage();
 $style = array(
 	'position' => '',
 	'align' => '',
+	'fitwidth' => false,
 	'stretch' => true,
 	'border' => true,
 	'padding' => 'auto',
@@ -277,41 +278,70 @@ $pdf->write1DBarcode('105', 'PHARMA2T', '', '', 20, 25, 0.4, $style, 'N');
 // add a page
 $pdf->AddPage();
 
+// set a background color
+$style['bgcolor'] = array(255,255,240);
+$style['fgcolor'] = array(128,0,0);
+
 // Left position
 $style['position'] = 'L';
-$pdf->write1DBarcode('LEFT', 'C128A', '', '', 50, 30, 0.4, $style, 'N');
+$pdf->write1DBarcode('LEFT', 'C128A', '', '', 50, 20, 0.4, $style, 'N');
 
 $pdf->Ln();
 
 // Center position
 $style['position'] = 'C';
-$pdf->write1DBarcode('CENTER', 'C128A', '', '', 50, 30, 0.4, $style, 'N');
+$pdf->write1DBarcode('CENTER', 'C128A', '', '', 50, 20, 0.4, $style, 'N');
 
 $pdf->Ln();
 
 // Right position
 $style['position'] = 'R';
-$pdf->write1DBarcode('RIGHT', 'C128A', '', '', 50, 30, 0.4, $style, 'N');
+$pdf->write1DBarcode('RIGHT', 'C128A', '', '', 50, 20, 0.4, $style, 'N');
 
 $pdf->Ln(10);
+// . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
-$style['stretch'] = false;
+$style['fgcolor'] = array(0,128,0);
+$style['position'] = '';
+$style['stretch'] = false; // disable stretch
 
 // Left alignment
 $style['align'] = 'L';
-$pdf->write1DBarcode('LEFT', 'C128A', '', '', '', 30, 0.4, $style, 'N');
+$pdf->write1DBarcode('LEFT', 'C128A', '', '', '', 20, 0.4, $style, 'N');
 
 $pdf->Ln();
 
 // Center alignment
 $style['align'] = 'C';
-$pdf->write1DBarcode('CENTER', 'C128A', '', '', '', 30, 0.4, $style, 'N');
+$pdf->write1DBarcode('CENTER', 'C128A', '', '', '', 20, 0.4, $style, 'N');
 
 $pdf->Ln();
 
 // Right alignment
 $style['align'] = 'R';
-$pdf->write1DBarcode('RIGHT', 'C128A', '', '', '', 30, 0.4, $style, 'N');
+$pdf->write1DBarcode('RIGHT', 'C128A', '', '', '', 20, 0.4, $style, 'N');
+
+$pdf->Ln(10);
+// . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+$style['fgcolor'] = array(0,0,128);
+$style['fitwidth'] = true; // enable fitwidth
+
+// Left alignment
+$style['position'] = 'L';
+$pdf->write1DBarcode('LEFT', 'C128A', '', '', '', 20, 0.4, $style, 'N');
+
+$pdf->Ln();
+
+// Center alignment
+$style['position'] = 'C';
+$pdf->write1DBarcode('CENTER', 'C128A', '', '', '', 20, 0.4, $style, 'N');
+
+$pdf->Ln();
+
+// Right alignment
+$style['position'] = 'R';
+$pdf->write1DBarcode('RIGHT', 'C128A', '', '', '', 20, 0.4, $style, 'N');
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // TEST BARCODE STYLES
@@ -323,6 +353,7 @@ $pdf->AddPage();
 $style = array(
 	'position' => '',
 	'align' => '',
+	'fitwidth' => false,
 	'stretch' => true,
 	'border' => true,
 	'padding' => 'auto',
@@ -336,7 +367,8 @@ $style = array(
 
 // CODE 39 EXTENDED + CHECKSUM
 $pdf->Cell(0, 0, 'CODE 39 EXTENDED + CHECKSUM', 0, 1);
-$pdf->write1DBarcode('CODE 39 E+', 'C39E+', '', '', 100, 25, 0.4, $style, 'N');
+$pdf->SetLineStyle(array('width' => 1, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(255, 0, 0)));
+$pdf->write1DBarcode('CODE 39 E+', 'C39E+', '', '', 120, 25, 0.4, $style, 'N');
 
 // ---------------------------------------------------------
 

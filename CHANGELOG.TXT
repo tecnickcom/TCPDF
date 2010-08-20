@@ -1,3 +1,7 @@
+5.8.010 (2010-08-20)
+	- Documentation of unhtmlentities() was fixed.
+	- The 'fitwidth' option was added and border color problem was fixed on write1DBarcode() method (check the example n. 27).
+
 5.8.009 (2010-08-20)
 	- Internal object numbering was improved.
 	- Some errors in object encryption were fixed.
