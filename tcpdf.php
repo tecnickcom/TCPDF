@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.8.008
+// Version     : 5.8.009
 // Begin       : 2002-08-03
-// Last Update : 2010-08-19
+// Last Update : 2010-08-20
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.8.008
+ * @version 5.8.009
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.8.008 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.8.009 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.8.008
+	* @version 5.8.009
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -4811,9 +4811,8 @@ if (!class_exists('TCPDF', false)) {
 					$data = gzcompress($data);
 					$filter = ' /Filter /FlateDecode';
 				}
-				$this->offsets[$filedata['n']] = $this->bufferlen;
-				$out = $filedata['n'].' 0 obj'."\n";
 				$stream = $this->_getrawstream($data, $filedata['n']);
+				$out = $this->_getobj($filedata['n'])."\n";
 				$out .= '<< /Type /EmbeddedFile'.$filter.' /Length '.strlen($stream).' >>';
 				$out .= ' stream'."\n".$stream."\n".'endstream';
 				$out .= "\n".'endobj';
@@ -7807,8 +7806,7 @@ if (!class_exists('TCPDF', false)) {
 				}
 			}
 			//Pages root
-			$this->offsets[1] = $this->bufferlen;
-			$out = '1 0 obj'."\n";
+			$out = $this->_getobj(1)."\n";
 			$out .= '<< /Type /Pages /Kids [';
 			foreach($this->page_obj_id as $page_obj) {
 				$out .= ' '.$page_obj.' 0 R';
@@ -7876,7 +7874,6 @@ if (!class_exists('TCPDF', false)) {
 						// create annotation object for grouping radiobuttons
 						if (isset($this->radiobutton_groups[$n][$pl['txt']]) AND is_array($this->radiobutton_groups[$n][$pl['txt']])) {
 							$radio_button_obj_id = $this->radiobutton_groups[$n][$pl['txt']]['n'];
-							$this->offsets[$radio_button_obj_id] = $this->bufferlen;
 							$annots = '<<';
 							$annots .= ' /Type /Annot';
 							$annots .= ' /Subtype /Widget';
@@ -7897,7 +7894,7 @@ if (!class_exists('TCPDF', false)) {
 								$annots .= ' /V /'.$defval;
 							}
 							$annots .= ' >>';
-							$this->_out($radio_button_obj_id.' 0 obj'."\n".$annots."\n".'endobj');
+							$this->_out($this->_getobj($radio_button_obj_id)."\n".$annots."\n".'endobj');
 							$this->form_obj_id[] = $radio_button_obj_id;
 							// store object id to be used on Parent entry of Kids
 							$this->radiobutton_groups[$n][$pl['txt']] = $radio_button_obj_id;
@@ -8459,8 +8456,7 @@ if (!class_exists('TCPDF', false)) {
 						}
 						$annots .= '>>';
 						// create new annotation object
-						$this->offsets[$annot_obj_id] = $this->bufferlen;
-						$this->_out($annot_obj_id.' 0 obj'."\n".$annots."\n".'endobj');
+						$this->_out($this->_getobj($annot_obj_id)."\n".$annots."\n".'endobj');
 						if ($formfield AND !isset($this->radiobutton_groups[$n][$pl['txt']])) {
 							// store reference of form object
 							$this->form_obj_id[] = $annot_obj_id;
@@ -8481,9 +8477,7 @@ if (!class_exists('TCPDF', false)) {
 		 */
 		protected function _putAPXObject($w=0, $h=0, $stream='') {
 			$stream = trim($stream);
-			++$this->n;
-			$this->offsets[$this->n] = $this->bufferlen;
-			$out = $this->n.' 0 obj'."\n";
+			$out = $this->_getobj()."\n";
 			$out .= '<<';
 			$out .= ' /Type /XObject';
 			$out .= ' /Subtype /Form';
@@ -9110,9 +9104,7 @@ if (!class_exists('TCPDF', false)) {
 				$name = $font['name'];
 				if ($type == 'core') {
 					// standard core font
-					$obj_id = $this->font_obj_ids[$k];
-					$this->offsets[$obj_id] = $this->bufferlen;
-					$out = $obj_id.' 0 obj'."\n";
+					$out = $this->_getobj($this->font_obj_ids[$k])."\n";
 					$out .= '<</Type /Font';
 					$out .= ' /Subtype /Type1';
 					$out .= ' /BaseFont /'.$name;
@@ -9129,9 +9121,7 @@ if (!class_exists('TCPDF', false)) {
 					$this->_out($out);
 				} elseif (($type == 'Type1') OR ($type == 'TrueType')) {
 					// additional Type1 or TrueType font
-					$obj_id = $this->font_obj_ids[$k];
-					$this->offsets[$obj_id] = $this->bufferlen;
-					$out = $obj_id.' 0 obj'."\n";
+					$out = $this->_getobj($this->font_obj_ids[$k])."\n";
 					$out .= '<</Type /Font';
 					$out .= ' /Subtype /'.$type;
 					$out .= ' /BaseFont /'.$name;
@@ -9189,7 +9179,6 @@ if (!class_exists('TCPDF', false)) {
 		 * Adds unicode fonts.<br>
 		 * Based on PDF Reference 1.3 (section 5)
 		 * @param array $font font data
-		 * @return int font object ID
 		 * @access protected
 		 * @author Nicola Asuni
 		 * @since 1.52.0.TC005 (2005-01-05)
@@ -9205,9 +9194,7 @@ if (!class_exists('TCPDF', false)) {
 			$fontname .= $font['name'];
 			// Type0 Font
 			// A composite font composed of other fonts, organized hierarchically
-			$obj_id = $this->font_obj_ids[$font['fontkey']];
-			$this->offsets[$obj_id] = $this->bufferlen;
-			$out = $obj_id.' 0 obj'."\n";
+			$out = $this->_getobj($this->font_obj_ids[$font['fontkey']])."\n";
 			$out .= '<< /Type /Font';
 			$out .= ' /Subtype /Type0';
 			$out .= ' /BaseFont /'.$fontname;
@@ -9503,13 +9490,13 @@ if (!class_exists('TCPDF', false)) {
 			$this->_out('<<'.$filter.'/Length '.strlen($stream).'>> stream'."\n".$stream."\n".'endstream'."\n".'endobj');
 			// CIDFontType2
 			// A CIDFont whose glyph descriptions are based on TrueType font technology
-			$this->_newobj();
+			$oid = $this->_newobj();
 			$out = '<< /Type /Font';
 			$out .= ' /Subtype /CIDFontType2';
 			$out .= ' /BaseFont /'.$fontname;
 			// A dictionary containing entries that define the character collection of the CIDFont.
-			$cidinfo = '/Registry '.$this->_datastring($font['cidinfo']['Registry']);
-			$cidinfo .= ' /Ordering '.$this->_datastring($font['cidinfo']['Ordering']);
+			$cidinfo = '/Registry '.$this->_datastring($font['cidinfo']['Registry'], $oid);
+			$cidinfo .= ' /Ordering '.$this->_datastring($font['cidinfo']['Ordering'], $oid);
 			$cidinfo .= ' /Supplement '.$font['cidinfo']['Supplement'];
 			$out .= ' /CIDSystemInfo << '.$cidinfo.' >>';
 			$out .= ' /FontDescriptor '.($this->n + 1).' 0 R';
@@ -9573,14 +9560,12 @@ if (!class_exists('TCPDF', false)) {
 				$out .= "\n".'endobj';
 				$this->_out($out);
 			}
-			return $obj_id;
 		}
 
 		/**
 		 * Output CID-0 fonts.
 		 * A Type 0 CIDFont contains glyph descriptions based on the Adobe Type 1 font format
 		 * @param array $font font data
-		 * @return int font object ID
 		 * @access protected
 		 * @author Andrew Whitehead, Nicola Asuni, Yukihiro Nakadaira
 		 * @since 3.2.000 (2008-06-23)
@@ -9610,9 +9595,7 @@ if (!class_exists('TCPDF', false)) {
 			} else {
 				$longname = $name;
 			}
-			$obj_id = $this->font_obj_ids[$font['fontkey']];
-			$this->offsets[$obj_id] = $this->bufferlen;
-			$out = $obj_id.' 0 obj'."\n";
+			$out = $this->_getobj($this->font_obj_ids[$font['fontkey']])."\n";
 			$out .= '<</Type /Font';
 			$out .= ' /Subtype /Type0';
 			$out .= ' /BaseFont /'.$longname;
@@ -9624,12 +9607,12 @@ if (!class_exists('TCPDF', false)) {
 			$out .= ' >>';
 			$out .= "\n".'endobj';
 			$this->_out($out);
-			$this->_newobj();
+			$oid = $this->_newobj();
 			$out = '<</Type /Font';
 			$out .= ' /Subtype /CIDFontType0';
 			$out .= ' /BaseFont /'.$name;
-			$cidinfo = '/Registry '.$this->_datastring($font['cidinfo']['Registry']);
-			$cidinfo .= ' /Ordering '.$this->_datastring($font['cidinfo']['Ordering']);
+			$cidinfo = '/Registry '.$this->_datastring($font['cidinfo']['Registry'], $oid);
+			$cidinfo .= ' /Ordering '.$this->_datastring($font['cidinfo']['Ordering'], $oid);
 			$cidinfo .= ' /Supplement '.$font['cidinfo']['Supplement'];
 			$out .= ' /CIDSystemInfo <<'.$cidinfo.'>>';
 			$out .= ' /FontDescriptor '.($this->n + 1).' 0 R';
@@ -9651,7 +9634,6 @@ if (!class_exists('TCPDF', false)) {
 			$s .= '>>';
 			$s .= "\n".'endobj';
 			$this->_out($s);
-			return $obj_id;
 		}
 
 		/**
@@ -9733,7 +9715,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @access protected
 		 */
 		protected function _putresourcedict() {
-			$out = '2 0 obj'."\n";
+			$out = $this->_getobj(2)."\n";
 			$out .= '<< /ProcSet [/PDF /Text /ImageB /ImageC /ImageI]';
 			$out .= ' /Font <<';
 			foreach ($this->fontkeys as $fontkey) {
@@ -9800,14 +9782,11 @@ if (!class_exists('TCPDF', false)) {
 			$this->_putimages();
 			$this->_putspotcolors();
 			$this->_putshaders();
-			//Resource dictionary
-			$this->offsets[2] = $this->bufferlen;
 			$this->_putresourcedict();
 			$this->_putbookmarks();
 			$this->_putEmbeddedFiles();
 			$this->_putannotsobjs();
 			$this->_putjavascript();
-			// encryption
 			$this->_putencryption();
 		}
 
@@ -9822,30 +9801,30 @@ if (!class_exists('TCPDF', false)) {
 			$out = '<<';
 			if (!$this->empty_string($this->title)) {
 				// The document's title.
-				$out .= ' /Title '.$this->_textstring($this->title);
+				$out .= ' /Title '.$this->_textstring($this->title, $oid);
 			}
 			if (!$this->empty_string($this->author)) {
 				// The name of the person who created the document.
-				$out .= ' /Author '.$this->_textstring($this->author);
+				$out .= ' /Author '.$this->_textstring($this->author, $oid);
 			}
 			if (!$this->empty_string($this->subject)) {
 				// The subject of the document.
-				$out .= ' /Subject '.$this->_textstring($this->subject);
+				$out .= ' /Subject '.$this->_textstring($this->subject, $oid);
 			}
 			if (!$this->empty_string($this->keywords)) {
 				// Keywords associated with the document.
-				$out .= ' /Keywords '.$this->_textstring($this->keywords.' TCP'.'DF');
+				$out .= ' /Keywords '.$this->_textstring($this->keywords.' TCP'.'DF', $oid);
 			}
 			if (!$this->empty_string($this->creator)) {
 				// If the document was converted to PDF from another format, the name of the conforming product that created the original document from which it was converted.
-				$out .= ' /Creator '.$this->_textstring($this->creator);
+				$out .= ' /Creator '.$this->_textstring($this->creator, $oid);
 			}
 			if (defined('PDF_PRODUCER')) {
 				// If the document was converted to PDF from another format, the name of the conforming product that converted it to PDF.
-				$out .= ' /Producer '.$this->_textstring(PDF_PRODUCER.' (TCP'.'DF)');
+				$out .= ' /Producer '.$this->_textstring(PDF_PRODUCER.' (TCP'.'DF)', $oid);
 			} else {
 				// default producer
-				$out .= ' /Producer '.$this->_textstring('TCP'.'DF');
+				$out .= ' /Producer '.$this->_textstring('TCP'.'DF', $oid);
 			}
 			// The date and time the document was created, in human-readable form
 			$out .= ' /CreationDate '.$this->_datestring();
@@ -9884,7 +9863,7 @@ if (!class_exists('TCPDF', false)) {
 				$out .= ' /PageMode /'.$this->PageMode;
 			}
 			if (isset($this->l['a_meta_language'])) {
-				$out .= ' /Lang '.$this->_textstring($this->l['a_meta_language']);
+				$out .= ' /Lang '.$this->_textstring($this->l['a_meta_language'], $oid);
 			}
 			$out .= ' /Names <<';
 			if ((!empty($this->javascript)) OR (!empty($this->js_objects))) {
@@ -10065,7 +10044,7 @@ if (!class_exists('TCPDF', false)) {
 				$out .= ' /P '.$this->page_obj_id[($this->signature_appearance['page'])].' 0 R'; // link to signature appearance page
 				$out .= ' /F 4';
 				$out .= ' /FT /Sig';
-				$out .= ' /T '.$this->_textstring('Signature');
+				$out .= ' /T '.$this->_textstring('Signature', $this->sig_obj_id);
 				$out .= ' /Ff 0';
 				$out .= ' /V '.($this->sig_obj_id + 1).' 0 R';
 				$out .= ' >>';
@@ -10177,10 +10156,24 @@ if (!class_exists('TCPDF', false)) {
 		 * @access protected
 		 */
 		protected function _newobj() {
-			++$this->n;
-			$this->offsets[$this->n] = $this->bufferlen;
-			$this->_out($this->n.' 0 obj');
+			$this->_out($this->_getobj());
 			return $this->n;
+		}
+
+		/**
+		 * Return the starting object string for the selected object ID.
+		 * @param int $objid Object ID (leave empty to get a new ID).
+		 * @return string the starting object string
+		 * @access protected
+		 * @since 5.8.009 (2010-08-20)
+		 */
+		protected function _getobj($objid='') {
+			if ($objid === '') {
+				++$this->n;
+				$objid = $this->n;
+			}
+			$this->offsets[$objid] = $this->bufferlen;
+			return $objid.' 0 obj';
 		}
 
 		/**
@@ -10325,7 +10318,9 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
+		 * THIS METHOD IS DEPRECATED
 		 * Format a text string
+		 * @DEPRECATED
 		 * @param string $s string to escape.
 		 * @return string escaped string.
 		 * @access protected
@@ -13281,14 +13276,14 @@ if (!class_exists('TCPDF', false)) {
 			$nltags = '/<br[\s]?\/>|<\/(blockquote|dd|dl|div|dt|h1|h2|h3|h4|h5|h6|hr|li|ol|p|pre|ul|tcpdf|table|tr|td)>/si';
 			foreach ($this->outlines as $i => $o) {
 				if (isset($this->page_obj_id[($o['p'])])) {
-					$this->_newobj();
+					$oid = $this->_newobj();
 					// covert HTML title to string
 					$title = preg_replace($nltags, "\n", $o['t']);
 					$title = preg_replace("/[\r]+/si", '', $title);
 					$title = preg_replace("/[\n]+/si", "\n", $title);
 					$title = strip_tags($title);
 					$title = $this->stringTrim($title);
-					$out = '<</Title '.$this->_textstring($title);
+					$out = '<</Title '.$this->_textstring($title, $oid);
 					$out .= ' /Parent '.($n + $o['parent']).' 0 R';
 					if (isset($o['prev'])) {
 						$out .= ' /Prev '.($n + $o['prev']).' 0 R';
@@ -13378,9 +13373,9 @@ if (!class_exists('TCPDF', false)) {
 			$this->_out($out);
 			// default Javascript object
 			if (!empty($this->javascript)) {
-				$this->_newobj();
+				$obj_id = $this->_newobj();
 				$out = '<< /S /JavaScript';
-				$out .= ' /JS '.$this->_textstring($this->javascript);
+				$out .= ' /JS '.$this->_textstring($this->javascript, $obj_id);
 				$out .= ' >>';
 				$out .= "\n".'endobj';
 				$this->_out($out);
@@ -13388,8 +13383,7 @@ if (!class_exists('TCPDF', false)) {
 			// additional Javascript objects
 			if (!empty($this->js_objects)) {
 				foreach ($this->js_objects as $key => $val) {
-					$this->offsets[$key] = $this->bufferlen;
-					$out = $key.' 0 obj'."\n".' << /S /JavaScript /JS '.$this->_textstring($val['js']).' >>'."\n".'endobj';
+					$out = $this->_getobj($key)."\n".' << /S /JavaScript /JS '.$this->_textstring($val['js'], $key).' >>'."\n".'endobj';
 					$this->_out($out);
 				}
 			}
@@ -14235,10 +14229,12 @@ if (!class_exists('TCPDF', false)) {
 			if (!isset($popt['mk'])) {
 				$popt['mk'] = array();
 			}
-			if (!empty($action) AND (is_array($action))) {
-				$ann_obj_id = ($this->n + 1);
-			} else {
-				$ann_obj_id = ($this->n + 2);
+			if (!empty($action)) {
+				if (is_array($action)) {
+					$ann_obj_id = ($this->n + 1);
+				} else {
+					$ann_obj_id = ($this->n + 2);
+				}
 			}
 			$popt['mk']['ca'] = $this->_textstring($caption, $ann_obj_id);
 			$popt['mk']['rc'] = $this->_textstring($caption, $ann_obj_id);
@@ -14364,7 +14360,7 @@ if (!class_exists('TCPDF', false)) {
 			if ((!$this->sign) OR (!isset($this->signature_data['cert_type']))) {
 				return;
 			}
-			$this->_newobj();
+			$oid = $this->_newobj();
 			$out = '<< /Type /Sig';
 			$out .= ' /Filter /Adobe.PPKLite';
 			$out .= ' /SubFilter /adbe.pkcs7.detached';
@@ -14405,16 +14401,16 @@ if (!class_exists('TCPDF', false)) {
 			$out .= ' >>';
 			$out .= ' ]'; // end of reference
 			if (isset($this->signature_data['info']['Name']) AND !$this->empty_string($this->signature_data['info']['Name'])) {
-				$out .= ' /Name '.$this->_textstring($this->signature_data['info']['Name']);
+				$out .= ' /Name '.$this->_textstring($this->signature_data['info']['Name'], $oid);
 			}
 			if (isset($this->signature_data['info']['Location']) AND !$this->empty_string($this->signature_data['info']['Location'])) {
-				$out .= ' /Location '.$this->_textstring($this->signature_data['info']['Location']);
+				$out .= ' /Location '.$this->_textstring($this->signature_data['info']['Location'], $oid);
 			}
 			if (isset($this->signature_data['info']['Reason']) AND !$this->empty_string($this->signature_data['info']['Reason'])) {
-				$out .= ' /Reason '.$this->_textstring($this->signature_data['info']['Reason']);
+				$out .= ' /Reason '.$this->_textstring($this->signature_data['info']['Reason'], $oid);
 			}
 			if (isset($this->signature_data['info']['ContactInfo']) AND !$this->empty_string($this->signature_data['info']['ContactInfo'])) {
-				$out .= ' /ContactInfo '.$this->_textstring($this->signature_data['info']['ContactInfo']);
+				$out .= ' /ContactInfo '.$this->_textstring($this->signature_data['info']['ContactInfo'], $oid);
 			}
 			$out .= ' /M '.$this->_datestring();
 			$out .= ' >>';
@@ -14674,9 +14670,9 @@ if (!class_exists('TCPDF', false)) {
 		 */
 		protected function _putocg() {
 			$this->n_ocg_print = $this->_newobj();
-			$this->_out('<< /Type /OCG /Name '.$this->_textstring('print').' /Usage << /Print <</PrintState /ON>> /View <</ViewState /OFF>> >> >>'."\n".'endobj');
+			$this->_out('<< /Type /OCG /Name '.$this->_textstring('print', $this->n_ocg_print).' /Usage << /Print <</PrintState /ON>> /View <</ViewState /OFF>> >> >>'."\n".'endobj');
 			$this->n_ocg_view = $this->_newobj();
-			$this->_out('<< /Type /OCG /Name '.$this->_textstring('view').' /Usage << /Print <</PrintState /OFF>> /View <</ViewState /ON>> >> >>'."\n".'endobj');
+			$this->_out('<< /Type /OCG /Name '.$this->_textstring('view', $this->n_ocg_view).' /Usage << /Print <</PrintState /OFF>> /View <</ViewState /ON>> >> >>'."\n".'endobj');
 		}
 
 		/**
@@ -16443,6 +16439,10 @@ if (!class_exists('TCPDF', false)) {
 			foreach ($matches as $key => $block) {
 				// index 0 contains the CSS selector, index 1 contains CSS properties
 				$cssblocks[$key] = explode('{', $block);
+				if (!isset($cssblocks[$key][1])) {
+					// remove empty definitions
+					unset($cssblocks[$key]);
+				}
 			}
 			// split groups of selectors (comma-separated list of selectors)
 			foreach ($cssblocks as $key => $block) {
