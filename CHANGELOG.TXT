@@ -1,3 +1,7 @@
+5.8.011 (2010-08-21)
+	- Method write1DBarcode() was improved to be backward compatible (check the new example n. 27).
+	- Support for CSS width and height properties on images were added.
+
 5.8.010 (2010-08-20)
 	- Documentation of unhtmlentities() was fixed.
 	- The 'fitwidth' option was added and border color problem was fixed on write1DBarcode() method (check the example n. 27).
