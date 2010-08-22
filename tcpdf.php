@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.8.011
+// Version     : 5.8.012
 // Begin       : 2002-08-03
-// Last Update : 2010-08-21
+// Last Update : 2010-08-22
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.8.011
+ * @version 5.8.012
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.8.011 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.8.012 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.8.011
+	* @version 5.8.012
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1613,6 +1613,13 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 5.0.000 (2010-05-02)
 		 */
 		protected $svgtext = '';
+
+		/**
+		 * @var svg text-achor property
+		 * @access protected
+		 * @since 5.8.012 (2010-08-22)
+		 */
+		protected $svgtextanchor = 'start';
 
 		/**
 		 * @var array of hinheritable SVG properties
@@ -23616,6 +23623,11 @@ if (!class_exists('TCPDF', false)) {
 					$y = (isset($attribs['y'])?$this->getHTMLUnitToUnits($attribs['y'], 0, $this->svgunit, false):0);
 					$svgstyle['text-color'] = $svgstyle['fill'];
 					$this->svgtext = '';
+					if (isset($svgstyle['text-anchor'])) {
+						$this->svgtextanchor = $svgstyle['text-anchor'];
+					} else {
+						$this->svgtextanchor = 'start';
+					}
 					$this->StartTransform();
 					$this->SVGTransform($tm);
 					$obstyle = $this->setSVGStyles($svgstyle, $prev_svgstyle, $x, $y, 1, 1);
@@ -23671,7 +23683,24 @@ if (!class_exists('TCPDF', false)) {
 				case 'text':
 				case 'tspan': {
 					// print text
-					$this->Cell(0, 0, trim($this->svgtext), 0, 0, '', 0, '', 0, false, 'L', 'T');
+					$text = $this->stringTrim($this->svgtext);
+					if ($this->svgtextanchor != 'start') {
+						$textlen = $this->GetStringWidth($text);
+						if ($this->svgtextanchor == 'end') {
+							if ($this->rtl) {
+								$this->x += $textlen;
+							} else {
+								$this->x -= $textlen;
+							}
+						} elseif ($this->svgtextanchor == 'middle') {
+							if ($this->rtl) {
+								$this->x += ($textlen / 2);
+							} else {
+								$this->x -= ($textlen / 2);
+							}
+						}
+					}
+					$this->Cell(0, 0, $text, 0, 0, '', 0, '', 0, false, 'L', 'T');
 					$this->svgtext = '';
 					$this->StopTransform();
 					break;
