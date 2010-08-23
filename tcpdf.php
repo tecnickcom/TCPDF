@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.8.013
+// Version     : 5.8.014
 // Begin       : 2002-08-03
 // Last Update : 2010-08-23
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.8.013
+ * @version 5.8.014
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.8.013 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.8.014 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.8.013
+	* @version 5.8.014
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -821,43 +821,12 @@ if (!class_exists('TCPDF', false)) {
 		 */
 		protected $linethrough;
 
-		// --- Variables used for User's Rights ---
-		// See PDF reference chapter 8.7 Digital Signatures
-
 		/**
-		 * If true enables user's rights on PDF reader
+		 * Array with additional document-wide usage rights for the document.
 		 * @access protected
-		 * @since 2.9.000 (2008-03-26)
+		 * @since 5.8.014 (2010-08-23)
 		 */
-		protected $ur;
-
-		/**
-		 * Names specifying additional document-wide usage rights for the document.
-		 * @access protected
-		 * @since 2.9.000 (2008-03-26)
-		 */
-		protected $ur_document;
-
-		/**
-		 * Names specifying additional annotation-related usage rights for the document.
-		 * @access protected
-		 * @since 2.9.000 (2008-03-26)
-		 */
-		protected $ur_annots;
-
-		/**
-		 * Names specifying additional form-field-related usage rights for the document.
-		 * @access protected
-		 * @since 2.9.000 (2008-03-26)
-		 */
-		protected $ur_form;
-
-		/**
-		 * Names specifying additional signature-related usage rights for the document.
-		 * @access protected
-		 * @since 2.9.000 (2008-03-26)
-		 */
-		protected $ur_signature;
+		protected $ur = array();
 
 		/**
 		 * Dot Per Inch Document Resolution (do not change)
@@ -1545,18 +1514,11 @@ if (!class_exists('TCPDF', false)) {
 		protected $default_graphic_vars = array();
 
 		/**
-		 * @var Array of external XObjects templates
+		 * @var Array of XObjects
 		 * @access protected
-		 * @since 5.8.013 (2010-08-23)
+		 * @since 5.8.014 (2010-08-23)
 		 */
-		protected $tpls = array();
-
-		/**
-		 * @var String prefix for external XObjects templates
-		 * @access protected
-		 * @since 5.8.013 (2010-08-23)
-		 */
-		protected $tplprefix = '/TPL';
+		protected $xobjects = array();
 
 		/**
 		 * @var directory used for the last SVG image
@@ -1826,11 +1788,13 @@ if (!class_exists('TCPDF', false)) {
 			$this->extgstates = array();
 			// user's rights
 			$this->sign = false;
-			$this->ur = false;
-			$this->ur_document = '/FullSave';
-			$this->ur_annots = '/Create/Delete/Modify/Copy/Import/Export';
-			$this->ur_form = '/Add/Delete/FillIn/Import/Export/SubmitStandalone/SpawnTemplate';
-			$this->ur_signature = '/Modify';
+			$this->ur['enabled'] = false;
+			$this->ur['document'] = '/FullSave';
+			$this->ur['annots'] = '/Create/Delete/Modify/Copy/Import/Export';
+			$this->ur['form'] = '/Add/Delete/FillIn/Import/Export/SubmitStandalone/SpawnTemplate';
+			$this->ur['signature'] = '/Modify';
+			$this->ur['ef'] = '/Create/Delete/Modify/Import';
+			$this->ur['formex'] = '';
 			$this->signature_appearance = array('page' => 1, 'rect' => '0 0 0 0');
 			// set default JPEG quality
 			$this->jpeg_quality = 75;
@@ -6080,11 +6044,12 @@ if (!class_exists('TCPDF', false)) {
 		 * @param boolean $firstline if true prints only the first line and return the remaining string.
 		 * @param boolean $firstblock if true the string is the starting of a line.
 		 * @param float $maxh maximum height. The remaining unprinted text will be returned. It should be >= $h and less then remaining space to the bottom of the page, or 0 for disable this feature.
+		 * @param float $wadj first line width will be reduced by this amount (used in HTML mode).
 		 * @return mixed Return the number of cells or the remaining string if $firstline = true.
 		 * @access public
 		 * @since 1.5
 		 */
-		public function Write($h, $txt, $link='', $fill=false, $align='', $ln=false, $stretch=0, $firstline=false, $firstblock=false, $maxh=0) {
+		public function Write($h, $txt, $link='', $fill=false, $align='', $ln=false, $stretch=0, $firstline=false, $firstblock=false, $maxh=0, $wadj=0) {
 			if (strlen($txt) == 0) {
 				$txt = ' ';
 			}
@@ -6124,7 +6089,7 @@ if (!class_exists('TCPDF', false)) {
 				$w = $this->w - $this->rMargin - $this->x;
 			}
 			// max column width
-			$wmax = $w - (2 * $this->cMargin);
+			$wmax = $w - (2 * $this->cMargin) - $wadj;
 			if ((!$firstline) AND (($chrwidth > $wmax) OR ($this->GetCharWidth($chars[0]) > $wmax))) {
 				// a single character do not fit on column
 				return '';
@@ -6877,7 +6842,7 @@ if (!class_exists('TCPDF', false)) {
 				return $info['i'];
 			}
 			$xkimg = $ximg * $this->k;
-			$this->_out(sprintf('q %.2F 0 0 %.2F %.2F %.2F cm /I%d Do Q', ($w * $this->k), ($h * $this->k), $xkimg, (($this->h - ($y + $h)) * $this->k), $info['i']));
+			$this->_out(sprintf('q %.2F 0 0 %.2F %.2F %.2F cm /I%u Do Q', ($w * $this->k), ($h * $this->k), $xkimg, (($this->h - ($y + $h)) * $this->k), $info['i']));
 			if (!empty($border)) {
 				$bx = $this->x;
 				$by = $this->y;
@@ -7870,10 +7835,18 @@ if (!class_exists('TCPDF', false)) {
 						$out .= ' '.$val['n'].' 0 R';
 					}
 				}
+				// add radiobutton groups
+				if (isset($this->radiobutton_groups[$n])) {
+					foreach ($this->radiobutton_groups[$n] as $key => $data) {
+						if (isset($data['n'])) {
+							$out .= ' '.$data['n'].' 0 R';
+						}
+					}
+				}
 			}
 			if ($this->sign AND ($n == $this->signature_appearance['page']) AND isset($this->signature_data['cert_type'])) {
 				// set reference for signature object
-				$out .= ' '.$this->sig_annot_ref;
+				$out .= ' '.$this->sig_obj_id.' 0 R';
 			}
 			$out .= ' ]';
 			return $out;
@@ -7900,12 +7873,13 @@ if (!class_exists('TCPDF', false)) {
 							$annots = '<<';
 							$annots .= ' /Type /Annot';
 							$annots .= ' /Subtype /Widget';
+							$annots .= ' /Rect [0 0 0 0]';
 							$annots .= ' /T '.$this->_datastring($pl['txt'], $radio_button_obj_id);
 							$annots .= ' /FT /Btn';
 							$annots .= ' /Ff 49152';
 							$annots .= ' /Kids [';
 							foreach ($this->radiobutton_groups[$n][$pl['txt']] as $key => $data) {
-								if ($key != 'n') {
+								if ($key !== 'n') {
 									$annots .= ' '.$data['kid'].' 0 R';
 									if ($data['def'] !== 'Off') {
 										$defval = $data['def'];
@@ -8151,7 +8125,7 @@ if (!class_exists('TCPDF', false)) {
 								} else {
 									// internal link
 									$l = $this->links[$pl['txt']];
-									$annots .= sprintf(' /Dest [%d 0 R /XYZ 0 %.2F null]', $this->page_obj_id[($l[0])], ($this->pagedim[$l[0]]['h'] - ($l[1] * $this->k)));
+									$annots .= sprintf(' /Dest [%u 0 R /XYZ 0 %.2F null]', $this->page_obj_id[($l[0])], ($this->pagedim[$l[0]]['h'] - ($l[1] * $this->k)));
 								}
 								$hmodes = array('N', 'I', 'O', 'P');
 								if (isset($pl['opt']['h']) AND in_array($pl['opt']['h'], $hmodes)) {
@@ -8501,6 +8475,7 @@ if (!class_exists('TCPDF', false)) {
 		protected function _putAPXObject($w=0, $h=0, $stream='') {
 			$stream = trim($stream);
 			$out = $this->_getobj()."\n";
+			$this->xobjects['AX'.$this->n] = $this->n;
 			$out .= '<<';
 			$out .= ' /Type /XObject';
 			$out .= ' /Subtype /Form';
@@ -9667,7 +9642,8 @@ if (!class_exists('TCPDF', false)) {
 			$filter = ($this->compress) ? '/Filter /FlateDecode ' : '';
 			foreach ($this->imagekeys as $file) {
 				$info = $this->getImageBuffer($file);
-				$this->_newobj();
+				$oid = $this->_newobj();
+				$this->xobjects['I'.$info['i']] = $oid;
 				$this->setImageSubBuffer($file, 'n', $this->n);
 				$out = '<</Type /XObject';
 				$out .= ' /Subtype /Image';
@@ -9734,6 +9710,20 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
+		 * Return XObjects Dictionary.
+		 * @retutn string XObjects dictionary
+		 * @access protected
+		 * @since 5.8.014 (2010-08-23)
+		 */
+		protected function _getxobjectdict() {
+			$out = '';
+			foreach ($this->xobjects as $id => $objid) {
+				$out .= ' /'.$id.' '.$objid.' 0 R';
+			}
+			return $out;
+		}
+
+		/**
 		 * Output Resources Dictionary.
 		 * @access protected
 		 */
@@ -9747,14 +9737,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 			$out .= ' >>';
 			$out .= ' /XObject <<';
-			foreach ($this->imagekeys as $file) {
-				$info = $this->getImageBuffer($file);
-				$out .= ' /I'.$info['i'].' '.$info['n'].' 0 R';
-			}
-			// support for external XObject templates
-			foreach($this->tpls as $tplidx => $tpl) {
-				$out .= sprintf(' %s%u %u 0 R', $this->tplprefix, $tplidx, $tpl['n']);
-			}
+			$out .= $this->_getxobjectdict();
 			$out .= ' >>';
 			// visibility
 			$out .= ' /Properties <</OC1 '.$this->n_ocg_print.' 0 R /OC2 '.$this->n_ocg_view.' 0 R>>';
@@ -9920,10 +9903,15 @@ if (!class_exists('TCPDF', false)) {
 				}
 				$out .= ' /Fields ['.$objrefs.']';
 				if (!empty($this->form_obj_id) AND !$this->sign) {
+					// It's better to turn off this value and set the appearance stream for each annotation (/AP) to avoid conflicts with signature fields.
 					$out .= ' /NeedAppearances true';
 				}
 				if ($this->sign AND isset($this->signature_data['cert_type'])) {
-					$out .= ' /SigFlags 3';
+					if ($this->signature_data['cert_type'] > 0) {
+						$out .= ' /SigFlags 3';
+					} else {
+						$out .= ' /SigFlags 1';
+					}
 				}
 				//$out .= ' /CO ';
 				if (isset($this->annotation_fonts) AND !empty($this->annotation_fonts)) {
@@ -10048,24 +10036,8 @@ if (!class_exists('TCPDF', false)) {
 			// Signature
 			if ($this->sign AND isset($this->signature_data['cert_type'])) {
 				// widget annotation for signature
-				$this->sig_obj_id = $this->_newobj();
-				// --- replace signature ID on the first page ---
-				// get the document content
-				$pdfdoc = $this->getBuffer();
-				// Remove the original buffer
-				if (isset($this->diskcache) AND $this->diskcache) {
-					// remove buffer file from cache
-					unlink($this->buffer);
-				}
-				unset($this->buffer);
-				$signature_widget_ref = sprintf('%u 0 R', $this->sig_obj_id);
-				$signature_widget_ref .= str_repeat(' ', (strlen($this->sig_annot_ref) - strlen($signature_widget_ref)));
-				$pdfdoc = str_replace($this->sig_annot_ref, $signature_widget_ref, $pdfdoc);
-				$this->diskcache = false;
-				$this->buffer = &$pdfdoc;
-				$this->bufferlen = strlen($pdfdoc);
-				// ---
-				$out = '<< /Type /Annot';
+				$out = $this->_getobj($this->sig_obj_id)."\n";
+				$out .= '<< /Type /Annot';
 				$out .= ' /Subtype /Widget';
 				$out .= ' /Rect ['.$this->signature_appearance['rect'].']';
 				$out .= ' /P '.$this->page_obj_id[($this->signature_appearance['page'])].' 0 R'; // link to signature appearance page
@@ -13324,7 +13296,7 @@ if (!class_exists('TCPDF', false)) {
 					if (isset($o['last'])) {
 						$out .= ' /Last '.($n + $o['last']).' 0 R';
 					}
-					$out .= ' '.sprintf('/Dest [%d 0 R /XYZ 0 %.2F null]', $this->page_obj_id[($o['p'])], ($this->pagedim[$o['p']]['h'] - ($o['y'] * $this->k)));
+					$out .= ' '.sprintf('/Dest [%u 0 R /XYZ 0 %.2F null]', $this->page_obj_id[($o['p'])], ($this->pagedim[$o['p']]['h'] - ($o['y'] * $this->k)));
 					$out .= ' /Count 0 >>';
 					$out .= "\n".'endobj';
 					$this->_out($out);
@@ -13374,11 +13346,11 @@ if (!class_exists('TCPDF', false)) {
 				return;
 			}
 			if (strpos($this->javascript, 'this.addField') > 0) {
-				if (!$this->ur) {
+				if (!$this->ur['enabled']) {
 					//$this->setUserRights();
 				}
 				// the following two lines are used to avoid form fields duplication after saving
-				// The addField method only works on Acrobat Writer, unless the document is signed with Adobe private key (UR3)
+				// The addField method only works when releasing user rights (UR3)
 				$jsa = sprintf("ftcpdfdocsaved=this.addField('%s','%s',%d,[%.2F,%.2F,%.2F,%.2F]);", 'tcpdfdocsaved', 'text', 0, 0, 1, 0, 1);
 				$jsb = "getField('tcpdfdocsaved').value='saved';";
 				$this->javascript = $jsa."\n".$this->javascript."\n".$jsb;
@@ -13454,7 +13426,7 @@ if (!class_exists('TCPDF', false)) {
 			// the followind avoid fields duplication after saving the document
 			$this->javascript .= "if(getField('tcpdfdocsaved').value != 'saved') {";
 			$k = $this->k;
-			$this->javascript .= sprintf("f".$name."=this.addField('%s','%s',%d,[%.2F,%.2F,%.2F,%.2F]);", $name, $type, $this->PageNo()-1, $x*$k, ($this->h-$y)*$k+1, ($x+$w)*$k, ($this->h-$y-$h)*$k+1)."\n";
+			$this->javascript .= sprintf("f".$name."=this.addField('%s','%s',%u,[%.2F,%.2F,%.2F,%.2F]);", $name, $type, $this->PageNo()-1, $x*$k, ($this->h-$y)*$k+1, ($x+$w)*$k, ($this->h-$y-$h)*$k+1)."\n";
 			$this->javascript .= 'f'.$name.'.textSize='.$this->FontSizePt.";\n";
 			while (list($key, $val) = each($prop)) {
 				if (strcmp(substr($key, -5), 'Color') == 0) {
@@ -13990,9 +13962,12 @@ if (!class_exists('TCPDF', false)) {
 				++$this->n;
 				$this->radiobutton_groups[$this->page][$name]['n'] = $this->n;
 				$this->radio_groups[] = $this->n;
+				$kid = ($this->n + 2);
+			} else {
+				$kid = ($this->n + 1);
 			}
 			// save object ID to be added on Kids entry on parent object
-			$this->radiobutton_groups[$this->page][$name][] = array('kid' => ($this->n + 1), 'def' => $defval);
+			$this->radiobutton_groups[$this->page][$name][] = array('kid' => $kid, 'def' => $defval);
 			// get default style
 			$prop = array_merge($this->getFormDefaultProp(), $prop);
 			$prop['NoToggleToOff'] = 'true';
@@ -14387,8 +14362,8 @@ if (!class_exists('TCPDF', false)) {
 			if ((!$this->sign) OR (!isset($this->signature_data['cert_type']))) {
 				return;
 			}
-			$oid = $this->_newobj();
-			$out = '<< /Type /Sig';
+			$out = $this->_getobj($this->sig_obj_id + 1)."\n";
+			$out .= '<< /Type /Sig';
 			$out .= ' /Filter /Adobe.PPKLite';
 			$out .= ' /SubFilter /adbe.pkcs7.detached';
 			$out .= ' '.$this->byterange_string;
@@ -14406,17 +14381,23 @@ if (!class_exists('TCPDF', false)) {
 				$out .= ' /TransformParams <<';
 				$out .= ' /Type /TransformParams';
 				$out .= ' /V /2.2';
-				if (!$this->empty_string($this->ur_document)) {
-					$out .= ' /Document['.$this->ur_document.']';
+				if (!$this->empty_string($this->ur['document'])) {
+					$out .= ' /Document['.$this->ur['document'].']';
 				}
-				if (!$this->empty_string($this->ur_annots)) {
-					$out .= ' /Annots['.$this->ur_annots.']';
+				if (!$this->empty_string($this->ur['form'])) {
+					$out .= ' /Form['.$this->ur['form'].']';
 				}
-				if (!$this->empty_string($this->ur_form)) {
-					$out .= ' /Form['.$this->ur_form.']';
+				if (!$this->empty_string($this->ur['signature'])) {
+					$out .= ' /Signature['.$this->ur['signature'].']';
 				}
-				if (!$this->empty_string($this->ur_signature)) {
-					$out .= ' /Signature['.$this->ur_signature.']';
+				if (!$this->empty_string($this->ur['annots'])) {
+					$out .= ' /Annots['.$this->ur['annots'].']';
+				}
+				if (!$this->empty_string($this->ur['ef'])) {
+					$out .= ' /EF['.$this->ur['ef'].']';
+				}
+				if (!$this->empty_string($this->ur['formex'])) {
+					$out .= ' /FormEX['.$this->ur['formex'].']';
 				}
 			}
 			$out .= ' >>'; // close TransformParams
@@ -14428,16 +14409,16 @@ if (!class_exists('TCPDF', false)) {
 			$out .= ' >>';
 			$out .= ' ]'; // end of reference
 			if (isset($this->signature_data['info']['Name']) AND !$this->empty_string($this->signature_data['info']['Name'])) {
-				$out .= ' /Name '.$this->_textstring($this->signature_data['info']['Name'], $oid);
+				$out .= ' /Name '.$this->_textstring($this->signature_data['info']['Name']);
 			}
 			if (isset($this->signature_data['info']['Location']) AND !$this->empty_string($this->signature_data['info']['Location'])) {
-				$out .= ' /Location '.$this->_textstring($this->signature_data['info']['Location'], $oid);
+				$out .= ' /Location '.$this->_textstring($this->signature_data['info']['Location']);
 			}
 			if (isset($this->signature_data['info']['Reason']) AND !$this->empty_string($this->signature_data['info']['Reason'])) {
-				$out .= ' /Reason '.$this->_textstring($this->signature_data['info']['Reason'], $oid);
+				$out .= ' /Reason '.$this->_textstring($this->signature_data['info']['Reason']);
 			}
 			if (isset($this->signature_data['info']['ContactInfo']) AND !$this->empty_string($this->signature_data['info']['ContactInfo'])) {
-				$out .= ' /ContactInfo '.$this->_textstring($this->signature_data['info']['ContactInfo'], $oid);
+				$out .= ' /ContactInfo '.$this->_textstring($this->signature_data['info']['ContactInfo']);
 			}
 			$out .= ' /M '.$this->_datestring();
 			$out .= ' >>';
@@ -14447,7 +14428,7 @@ if (!class_exists('TCPDF', false)) {
 
 		/**
 		 * Set User's Rights for PDF Reader
-		 * WARNING: This works only using the Adobe private key with the setSignature() method!.
+		 * WARNING: This is experimental and currently do not work.
 		 * Check the PDF Reference 8.7.1 Transform Methods,
 		 * Table 8.105 Entries in the UR transform parameters dictionary
 		 * @param boolean $enable if true enable user's rights on PDF reader
@@ -14455,6 +14436,9 @@ if (!class_exists('TCPDF', false)) {
 		 * @param string $annots Names specifying additional annotation-related usage rights for the document. Valid names in PDF 1.5 and later are /Create/Delete/Modify/Copy/Import/Export, which permit the user to perform the named operation on annotations.
 		 * @param string $form Names specifying additional form-field-related usage rights for the document. Valid names are: /Add/Delete/FillIn/Import/Export/SubmitStandalone/SpawnTemplate
 		 * @param string $signature Names specifying additional signature-related usage rights for the document. The only defined value is /Modify, which permits a user to apply a digital signature to an existing signature form field or clear a signed signature form field.
+		 * @param string $ef Names specifying additional usage rights for named embedded files in the document. Valid names are /Create/Delete/Modify/Import, which permit the user to perform the named operation on named embedded files
+		 Names specifying additional embedded-files-related usage rights for the document.
+		 * @param string $formex Names specifying additional form-field-related usage rights. The only valid name is BarcodePlaintext, which permits text form field data to be encoded as a plaintext two-dimensional barcode.
 		 * @access public
 		 * @author Nicola Asuni
 		 * @since 2.9.000 (2008-03-26)
@@ -14464,14 +14448,17 @@ if (!class_exists('TCPDF', false)) {
 				$document='/FullSave',
 				$annots='/Create/Delete/Modify/Copy/Import/Export',
 				$form='/Add/Delete/FillIn/Import/Export/SubmitStandalone/SpawnTemplate',
-				$signature='/Modify') {
-			$this->ur = $enable;
-			$this->ur_document = $document;
-			$this->ur_annots = $annots;
-			$this->ur_form = $form;
-			$this->ur_signature = $signature;
+				$signature='/Modify',
+				$ef='/Create/Delete/Modify/Import',
+				$formex='') {
+			$this->ur['enabled'] = $enable;
+			$this->ur['document'] = $document;
+			$this->ur['annots'] = $annots;
+			$this->ur['form'] = $form;
+			$this->ur['signature'] = $signature;
+			$this->ur['ef'] = $ef;
+			$this->ur['formex'] = $formex;
 			if (!$this->sign) {
-				// This signature only works using the Adobe Private key that is unavailable!
 				$this->setSignature('', '', '', '', 0, array());
 			}
 		}
@@ -14498,6 +14485,9 @@ if (!class_exists('TCPDF', false)) {
 			// to convert pfx certificate to pem: openssl
 			//     OpenSSL> pkcs12 -in <cert.pfx> -out <cert.crt> -nodes
 			$this->sign = true;
+			++$this->n;
+			$this->sig_obj_id = $this->n; // signature widget
+			++$this->n; // signature object ($this->sig_obj_id + 1)
 			$this->signature_data = array();
 			if (strlen($signing_cert) == 0) {
 				$signing_cert = 'file://'.dirname(__FILE__).'/tcpdf.crt';
@@ -15468,7 +15458,8 @@ if (!class_exists('TCPDF', false)) {
 					$this->_out($out);
 					$this->gradients[$idgs]['pattern'] = $this->n;
 					// luminosity XObject
-					$this->_newobj();
+					$oid = $this->_newobj();
+					$this->xobjects['LX'.$oid] = $oid;
 					$filter = '';
 					$stream = 'q /a0 gs /Pattern cs /p'.$idgs.' scn 0 0 '.$this->wPt.' '.$this->hPt.' re f Q';
 					if ($this->compress) {
@@ -18716,7 +18707,21 @@ if (!class_exists('TCPDF', false)) {
 							$strrest = $this->addHtmlLink($this->HREF['url'], $dom[$key]['value'], $wfill, true, $hrefcolor, $hrefstyle, true);
 						} else {
 							// ****** write only until the end of the line and get the rest ******
-							$strrest = $this->Write($this->lasth, $dom[$key]['value'], '', $wfill, '', false, 0, true, $firstblock, 0);
+							// check the next text block for continuity
+							$nkey = ($key + 1);
+							while (isset($dom[$nkey]) AND $dom[$nkey]['tag']) {
+								++$nkey;
+							}
+							$wadj = 0;
+							if (isset($dom[$nkey])) {
+								$nextstr = preg_split('/'.$this->re_space['p'].'+/'.$this->re_space['m'], $dom[$nkey]['value']);
+								$nextstr = $nextstr[0];
+								if (!$this->empty_string($nextstr)) {
+									// preserve line continuity
+									$wadj = $this->GetStringWidth($nextstr);
+								}
+							}
+							$strrest = $this->Write($this->lasth, $dom[$key]['value'], '', $wfill, '', false, 0, true, $firstblock, 0, $wadj);
 						}
 					}
 					$this->textindent = 0;

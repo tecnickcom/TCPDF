@@ -1,3 +1,8 @@
+5.8.014 (2010-08-23)
+	- Method _getxobjectdict() was added for better compatibility with external extensions.
+	- A bug related to radiobuttons was fixed.
+	- Bug #3051509 "new line after punctuation marks" was fixed (partially).
+
 5.8.013 (2010-08-23)
 	- SVG support for 'direction' property was added.
 	- A problem on default width calculation for linear barcodes was fixed.
