@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_027.php
 // Begin       : 2008-03-04
-// Last Update : 2010-08-21
+// Last Update : 2010-08-23
 //
 // Description : Example 027 for TCPDF class
 //               1D Barcodes
@@ -82,8 +82,9 @@ $pdf->AddPage();
 $style = array(
 	'position' => '',
 	'align' => 'C',
-	'fitwidth' => true,
 	'stretch' => false,
+	'fitwidth' => true,
+	'cellfitalign' => '',
 	'border' => true,
 	'padding' => 'auto',
 	'fgcolor' => array(0,0,0),
@@ -280,69 +281,92 @@ $pdf->AddPage();
 
 // set a background color
 $style['bgcolor'] = array(255,255,240);
-$style['fgcolor'] = array(128,0,0);
+$style['fgcolor'] = array(127,0,0);
 
 // Left position
 $style['position'] = 'L';
-$pdf->write1DBarcode('LEFT', 'C128A', '', '', '', 20, 0.4, $style, 'N');
+$pdf->write1DBarcode('LEFT', 'C128A', '', '', '', 15, 0.4, $style, 'N');
 
-$pdf->Ln();
+$pdf->Ln(2);
 
 // Center position
 $style['position'] = 'C';
-$pdf->write1DBarcode('CENTER', 'C128A', '', '', '', 20, 0.4, $style, 'N');
+$pdf->write1DBarcode('CENTER', 'C128A', '', '', '', 15, 0.4, $style, 'N');
 
-$pdf->Ln();
+$pdf->Ln(2);
 
 // Right position
 $style['position'] = 'R';
-$pdf->write1DBarcode('RIGHT', 'C128A', '', '', '', 20, 0.4, $style, 'N');
+$pdf->write1DBarcode('RIGHT', 'C128A', '', '', '', 15, 0.4, $style, 'N');
 
-$pdf->Ln();
+$pdf->Ln(2);
 // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
-$style['fgcolor'] = array(0,128,0);
+$style['fgcolor'] = array(0,127,0);
 $style['position'] = '';
 $style['stretch'] = false; // disable stretch
 $style['fitwidth'] = false; // disable fitwidth
 
 // Left alignment
 $style['align'] = 'L';
-$pdf->write1DBarcode('LEFT', 'C128A', '', '', '', 20, 0.4, $style, 'N');
+$pdf->write1DBarcode('LEFT', 'C128A', '', '', '', 15, 0.4, $style, 'N');
 
-$pdf->Ln();
+$pdf->Ln(2);
 
 // Center alignment
 $style['align'] = 'C';
-$pdf->write1DBarcode('CENTER', 'C128A', '', '', '', 20, 0.4, $style, 'N');
+$pdf->write1DBarcode('CENTER', 'C128A', '', '', '', 15, 0.4, $style, 'N');
 
-$pdf->Ln();
+$pdf->Ln(2);
 
 // Right alignment
 $style['align'] = 'R';
-$pdf->write1DBarcode('RIGHT', 'C128A', '', '', '', 20, 0.4, $style, 'N');
+$pdf->write1DBarcode('RIGHT', 'C128A', '', '', '', 15, 0.4, $style, 'N');
 
-$pdf->Ln();
+$pdf->Ln(2);
 // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
-$style['fgcolor'] = array(0,0,128);
-$style['fitwidth'] = true; // enable fitwidth
+$style['fgcolor'] = array(0,64,127);
+$style['position'] = '';
+$style['stretch'] = false; // disable stretch
+$style['fitwidth'] = true; // disable fitwidth
+
+// Left alignment
+$style['cellfitalign'] = 'L';
+$pdf->write1DBarcode('LEFT', 'C128A', 105, '', 90, 15, 0.4, $style, 'N');
+
+$pdf->Ln(2);
+
+// Center alignment
+$style['cellfitalign'] = 'C';
+$pdf->write1DBarcode('CENTER', 'C128A', 105, '', 90, 15, 0.4, $style, 'N');
+
+$pdf->Ln(2);
+
+// Right alignment
+$style['cellfitalign'] = 'R';
+$pdf->write1DBarcode('RIGHT', 'C128A', 105, '', 90, 15, 0.4, $style, 'N');
+
+$pdf->Ln(2);
+// . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+$style['fgcolor'] = array(127,0,127);
 
 // Left alignment
 $style['position'] = 'L';
-$pdf->write1DBarcode('LEFT', 'C128A', '', '', '', 20, 0.4, $style, 'N');
+$pdf->write1DBarcode('LEFT', 'C128A', '', '', '', 15, 0.4, $style, 'N');
 
-$pdf->Ln();
+$pdf->Ln(2);
 
 // Center alignment
 $style['position'] = 'C';
-$pdf->write1DBarcode('CENTER', 'C128A', '', '', '', 20, 0.4, $style, 'N');
+$pdf->write1DBarcode('CENTER', 'C128A', '', '', '', 15, 0.4, $style, 'N');
 
-$pdf->Ln();
+$pdf->Ln(2);
 
 // Right alignment
 $style['position'] = 'R';
-$pdf->write1DBarcode('RIGHT', 'C128A', '', '', '', 20, 0.4, $style, 'N');
+$pdf->write1DBarcode('RIGHT', 'C128A', '', '', '', 15, 0.4, $style, 'N');
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // TEST BARCODE STYLE
@@ -351,8 +375,9 @@ $pdf->write1DBarcode('RIGHT', 'C128A', '', '', '', 20, 0.4, $style, 'N');
 $style = array(
 	'position' => '',
 	'align' => '',
-	'fitwidth' => false,
 	'stretch' => true,
+	'fitwidth' => false,
+	'cellfitalign' => '',
 	'border' => true,
 	'padding' => 'auto',
 	'fgcolor' => array(0,0,128),

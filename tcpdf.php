@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.8.012
+// Version     : 5.8.013
 // Begin       : 2002-08-03
-// Last Update : 2010-08-22
+// Last Update : 2010-08-23
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.8.012
+ * @version 5.8.013
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.8.012 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.8.013 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.8.012
+	* @version 5.8.013
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1545,6 +1545,20 @@ if (!class_exists('TCPDF', false)) {
 		protected $default_graphic_vars = array();
 
 		/**
+		 * @var Array of external XObjects templates
+		 * @access protected
+		 * @since 5.8.013 (2010-08-23)
+		 */
+		protected $tpls = array();
+
+		/**
+		 * @var String prefix for external XObjects templates
+		 * @access protected
+		 * @since 5.8.013 (2010-08-23)
+		 */
+		protected $tplprefix = '/TPL';
+
+		/**
 		 * @var directory used for the last SVG image
 		 * @access protected
 		 * @since 5.0.000 (2010-05-05)
@@ -1615,11 +1629,11 @@ if (!class_exists('TCPDF', false)) {
 		protected $svgtext = '';
 
 		/**
-		 * @var svg text-achor property
+		 * @var svg text properties
 		 * @access protected
-		 * @since 5.8.012 (2010-08-22)
+		 * @since 5.8.013 (2010-08-23)
 		 */
-		protected $svgtextanchor = 'start';
+		protected $svgtextmode = array();
 
 		/**
 		 * @var array of hinheritable SVG properties
@@ -3772,8 +3786,9 @@ if (!class_exists('TCPDF', false)) {
 				$style = array(
 					'position' => $this->rtl?'R':'L',
 					'align' => $this->rtl?'R':'L',
-					'fitwidth' => true,
 					'stretch' => false,
+					'fitwidth' => true,
+					'cellfitalign' => '',
 					'border' => false,
 					'padding' => 0,
 					'fgcolor' => array(0,0,0),
@@ -9735,6 +9750,10 @@ if (!class_exists('TCPDF', false)) {
 			foreach ($this->imagekeys as $file) {
 				$info = $this->getImageBuffer($file);
 				$out .= ' /I'.$info['i'].' '.$info['n'].' 0 R';
+			}
+			// support for external XObject templates
+			foreach($this->tpls as $tplidx => $tpl) {
+				$out .= sprintf(' %s%u %u 0 R', $this->tplprefix, $tplidx, $tpl['n']);
 			}
 			$out .= ' >>';
 			// visibility
@@ -15838,7 +15857,10 @@ if (!class_exists('TCPDF', false)) {
 		 * @param int $w width in user units (empty string = remaining page width)
 		 * @param int $h height in user units (empty string = remaining page height)
 		 * @param float $xres width of the smallest bar in user units (empty string = default value = 0.4mm)
-		 * @param array $style array of options:<ul><li>boolean $style['border'] if true prints a border</li><li>int $style['padding'] padding to leave around the barcode in user units (set to 'auto' for automatic padding)</li><li>array $style['fgcolor'] color array for bars and text</li><li>mixed $style['bgcolor'] color array for background or false for transparent</li><li>boolean $style["text"] boolean if true prints text below the barcode</li><li>string $style['font'] font name for text</li><li>int $style['fontsize'] font size for text</li><li>int $style['stretchtext']: 0 = disabled; 1 = horizontal scaling only if necessary; 2 = forced horizontal scaling; 3 = character spacing only if necessary; 4 = forced character spacing</li><li>string $style['position'] barcode position on the page: L = left margin; C = center; R = right margin.</li><li>string $style['align'] barcode position on the containing rectangle: L = left; C = center; R = right.</li><li>string $style['fitwidth'] if true reduce the width to fit the barcode + padding width (stretch doesn't work with this option enabled).</li><li>string $style['stretch'] if true stretch the barcode to best fit the available width, otherwise uses $xres resolution for a single bar.</li></ul>
+		 * @param array $style array of options:<ul>
+
+		 <li>boolean $style['border'] if true prints a border</li>
+		 <li>int $style['padding'] padding to leave around the barcode (minimum distance between the barcode and the containing cell border) in user units (set to 'auto' for automatic padding)</li><li>array $style['fgcolor'] color array for bars and text</li><li>mixed $style['bgcolor'] color array for background (set to false for transparent)</li><li>boolean $style["text"] boolean if true prints text below the barcode</li><li>string $style['font'] font name for text</li><li>int $style['fontsize'] font size for text</li><li>int $style['stretchtext']: 0 = disabled; 1 = horizontal scaling only if necessary; 2 = forced horizontal scaling; 3 = character spacing only if necessary; 4 = forced character spacing.</li><li>string $style['position'] horizontal position of the containing barcode cell on the page: L = left margin; C = center; R = right margin.</li><li>string $style['align'] horizontal position of the barcode on the containing rectangle: L = left; C = center; R = right.</li><li>string $style['stretch'] if true stretch the barcode to best fit the available width, otherwise uses $xres resolution for a single bar.</li><li>string $style['fitwidth'] if true reduce the width to fit the barcode width + padding. When this option is enabled the 'stretch' option is automatically disabled.</li><li>string $style['cellfitalign'] this option works only when 'fitwidth' is true and 'position' is unset or empty. Set the horizontal position of the containing barcode cell inside the specified rectangle: L = left; C = center; R = right.</li></ul>
 		 * @param string $align Indicates the alignment of the pointer next to barcode insertion relative to barcode height. The value can be:<ul><li>T: top-right for LTR or top-left for RTL</li><li>M: middle-right for LTR or middle-left for RTL</li><li>B: bottom-right for LTR or bottom-left for RTL</li><li>N: next line</li></ul>
 		 * @author Nicola Asuni
 		 * @since 3.1.000 (2008-06-09)
@@ -15864,9 +15886,6 @@ if (!class_exists('TCPDF', false)) {
 				// keep this for backward compatibility
 				$style['position'] = '';
 				$style['stretch'] = true;
-			}
-			if (!isset($style['align'])) {
-				$style['align'] = 'C';
 			}
 			if (!isset($style['fitwidth'])) {
 				if (!isset($style['stretch'])) {
@@ -15916,9 +15935,9 @@ if (!class_exists('TCPDF', false)) {
 			}
 			if (($w === '') OR ($w <= 0)) {
 				if ($this->rtl) {
-					$w = $this->x - $this->lMargin;
+					$w = $x - $this->lMargin;
 				} else {
-					$w = $this->w - $this->rMargin - $this->x;
+					$w = $this->w - $this->rMargin - $x;
 				}
 			}
 			// horizontal padding
@@ -15946,7 +15965,35 @@ if (!class_exists('TCPDF', false)) {
 				}
 			}
 			if ($style['fitwidth']) {
+				$wold = $w;
 				$w = (($arrcode['maxw'] * $xres) + (2 * $hpadding));
+				if (isset($style['cellfitalign'])) {
+					switch ($style['cellfitalign']) {
+						case 'L': {
+							if ($this->rtl) {
+								$x -= ($wold - $w);
+							}
+							break;
+						}
+						case 'R': {
+							if (!$this->rtl) {
+								$x += ($wold - $w);
+							}
+							break;
+						}
+						case 'C': {
+							if ($this->rtl) {
+								$x -= (($wold - $w) / 2);
+							} else {
+								$x += (($wold - $w) / 2);
+							}
+							break;
+						}
+						default : {
+							break;
+						}
+					}
+				}
 			}
 			// vertical padding
 			$vpadding = $hpadding;
@@ -15998,6 +16045,9 @@ if (!class_exists('TCPDF', false)) {
 				$this->img_rb_x = $xpos + $w;
 			}
 			$xpos_rect = $xpos;
+			if (!isset($style['align'])) {
+				$style['align'] = 'C';
+			}
 			switch ($style['align']) {
 				case 'L': {
 					$xpos = $xpos_rect + $hpadding;
@@ -16103,8 +16153,9 @@ if (!class_exists('TCPDF', false)) {
 			$newstyle = array(
 				'position' => '',
 				'align' => '',
-				'fitwidth' => false,
 				'stretch' => false,
+				'fitwidth' => false,
+				'cellfitalign' => '',
 				'border' => false,
 				'padding' => 0,
 				'fgcolor' => array(0,0,0),
@@ -16833,6 +16884,14 @@ if (!class_exists('TCPDF', false)) {
 		protected function getHtmlDomArray($html) {
 			// array of CSS styles ( selector => properties).
 			$css = array();
+			// get CSS array defined at previous call
+			$matches = array();
+			if (preg_match_all('/<cssarray>([^\<]*)<\/cssarray>/isU', $html, $matches) > 0) {
+				if (isset($matches[1][0])) {
+					$css = array_merge($css, unserialize($this->unhtmlentities($matches[1][0])));
+				}
+				$html = preg_replace('/<cssarray>(.*?)<\/cssarray>/isU', '', $html);
+			}
 			// extract external CSS files
 			$matches = array();
 			if (preg_match_all('/<link([^\>]*)>/isU', $html, $matches) > 0) {
@@ -16868,6 +16927,8 @@ if (!class_exists('TCPDF', false)) {
 					}
 				}
 			}
+			// create a special tag to contain the CSS array (used for table content)
+			$csstagarray = '<cssarray>'.htmlentities(serialize($css)).'</cssarray>';
 			// remove head and style blocks
 			$html = preg_replace('/<head([^\>]*)>(.*?)<\/head>/siU', '', $html);
 			$html = preg_replace('/<style([^\>]*)>([^\<]*)<\/style>/isU', '', $html);
@@ -17031,7 +17092,7 @@ if (!class_exists('TCPDF', false)) {
 							$dom[($dom[($dom[$key]['parent'])]['parent'])]['cols'] = $dom[($dom[$key]['parent'])]['cols'];
 						}
 						if (($dom[$key]['value'] == 'td') OR ($dom[$key]['value'] == 'th')) {
-							$dom[($dom[$key]['parent'])]['content'] = '';
+							$dom[($dom[$key]['parent'])]['content'] = $csstagarray;
 							for ($i = ($dom[$key]['parent'] + 1); $i < $key; ++$i) {
 								$dom[($dom[$key]['parent'])]['content'] .= $a[$dom[$i]['elkey']];
 							}
@@ -23624,9 +23685,18 @@ if (!class_exists('TCPDF', false)) {
 					$svgstyle['text-color'] = $svgstyle['fill'];
 					$this->svgtext = '';
 					if (isset($svgstyle['text-anchor'])) {
-						$this->svgtextanchor = $svgstyle['text-anchor'];
+						$this->svgtextmode['text-anchor'] = $svgstyle['text-anchor'];
 					} else {
-						$this->svgtextanchor = 'start';
+						$this->svgtextmode['text-anchor'] = 'start';
+					}
+					if (isset($svgstyle['direction'])) {
+						if ($svgstyle['direction'] == 'rtl') {
+							$this->svgtextmode['rtl'] = true;
+						} else {
+							$this->svgtextmode['rtl'] = false;
+						}
+					} else {
+						$this->svgtextmode['rtl'] = false;
 					}
 					$this->StartTransform();
 					$this->SVGTransform($tm);
@@ -23684,16 +23754,17 @@ if (!class_exists('TCPDF', false)) {
 				case 'tspan': {
 					// print text
 					$text = $this->stringTrim($this->svgtext);
-					if ($this->svgtextanchor != 'start') {
+					if ($this->svgtextmode['text-anchor'] != 'start') {
 						$textlen = $this->GetStringWidth($text);
-						if ($this->svgtextanchor == 'end') {
-							if ($this->rtl) {
+						// check if string is RTL text
+						if ($this->svgtextmode['text-anchor'] == 'end') {
+							if ($this->svgtextmode['rtl']) {
 								$this->x += $textlen;
 							} else {
 								$this->x -= $textlen;
 							}
-						} elseif ($this->svgtextanchor == 'middle') {
-							if ($this->rtl) {
+						} elseif ($this->svgtextmode['text-anchor'] == 'middle') {
+							if ($this->svgtextmode['rtl']) {
 								$this->x += ($textlen / 2);
 							} else {
 								$this->x -= ($textlen / 2);

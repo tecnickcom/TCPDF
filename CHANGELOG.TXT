@@ -1,3 +1,10 @@
+5.8.013 (2010-08-23)
+	- SVG support for 'direction' property was added.
+	- A problem on default width calculation for linear barcodes was fixed.
+	- New option was added to write1DBarcode() method to improve alignments (see example n. 27).
+	- Bug #3050896 "Nested HTML tables: styles are not applied" was fixed.
+	- Method _putresourcedict() was improved to include external XObject templates.
+
 5.8.012 (2010-08-22)
 	- Support for SVG 'text-anchor' property was added.
 
