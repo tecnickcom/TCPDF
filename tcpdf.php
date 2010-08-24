@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.8.014
+// Version     : 5.8.015
 // Begin       : 2002-08-03
-// Last Update : 2010-08-23
+// Last Update : 2010-08-24
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -126,7 +126,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.8.014
+ * @version 5.8.015
  */
 
 /**
@@ -150,14 +150,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.8.014 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.8.015 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.8.014
+	* @version 5.8.015
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -18706,14 +18706,13 @@ if (!class_exists('TCPDF', false)) {
 							}
 							$strrest = $this->addHtmlLink($this->HREF['url'], $dom[$key]['value'], $wfill, true, $hrefcolor, $hrefstyle, true);
 						} else {
-							// ****** write only until the end of the line and get the rest ******
 							// check the next text block for continuity
+							$wadj = 0;
 							$nkey = ($key + 1);
-							while (isset($dom[$nkey]) AND $dom[$nkey]['tag']) {
+							while (isset($dom[$nkey]) AND $dom[$nkey]['tag'] AND (!$dom[$nkey]['block'])) {
 								++$nkey;
 							}
-							$wadj = 0;
-							if (isset($dom[$nkey])) {
+							if (isset($dom[$nkey]) AND (!$dom[$nkey]['block'])) {
 								$nextstr = preg_split('/'.$this->re_space['p'].'+/'.$this->re_space['m'], $dom[$nkey]['value']);
 								$nextstr = $nextstr[0];
 								if (!$this->empty_string($nextstr)) {
@@ -18721,6 +18720,7 @@ if (!class_exists('TCPDF', false)) {
 									$wadj = $this->GetStringWidth($nextstr);
 								}
 							}
+							// ****** write only until the end of the line and get the rest ******
 							$strrest = $this->Write($this->lasth, $dom[$key]['value'], '', $wfill, '', false, 0, true, $firstblock, 0, $wadj);
 						}
 					}

@@ -1,3 +1,6 @@
+5.8.015 (2010-08-24)
+	- A problem arised with the latest bugfix was fixed.
+
 5.8.014 (2010-08-23)
 	- Method _getxobjectdict() was added for better compatibility with external extensions.
 	- A bug related to radiobuttons was fixed.
