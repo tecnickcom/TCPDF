@@ -1,3 +1,6 @@
+5.8.016 (2010-08-24)
+	- Alignment problem on write2DBarcode was fixed.
+
 5.8.015 (2010-08-24)
 	- A problem arised with the latest bugfix was fixed.
 
