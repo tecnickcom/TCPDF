@@ -9711,7 +9711,7 @@ if (!class_exists('TCPDF', false)) {
 
 		/**
 		 * Return XObjects Dictionary.
-		 * @retutn string XObjects dictionary
+		 * @return string XObjects dictionary
 		 * @access protected
 		 * @since 5.8.014 (2010-08-23)
 		 */
