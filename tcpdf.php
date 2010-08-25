@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.8.017
+// Version     : 5.8.018
 // Begin       : 2002-08-03
 // Last Update : 2010-08-25
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
@@ -128,7 +128,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.8.017
+ * @version 5.8.018
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.8.017 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.8.018 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.8.017
+	* @version 5.8.018
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -18500,7 +18500,9 @@ if (!class_exists('TCPDF', false)) {
 					} else {
 						$pask = 0;
 					}
-					$this->SetFont($fontname, $fontstyle, $fontsize);
+					if ($dom[$key]['tag'] AND $dom[$key]['opening'] AND ($dom[$key]['value'] == 'table')) {
+						$this->SetFont($fontname, $fontstyle, $fontsize);
+					}
 					if ($wfill) {
 						$this->SetFillColorArray($this->bgcolor);
 					}
@@ -22025,6 +22027,16 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
+		 * Return the current number of columns.
+		 * @return int number of columns
+		 * @access public
+	 	 * @since 5.8.018 (2010-08-25)
+		 */
+		public function getNumberOfColumns() {
+			return $this->num_columns;
+		}
+
+		/**
 		 * Serialize an array of parameters to be used with TCPDF tag in HTML code.
 		 * @param array $pararray parameters array
 		 * @return sting containing serialized data
@@ -22877,6 +22889,8 @@ if (!class_exists('TCPDF', false)) {
 			// store current page break mode
 			$page_break_mode = $this->AutoPageBreak;
 			$page_break_margin = $this->getBreakMargin();
+			$cMargin = $this->cMargin;
+			$this->cMargin = 0;
 			$this->SetAutoPageBreak(false);
 			// save the current graphic state
 			$this->_out('q'.$this->epsmarker);
@@ -22950,6 +22964,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->endlinex = $this->img_rb_x;
 			// restore page break
 			$this->SetAutoPageBreak($page_break_mode, $page_break_margin);
+			$this->cMargin = $cMargin;
 		}
 
 		/**
@@ -22963,93 +22978,85 @@ if (!class_exists('TCPDF', false)) {
 		protected function getSVGTransformMatrix($attribute) {
 			// identity matrix
 			$tm = array(1, 0, 0, 1, 0, 0);
-			$continue = true;
-			while ($continue) {
-				$continue = false;
-				// matrix
-				$regs = array();
-				if (preg_match('/matrix\(([a-z0-9\-\.]+)[\,\s]+([a-z0-9\-\.]+)[\,\s]+([a-z0-9\-\.]+)[\,\s]+([a-z0-9\-\.]+)[\,\s]+([a-z0-9\-\.]+)[\,\s]+([a-z0-9\-\.]+)\)/si', $attribute, $regs)) {
-					$attribute = str_replace($regs[0], '', $attribute);
-					$continue = true;
-					$a = $regs[1];
-					$b = $regs[2];
-					$c = $regs[3];
-					$d = $regs[4];
-					$e = $regs[5];
-					$f = $regs[6];
-					$tm = $this->getTransformationMatrixProduct($tm, array($a, $b, $c, $d, $e, $f));
-				}
-				// translate x
-				$regs = array();
-				if (preg_match('/translate\(([a-z0-9\-\.]+)\)/si', $attribute, $regs)) {
-					$attribute = str_replace($regs[0], 'translate('.$regs[1].',0)', $attribute);
-					$continue = true;
-				}
-				// translate x,y
-				$regs = array();
-				if (preg_match('/translate\(([a-z0-9\-\.]+)[\,\s]+([a-z0-9\-\.]+)\)/si', $attribute, $regs)) {
-					$attribute = str_replace($regs[0], '', $attribute);
-					$continue = true;
-					$e = $regs[1];
-					$f = $regs[2];
-					$tm = $this->getTransformationMatrixProduct($tm, array(1, 0, 0, 1, $e, $f));
-				}
-				// scale x
-				$regs = array();
-				if (preg_match('/scale\(([a-z0-9\-\.]+)\)/si', $attribute, $regs)) {
-					$attribute = str_replace($regs[0], 'scale('.$regs[1].','.$regs[1].')', $attribute);
-					$continue = true;
-				}
-				// scale x,y
-				$regs = array();
-				if (preg_match('/scale\(([a-z0-9\-\.]+)[\,\s]+([a-z0-9\-\.]+)\)/si', $attribute, $regs)) {
-					$attribute = str_replace($regs[0], '', $attribute);
-					$continue = true;
-					$a = $regs[1];
-					if (isset($regs[2]) AND (strlen(trim($regs[2])) > 0)) {
-						$d = $regs[2];
-					} else {
-						$d = $a;
+			$transform = array();
+			if (preg_match_all('/(matrix|translate|scale|rotate|skewX|skewY)[\s]*\(([^\)]+)\)/si', $attribute, $transform, PREG_SET_ORDER) > 0) {
+				foreach ($transform as $key => $data) {
+					if (!empty($data[2])) {
+						$a = 1;
+						$b = 0;
+						$c = 0;
+						$d = 1;
+						$e = 0;
+						$f = 0;
+						$regs = array();
+						switch ($data[1]) {
+							case 'matrix': {
+								if (preg_match('/([a-z0-9\-\.]+)[\,\s]+([a-z0-9\-\.]+)[\,\s]+([a-z0-9\-\.]+)[\,\s]+([a-z0-9\-\.]+)[\,\s]+([a-z0-9\-\.]+)[\,\s]+([a-z0-9\-\.]+)/si', $data[2], $regs)) {
+									$a = $regs[1];
+									$b = $regs[2];
+									$c = $regs[3];
+									$d = $regs[4];
+									$e = $regs[5];
+									$f = $regs[6];
+								}
+								break;
+							}
+							case 'translate': {
+								if (preg_match('/([a-z0-9\-\.]+)[\,\s]+([a-z0-9\-\.]+)/si', $data[2], $regs)) {
+									$e = $regs[1];
+									$f = $regs[2];
+								} elseif (preg_match('/([a-z0-9\-\.]+)/si', $data[2], $regs)) {
+									$e = $regs[1];
+								}
+								break;
+							}
+							case 'scale': {
+								if (preg_match('/([a-z0-9\-\.]+)[\,\s]+([a-z0-9\-\.]+)/si', $data[2], $regs)) {
+									$a = $regs[1];
+									$d = $regs[2];
+								} elseif (preg_match('/([a-z0-9\-\.]+)/si', $data[2], $regs)) {
+									$a = $regs[1];
+									$d = $a;
+								}
+								break;
+							}
+							case 'rotate': {
+								if (preg_match('/([0-9\-\.]+)[\,\s]+([a-z0-9\-\.]+)[\,\s]+([a-z0-9\-\.]+)/si', $data[2], $regs)) {
+									$ang = deg2rad($regs[1]);
+									$x = $regs[2];
+									$y = $regs[3];
+									$a = cos($ang);
+									$b = sin($ang);
+									$c = -$b;
+									$d = $a;
+									$e = ($x * (1 - $a)) - ($y * $c);
+									$f = ($y * (1 - $d)) - ($x * $b);
+								} elseif (preg_match('/([0-9\-\.]+)/si', $data[2], $regs)) {
+									$ang = deg2rad($regs[1]);
+									$a = cos($ang);
+									$b = sin($ang);
+									$c = -$b;
+									$d = $a;
+									$e = 0;
+									$f = 0;
+								}
+								break;
+							}
+							case 'skewX': {
+								if (preg_match('/([0-9\-\.]+)/si', $data[2], $regs)) {
+									$c = tan(deg2rad($regs[1]));
+								}
+								break;
+							}
+							case 'skewY': {
+								if (preg_match('/([0-9\-\.]+)/si', $data[2], $regs)) {
+									$b = tan(deg2rad($regs[1]));
+								}
+								break;
+							}
+						}
+						$tm = $this->getTransformationMatrixProduct($tm, array($a, $b, $c, $d, $e, $f));
 					}
-					$tm = $this->getTransformationMatrixProduct($tm, array($a, 0, 0, $d, 0, 0));
-				}
-				// rotate ang
-				$regs = array();
-				if (preg_match('/rotate\(([a-z0-9\-\.]+)\)/si', $attribute, $regs)) {
-					$attribute = str_replace($regs[0], 'rotate('.$regs[1].',0,0)', $attribute);
-					$continue = true;
-				}
-				// rotate ang,x,y
-				$regs = array();
-				if (preg_match('/rotate\(([0-9\-\.]+)[\,\s]+([a-z0-9\-\.]+)[\,\s]+([a-z0-9\-\.]+)\)/si', $attribute, $regs)) {
-					$attribute = str_replace($regs[0], '', $attribute);
-					$continue = true;
-					$ang = deg2rad($regs[1]);
-					$a = cos($ang);
-					$b = sin($ang);
-					$c = -$b;
-					$d = $a;
-					$x = $regs[2];
-					$y = $regs[3];
-					$e = ($x * (1 - $a)) - ($y * $c);
-					$f = ($y * (1 - $d)) - ($x * $b);
-					$tm = $this->getTransformationMatrixProduct($tm, array($a, $b, $c, $d, $e, $f));
-				}
-				// skewX
-				$regs = array();
-				if (preg_match('/skewX\(([0-9\-\.]+)\)/si', $attribute, $regs)) {
-					$attribute = str_replace($regs[0], '', $attribute);
-					$continue = true;
-					$c = tan(deg2rad($regs[1]));
-					$tm = $this->getTransformationMatrixProduct($tm, array(1, 0, $c, 1, 0, 0));
-				}
-				// skewY
-				$regs = array();
-				if (preg_match('/skewY\(([0-9\-\.]+)\)/si', $attribute, $regs)) {
-					$attribute = str_replace($regs[0], '', $attribute);
-					$continue = true;
-					$b = tan(deg2rad($regs[1]));
-					$tm = $this->getTransformationMatrixProduct($tm, array(1, $b, 0, 1, 0, 0));
 				}
 			}
 			return $tm;
@@ -24089,10 +24096,16 @@ if (!class_exists('TCPDF', false)) {
 					} else {
 						$this->svgtextmode['rtl'] = false;
 					}
+					if (isset($svgstyle['stroke']) AND ($svgstyle['stroke'] != 'none') AND isset($svgstyle['stroke-width']) AND ($svgstyle['stroke-width'] > 0)) {
+						$this->svgtextmode['stroke'] = $this->getHTMLUnitToUnits($svgstyle['stroke-width'], 0, $this->svgunit, false);
+					} else {
+						$this->svgtextmode['stroke'] = false;
+					}
 					$this->StartTransform();
 					$this->SVGTransform($tm);
 					$obstyle = $this->setSVGStyles($svgstyle, $prev_svgstyle, $x, $y, 1, 1);
-					$this->SetXY($x, $y, true);
+					$this->x = $x;
+					$this->y = $y;
 					break;
 				}
 				// use
@@ -24162,7 +24175,13 @@ if (!class_exists('TCPDF', false)) {
 							}
 						}
 					}
-					$this->Cell(0, 0, $text, 0, 0, '', 0, '', 0, false, 'L', 'T');
+					$textrendermode = $this->textrendermode;
+					$textstrokewidth = $this->textstrokewidth;
+					$this->setTextRenderingMode($this->svgtextmode['stroke'], true, false);
+					$this->Cell(0, 0, $text, 0, 0, '', false, '', 0, false, 'L', 'T');
+					// restore previous rendering mode
+					$this->textrendermode = $textrendermode;
+					$this->textstrokewidth = $textstrokewidth;
 					$this->svgtext = '';
 					$this->StopTransform();
 					break;
