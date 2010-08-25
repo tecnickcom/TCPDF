@@ -1,3 +1,7 @@
+5.8.017 (2010-08-25)
+	- This version includes support for XObject Templates (see the new example n. 62).
+	- Methods starttemplate(), endTemplate() and printTemplate() were added (see the new example n. 62).
+
 5.8.016 (2010-08-24)
 	- Alignment problem on write2DBarcode was fixed.
 

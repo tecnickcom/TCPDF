@@ -437,6 +437,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodendPage">TCPDF::endPage()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Terminate the current page</dd>
 							<dt><b>endSVGElementHandler</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodendSVGElementHandler">TCPDF::endSVGElementHandler()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Sets the closing SVG element handler function for the XML parser.</dd>
+							<dt><b>endTemplate</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodendTemplate">TCPDF::endTemplate()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;End the current XObject Template started with startTemplate() and restore the previous graphic state.</dd>
 							<dt><b>endTOCPage</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodendTOCPage">TCPDF::endTOCPage()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Terminate the current TOC (Table Of Content) page</dd>
 							<dt><b>Error</b></dt>
@@ -817,6 +819,8 @@
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$inthead">TCPDF::$inthead</a><br>&nbsp;&nbsp;&nbsp;&nbsp;True when we are printing the thead section on a new page</dd>
 							<dt><b>$intmrk</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$intmrk">TCPDF::$intmrk</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Array used to store positions inside the pages buffer.</dd>
+							<dt><b>$inxobj</b></dt>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$inxobj">TCPDF::$inxobj</a></dd>
 							<dt><b>$isunicode</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$isunicode">TCPDF::$isunicode</a></dd>
 							<dt><b>$items</b></dt>
@@ -1231,6 +1235,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodPolygon">TCPDF::Polygon()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Draws a polygon.</dd>
 							<dt><b>PolyLine</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodPolyLine">TCPDF::PolyLine()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Draws a polygonal line</dd>
+							<dt><b>printTemplate</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodprintTemplate">TCPDF::printTemplate()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Print an XObject Template.</dd>
 							<dt><b>putAlignmentMarker</b></dt>
 				<dd>in file qrcode.php, method <a href="com-tecnick-tcpdf/QRcode.html#methodputAlignmentMarker">QRcode::putAlignmentMarker()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Put an alignment marker.</dd>
 							<dt><b>putAlignmentPattern</b></dt>
@@ -1460,11 +1466,11 @@
 							<dt><b>SetAutoPageBreak</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodSetAutoPageBreak">TCPDF::SetAutoPageBreak()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Enables or disables the automatic page breaking mode. When enabling, the second parameter is the distance from the bottom of the page that defines the triggering limit. By default, the mode is on and the margin is 2 cm.</dd>
 							<dt><b>setBarcode</b></dt>
-				<dd>in file barcodes.php, method <a href="com-tecnick-tcpdf/TCPDFBarcode.html#methodsetBarcode">TCPDFBarcode::setBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set the barcode.</dd>
-							<dt><b>setBarcode</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetBarcode">TCPDF::setBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set document barcode.</dd>
 							<dt><b>setBarcode</b></dt>
 				<dd>in file 2dbarcodes.php, method <a href="com-tecnick-tcpdf/TCPDF2DBarcode.html#methodsetBarcode">TCPDF2DBarcode::setBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set the barcode.</dd>
+							<dt><b>setBarcode</b></dt>
+				<dd>in file barcodes.php, method <a href="com-tecnick-tcpdf/TCPDFBarcode.html#methodsetBarcode">TCPDFBarcode::setBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set the barcode.</dd>
 							<dt><b>SetBooklet</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodSetBooklet">TCPDF::SetBooklet()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set the booklet mode for double-sided pages.</dd>
 							<dt><b>setBuffer</b></dt>
@@ -1651,6 +1657,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodstartPageGroup">TCPDF::startPageGroup()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Create a new page group.</dd>
 							<dt><b>startSVGElementHandler</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodstartSVGElementHandler">TCPDF::startSVGElementHandler()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Sets the opening SVG element handler function for the XML parser. (*** TO BE COMPLETED ***)</dd>
+							<dt><b>startTemplate</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodstartTemplate">TCPDF::startTemplate()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Start a new XObject Template.</dd>
 							<dt><b>startTransaction</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodstartTransaction">TCPDF::startTransaction()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Stores a copy of the current TCPDF object used for undo operation.</dd>
 							<dt><b>StartTransform</b></dt>
@@ -1839,6 +1847,8 @@
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$x">TCPDF::$x</a></dd>
 							<dt><b>$xobjects</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$xobjects">TCPDF::$xobjects</a></dd>
+							<dt><b>$xobjid</b></dt>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$xobjid">TCPDF::$xobjid</a></dd>
 					</dl>
 	</div>
 	<a href="elementindex.html#top">top</a><br>
@@ -2013,6 +2023,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_puttruetypeunicode">TCPDF::_puttruetypeunicode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Adds unicode fonts.<br /></dd>
 							<dt><b>_putviewerpreferences</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_putviewerpreferences">TCPDF::_putviewerpreferences()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Output viewer preferences.</dd>
+							<dt><b>_putxobjects</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_putxobjects">TCPDF::_putxobjects()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Output Form XObjects Templates.</dd>
 							<dt><b>_RC4</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#method_RC4">TCPDF::_RC4()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns the input text exrypted using RC4 algorithm and the specified key.</dd>
 							<dt><b>_setGDImageTransparency</b></dt>
@@ -2042,7 +2054,7 @@
 	<a href="elementindex.html#top">top</a><br>
         <div class="credit">
 		    <hr />
-		    Documentation generated on Tue, 24 Aug 2010 09:27:49 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
+		    Documentation generated on Wed, 25 Aug 2010 11:57:31 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
 	      </div>
       </td></tr></table>
     </td>

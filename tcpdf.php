@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.8.016
+// Version     : 5.8.017
 // Begin       : 2002-08-03
-// Last Update : 2010-08-24
+// Last Update : 2010-08-25
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -58,6 +58,7 @@
 //  * automatic page numbering and page groups;
 //  * move and delete pages;
 //  * page compression (requires php-zlib extension);
+//  * XOBject Templates;
 //
 // -----------------------------------------------------------
 // THANKS TO:
@@ -118,6 +119,7 @@
  * <li>automatic page numbering and page groups;</li>
  * <li>move and delete pages;</li>
  * <li>page compression (requires php-zlib extension);</li>
+ * <li>XOBject Templates;</li>
  * </ul>
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
@@ -126,7 +128,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.8.016
+ * @version 5.8.017
  */
 
 /**
@@ -150,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.8.016 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.8.017 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.8.016
+	* @version 5.8.017
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1521,6 +1523,20 @@ if (!class_exists('TCPDF', false)) {
 		protected $xobjects = array();
 
 		/**
+		 * @var boolean true when we are inside a XObject
+		 * @access protected
+		 * @since 5.8.017 (2010-08-24)
+		 */
+		protected $inxobj = false;
+
+		/**
+		 * @var current XObject ID
+		 * @access protected
+		 * @since 5.8.017 (2010-08-24)
+		 */
+		protected $xobjid = '';
+
+		/**
 		 * @var directory used for the last SVG image
 		 * @access protected
 		 * @since 5.0.000 (2010-05-05)
@@ -1681,10 +1697,8 @@ if (!class_exists('TCPDF', false)) {
 
 		/**
 		 * This is the class constructor.
-		 * It allows to set up the page format, the orientation and
-		 * the measure unit used in all the methods (except for the font sizes).
-		 * @since 1.0
-		 * @param string $orientation page orientation. Possible values are (case insensitive):<ul><li>P or Portrait (default)</li><li>L or Landscape</li></ul>
+		 * It allows to set up the page format, the orientation and the measure unit used in all the methods (except for the font sizes).
+		 * @param string $orientation page orientation. Possible values are (case insensitive):<ul><li>P or Portrait (default)</li><li>L or Landscape</li><li>'' (empty string) for automatic orientation</li></ul>
 		 * @param string $unit User measure unit. Possible values are:<ul><li>pt: point</li><li>mm: millimeter (default)</li><li>cm: centimeter</li><li>in: inch</li></ul><br />A point equals 1/72 of inch, that is to say about 0.35 mm (an inch being 2.54 cm). This is a very common unit in typography; font sizes are expressed in that unit.
 		 * @param mixed $format The format used for pages. It can be either: one of the string values specified at getPageSizeFromFormat() or an array of parameters specified at setPageFormat().
 		 * @param boolean $unicode TRUE means that the input text is unicode (default = true)
@@ -2548,7 +2562,55 @@ if (!class_exists('TCPDF', false)) {
 
 		/**
 		 * Change the format of the current page
-		 * @param mixed $format The format used for pages. It can be either: one of the string values specified at getPageSizeFromFormat() documentation or an array containing page measures and advanced options:<ul><li>['format'] = page format name (one of the above);</li><li>['Rotate'] : The number of degrees by which the page shall be rotated clockwise when displayed or printed. The value shall be a multiple of 90.</li><li>['PZ'] : The page's preferred zoom (magnification) factor.</li><li>['MediaBox'] : the boundaries of the physical medium on which the page shall be displayed or printed:</li><li>['MediaBox']['llx'] : lower-left x coordinate in points</li><li>['MediaBox']['lly'] : lower-left y coordinate in points</li><li>['MediaBox']['urx'] : upper-right x coordinate in points</li><li>['MediaBox']['ury'] : upper-right y coordinate in points</li><li>['CropBox'] : the visible region of default user space:</li><li>['CropBox']['llx'] : lower-left x coordinate in points</li><li>['CropBox']['lly'] : lower-left y coordinate in points</li><li>['CropBox']['urx'] : upper-right x coordinate in points</li><li>['CropBox']['ury'] : upper-right y coordinate in points</li><li>['BleedBox'] : the region to which the contents of the page shall be clipped when output in a production environment:</li><li>['BleedBox']['llx'] : lower-left x coordinate in points</li><li>['BleedBox']['lly'] : lower-left y coordinate in points</li><li>['BleedBox']['urx'] : upper-right x coordinate in points</li><li>['BleedBox']['ury'] : upper-right y coordinate in points</li><li>['TrimBox'] : the intended dimensions of the finished page after trimming:</li><li>['TrimBox']['llx'] : lower-left x coordinate in points</li><li>['TrimBox']['lly'] : lower-left y coordinate in points</li><li>['TrimBox']['urx'] : upper-right x coordinate in points</li><li>['TrimBox']['ury'] : upper-right y coordinate in points</li><li>['ArtBox'] : the extent of the page's meaningful content:</li><li>['ArtBox']['llx'] : lower-left x coordinate in points</li><li>['ArtBox']['lly'] : lower-left y coordinate in points</li><li>['ArtBox']['urx'] : upper-right x coordinate in points</li><li>['ArtBox']['ury'] : upper-right y coordinate in points</li><li>['BoxColorInfo'] :specify the colours and other visual characteristics that should be used in displaying guidelines on the screen for each of the possible page boundaries other than the MediaBox:</li><li>['BoxColorInfo'][BOXTYPE]['C'] : an array of three numbers in the range 0-255, representing the components in the DeviceRGB colour space.</li><li>['BoxColorInfo'][BOXTYPE]['W'] : the guideline width in default user units</li><li>['BoxColorInfo'][BOXTYPE]['S'] : the guideline style: S = Solid; D = Dashed</li><li>['BoxColorInfo'][BOXTYPE]['D'] : dash array defining a pattern of dashes and gaps to be used in drawing dashed guidelines</li><li>['trans'] : the style and duration of the visual transition to use when moving from another page to the given page during a presentation</li><li>['trans']['Dur'] : The page's display duration (also called its advance timing): the maximum length of time, in seconds, that the page shall be displayed during presentations before the viewer application shall automatically advance to the next page.</li><li>['trans']['S'] : transition style : Split, Blinds, Box, Wipe, Dissolve, Glitter, R, Fly, Push, Cover, Uncover, Fade</li><li>['trans']['D'] : The duration of the transition effect, in seconds.</li><li>['trans']['Dm'] : (Split and Blinds transition styles only) The dimension in which the specified transition effect shall occur: H = Horizontal, V = Vertical. Default value: H.</li><li>['trans']['M'] : (Split, Box and Fly transition styles only) The direction of motion for the specified transition effect: I = Inward from the edges of the page, O = Outward from the center of the pageDefault value: I.</li><li>['trans']['Di'] : (Wipe, Glitter, Fly, Cover, Uncover and Push transition styles only) The direction in which the specified transition effect shall moves, expressed in degrees counterclockwise starting from a left-to-right direction. If the value is a number, it shall be one of: 0 = Left to right, 90 = Bottom to top (Wipe only), 180 = Right to left (Wipe only), 270 = Top to bottom, 315 = Top-left to bottom-right (Glitter only). If the value is a name, it shall be None, which is relevant only for the Fly transition when the value of SS is not 1.0. Default value: 0.</li><li>['trans']['SS'] : (Fly transition style only) The starting or ending scale at which the changes shall be drawn. If M specifies an inward transition, the scale of the changes drawn shall progress from SS to 1.0 over the course of the transition. If M specifies an outward transition, the scale of the changes drawn shall progress from 1.0 to SS over the course of the transition. Default: 1.0.</li><li>['trans']['B'] : (Fly transition style only) If true, the area that shall be flown in is rectangular and opaque. Default: false.</li></ul>
+		 * @param mixed $format The format used for pages. It can be either: one of the string values specified at getPageSizeFromFormat() documentation or an array of two numners (width, height) or an array containing the following measures and options:<ul>
+		 * <li>['format'] = page format name (one of the above);</li>
+		 * <li>['Rotate'] : The number of degrees by which the page shall be rotated clockwise when displayed or printed. The value shall be a multiple of 90.</li>
+		 * <li>['PZ'] : The page's preferred zoom (magnification) factor.</li>
+		 * <li>['MediaBox'] : the boundaries of the physical medium on which the page shall be displayed or printed:</li>
+		 * <li>['MediaBox']['llx'] : lower-left x coordinate in points</li>
+		 * <li>['MediaBox']['lly'] : lower-left y coordinate in points</li>
+		 * <li>['MediaBox']['urx'] : upper-right x coordinate in points</li>
+		 * <li>['MediaBox']['ury'] : upper-right y coordinate in points</li>
+		 * <li>['CropBox'] : the visible region of default user space:</li>
+		 * <li>['CropBox']['llx'] : lower-left x coordinate in points</li>
+		 * <li>['CropBox']['lly'] : lower-left y coordinate in points</li>
+		 * <li>['CropBox']['urx'] : upper-right x coordinate in points</li>
+		 * <li>['CropBox']['ury'] : upper-right y coordinate in points</li>
+		 * <li>['BleedBox'] : the region to which the contents of the page shall be clipped when output in a production environment:</li>
+		 * <li>['BleedBox']['llx'] : lower-left x coordinate in points</li>
+		 * <li>['BleedBox']['lly'] : lower-left y coordinate in points</li>
+		 * <li>['BleedBox']['urx'] : upper-right x coordinate in points</li>
+		 * <li>['BleedBox']['ury'] : upper-right y coordinate in points</li>
+		 * <li>['TrimBox'] : the intended dimensions of the finished page after trimming:</li>
+		 * <li>['TrimBox']['llx'] : lower-left x coordinate in points</li>
+		 * <li>['TrimBox']['lly'] : lower-left y coordinate in points</li>
+		 * <li>['TrimBox']['urx'] : upper-right x coordinate in points</li>
+		 * <li>['TrimBox']['ury'] : upper-right y coordinate in points</li>
+		 * <li>['ArtBox'] : the extent of the page's meaningful content:</li>
+		 * <li>['ArtBox']['llx'] : lower-left x coordinate in points</li>
+		 * <li>['ArtBox']['lly'] : lower-left y coordinate in points</li>
+		 * <li>['ArtBox']['urx'] : upper-right x coordinate in points</li>
+		 * <li>['ArtBox']['ury'] : upper-right y coordinate in points</li>
+		 * <li>['BoxColorInfo'] :specify the colours and other visual characteristics that should be used in displaying guidelines on the screen for each of the possible page boundaries other than the MediaBox:</li>
+		 * <li>['BoxColorInfo'][BOXTYPE]['C'] : an array of three numbers in the range 0-255, representing the components in the DeviceRGB colour space.</li>
+		 * <li>['BoxColorInfo'][BOXTYPE]['W'] : the guideline width in default user units</li>
+		 * <li>['BoxColorInfo'][BOXTYPE]['S'] : the guideline style: S = Solid; D = Dashed</li>
+		 * <li>['BoxColorInfo'][BOXTYPE]['D'] : dash array defining a pattern of dashes and gaps to be used in drawing dashed guidelines</li>
+		 * <li>['trans'] : the style and duration of the visual transition to use when moving from another page to the given page during a presentation</li>
+		 * <li>['trans']['Dur'] : The page's display duration (also called its advance timing): the maximum length of time, in seconds, that the page shall be displayed during presentations before the viewer application shall automatically advance to the next page.</li>
+		 * <li>['trans']['S'] : transition style : Split, Blinds, Box, Wipe, Dissolve, Glitter, R, Fly, Push, Cover, Uncover, Fade</li>
+		 * <li>['trans']['D'] : The duration of the transition effect, in seconds.</li>
+		 * <li>['trans']['Dm'] : (Split and Blinds transition styles only) The dimension in which the specified transition effect shall occur: H = Horizontal, V = Vertical. Default value: H.</li>
+		 * <li>['trans']['M'] : (Split, Box and Fly transition styles only) The direction of motion for the specified transition effect: I = Inward from the edges of the page, O = Outward from the center of the pageDefault value: I.</li>
+		 * <li>['trans']['Di'] : (Wipe, Glitter, Fly, Cover, Uncover and Push transition styles only) The direction in which the specified transition effect shall moves, expressed in degrees counterclockwise starting from a left-to-right direction. If the value is a number, it shall be one of: 0 = Left to right, 90 = Bottom to top (Wipe only), 180 = Right to left (Wipe only), 270 = Top to bottom, 315 = Top-left to bottom-right (Glitter only). If the value is a name, it shall be None, which is relevant only for the Fly transition when the value of SS is not 1.0. Default value: 0.</li>
+		 * <li>['trans']['SS'] : (Fly transition style only) The starting or ending scale at which the changes shall be drawn. If M specifies an inward transition, the scale of the changes drawn shall progress from SS to 1.0 over the course of the transition. If M specifies an outward transition, the scale of the changes drawn shall progress from 1.0 to SS over the course of the transition. Default: 1.0.</li>
+		 * <li>['trans']['B'] : (Fly transition style only) If true, the area that shall be flown in is rectangular and opaque. Default: false.</li>
+		 * </ul>
+		 * @param string $orientation page orientation. Possible values are (case insensitive):<ul>
+		 * <li>P or Portrait (default)</li>
+		 * <li>L or Landscape</li>
+		 * <li>'' (empty string) for automatic orientation</li>
+		 * </ul>
 		 * @access protected
 		 * @since 3.0.015 (2008-06-06)
 		 * @see getPageSizeFromFormat()
@@ -2714,7 +2776,7 @@ if (!class_exists('TCPDF', false)) {
 
 		/**
 		 * Set page orientation.
-		 * @param string $orientation page orientation. Possible values are (case insensitive):<ul><li>P or PORTRAIT (default)</li><li>L or LANDSCAPE</li></ul>
+		 * @param string $orientation page orientation. Possible values are (case insensitive):<ul><li>P or Portrait (default)</li><li>L or Landscape</li><li>'' (empty string) for automatic orientation</li></ul>
 		 * @param boolean $autopagebreak Boolean indicating if auto-page-break mode should be on or off.
 		 * @param float $bottommargin bottom margin of the page.
 		 * @access public
@@ -3466,6 +3528,10 @@ if (!class_exists('TCPDF', false)) {
 		 * @see startPage(), endPage(), addTOCPage(), endTOCPage(), getPageSizeFromFormat(), setPageFormat()
 		 */
 		public function AddPage($orientation='', $format='', $keepmargins=false, $tocpage=false) {
+			if ($this->inxobj) {
+				// we are inside a template
+				return;
+			}
 			if (!isset($this->original_lMargin) OR $keepmargins) {
 				$this->original_lMargin = $this->lMargin;
 			}
@@ -4499,6 +4565,10 @@ if (!class_exists('TCPDF', false)) {
 			// initialize subsetchars to contain default ASCII values (0-255)
 			$subsetchars = array_fill(0, 256, true);
 			$this->setFontBuffer($fontkey, array('fontkey' => $fontkey, 'i' => $this->numfonts, 'type' => $type, 'name' => $name, 'desc' => $desc, 'up' => $up, 'ut' => $ut, 'cw' => $cw, 'dw' => $dw, 'enc' => $enc, 'cidinfo' => $cidinfo, 'file' => $file, 'ctg' => $ctg, 'subset' => $subset, 'subsetchars' => $subsetchars));
+			if ($this->inxobj) {
+				// we are inside a template
+				$this->xobjects[$this->xobjid]['fonts'][$fontkey] = $this->numfonts;
+			}
 			if (isset($diff) AND (!empty($diff))) {
 				//Search existing encodings
 				$d = 0;
@@ -4653,6 +4723,10 @@ if (!class_exists('TCPDF', false)) {
 		 * @see Cell(), Write(), Image(), Link(), SetLink()
 		 */
 		public function AddLink() {
+			if ($this->inxobj) {
+				// we are inside a template
+				return;
+			}
 			//Create a new internal link
 			$n = count($this->links) + 1;
 			$this->links[$n] = array(0, 0);
@@ -4669,6 +4743,10 @@ if (!class_exists('TCPDF', false)) {
 		 * @see AddLink()
 		 */
 		public function SetLink($link, $y=0, $page=-1) {
+			if ($this->inxobj) {
+				// we are inside a template
+				return;
+			}
 			if ($y == -1) {
 				$y = $this->y;
 			}
@@ -4709,6 +4787,10 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 4.0.018 (2008-08-06)
 		 */
 		public function Annotation($x, $y, $w, $h, $text, $opt=array('Subtype'=>'Text'), $spaces=0) {
+			if ($this->inxobj) {
+				// we are inside a template
+				return;
+			}
 			if ($x === '') {
 				$x = $this->x;
 			}
@@ -4983,7 +5065,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @param int $stretch stretch carachter mode: <ul><li>0 = disabled</li><li>1 = horizontal scaling only if necessary</li><li>2 = forced horizontal scaling</li><li>3 = character spacing only if necessary</li><li>4 = forced character spacing</li></ul>
 		 * @param boolean $ignore_min_height if true ignore automatic minimum height value.
 		 * @param string $calign cell vertical alignment relative to the specified Y value. Possible values are:<ul><li>T : cell top</li><li>C : center</li><li>B : cell bottom</li><li>A : font top</li><li>L : font baseline</li><li>D : font bottom</li></ul>
-		 * @param string $valign text vertical alignment inside the cell. Possible values are:<ul><li>T : top</li><li>C : center</li><li>B : bottom</li></ul>
+		 * @param string $valign text vertical alignment inside the cell. Possible values are:<ul><li>T : top</li><li>M : middle</li><li>B : bottom</li></ul>
 		 * @return string containing cell code
 		 * @access protected
 		 * @since 1.0
@@ -5017,6 +5099,7 @@ if (!class_exists('TCPDF', false)) {
 							break;
 						}
 						default:
+						case 'C':
 						case 'M': {
 							// center
 							$y -= (($h - $this->FontAscent - $this->FontDescent) / 2);
@@ -5039,6 +5122,7 @@ if (!class_exists('TCPDF', false)) {
 							break;
 						}
 						default:
+						case 'C':
 						case 'M': {
 							// center
 							$y -= (($h + $this->FontAscent - $this->FontDescent) / 2);
@@ -5061,6 +5145,7 @@ if (!class_exists('TCPDF', false)) {
 							break;
 						}
 						default:
+						case 'C':
 						case 'M': {
 							// center
 							$y -= (($h + $this->FontAscent + $this->FontDescent) / 2);
@@ -5098,6 +5183,7 @@ if (!class_exists('TCPDF', false)) {
 					break;
 				}
 				default:
+				case 'C':
 				case 'M': {
 					// center
 					$basefonty = $y + (($h + $this->FontAscent - $this->FontDescent) / 2);
@@ -6858,7 +6944,7 @@ if (!class_exists('TCPDF', false)) {
 			if ($link) {
 				$this->Link($ximg, $y, $w, $h, $link, 0);
 			}
-			// set pointer to align the successive text/objects
+			// set pointer to align the next text/objects
 			switch($align) {
 				case 'T': {
 					$this->y = $y;
@@ -6884,6 +6970,10 @@ if (!class_exists('TCPDF', false)) {
 				}
 			}
 			$this->endlinex = $this->img_rb_x;
+			if ($this->inxobj) {
+				// we are inside a template
+				$this->xobjects[$this->xobjid]['images'][] = $info['i'];
+			}
 			return $info['i'];
 		}
 
@@ -8475,7 +8565,7 @@ if (!class_exists('TCPDF', false)) {
 		protected function _putAPXObject($w=0, $h=0, $stream='') {
 			$stream = trim($stream);
 			$out = $this->_getobj()."\n";
-			$this->xobjects['AX'.$this->n] = $this->n;
+			$this->xobjects['AX'.$this->n] = array('n' => $this->n);
 			$out .= '<<';
 			$out .= ' /Type /XObject';
 			$out .= ' /Subtype /Form';
@@ -9643,7 +9733,7 @@ if (!class_exists('TCPDF', false)) {
 			foreach ($this->imagekeys as $file) {
 				$info = $this->getImageBuffer($file);
 				$oid = $this->_newobj();
-				$this->xobjects['I'.$info['i']] = $oid;
+				$this->xobjects['I'.$info['i']] = array('n' => $oid);
 				$this->setImageSubBuffer($file, 'n', $this->n);
 				$out = '<</Type /XObject';
 				$out .= ' /Subtype /Image';
@@ -9691,6 +9781,60 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
+		 * Output Form XObjects Templates.
+		 * @author Nicola Asuni
+		 * @since 5.8.017 (2010-08-24)
+		 * @access protected
+		 * @see startTemplate(), endTemplate(), printTemplate()
+		 */
+		protected function _putxobjects() {
+			foreach ($this->xobjects as $key => $data) {
+				if (isset($data['outdata'])) {
+					$stream = trim($data['outdata']);
+					$out = $this->_getobj($data['n'])."\n";
+					$out .= '<<';
+					$out .= ' /Type /XObject';
+					$out .= ' /Subtype /Form';
+					$out .= ' /FormType 1';
+					if ($this->compress) {
+						$stream = gzcompress($stream);
+						$out .= ' /Filter /FlateDecode';
+					}
+					$out .= sprintf(' /BBox [0 0 %.2F %.2F]', ($data['w'] * $this->k), ($data['h'] * $this->k));
+					$out .= ' /Matrix [1 0 0 1 0 0]';
+					$out .= ' /Resources <<';
+					$out .= ' /ProcSet [/PDF /Text /ImageB /ImageC /ImageI]';
+					// fonts
+					if (!empty($data['fonts'])) {
+						$out .= ' /Font <<';
+						foreach ($data['fonts'] as $fontkey => $fontid) {
+							$out .= ' /F'.$fontid.' '.$this->font_obj_ids[$fontkey].' 0 R';
+						}
+						$out .= ' >>';
+					}
+					// images or nested xobjects
+					if (!empty($data['images']) OR !empty($data['xobjects'])) {
+						$out .= ' /XObject <<';
+						foreach ($data['images'] as $imgid) {
+							$out .= ' /I'.$imgid.' '.$this->xobjects['I'.$imgid]['n'].' 0 R';
+						}
+						foreach ($data['xobjects'] as $sub_id => $sub_objid) {
+							$out .= ' /'.$sub_id.' '.$sub_objid['n'].' 0 R';
+						}
+						$out .= ' >>';
+					}
+					$out .= ' >>';
+					$stream = $this->_getrawstream($stream);
+					$out .= ' /Length '.strlen($stream);
+					$out .= ' >>';
+					$out .= ' stream'."\n".$stream."\n".'endstream';
+					$out .= "\n".'endobj';
+					$this->_out($out);
+				}
+			}
+		}
+
+		/**
 		 * Output Spot Colors Resources.
 		 * @access protected
 		 * @since 4.0.024 (2008-09-12)
@@ -9718,7 +9862,7 @@ if (!class_exists('TCPDF', false)) {
 		protected function _getxobjectdict() {
 			$out = '';
 			foreach ($this->xobjects as $id => $objid) {
-				$out .= ' /'.$id.' '.$objid.' 0 R';
+				$out .= ' /'.$id.' '.$objid['n'].' 0 R';
 			}
 			return $out;
 		}
@@ -9790,6 +9934,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->_putocg();
 			$this->_putfonts();
 			$this->_putimages();
+			$this->_putxobjects();
 			$this->_putspotcolors();
 			$this->_putshaders();
 			$this->_putresourcedict();
@@ -10381,7 +10526,10 @@ if (!class_exists('TCPDF', false)) {
 		 */
 		protected function _out($s) {
 			if ($this->state == 2) {
-				if ((!$this->InFooter) AND isset($this->footerlen[$this->page]) AND ($this->footerlen[$this->page] > 0)) {
+				if ($this->inxobj) {
+					// we are inside a template
+					$this->xobjects[$this->xobjid]['outdata'] .= $s."\n";
+				} elseif ((!$this->InFooter) AND isset($this->footerlen[$this->page]) AND ($this->footerlen[$this->page] > 0)) {
 					// puts data before page footer
 					$pagebuff = $this->getPageBuffer($this->page);
 					$page = substr($pagebuff, 0, -$this->footerlen[$this->page]);
@@ -11531,6 +11679,7 @@ if (!class_exists('TCPDF', false)) {
 			//calculate elements of transformation matrix
 			$s_x /= 100;
 			$s_y /= 100;
+			$tm = array();
 			$tm[0] = $s_x;
 			$tm[1] = 0;
 			$tm[2] = 0;
@@ -11621,6 +11770,7 @@ if (!class_exists('TCPDF', false)) {
 		 */
 		public function Translate($t_x, $t_y) {
 			//calculate elements of transformation matrix
+			$tm = array();
 			$tm[0] = 1;
 			$tm[1] = 0;
 			$tm[2] = 0;
@@ -11650,6 +11800,7 @@ if (!class_exists('TCPDF', false)) {
 			$y = ($this->h - $y) * $this->k;
 			$x *= $this->k;
 			//calculate elements of transformation matrix
+			$tm = array();
 			$tm[0] = cos(deg2rad($angle));
 			$tm[1] = sin(deg2rad($angle));
 			$tm[2] = -$tm[1];
@@ -11709,6 +11860,7 @@ if (!class_exists('TCPDF', false)) {
 			$x *= $this->k;
 			$y = ($this->h - $y) * $this->k;
 			//calculate elements of transformation matrix
+			$tm = array();
 			$tm[0] = 1;
 			$tm[1] = tan(deg2rad($angle_y));
 			$tm[2] = tan(deg2rad($angle_x));
@@ -15459,7 +15611,7 @@ if (!class_exists('TCPDF', false)) {
 					$this->gradients[$idgs]['pattern'] = $this->n;
 					// luminosity XObject
 					$oid = $this->_newobj();
-					$this->xobjects['LX'.$oid] = $oid;
+					$this->xobjects['LX'.$oid] = array('n' => $oid);
 					$filter = '';
 					$stream = 'q /a0 gs /Pattern cs /p'.$idgs.' scn 0 0 '.$this->wPt.' '.$this->hPt.' re f Q';
 					if ($this->compress) {
@@ -15469,7 +15621,8 @@ if (!class_exists('TCPDF', false)) {
 					$stream = $this->_getrawstream($stream);
 					$out = '<< /Type /XObject /Subtype /Form /FormType 1'.$filter;
 					$out .= ' /Length '.strlen($stream);
-					$out .= ' /BBox [0 0 '.$this->wPt.' '.$this->hPt.']';
+					$rect = sprintf('%.2F %.2F', $this->wPt, $this->hPt);
+					$out .= ' /BBox [0 0 '.$rect.']';
 					$out .= ' /Group << /Type /Group /S /Transparency /CS /DeviceGray >>';
 					$out .= ' /Resources <<';
 					$out .= ' /ExtGState << /a0 << /ca 1 /CA 1 >> >>';
@@ -15792,7 +15945,7 @@ if (!class_exists('TCPDF', false)) {
 			if ($link) {
 				$this->Link($ximg, $y, $w, $h, $link, 0);
 			}
-			// set pointer to align the successive text/objects
+			// set pointer to align the next text/objects
 			switch($align) {
 				case 'T':{
 					$this->y = $y;
@@ -15849,7 +16002,6 @@ if (!class_exists('TCPDF', false)) {
 		 * @param int $h height in user units (empty string = remaining page height)
 		 * @param float $xres width of the smallest bar in user units (empty string = default value = 0.4mm)
 		 * @param array $style array of options:<ul>
-
 		 <li>boolean $style['border'] if true prints a border</li>
 		 <li>int $style['padding'] padding to leave around the barcode (minimum distance between the barcode and the containing cell border) in user units (set to 'auto' for automatic padding)</li><li>array $style['fgcolor'] color array for bars and text</li><li>mixed $style['bgcolor'] color array for background (set to false for transparent)</li><li>boolean $style["text"] boolean if true prints text below the barcode</li><li>string $style['font'] font name for text</li><li>int $style['fontsize'] font size for text</li><li>int $style['stretchtext']: 0 = disabled; 1 = horizontal scaling only if necessary; 2 = forced horizontal scaling; 3 = character spacing only if necessary; 4 = forced character spacing.</li><li>string $style['position'] horizontal position of the containing barcode cell on the page: L = left margin; C = center; R = right margin.</li><li>string $style['align'] horizontal position of the barcode on the containing rectangle: L = left; C = center; R = right.</li><li>string $style['stretch'] if true stretch the barcode to best fit the available width, otherwise uses $xres resolution for a single bar.</li><li>string $style['fitwidth'] if true reduce the width to fit the barcode width + padding. When this option is enabled the 'stretch' option is automatically disabled.</li><li>string $style['cellfitalign'] this option works only when 'fitwidth' is true and 'position' is unset or empty. Set the horizontal position of the containing barcode cell inside the specified rectangle: L = left; C = center; R = right.</li></ul>
 		 * @param string $align Indicates the alignment of the pointer next to barcode insertion relative to barcode height. The value can be:<ul><li>T: top-right for LTR or top-left for RTL</li><li>M: middle-right for LTR or middle-left for RTL</li><li>B: bottom-right for LTR or bottom-left for RTL</li><li>N: next line</li></ul>
@@ -16095,7 +16247,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->rtl = $tempRTL;
 			// restore previous settings
 			$this->setGraphicVars($gvars);
-			// set pointer to align the successive text/objects
+			// set pointer to align the next text/objects
 			switch($align) {
 				case 'T':{
 					$this->y = $y;
@@ -16367,7 +16519,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->rtl = $tempRTL;
 			// restore previous settings
 			$this->setGraphicVars($gvars);
-			// set pointer to align the successive text/objects
+			// set pointer to align the next text/objects
 			switch($align) {
 				case 'T':{
 					$this->y = $y;
@@ -20635,7 +20787,7 @@ if (!class_exists('TCPDF', false)) {
 
 		/**
 		 * Returns current graphic variables as array.
-		 * @return array graphic variables
+		 * @return array of graphic variables
 		 * @access protected
 		 * @since 4.2.010 (2008-11-14)
 		 */
@@ -20668,18 +20820,35 @@ if (!class_exists('TCPDF', false)) {
 				'listcount' => $this->listcount,
 				'lispacer' => $this->lispacer,
 				'cell_height_ratio' => $this->cell_height_ratio,
-				'lasth' => $this->lasth
+				// extended
+				'lasth' => $this->lasth,
+				'tMargin' => $this->tMargin,
+				'bMargin' => $this->bMargin,
+				'AutoPageBreak' => $this->AutoPageBreak,
+				'PageBreakTrigger' => $this->PageBreakTrigger,
+				'x' => $this->x,
+				'y' => $this->y,
+				'w' => $this->w,
+				'h' => $this->h,
+				'wPt' => $this->wPt,
+				'hPt' => $this->hPt,
+				'fwPt' => $this->fwPt,
+				'fhPt' => $this->fhPt,
+				'page' => $this->page,
+				'current_column' => $this->current_column,
+				'num_columns' => $this->num_columns
 				);
 			return $grapvars;
 		}
 
 		/**
 		 * Set graphic variables.
-		 * @param $gvars array graphic variables
+		 * @param array $gvars array of graphic variablesto restore
+		 * @param boolean $extended if true restore extended graphic variables
 		 * @access protected
 		 * @since 4.2.010 (2008-11-14)
 		 */
-		protected function setGraphicVars($gvars) {
+		protected function setGraphicVars($gvars, $extended=false) {
 			$this->FontFamily = $gvars['FontFamily'];
 			$this->FontStyle = $gvars['FontStyle'];
 			$this->FontSizePt = $gvars['FontSizePt'];
@@ -20707,7 +20876,25 @@ if (!class_exists('TCPDF', false)) {
 			$this->listcount = $gvars['listcount'];
 			$this->lispacer = $gvars['lispacer'];
 			$this->cell_height_ratio = $gvars['cell_height_ratio'];
-			//$this->lasth = $gvars['lasth'];
+			if ($extended) {
+				// restore extended values
+				$this->lasth = $gvars['lasth'];
+				$this->tMargin = $gvars['tMargin'];
+				$this->bMargin = $gvars['bMargin'];
+				$this->AutoPageBreak = $gvars['AutoPageBreak'];
+				$this->PageBreakTrigger = $gvars['PageBreakTrigger'];
+				$this->x = $gvars['x'];
+				$this->y = $gvars['y'];
+				$this->w = $gvars['w'];
+				$this->h = $gvars['h'];
+				$this->wPt = $gvars['wPt'];
+				$this->hPt = $gvars['hPt'];
+				$this->fwPt = $gvars['fwPt'];
+				$this->fhPt = $gvars['fhPt'];
+				$this->page = $gvars['page'];
+				$this->current_column = $gvars['current_column'];
+				$this->num_columns = $gvars['num_columns'];
+			}
 			$this->_out(''.$this->linestyleWidth.' '.$this->linestyleCap.' '.$this->linestyleJoin.' '.$this->linestyleDash.' '.$this->DrawColor.' '.$this->FillColor.'');
 			if (!$this->empty_string($this->FontFamily)) {
 				$this->SetFont($this->FontFamily, $this->FontStyle, $this->FontSizePt);
@@ -22282,6 +22469,205 @@ if (!class_exists('TCPDF', false)) {
 			return $this->CurrentFont['fontkey'];
 		}
 
+		/**
+		 * Start a new XObject Template.
+		 * An XObject Template is a PDF block that is a self-contained description of any sequence of graphics objects (including path objects, text objects, and sampled images).
+		 * An XObject Template may be painted multiple times, either on several pages or at several locations on the same page and produces the same results each time, subject only to the graphics state at the time it is invoked.
+		 * Note: X,Y coordinates will be reset to 0,0.
+		 * @param int $w Template width in user units (empty string or zero = page width less margins)
+		 * @param int $h Template height in user units (empty string or zero = page height less margins)
+		 * @return int the XObject Template ID in case of success or false in case of error.
+		 * @author Nicola Asuni
+		 * @access public
+		 * @since 5.8.017 (2010-08-24)
+		 * @see endTemplate(), printTemplate()
+		 */
+		public function startTemplate($w=0, $h=0) {
+			if ($this->inxobj) {
+				// we are inside a template
+				return false;
+			}
+			$this->inxobj = true;
+			++$this->n;
+			// XObject ID
+			$this->xobjid = 'XT'.$this->n;
+			// object ID
+			$this->xobjects[$this->xobjid] = array('n' => $this->n);
+			// store current graphic state
+			$this->xobjects[$this->xobjid]['gvars'] = $this->getGraphicVars();
+			// initialize data
+			$this->xobjects[$this->xobjid]['outdata'] = '';
+			$this->xobjects[$this->xobjid]['xobjects'] = array();
+			$this->xobjects[$this->xobjid]['images'] = array();
+			$this->xobjects[$this->xobjid]['fonts'] = array();
+			// set new environment
+			$this->num_columns = 1;
+			$this->current_column = 0;
+			$this->SetAutoPageBreak(false);
+			if (($w === '') OR ($w <= 0)) {
+				$w = $this->w - $this->lMargin - $this->rMargin;
+			}
+			if (($h === '') OR ($h <= 0)) {
+				$h = $this->h - $this->tMargin - $this->bMargin;
+			}
+			$this->xobjects[$this->xobjid]['w'] = $w;
+			$this->xobjects[$this->xobjid]['h'] = $h;
+			$this->w = $w;
+			$this->h = $h;
+			$this->wPt = $this->w * $this->k;
+			$this->hPt = $this->h * $this->k;
+			$this->fwPt = $this->wPt;
+			$this->fhPt = $this->hPt;
+			$this->x = 0;
+			$this->y = 0;
+			$this->lMargin = 0;
+			$this->rMargin = 0;
+			$this->tMargin = 0;
+			$this->bMargin = 0;
+			return $this->xobjid;
+		}
+
+		/**
+		 * End the current XObject Template started with startTemplate() and restore the previous graphic state.
+		 * An XObject Template is a PDF block that is a self-contained description of any sequence of graphics objects (including path objects, text objects, and sampled images).
+		 * An XObject Template may be painted multiple times, either on several pages or at several locations on the same page and produces the same results each time, subject only to the graphics state at the time it is invoked.
+		 * @return int the XObject Template ID in case of success or false in case of error.
+		 * @author Nicola Asuni
+		 * @access public
+		 * @since 5.8.017 (2010-08-24)
+		 * @see startTemplate(), printTemplate()
+		 */
+		public function endTemplate() {
+			if (!$this->inxobj) {
+				// we are not inside a template
+				return false;
+			}
+			$this->inxobj = false;
+			// restore previous graphic state
+			$this->setGraphicVars($this->xobjects[$this->xobjid]['gvars'], true);
+			return $this->xobjid;
+		}
+
+		/**
+		 * Print an XObject Template.
+		 * You can print an XObject Template inside the currently opened Template.
+		 * An XObject Template is a PDF block that is a self-contained description of any sequence of graphics objects (including path objects, text objects, and sampled images).
+		 * An XObject Template may be painted multiple times, either on several pages or at several locations on the same page and produces the same results each time, subject only to the graphics state at the time it is invoked.
+		 * @param string $id The ID of XObject Template to print.
+		 * @param int $x X position in user units (empty string = current x position)
+		 * @param int $y Y position in user units (empty string = current y position)
+		 * @param int $w Width in user units (zero = remaining page width)
+		 * @param int $h Height in user units (zero = remaining page height)
+		 * @param string $align Indicates the alignment of the pointer next to template insertion relative to template height. The value can be:<ul><li>T: top-right for LTR or top-left for RTL</li><li>M: middle-right for LTR or middle-left for RTL</li><li>B: bottom-right for LTR or bottom-left for RTL</li><li>N: next line</li></ul>
+		 * @param string $palign Allows to center or align the template on the current line. Possible values are:<ul><li>L : left align</li><li>C : center</li><li>R : right align</li><li>'' : empty string : left for LTR or right for RTL</li></ul>
+		 * @param boolean $fitonpage if true the template is resized to not exceed page dimensions.
+		 * @author Nicola Asuni
+		 * @access public
+		 * @since 5.8.017 (2010-08-24)
+		 * @see startTemplate(), endTemplate()
+		 */
+		public function printTemplate($id, $x='', $y='', $w=0, $h=0, $align='', $palign='', $fitonpage=false) {
+			if (!isset($this->xobjects[$id])) {
+				$this->Error('The XObject Template \''.$id.'\' doesn\'t exist!');
+			}
+			if ($this->inxobj) {
+				if ($id == $this->xobjid) {
+					// close current template
+					$this->endTemplate();
+				} else {
+					// use the template as resource for the template currently opened
+					$this->xobjects[$this->xobjid]['xobjects'][$id] = $this->xobjects[$id];
+				}
+			}
+			// set default values
+			if ($x === '') {
+				$x = $this->x;
+			}
+			if ($y === '') {
+				$y = $this->y;
+			}
+			$ow = $this->xobjects[$this->xobjid]['w'];
+			$oh = $this->xobjects[$this->xobjid]['h'];
+			// calculate image width and height on document
+			if (($w <= 0) AND ($h <= 0)) {
+				$w = $ow;
+				$h = $oh;
+			} elseif ($w <= 0) {
+				$w = $h * $ow / $oh;
+			} elseif ($h <= 0) {
+				$h = $w * $oh / $ow;
+			}
+			// fit the image on available space
+			$this->fitBlock($w, $h, $x, $y, $fitonpage);
+			// set page alignment
+			$rb_y = $y + $h;
+			// set alignment
+			if ($this->rtl) {
+				if ($palign == 'L') {
+					$xt = $this->lMargin;
+				} elseif ($palign == 'C') {
+					$xt = ($this->w + $this->lMargin - $this->rMargin - $w) / 2;
+				} elseif ($palign == 'R') {
+					$xt = $this->w - $this->rMargin - $w;
+				} else {
+					$xt = $x - $w;
+				}
+				$rb_x = $xt;
+			} else {
+				if ($palign == 'L') {
+					$xt = $this->lMargin;
+				} elseif ($palign == 'C') {
+					$xt = ($this->w + $this->lMargin - $this->rMargin - $w) / 2;
+				} elseif ($palign == 'R') {
+					$xt = $this->w - $this->rMargin - $w;
+				} else {
+					$xt = $x;
+				}
+				$rb_x = $xt + $w;
+			}
+			// print XObject Template + Transformation matrix
+			$this->StartTransform();
+			// translate and scale
+			$sx = ($w / $this->xobjects[$this->xobjid]['w']);
+			$sy = ($h / $this->xobjects[$this->xobjid]['h']);
+			$tm = array();
+			$tm[0] = $sx;
+			$tm[1] = 0;
+			$tm[2] = 0;
+			$tm[3] = $sy;
+			$tm[4] = $xt * $this->k;
+			$tm[5] = ($this->h - $h - $y) * $this->k;
+			$this->Transform($tm);
+			// set object
+			$this->_out('/'.$id.' Do');
+			$this->StopTransform();
+			// set pointer to align the next text/objects
+			switch($align) {
+				case 'T': {
+					$this->y = $y;
+					$this->x = $rb_x;
+					break;
+				}
+				case 'M': {
+					$this->y = $y + round($h/2);
+					$this->x = $rb_x;
+					break;
+				}
+				case 'B': {
+					$this->y = $rb_y;
+					$this->x = $rb_x;
+					break;
+				}
+				case 'N': {
+					$this->SetY($rb_y);
+					break;
+				}
+				default:{
+					break;
+				}
+			}
+		}
+
 		// -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
 		// SVG METHODS
 		// -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
@@ -22536,7 +22922,7 @@ if (!class_exists('TCPDF', false)) {
 			if ($link) {
 				$this->Link($ximg, $y, $w, $h, $link, 0);
 			}
-			// set pointer to align the successive text/objects
+			// set pointer to align the next text/objects
 			switch($align) {
 				case 'T':{
 					$this->y = $y;

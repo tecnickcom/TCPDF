@@ -8,8 +8,8 @@ http:  sourceforge.net/donate/index.php?group_id=128076
 ------------------------------------------------------------
 
 Name: TCPDF
-Version: 5.8.016
-Release date: 2010-08-24
+Version: 5.8.017
+Release date: 2010-08-25
 Author:	Nicola Asuni
 
 Copyright (c) 2002-2010:
@@ -50,6 +50,7 @@ Main Features:
     * automatic page numbering and page groups;
     * move and delete pages;
     * page compression (requires php-zlib extension);
+    * XOBject Templates;
 
 
 Installation (full instructions on http:  www.tcpdf.org):
