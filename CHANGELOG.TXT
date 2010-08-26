@@ -1,3 +1,8 @@
+5.8.019 (2010-08-26)
+	- XObject Templates now includes support for links and annotations.
+	- A problem related to link alignment on cell was fixed.
+	- A problem related to SVG styles was fixed.
+
 5.8.018 (2010-08-25)
 	- Method getNumberOfColumns() was added.
 	- A problem related to table header was fixed.

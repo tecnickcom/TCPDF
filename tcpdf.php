@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.8.018
+// Version     : 5.8.019
 // Begin       : 2002-08-03
-// Last Update : 2010-08-25
+// Last Update : 2010-08-26
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -128,7 +128,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.8.018
+ * @version 5.8.019
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.8.018 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.8.019 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.8.018
+	* @version 5.8.019
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1523,7 +1523,7 @@ if (!class_exists('TCPDF', false)) {
 		protected $xobjects = array();
 
 		/**
-		 * @var boolean true when we are inside a XObject
+		 * @var boolean true when we are inside an XObject
 		 * @access protected
 		 * @since 5.8.017 (2010-08-24)
 		 */
@@ -3529,7 +3529,7 @@ if (!class_exists('TCPDF', false)) {
 		 */
 		public function AddPage($orientation='', $format='', $keepmargins=false, $tocpage=false) {
 			if ($this->inxobj) {
-				// we are inside a template
+				// we are inside an XObject template
 				return;
 			}
 			if (!isset($this->original_lMargin) OR $keepmargins) {
@@ -4566,7 +4566,7 @@ if (!class_exists('TCPDF', false)) {
 			$subsetchars = array_fill(0, 256, true);
 			$this->setFontBuffer($fontkey, array('fontkey' => $fontkey, 'i' => $this->numfonts, 'type' => $type, 'name' => $name, 'desc' => $desc, 'up' => $up, 'ut' => $ut, 'cw' => $cw, 'dw' => $dw, 'enc' => $enc, 'cidinfo' => $cidinfo, 'file' => $file, 'ctg' => $ctg, 'subset' => $subset, 'subsetchars' => $subsetchars));
 			if ($this->inxobj) {
-				// we are inside a template
+				// we are inside an XObject template
 				$this->xobjects[$this->xobjid]['fonts'][$fontkey] = $this->numfonts;
 			}
 			if (isset($diff) AND (!empty($diff))) {
@@ -4723,10 +4723,6 @@ if (!class_exists('TCPDF', false)) {
 		 * @see Cell(), Write(), Image(), Link(), SetLink()
 		 */
 		public function AddLink() {
-			if ($this->inxobj) {
-				// we are inside a template
-				return;
-			}
 			//Create a new internal link
 			$n = count($this->links) + 1;
 			$this->links[$n] = array(0, 0);
@@ -4743,10 +4739,6 @@ if (!class_exists('TCPDF', false)) {
 		 * @see AddLink()
 		 */
 		public function SetLink($link, $y=0, $page=-1) {
-			if ($this->inxobj) {
-				// we are inside a template
-				return;
-			}
 			if ($y == -1) {
 				$y = $this->y;
 			}
@@ -4788,7 +4780,8 @@ if (!class_exists('TCPDF', false)) {
 		 */
 		public function Annotation($x, $y, $w, $h, $text, $opt=array('Subtype'=>'Text'), $spaces=0) {
 			if ($this->inxobj) {
-				// we are inside a template
+				// store parameters for later use on template
+				$this->xobjects[$this->xobjid]['annotations'][] = array('x' => $x, 'y' => $y, 'w' => $w, 'h' => $h, 'text' => $text, 'opt' => $opt, 'spaces' => $spaces);
 				return;
 			}
 			if ($x === '') {
@@ -4798,7 +4791,7 @@ if (!class_exists('TCPDF', false)) {
 				$y = $this->y;
 			}
 			// recalculate coordinates to account for graphic transformations
-			if (isset($this->transfmatrix)) {
+			if (isset($this->transfmatrix) AND !empty($this->transfmatrix)) {
 				for ($i=$this->transfmatrix_key; $i > 0; --$i) {
 					$maxid = count($this->transfmatrix[$i]) - 1;
 					for ($j=$maxid; $j >= 0; --$j) {
@@ -5095,7 +5088,7 @@ if (!class_exists('TCPDF', false)) {
 						}
 						case 'B': {
 							// bottom
-							$y -= ($h - $this->FontAscent - $this->FontDescent - ($this->LineWidth / 2));
+							$y -= ($h - $this->FontAscent - $this->FontDescent - $this->cMargin - ($this->LineWidth / 2));
 							break;
 						}
 						default:
@@ -5118,7 +5111,7 @@ if (!class_exists('TCPDF', false)) {
 						}
 						case 'B': {
 							// bottom
-							$y -= ($h - $this->FontDescent - ($this->LineWidth / 2));
+							$y -= ($h - $this->FontDescent- $this->cMargin - ($this->LineWidth / 2));
 							break;
 						}
 						default:
@@ -5136,7 +5129,7 @@ if (!class_exists('TCPDF', false)) {
 					switch ($valign) {
 						case 'T': {
 							// top
-							$y -= ($this->FontAscent + $this->FontDescent + ($this->LineWidth / 2));
+							$y -= ($this->FontAscent + $this->FontDescent + $this->cMargin + ($this->LineWidth / 2));
 							break;
 						}
 						case 'B': {
@@ -5148,7 +5141,7 @@ if (!class_exists('TCPDF', false)) {
 						case 'C':
 						case 'M': {
 							// center
-							$y -= (($h + $this->FontAscent + $this->FontDescent) / 2);
+							$y -= (($h + $this->FontAscent + $this->FontDescent) / 2)  + $this->cMargin;
 							break;
 						}
 					}
@@ -5175,11 +5168,13 @@ if (!class_exists('TCPDF', false)) {
 				case 'T': {
 					// top
 					$basefonty = $y + $this->FontAscent + ($this->LineWidth / 2);
+					$yt = $y + ($this->LineWidth / 2);
 					break;
 				}
 				case 'B': {
 					// bottom
-					$basefonty = $y + $h - $this->FontDescent - ($this->LineWidth / 2);
+					$basefonty = $y + $h - $this->FontDescent - $this->cMargin - ($this->LineWidth / 2);
+					$yt = $y + $h - $this->FontSize - $this->cMargin - ($this->LineWidth / 2);
 					break;
 				}
 				default:
@@ -5187,6 +5182,7 @@ if (!class_exists('TCPDF', false)) {
 				case 'M': {
 					// center
 					$basefonty = $y + (($h + $this->FontAscent - $this->FontDescent) / 2);
+					$yt = $y + (($h - $this->FontSize) / 2);
 					break;
 				}
 			}
@@ -5385,7 +5381,7 @@ if (!class_exists('TCPDF', false)) {
 					$s .= ' Q';
 				}
 				if ($link) {
-					$this->Link($xdx, $y + (($h - $this->FontSize)/2), $width, $this->FontSize, $link, $ns);
+					$this->Link($xdx, $yt, $width, ($this->FontSize + $this->cMargin), $link, $ns);
 				}
 			}
 			// output cell
@@ -6971,7 +6967,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 			$this->endlinex = $this->img_rb_x;
 			if ($this->inxobj) {
-				// we are inside a template
+				// we are inside an XObject template
 				$this->xobjects[$this->xobjid]['images'][] = $info['i'];
 			}
 			return $info['i'];
@@ -8077,6 +8073,7 @@ if (!class_exists('TCPDF', false)) {
 											// reference to XObject that define the appearance for this mode-state
 											$apsobjid = $this->_putAPXObject($c, $d, $stream);
 											$annots .= ' /'.$apstate.' '.$apsobjid.' 0 R';
+											$annots .= ' /'.$apstate.' /'.$stream;
 										}
 										$annots .= ' >>';
 									} else {
@@ -10527,7 +10524,7 @@ if (!class_exists('TCPDF', false)) {
 		protected function _out($s) {
 			if ($this->state == 2) {
 				if ($this->inxobj) {
-					// we are inside a template
+					// we are inside an XObject template
 					$this->xobjects[$this->xobjid]['outdata'] .= $s."\n";
 				} elseif ((!$this->InFooter) AND isset($this->footerlen[$this->page]) AND ($this->footerlen[$this->page] > 0)) {
 					// puts data before page footer
@@ -14379,6 +14376,11 @@ if (!class_exists('TCPDF', false)) {
 			$prop['display'] = 'display.noPrint';
 			// get annotation data
 			$popt = $this->getAnnotOptFromJSProp($prop);
+			$this->annotation_fonts[$this->CurrentFont['fontkey']] = $this->CurrentFont['i'];
+			$fontstyle = sprintf('/F%d %.2F Tf %s', $this->CurrentFont['i'], $this->FontSizePt, $this->TextColor);
+			$popt['da'] = $fontstyle;
+			$popt['ap'] = array();
+			$popt['ap']['n'] = 'q BT '.$fontstyle.' ET Q';
 			// set additional default options
 			if (!isset($popt['mk'])) {
 				$popt['mk'] = array();
@@ -14393,11 +14395,6 @@ if (!class_exists('TCPDF', false)) {
 			$popt['mk']['ca'] = $this->_textstring($caption, $ann_obj_id);
 			$popt['mk']['rc'] = $this->_textstring($caption, $ann_obj_id);
 			$popt['mk']['ac'] = $this->_textstring($caption, $ann_obj_id);
-			$this->annotation_fonts[$this->CurrentFont['fontkey']] = $this->CurrentFont['i'];
-			$fontstyle = sprintf('/F%d %.2F Tf %s', $this->CurrentFont['i'], $this->FontSizePt, $this->TextColor);
-			$popt['da'] = $fontstyle;
-			$popt['ap'] = array();
-			$popt['ap']['n'] = 'q BT '.$fontstyle.' ET Q';
 			// merge options
 			$opt = array_merge($popt, $opt);
 			// set remaining annotation data
@@ -22496,7 +22493,7 @@ if (!class_exists('TCPDF', false)) {
 		 */
 		public function startTemplate($w=0, $h=0) {
 			if ($this->inxobj) {
-				// we are inside a template
+				// we are already inside an XObject template
 				return false;
 			}
 			$this->inxobj = true;
@@ -22512,6 +22509,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->xobjects[$this->xobjid]['xobjects'] = array();
 			$this->xobjects[$this->xobjid]['images'] = array();
 			$this->xobjects[$this->xobjid]['fonts'] = array();
+			$this->xobjects[$this->xobjid]['annotations'] = array();
 			// set new environment
 			$this->num_columns = 1;
 			$this->current_column = 0;
@@ -22598,8 +22596,8 @@ if (!class_exists('TCPDF', false)) {
 			if ($y === '') {
 				$y = $this->y;
 			}
-			$ow = $this->xobjects[$this->xobjid]['w'];
-			$oh = $this->xobjects[$this->xobjid]['h'];
+			$ow = $this->xobjects[$id]['w'];
+			$oh = $this->xobjects[$id]['h'];
 			// calculate image width and height on document
 			if (($w <= 0) AND ($h <= 0)) {
 				$w = $ow;
@@ -22640,8 +22638,8 @@ if (!class_exists('TCPDF', false)) {
 			// print XObject Template + Transformation matrix
 			$this->StartTransform();
 			// translate and scale
-			$sx = ($w / $this->xobjects[$this->xobjid]['w']);
-			$sy = ($h / $this->xobjects[$this->xobjid]['h']);
+			$sx = ($w / $this->xobjects[$id]['w']);
+			$sy = ($h / $this->xobjects[$id]['h']);
 			$tm = array();
 			$tm[0] = $sx;
 			$tm[1] = 0;
@@ -22653,6 +22651,19 @@ if (!class_exists('TCPDF', false)) {
 			// set object
 			$this->_out('/'.$id.' Do');
 			$this->StopTransform();
+			// add annotations
+			if (!empty($this->xobjects[$id]['annotations'])) {
+				foreach ($this->xobjects[$id]['annotations'] as $annot) {
+					// transform original coordinates
+					$coordlt = $this->getTransformationMatrixProduct($tm, array(1, 0, 0, 1, ($annot['x'] * $this->k), (-$annot['y'] * $this->k)));
+					$ax = ($coordlt[4] / $this->k);
+					$ay = ($this->h - $h - ($coordlt[5] / $this->k));
+					$coordrb = $this->getTransformationMatrixProduct($tm, array(1, 0, 0, 1, (($annot['x'] + $annot['w']) * $this->k), ((-$annot['y'] - $annot['h']) * $this->k)));
+					$aw = ($coordrb[4] / $this->k) - $ax;
+					$ah = ($this->h - $h - ($coordrb[5] / $this->k)) - $ay;
+					$this->Annotation($ax, $ay, $aw, $ah, $annot['text'], $annot['opt'], $annot['spaces']);
+				}
+			}
 			// set pointer to align the next text/objects
 			switch($align) {
 				case 'T': {
@@ -23744,7 +23755,7 @@ if (!class_exists('TCPDF', false)) {
 			// get styling properties
 			$prev_svgstyle = $this->svgstyles[(count($this->svgstyles) - 1)]; // previous style
 			$svgstyle = array(); // current style
-			if (isset($attribs['style'])) {
+			if (isset($attribs['style']) AND !$this->empty_string($attribs['style'])) {
 				$attribs['style'] = ';'.$attribs['style'];
 			}
 			foreach ($prev_svgstyle as $key => $val) {
@@ -23754,7 +23765,7 @@ if (!class_exists('TCPDF', false)) {
 					} else {
 						$svgstyle[$key] = $attribs[$key];
 					}
-				} elseif (isset($attribs['style'])) {
+				} elseif (isset($attribs['style']) AND !$this->empty_string($attribs['style'])) {
 					// CSS style syntax
 					$attrval = array();
 					if (preg_match('/[;\"\s]{1}'.$key.'[\s]*:[\s]*([^;\"]*)/si', $attribs['style'], $attrval) AND isset($attrval[1])) {
@@ -23765,7 +23776,13 @@ if (!class_exists('TCPDF', false)) {
 						}
 					} else {
 						// default value
-						$svgstyle[$key] = $this->svgstyles[0][$key];
+						if (in_array($key, $this->svginheritprop)) {
+							// inherit previous value
+							$svgstyle[$key] = $val;
+						} else {
+							// default value
+							$svgstyle[$key] = $this->svgstyles[0][$key];
+						}
 					}
 				} else {
 					if (in_array($key, $this->svginheritprop)) {
