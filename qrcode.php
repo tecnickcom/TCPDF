@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : qrcode.php
-// Version     : 1.0.005
+// Version     : 1.0.006
 // Begin       : 2010-03-22
-// Last Update : 2010-08-08
+// Last Update : 2010-08-30
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -79,7 +79,7 @@
  * @copyright 2010-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 1.0.005
+ * @version 1.0.006
  */
 
 // definitions
@@ -295,7 +295,7 @@ if (!class_exists('QRcode', false)) {
 	 * @copyright 2010-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 	 * @link http://www.tcpdf.org
 	 * @license http://www.gnu.org/copyleft/lesser.html LGPL
-	 * @version 1.0.005
+	 * @version 1.0.006
 	 */
 	class QRcode {
 
@@ -663,6 +663,9 @@ if (!class_exists('QRcode', false)) {
 			}
 			$this->items = array();
 			$this->encodeString($code);
+			if (is_null($this->data)) {
+				return false;
+			}
 			$qrTab = $this->binarize($this->data);
 			$size = count($qrTab);
 			$barcode_array['num_rows'] = $size;
@@ -2060,6 +2063,9 @@ if (!class_exists('QRcode', false)) {
 		 * @return array bitstream
 		 */
 		 protected function appendPaddingBit($bstream) {
+		 	if (is_null($bstream)) {
+		 		return null;
+		 	}
 			$bits = count($bstream);
 			$maxwords = $this->getDataLength($this->version, $this->level);
 			$maxbits = $maxwords * 8;
@@ -2091,6 +2097,9 @@ if (!class_exists('QRcode', false)) {
 		 */
 		 protected function mergeBitStream($items) {
 			$items = $this->convertData($items);
+			if (!is_array($items)) {
+				return null;
+			}
 			$bstream = array();
 			foreach ($items as $item) {
 				$bstream = $this->appendBitstream($bstream, $item['bstream']);
@@ -2227,6 +2236,9 @@ if (!class_exists('QRcode', false)) {
 		 * @return array of bytes
 		 */
 		 protected function bitstreamToByte($bstream) {
+			if (is_null($bstream)) {
+		 		return null;
+		 	}
 			$size = count($bstream);
 			if ($size == 0) {
 				return array();

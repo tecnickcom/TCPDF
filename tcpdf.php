@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.8.020
+// Version     : 5.8.021
 // Begin       : 2002-08-03
-// Last Update : 2010-08-26
+// Last Update : 2010-08-30
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -128,7 +128,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.8.020
+ * @version 5.8.021
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.8.020 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.8.021 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.8.020
+	* @version 5.8.021
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -16352,7 +16352,7 @@ if (!class_exists('TCPDF', false)) {
 			// create new barcode object
 			$barcodeobj = new TCPDF2DBarcode($code, $type);
 			$arrcode = $barcodeobj->getBarcodeArray();
-			if ($arrcode === false) {
+			if (($arrcode === false) OR empty($arrcode)) {
 				$this->Error('Error in 2D barcode string');
 			}
 			// set default values
@@ -18498,11 +18498,11 @@ if (!class_exists('TCPDF', false)) {
 					} else {
 						$pask = 0;
 					}
-					if ($dom[$key]['tag'] AND $dom[$key]['opening'] AND ($dom[$key]['value'] == 'table')) {
+					if (!($dom[$key]['tag'] AND !$dom[$key]['opening'] AND ($dom[$key]['value'] == 'table') AND ($this->emptypagemrk[$this->page] == $this->pagelen[$this->page]))) {
 						$this->SetFont($fontname, $fontstyle, $fontsize);
-					}
-					if ($wfill) {
-						$this->SetFillColorArray($this->bgcolor);
+						if ($wfill) {
+							$this->SetFillColorArray($this->bgcolor);
+						}
 					}
 				} // end newline
 				if (isset($opentagpos)) {

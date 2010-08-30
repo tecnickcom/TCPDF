@@ -1,3 +1,7 @@
+5.8.021 (2010-08-30)
+	- A new CID-0 'chinese' font was added for traditional Chinese.
+	- Bug #3054287 'Inner tags are ignored due to "align" attribute' was fixed.
+
 5.8.020 (2010-08-26)
 	- CSS "catch-all" class selector is now supported.
 

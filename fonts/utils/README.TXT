@@ -109,7 +109,7 @@ Setting up a font for usage with TCPDF requires the following steps:
                       + // Chinese Simplified
                         $enc='UniCNS-UTF16-H';
                         $cidinfo=array('Registry'=>'Adobe', 'Ordering'=>'CNS1','Supplement'=>0);
-                        include(dirname(__FILE__).'/uni2cid_ac16.php');
+                        include(dirname(__FILE__).'/uni2cid_ac15.php');
 
                       + // Chinese Traditional
                         $enc='UniGB-UTF16-H';
