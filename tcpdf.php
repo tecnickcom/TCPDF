@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.8.022
+// Version     : 5.8.023
 // Begin       : 2002-08-03
 // Last Update : 2010-08-31
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
@@ -128,7 +128,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.8.022
+ * @version 5.8.023
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.8.022 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.8.023 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.8.022
+	* @version 5.8.023
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -643,7 +643,6 @@ if (!class_exists('TCPDF', false)) {
 		 */
 		protected $default_table_columns = 4;
 
-
 		// variables for html parser
 
 		/**
@@ -798,7 +797,6 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 2.1.002 (2008-02-12)
 		 */
 		protected $OutlineRoot;
-
 
 		// --- javascript and form ---
 
@@ -959,7 +957,6 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 3.2.000 (2008-07-01)
 		 */
 		protected $footerpos = array();
-
 
 		/**
 		 * Array used to store footer length of each page.
@@ -3488,7 +3485,6 @@ if (!class_exists('TCPDF', false)) {
 		public function getPage() {
 			return $this->page;
 		}
-
 
 		/**
 		 * Get the total number of insered pages.
@@ -8080,7 +8076,6 @@ if (!class_exists('TCPDF', false)) {
 											// reference to XObject that define the appearance for this mode-state
 											$apsobjid = $this->_putAPXObject($c, $d, $stream);
 											$annots .= ' /'.$apstate.' '.$apsobjid.' 0 R';
-											$annots .= ' /'.$apstate.' /'.$stream;
 										}
 										$annots .= ' >>';
 									} else {
@@ -11895,7 +11890,6 @@ if (!class_exists('TCPDF', false)) {
 
 		// END TRANSFORMATIONS SECTION -------------------------
 
-
 		// START GRAPHIC FUNCTIONS SECTION ---------------------
 		// The following section is based on the code provided by David Hernandez Sanz
 
@@ -12360,7 +12354,6 @@ if (!class_exists('TCPDF', false)) {
 				$this->_outLine($xc, $yc);
 			}
 		}
-
 
 		/**
 		 * Draws a circle.

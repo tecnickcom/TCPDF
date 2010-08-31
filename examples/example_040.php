@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_040.php
 // Begin       : 2008-10-28
-// Last Update : 2010-08-08
+// Last Update : 2010-08-31
 //
 // Description : Example 040 for TCPDF class
 //               Booklet mode (double-sided pages)
@@ -87,27 +87,27 @@ $pdf->AddPage();
 $pdf->Write(0, 'Example of booklet mode', '', 0, 'L', true, 0, false, false, 0);
 
 // print a line using Cell()
-$pdf->Cell(0, 0, 'LEFT PAGE 1', 1, 1, 'C');
+$pdf->Cell(0, 0, 'PAGE 1', 1, 1, 'C');
 
 
 // add a page (right page)
 $pdf->AddPage();
 
 // print a line using Cell()
-$pdf->Cell(0, 0, 'RIGHT PAGE 2', 1, 1, 'C');
+$pdf->Cell(0, 0, 'PAGE 2', 1, 1, 'C');
 
 
 // add a page (left page)
 $pdf->AddPage();
 
 // print a line using Cell()
-$pdf->Cell(0, 0, 'LEFT PAGE 3', 1, 1, 'C');
+$pdf->Cell(0, 0, 'PAGE 3', 1, 1, 'C');
 
 // add a page (right page)
 $pdf->AddPage();
 
 // print a line using Cell()
-$pdf->Cell(0, 0, 'RIGHT PAGE 4', 1, 1, 'C');
+$pdf->Cell(0, 0, 'PAGE 4', 1, 1, 'C');
 
 // ---------------------------------------------------------
 
