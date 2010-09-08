@@ -1,3 +1,6 @@
+5.8.024 (2010-09-08)
+	- Bug #3062005 "Undefined variable: ann_obj_id" was fixed.
+
 5.8.023 (2010-08-31)
 	- Forms bug added on version 5.8.019 was fixed.
 

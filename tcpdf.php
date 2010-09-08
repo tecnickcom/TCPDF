@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.8.023
+// Version     : 5.8.024
 // Begin       : 2002-08-03
-// Last Update : 2010-08-31
+// Last Update : 2010-09-08
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -128,7 +128,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.8.023
+ * @version 5.8.024
  */
 
 /**
@@ -152,14 +152,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.8.023 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.8.024 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.8.023
+	* @version 5.8.024
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -14385,12 +14385,9 @@ if (!class_exists('TCPDF', false)) {
 			if (!isset($popt['mk'])) {
 				$popt['mk'] = array();
 			}
-			if (!empty($action)) {
-				if (is_array($action)) {
-					$ann_obj_id = ($this->n + 1);
-				} else {
-					$ann_obj_id = ($this->n + 2);
-				}
+			$ann_obj_id = ($this->n + 1);
+			if (!empty($action) AND !is_array($action)) {
+				$ann_obj_id = ($this->n + 2);
 			}
 			$popt['mk']['ca'] = $this->_textstring($caption, $ann_obj_id);
 			$popt['mk']['rc'] = $this->_textstring($caption, $ann_obj_id);
