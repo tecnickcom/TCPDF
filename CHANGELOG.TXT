@@ -1,3 +1,6 @@
+5.8.025 (2010-09-09)
+	- Bug #3062692 "Textarea inside a table" was fixed.
+
 5.8.024 (2010-09-08)
 	- Bug #3062005 "Undefined variable: ann_obj_id" was fixed.
 
