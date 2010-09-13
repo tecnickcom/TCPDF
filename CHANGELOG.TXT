@@ -1,3 +1,6 @@
+5.8.026 (2010-09-13)
+	- A bug on addHTMLTOC() method was fixed. Note: be sure that the #TOC_PAGE_NUMBER# template has enough width to be printed correctly.
+
 5.8.025 (2010-09-09)
 	- Bug #3062692 "Textarea inside a table" was fixed.
 
