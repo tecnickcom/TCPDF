@@ -1,3 +1,6 @@
+5.8.029 (2010-09-16)
+	- A problem with HTML borders was fixed.
+
 5.8.028 (2010-09-13)
 	- Bug #3065224 "mcrypt_create_iv error on TCPDF 5.8.027 on PHP 5.3.2" was fixed.
 

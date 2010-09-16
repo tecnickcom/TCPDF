@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.8.028
+// Version     : 5.8.029
 // Begin       : 2002-08-03
-// Last Update : 2010-09-13
+// Last Update : 2010-09-16
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -33,7 +33,8 @@
 // NOTE:
 //   This class was originally derived in 2002 from the Public
 //   Domain FPDF class by Olivier Plathey (http://www.fpdf.org),
-//   but now is almost entirely rewritten.
+//   but now is almost entirely rewritten and contains thousands of
+//   new lines of code and hundreds new features.
 //
 // Main features:
 //  * no external libraries are required for the basic functions;
@@ -128,7 +129,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.8.028
+ * @version 5.8.029
  */
 
 /**
@@ -152,14 +153,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.8.028 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.8.029 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.8.028
+	* @version 5.8.029
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -17000,6 +17001,9 @@ if (!class_exists('TCPDF', false)) {
 					break;
 				}
 			}
+			if ($style == 'none') {
+				return array();
+			}
 			$border['cap'] = 'square';
 			$border['join'] = 'miter';
 			$border['dash'] = $this->getCSSBorderDashStyle($style);
@@ -17455,7 +17459,10 @@ if (!class_exists('TCPDF', false)) {
 							}
 							// check for CSS border properties
 							if (isset($dom[$key]['style']['border'])) {
-								$dom[$key]['border']['LTRB'] = $this->getCSSBorderStyle($dom[$key]['style']['border']);
+								$borderstyle = $this->getCSSBorderStyle($dom[$key]['style']['border']);
+								if (!empty($borderstyle)) {
+									$dom[$key]['border']['LTRB'] = $borderstyle;
+								}
 							}
 							if (isset($dom[$key]['style']['border-color'])) {
 								$brd_colors = preg_split('/[\s]+/', trim($dom[$key]['style']['border-color']));
@@ -17525,7 +17532,10 @@ if (!class_exists('TCPDF', false)) {
 							$borderside = array('L' => 'left', 'R' => 'right', 'T' => 'top', 'B' => 'bottom');
 							foreach ($borderside as $bsk => $bsv) {
 								if (isset($dom[$key]['style']['border-'.$bsv])) {
-									$dom[$key]['border'][$bsk] = $this->getCSSBorderStyle($dom[$key]['style']['border-'.$bsv]);
+									$borderstyle = $this->getCSSBorderStyle($dom[$key]['style']['border-'.$bsv]);
+									if (!empty($borderstyle)) {
+										$dom[$key]['border'][$bsk] = $borderstyle;
+									}
 								}
 								if (isset($dom[$key]['style']['border-'.$bsv.'-color'])) {
 									$dom[$key]['border'][$bsk]['color'] = $this->convertHTMLColorToDec($dom[$key]['style']['border-'.$bsv.'-color']);
@@ -17566,7 +17576,10 @@ if (!class_exists('TCPDF', false)) {
 							}
 						}
 						if (isset($dom[$key]['attribute']['border']) AND ($dom[$key]['attribute']['border'] != 0)) {
-							$dom[$key]['border']['LTRB'] = $this->getCSSBorderStyle($dom[$key]['attribute']['border'].' solid black');
+							$borderstyle = $this->getCSSBorderStyle($dom[$key]['attribute']['border'].' solid black');
+							if (!empty($borderstyle)) {
+								$dom[$key]['border']['LTRB'] = $borderstyle;
+							}
 						}
 						// check for font tag
 						if ($dom[$key]['value'] == 'font') {
@@ -19060,7 +19073,7 @@ if (!class_exists('TCPDF', false)) {
 		protected function openHTMLTagHandler(&$dom, $key, $cell) {
 			$tag = $dom[$key];
 			$parent = $dom[($dom[$key]['parent'])];
-			$firstorlast = ($key == 1);
+			$firsttag = ($key == 1);
 			// check for text direction attribute
 			if (isset($tag['attribute']['dir'])) {
 				$this->setTempRTL($tag['attribute']['dir']);
@@ -19141,7 +19154,7 @@ if (!class_exists('TCPDF', false)) {
 					} else {
 						$hrHeight = $this->GetLineWidth();
 					}
-					$this->addHTMLVertSpace($hbz, ($hrHeight / 2), $cell, $firstorlast);
+					$this->addHTMLVertSpace($hbz, ($hrHeight / 2), $cell, $firsttag);
 					$x = $this->GetX();
 					$y = $this->GetY();
 					$wtmp = $this->w - $this->lMargin - $this->rMargin;
@@ -19271,14 +19284,14 @@ if (!class_exists('TCPDF', false)) {
 				case 'dl': {
 					++$this->listnum;
 					if ($this->listnum == 1) {
-						$this->addHTMLVertSpace($hbz, $hb, $cell, $firstorlast);
+						$this->addHTMLVertSpace($hbz, $hb, $cell, $firsttag);
 					} else {
-						$this->addHTMLVertSpace(0, 0, $cell, $firstorlast);
+						$this->addHTMLVertSpace(0, 0, $cell, $firsttag);
 					}
 					break;
 				}
 				case 'dt': {
-					$this->addHTMLVertSpace($hbz, 0, $cell, $firstorlast);
+					$this->addHTMLVertSpace($hbz, 0, $cell, $firsttag);
 					break;
 				}
 				case 'dd': {
@@ -19288,7 +19301,7 @@ if (!class_exists('TCPDF', false)) {
 						$this->lMargin += $this->listindent;
 					}
 					++$this->listindentlevel;
-					$this->addHTMLVertSpace($hbz, 0, $cell, $firstorlast);
+					$this->addHTMLVertSpace($hbz, 0, $cell, $firsttag);
 					break;
 				}
 				case 'ul':
@@ -19313,14 +19326,14 @@ if (!class_exists('TCPDF', false)) {
 					}
 					++$this->listindentlevel;
 					if ($this->listnum == 1) {
-						$this->addHTMLVertSpace($hbz, $hb, $cell, $firstorlast);
+						$this->addHTMLVertSpace($hbz, $hb, $cell, $firsttag);
 					} else {
-						$this->addHTMLVertSpace(0, 0, $cell, $firstorlast);
+						$this->addHTMLVertSpace(0, 0, $cell, $firsttag);
 					}
 					break;
 				}
 				case 'li': {
-					$this->addHTMLVertSpace($hbz, 0, $cell, $firstorlast);
+					$this->addHTMLVertSpace($hbz, 0, $cell, $firsttag);
 					if ($this->listordered[$this->listnum]) {
 						// ordered item
 						if (isset($parent['attribute']['type']) AND !$this->empty_string($parent['attribute']['type'])) {
@@ -19357,23 +19370,23 @@ if (!class_exists('TCPDF', false)) {
 						$this->lMargin += $this->listindent;
 					}
 					++$this->listindentlevel;
-					$this->addHTMLVertSpace($hbz, $hb, $cell, $firstorlast);
+					$this->addHTMLVertSpace($hbz, $hb, $cell, $firsttag);
 					break;
 				}
 				case 'br': {
-					$this->addHTMLVertSpace($hbz, 0, $cell, $firstorlast);
+					$this->addHTMLVertSpace($hbz, 0, $cell, $firsttag);
 					break;
 				}
 				case 'div': {
-					$this->addHTMLVertSpace($hbz, 0, $cell, $firstorlast);
+					$this->addHTMLVertSpace($hbz, 0, $cell, $firsttag);
 					break;
 				}
 				case 'p': {
-					$this->addHTMLVertSpace($hbz, $hb, $cell, $firstorlast);
+					$this->addHTMLVertSpace($hbz, $hb, $cell, $firsttag);
 					break;
 				}
 				case 'pre': {
-					$this->addHTMLVertSpace($hbz, $hb, $cell, $firstorlast);
+					$this->addHTMLVertSpace($hbz, $hb, $cell, $firsttag);
 					$this->premode = true;
 					break;
 				}
@@ -19391,7 +19404,7 @@ if (!class_exists('TCPDF', false)) {
 				case 'h4':
 				case 'h5':
 				case 'h6': {
-					$this->addHTMLVertSpace($hbz, $hb, $cell, $firstorlast);
+					$this->addHTMLVertSpace($hbz, $hb, $cell, $firsttag);
 					break;
 				}
 				// Form fields (since 4.8.000 - 2009-09-07)
@@ -19661,7 +19674,7 @@ if (!class_exists('TCPDF', false)) {
 		protected function closeHTMLTagHandler(&$dom, $key, $cell, $maxbottomliney=0) {
 			$tag = $dom[$key];
 			$parent = $dom[($dom[$key]['parent'])];
-			$firstorlast = ((!isset($dom[($key + 1)])) OR ((!isset($dom[($key + 2)])) AND ($dom[($key + 1)]['value'] == 'marker')));
+			$lasttag = ((!isset($dom[($key + 1)])) OR ((!isset($dom[($key + 2)])) AND ($dom[($key + 1)]['value'] == 'marker')));
 			$in_table_head = false;
 			// maximum x position (used to draw borders)
 			if ($this->rtl) {
@@ -20040,7 +20053,7 @@ if (!class_exists('TCPDF', false)) {
 					break;
 				}
 				case 'div': {
-					$this->addHTMLVertSpace($hbz, 0, $cell, $firstorlast);
+					$this->addHTMLVertSpace($hbz, 0, $cell, false, $lasttag);
 					break;
 				}
 				case 'blockquote': {
@@ -20050,15 +20063,15 @@ if (!class_exists('TCPDF', false)) {
 						$this->lMargin -= $this->listindent;
 					}
 					--$this->listindentlevel;
-					$this->addHTMLVertSpace($hbz, $hb, $cell, $firstorlast);
+					$this->addHTMLVertSpace($hbz, $hb, $cell, false, $lasttag);
 					break;
 				}
 				case 'p': {
-					$this->addHTMLVertSpace($hbz, $hb, $cell, $firstorlast);
+					$this->addHTMLVertSpace($hbz, $hb, $cell, false, $lasttag);
 					break;
 				}
 				case 'pre': {
-					$this->addHTMLVertSpace($hbz, $hb, $cell, $firstorlast);
+					$this->addHTMLVertSpace($hbz, $hb, $cell, false, $lasttag);
 					$this->premode = false;
 					break;
 				}
@@ -20066,16 +20079,16 @@ if (!class_exists('TCPDF', false)) {
 					--$this->listnum;
 					if ($this->listnum <= 0) {
 						$this->listnum = 0;
-						$this->addHTMLVertSpace($hbz, $hb, $cell, $firstorlast);
+						$this->addHTMLVertSpace($hbz, $hb, $cell, false, $lasttag);
 					} else {
-						$this->addHTMLVertSpace(0, 0, $cell, $firstorlast);
+						$this->addHTMLVertSpace(0, 0, $cell, false, $lasttag);
 					}
 					$this->lasth = $this->FontSize * $this->cell_height_ratio;
 					break;
 				}
 				case 'dt': {
 					$this->lispacer = '';
-					$this->addHTMLVertSpace(0, 0, $cell, $firstorlast);
+					$this->addHTMLVertSpace(0, 0, $cell, false, $lasttag);
 					break;
 				}
 				case 'dd': {
@@ -20086,7 +20099,7 @@ if (!class_exists('TCPDF', false)) {
 						$this->lMargin -= $this->listindent;
 					}
 					--$this->listindentlevel;
-					$this->addHTMLVertSpace(0, 0, $cell, $firstorlast);
+					$this->addHTMLVertSpace(0, 0, $cell, false, $lasttag);
 					break;
 				}
 				case 'ul':
@@ -20101,16 +20114,16 @@ if (!class_exists('TCPDF', false)) {
 					--$this->listindentlevel;
 					if ($this->listnum <= 0) {
 						$this->listnum = 0;
-						$this->addHTMLVertSpace($hbz, $hb, $cell, $firstorlast);
+						$this->addHTMLVertSpace($hbz, $hb, $cell, false, $lasttag);
 					} else {
-						$this->addHTMLVertSpace(0, 0, $cell, $firstorlast);
+						$this->addHTMLVertSpace(0, 0, $cell, false, $lasttag);
 					}
 					$this->lasth = $this->FontSize * $this->cell_height_ratio;
 					break;
 				}
 				case 'li': {
 					$this->lispacer = '';
-					$this->addHTMLVertSpace(0, 0, $cell, $firstorlast);
+					$this->addHTMLVertSpace(0, 0, $cell, false, $lasttag);
 					break;
 				}
 				case 'h1':
@@ -20119,7 +20132,7 @@ if (!class_exists('TCPDF', false)) {
 				case 'h4':
 				case 'h5':
 				case 'h6': {
-					$this->addHTMLVertSpace($hbz, $hb, $cell, $firstorlast);
+					$this->addHTMLVertSpace($hbz, $hb, $cell, false, $lasttag);
 					break;
 				}
 				// Form fields (since 4.8.000 - 2009-09-07)
@@ -20155,12 +20168,18 @@ if (!class_exists('TCPDF', false)) {
 		 * @param string $hbz Distance between current y and line bottom.
 		 * @param string $hb The height of the break.
 		 * @param boolean $cell if true add the default cMargin space to each new line (default false).
-		 * @param boolean $firstorlast if true do not print additional empty lines.
+		 * @param boolean $firsttag set to true when the tag is the first.
+		 * @param boolean $lasttag set to true when the tag is the last.
 		 * @access protected
 		 */
-		protected function addHTMLVertSpace($hbz=0, $hb=0, $cell=false, $firstorlast=false) {
-			if ($firstorlast) {
+		protected function addHTMLVertSpace($hbz=0, $hb=0, $cell=false, $firsttag=false, $lasttag=false) {
+			if ($firsttag) {
 				$this->Ln(0, $cell);
+				$this->htmlvspace = 0;
+				return;
+			}
+			if ($lasttag) {
+				$this->Ln($hbz, $cell);
 				$this->htmlvspace = 0;
 				return;
 			}
@@ -20190,8 +20209,8 @@ if (!class_exists('TCPDF', false)) {
 
 		/**
 		 * Draw an HTML block border and fill
-		 * @param array $tag array of tag properties
-		 * @param $xmax end X coordinate for border
+		 * @param array $tag array of tag properties.
+		 * @param int $xmax end X coordinate for border.
 		 * @access protected
 		 * @since 5.7.000 (2010-08-03)
 		 */
