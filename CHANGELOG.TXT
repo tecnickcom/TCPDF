@@ -1,3 +1,6 @@
+5.8.030 (2010-09-17)
+	- SVG support was improved and some bugs were fixed.
+
 5.8.029 (2010-09-16)
 	- A problem with HTML borders was fixed.
 
