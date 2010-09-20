@@ -1,3 +1,6 @@
+5.8.031 (2010-09-20)
+	- Bug #3071961 "Spaces in HTML" was fixed.
+
 5.8.030 (2010-09-17)
 	- SVG support was improved and some bugs were fixed.
 
