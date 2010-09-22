@@ -1,3 +1,6 @@
+5.8.032 (2010-09-22)
+	- Bug #3073165 "Issues with changes to addHTMLVertSpace()" was fixed.
+
 5.8.031 (2010-09-20)
 	- Bug #3071961 "Spaces in HTML" was fixed.
 
