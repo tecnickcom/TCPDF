@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.8.032
+// Version     : 5.8.033
 // Begin       : 2002-08-03
-// Last Update : 2010-09-22
+// Last Update : 2010-09-25
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -130,7 +130,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.8.032
+ * @version 5.8.033
  */
 
 /**
@@ -154,14 +154,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.8.032 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.8.033 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.8.032
+	* @version 5.8.033
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -3899,6 +3899,8 @@ if (!class_exists('TCPDF', false)) {
 			$this->_out("\n");
 			if ($this->print_footer) {
 				$this->setGraphicVars($this->default_graphic_vars);
+				$this->current_column = 0;
+				$this->num_columns = 1;
 				$temp_thead = $this->thead;
 				$temp_theadMargins = $this->theadMargins;
 				$lasth = $this->lasth;
@@ -3928,6 +3930,8 @@ if (!class_exists('TCPDF', false)) {
 			}
 			// restore graphic settings
 			$this->setGraphicVars($gvars);
+			$this->current_column = $gvars['current_column'];
+			$this->num_columns = $gvars['num_columns'];
 			// calculate footer length
 			$this->footerlen[$this->page] = $this->pagelen[$this->page] - $this->footerpos[$this->page] + 1;
 		}
@@ -6663,8 +6667,8 @@ if (!class_exists('TCPDF', false)) {
 		 * It is possible to put a link on the image.<br />
 		 * Remark: if an image is used several times, only one copy will be embedded in the file.<br />
 		 * @param string $file Name of the file containing the image.
-		 * @param float $x Abscissa of the upper-left corner.
-		 * @param float $y Ordinate of the upper-left corner.
+		 * @param float $x Abscissa of the upper-left corner (LTR) or upper-right corner (RTL).
+		 * @param float $y Ordinate of the upper-left corner (LTR) or upper-right corner (RTL).
 		 * @param float $w Width of the image in the page. If not specified or equal to zero, it is automatically calculated.
 		 * @param float $h Height of the image in the page. If not specified or equal to zero, it is automatically calculated.
 		 * @param string $type Image format. Possible values are (case insensitive): JPEG and PNG (whitout GD library) and all images supported by GD: GD, GD2, GD2PART, GIF, JPEG, PNG, BMP, XBM, XPM;. If not specified, the type is inferred from the file extension.

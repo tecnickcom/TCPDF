@@ -3,13 +3,13 @@ TCPDF - README
 
 I WISH TO IMPROVE AND EXPAND TCPDF BUT I NEED YOUR SUPPORT.
 PLEASE MAKE A DONATION:
-http:  sourceforge.net/donate/index.php?group_id=128076
+http://sourceforge.net/donate/index.php?group_id=128076
 
 ------------------------------------------------------------
 
 Name: TCPDF
-Version: 5.8.032
-Release date: 2010-09-22
+Version: 5.8.033
+Release date: 2010-09-25
 Author:	Nicola Asuni
 
 Copyright (c) 2002-2010:

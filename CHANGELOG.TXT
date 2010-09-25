@@ -1,3 +1,6 @@
+5.8.033 (2010-09-25)
+	- A problem with Footer() and multiple columns was fixed.
+
 5.8.032 (2010-09-22)
 	- Bug #3073165 "Issues with changes to addHTMLVertSpace()" was fixed.
 
