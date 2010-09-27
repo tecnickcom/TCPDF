@@ -1,3 +1,6 @@
+5.8.034 (2010-09-27)
+	- A bug related to SetFont on XObject templates was fixed.
+
 5.8.033 (2010-09-25)
 	- A problem with Footer() and multiple columns was fixed.
 
