@@ -1,3 +1,17 @@
+5.9.000 (2010-10-04)
+	- Support for text stretching and spacing (kerning) was added, see example n. 63 and methods setFontStretching(), getFontStretching(), setFontSpacing(), getFontSpacing().
+	- Support for CSS properties 'font-stretch' and 'letter-spacing' was added (see example n. 63).
+	- The cMargin state was replaced by cell_padding array that can be set/get using setCellPadding() and getCellPadding() methods.
+	- Methods getCellPaddings() and setCellPaddings() were added to fine tune cell paddings (see example n. 5).
+	- Methods getCellMargins() and setCellMargins() were added to fine tune cell margins (see example n. 5).
+	- Method write1DBarcode() was improved to permit custom labels (see example n. 27).
+	- Method ImagePngAlpha() now includes support for ImageMagick to improve performances.
+	- XObject Template support was extended to support Multicell(), writeHTML() and writeHTMLCell() methods.
+	- The signature of getNumLines() and getStringHeight() methods is changed.
+	- Example n. 57 was updated.
+
+// -------------------------------------------------------------------
+
 5.8.034 (2010-09-27)
 	- A bug related to SetFont on XObject templates was fixed.
 

@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_005.php
 // Begin       : 2008-03-04
-// Last Update : 2010-08-08
+// Last Update : 2010-10-04
 //
 // Description : Example 005 for TCPDF class
 //               Multicell
@@ -75,6 +75,12 @@ $pdf->SetFont('times', '', 10);
 // add a page
 $pdf->AddPage();
 
+// set cell padding
+$pdf->setCellPaddings(1, 1, 1, 1);
+
+// set cell margins
+$pdf->setCellMargins(1, 1, 1, 1);
+
 // set color for background
 $pdf->SetFillColor(255, 255, 127);
 
@@ -102,6 +108,8 @@ $pdf->MultiCell(55, 40, '[VERTICAL ALIGNMENT - BOTTOM] '.$txt, 1, 'J', 1, 1, '',
 
 $pdf->Ln(4);
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 // set color for background
 $pdf->SetFillColor(215, 235, 255);
 
@@ -113,11 +121,32 @@ Fusce et felis vitae diam lobortis sollicitudin. Aenean tincidunt accumsan nisi,
 // print a blox of text using multicell()
 $pdf->MultiCell(80, 5, $txt."\n", 1, 'J', 1, 1, '' ,'', true);
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// AUTO-FITTING
+
 // set color for background
 $pdf->SetFillColor(255, 235, 235);
 
 // Fit text on cell by reducing font size
-$pdf->MultiCell(55, 60, '[FIT CELL] '.$txt."\n", 1, 'J', 1, 1, 125, 135, true, 0, false, true, 60, 'M', true);
+$pdf->MultiCell(55, 60, '[FIT CELL] '.$txt."\n", 1, 'J', 1, 1, 125, 145, true, 0, false, true, 60, 'M', true);
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// CUSTOM PADDING
+
+// set color for background
+$pdf->SetFillColor(255, 255, 215);
+
+// set font
+$pdf->SetFont('helvetica', '', 8);
+
+// set cell padding
+$pdf->setCellPaddings(2, 4, 6, 8);
+
+$txt = "CUSTOM PADDING:\nLeft=2, Top=4, Right=6, Bottom=8\nLorem ipsum dolor sit amet, consectetur adipiscing elit. In sed imperdiet lectus. Phasellus quis velit velit, non condimentum quam. Sed neque urna, ultrices ac volutpat vel, laoreet vitae augue.\n";
+
+$pdf->MultiCell(55, 5, $txt, 1, 'J', 1, 2, 125, 210, true);
 
 // move pointer to last page
 $pdf->lastPage();

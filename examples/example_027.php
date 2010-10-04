@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_027.php
 // Begin       : 2008-03-04
-// Last Update : 2010-08-23
+// Last Update : 2010-10-01
 //
 // Description : Example 027 for TCPDF class
 //               1D Barcodes
@@ -383,6 +383,7 @@ $style = array(
 	'fgcolor' => array(0,0,128),
 	'bgcolor' => array(255,255,128),
 	'text' => true,
+	'label' => 'CUSTOM LABEL',
 	'font' => 'helvetica',
 	'fontsize' => 8,
 	'stretchtext' => 4

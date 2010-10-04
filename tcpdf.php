@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.8.034
+// Version     : 5.9.000
 // Begin       : 2002-08-03
-// Last Update : 2010-09-27
+// Last Update : 2010-10-04
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -55,6 +55,7 @@
 //  * multiple columns mode;
 //  * bookmarks and table of content;
 //  * text hyphenation;
+//  * font stretching and spacing (kerning);
 //  * automatic page break, line break and text alignments including justification;
 //  * automatic page numbering and page groups;
 //  * move and delete pages;
@@ -117,6 +118,7 @@
  * <li>multiple columns mode;</li>
  * <li>bookmarks and table of content;</li>
  * <li>text hyphenation;</li>
+ * <li>font stretching and spacing (kerning);</li>
  * <li>automatic page break, line break and text alignments including justification;</li>
  * <li>automatic page numbering and page groups;</li>
  * <li>move and delete pages;</li>
@@ -130,7 +132,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.8.034
+ * @version 5.9.000
  */
 
 /**
@@ -154,21 +156,21 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.8.034 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.9.000 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.8.034
+	* @version 5.9.000
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
 	*/
 	class TCPDF {
 
-		// protected or Protected properties
+		// Protected properties
 
 		/**
 		 * @var current page number
@@ -291,10 +293,18 @@ if (!class_exists('TCPDF', false)) {
 		protected $bMargin;
 
 		/**
-		 * @var cell internal padding
+		 * @var array of cell internal paddings ('T' => top, 'R' => right, 'B' => bottom, 'L' => left)
+		 * @since 5.9.000 (2010-10-03)
 		 * @access protected
 		 */
-		public $cMargin;
+		protected $cell_padding = array('T' => 0, 'R' => 0, 'B' => 0, 'L' => 0);
+
+		/**
+		 * @var array of cell margins ('T' => top, 'R' => right, 'B' => bottom, 'L' => left)
+		 * @since 5.9.000 (2010-10-04)
+		 * @access protected
+		 */
+		protected $cell_margin = array('T' => 0, 'R' => 0, 'B' => 0, 'L' => 0);
 
 		/**
 		 * @var current horizontal position in user unit for cell positioning
@@ -1536,6 +1546,20 @@ if (!class_exists('TCPDF', false)) {
 		protected $xobjid = '';
 
 		/**
+		 * @var percentage of character stretching
+		 * @access protected
+		 * @since 5.9.000 (2010-09-29)
+		 */
+		protected $font_stretching = 100;
+
+		/**
+		 * @var increases or decreases the space between characters in a text by the specified amount (kerning).
+		 * @access protected
+		 * @since 5.9.000 (2010-09-29)
+		 */
+		protected $font_spacing = 0;
+
+		/**
 		 * @var directory used for the last SVG image
 		 * @access protected
 		 * @since 5.0.000 (2010-05-05)
@@ -1727,9 +1751,9 @@ if (!class_exists('TCPDF', false)) {
 			// set language direction
 			$this->rtl = false;
 			$this->tmprtl = false;
-			//Some checks
+			// some checks
 			$this->_dochecks();
-			//Initialization of properties
+			// initialization of properties
 			$this->isunicode = $unicode;
 			$this->page = 0;
 			$this->transfmrk[0] = array();
@@ -1759,7 +1783,7 @@ if (!class_exists('TCPDF', false)) {
 			// encryption values
 			$this->encrypted = false;
 			$this->last_enc_key = '';
-			//Standard Unicode fonts
+			// standard Unicode fonts
 			$this->CoreFonts = array(
 				'courier'=>'Courier',
 				'courierB'=>'Courier-Bold',
@@ -1776,28 +1800,31 @@ if (!class_exists('TCPDF', false)) {
 				'symbol'=>'Symbol',
 				'zapfdingbats'=>'ZapfDingbats'
 			);
-			//Set scale factor
+			// set scale factor
 			$this->setPageUnit($unit);
 			// set page format and orientation
 			$this->setPageFormat($format, $orientation);
-			//Page margins (1 cm)
+			// page margins (1 cm)
 			$margin = 28.35 / $this->k;
 			$this->SetMargins($margin, $margin);
-			//Interior cell margin
-			$this->cMargin = $margin / 10;
-			//Line width (0.2 mm)
+			// internal cell padding
+			$cpadding = $margin / 10;
+			$this->setCellPaddings($cpadding, 0, $cpadding, 0);
+			// cell margins
+			$this->setCellMargins(0, 0, 0, 0);
+			// line width (0.2 mm)
 			$this->LineWidth = 0.57 / $this->k;
 			$this->linestyleWidth = sprintf('%.2F w', ($this->LineWidth * $this->k));
 			$this->linestyleCap = '0 J';
 			$this->linestyleJoin = '0 j';
 			$this->linestyleDash = '[] 0 d';
-			//Automatic page break
+			// automatic page break
 			$this->SetAutoPageBreak(true, (2 * $margin));
-			//Full width display mode
+			// full width display mode
 			$this->SetDisplayMode('fullwidth');
-			//Compression
+			// compression
 			$this->SetCompression(true);
-			//Set default PDF version number
+			// set default PDF version number
 			$this->PDFVersion = '1.7';
 			$this->encoding = $encoding;
 			$this->HREF = array();
@@ -2994,6 +3021,15 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
+		 * Reset the last cell height.
+		 * @access public
+		 * @since 5.9.000 (2010-10-03)
+		 */
+		public function resetLastH() {
+			$this->lasth = ($this->FontSize * $this->cell_height_ratio) + $this->cell_padding['T'] + $this->cell_padding['B'];
+		}
+
+		/**
 		 * Get the last cell height.
 		 * @return last cell height
 		 * @access public
@@ -3170,14 +3206,161 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
-		 * Set the internal Cell padding.
+		 * Set the same internal Cell padding for top, right, bottom, left-
 		 * @param float $pad internal padding.
 		 * @access public
 		 * @since 2.1.000 (2008-01-09)
-		 * @see Cell(), SetLeftMargin(), SetTopMargin(), SetAutoPageBreak(), SetMargins()
+		 * @see getCellPaddings(), setCellPaddings()
 		 */
 		public function SetCellPadding($pad) {
-			$this->cMargin = $pad;
+			if ($pad >= 0) {
+				$this->cell_padding['L'] = $pad;
+				$this->cell_padding['T'] = $pad;
+				$this->cell_padding['R'] = $pad;
+				$this->cell_padding['B'] = $pad;
+			}
+		}
+
+		/**
+		 * Set the internal Cell paddings.
+		 * @param float $left left padding
+		 * @param float $top top padding
+		 * @param float $right right padding
+		 * @param float $bottom bottom padding
+		 * @access public
+		 * @since 5.9.000 (2010-10-03)
+		 * @see getCellPaddings(), SetCellPadding()
+		 */
+		public function setCellPaddings($left='', $top='', $right='', $bottom='') {
+			if (($left !== '') AND ($left >= 0)) {
+				$this->cell_padding['L'] = $left;
+			}
+			if (($top !== '') AND ($top >= 0)) {
+				$this->cell_padding['T'] = $top;
+			}
+			if (($right !== '') AND ($right >= 0)) {
+				$this->cell_padding['R'] = $right;
+			}
+			if (($bottom !== '') AND ($bottom >= 0)) {
+				$this->cell_padding['B'] = $bottom;
+			}
+		}
+
+		/**
+		 * Get the internal Cell padding array.
+		 * @return array of padding values
+		 * @access public
+		 * @since 5.9.000 (2010-10-03)
+		 * @see setCellPaddings(), SetCellPadding()
+		 */
+		public function getCellPaddings() {
+			return $this->cell_padding;
+		}
+
+		/**
+		 * Set the internal Cell margins.
+		 * @param float $left left margin
+		 * @param float $top top margin
+		 * @param float $right right margin
+		 * @param float $bottom bottom margin
+		 * @access public
+		 * @since 5.9.000 (2010-10-03)
+		 * @see getCellMargins()
+		 */
+		public function setCellMargins($left='', $top='', $right='', $bottom='') {
+			if (($left !== '') AND ($left >= 0)) {
+				$this->cell_margin['L'] = $left;
+			}
+			if (($top !== '') AND ($top >= 0)) {
+				$this->cell_margin['T'] = $top;
+			}
+			if (($right !== '') AND ($right >= 0)) {
+				$this->cell_margin['R'] = $right;
+			}
+			if (($bottom !== '') AND ($bottom >= 0)) {
+				$this->cell_margin['B'] = $bottom;
+			}
+		}
+
+		/**
+		 * Get the internal Cell margin array.
+		 * @return array of margin values
+		 * @access public
+		 * @since 5.9.000 (2010-10-03)
+		 * @see setCellMargins()
+		 */
+		public function getCellMargins() {
+			return $this->cell_margin;
+		}
+
+		/**
+		 * Adjust the internal Cell padding array to take account of the line width.
+		 * @param mixed $brd Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
+		 * @return array of adjustments
+		 * @access public
+		 * @since 5.9.000 (2010-10-03)
+		 */
+		protected function adjustCellPadding($brd=0) {
+			if (empty($brd)) {
+				return;
+			}
+			// current cell padding
+			$cp = $this->cell_padding;
+			if ($brd === 1) {
+				$brd = array('LRTB' => true);
+			}
+			if (is_string($brd)) {
+				// convert string to array
+				$slen = strlen($brd);
+				$newbrd = array();
+				for ($i = 0; $i < $slen; ++$i) {
+					$newbrd[$brd{$i}] = true;
+				}
+				$brd = $newbrd;
+			}
+			if (isset($brd['mode'])) {
+				$mode = $brd['mode'];
+				unset($brd['mode']);
+			} else {
+				$mode = 'normal';
+			}
+			foreach ($brd as $border => $style) {
+				$line_width = $this->LineWidth;
+				if (is_array($style) AND isset($style['width'])) {
+					// get border width
+					$line_width = $style['width'];
+				}
+				$adj = 0; // line width inside the cell
+				switch ($mode) {
+					case 'ext': {
+						$adj = 0;
+						break;
+					}
+					case 'int': {
+						$adj = $line_width;
+						break;
+					}
+					case 'normal':
+					default: {
+						$adj = ($line_width / 2);
+						break;
+					}
+				}
+				// correct internal cell padding if required to avoid overlap between text and lines
+				if ((strpos($border,'T') !== false) AND ($this->cell_padding['T'] < $adj)) {
+					$this->cell_padding['T'] = $adj;
+				}
+				if ((strpos($border,'R') !== false) AND ($this->cell_padding['R'] < $adj)) {
+					$this->cell_padding['R'] = $adj;
+				}
+				if ((strpos($border,'B') !== false) AND ($this->cell_padding['B'] < $adj)) {
+					$this->cell_padding['B'] = $adj;
+				}
+				if ((strpos($border,'L') !== false) AND ($this->cell_padding['L'] < $adj)) {
+					$this->cell_padding['L'] = $adj;
+				}
+			}
+			return array('T' => ($this->cell_padding['T'] - $cp['T']), 'R' => ($this->cell_padding['R'] - $cp['R']), 'B' => ($this->cell_padding['B'] - $cp['B']), 'L' => ($this->cell_padding['L'] - $cp['L']));
 		}
 
 		/**
@@ -3862,7 +4045,7 @@ if (!class_exists('TCPDF', false)) {
 				$this->_out('q');
 				$this->rMargin = $this->original_rMargin;
 				$this->lMargin = $this->original_lMargin;
-				$this->cMargin = 0;
+				$this->SetCellPadding(0);
 				//set current position
 				if ($this->rtl) {
 					$this->SetXY($this->original_rMargin, $this->header_margin);
@@ -3907,7 +4090,7 @@ if (!class_exists('TCPDF', false)) {
 				$this->_out('q');
 				$this->rMargin = $this->original_rMargin;
 				$this->lMargin = $this->original_lMargin;
-				$this->cMargin = 0;
+				$this->SetCellPadding(0);
 				//set current position
 				$footer_y = $this->h - $this->footer_margin;
 				if ($this->rtl) {
@@ -3956,10 +4139,10 @@ if (!class_exists('TCPDF', false)) {
 				// set margins
 				$prev_lMargin = $this->lMargin;
 				$prev_rMargin = $this->rMargin;
-				$prev_cMargin = $this->cMargin;
+				$prev_cell_padding = $this->cell_padding;
 				$this->lMargin = $this->theadMargins['lmargin'] + ($this->pagedim[$this->page]['olm'] - $this->pagedim[$this->theadMargins['page']]['olm']);
 				$this->rMargin = $this->theadMargins['rmargin'] + ($this->pagedim[$this->page]['orm'] - $this->pagedim[$this->theadMargins['page']]['orm']);
-				$this->cMargin = $this->theadMargins['cmargin'];
+				$this->cell_padding = $this->theadMargins['cell_padding'];
 				if ($this->rtl) {
 					$this->x = $this->w - $this->rMargin;
 				} else {
@@ -3976,7 +4159,7 @@ if (!class_exists('TCPDF', false)) {
 				$this->lasth = 0;
 				$this->lMargin = $prev_lMargin;
 				$this->rMargin = $prev_rMargin;
-				$this->cMargin = $prev_cMargin;
+				$this->cell_padding = $prev_cell_padding;
 			}
 		}
 
@@ -4308,9 +4491,9 @@ if (!class_exists('TCPDF', false)) {
 			$sa = $this->UTF8ArrToLatin1($sa);
 			$w = 0; // total width
 			$wa = array(); // array of characters widths
-			foreach ($sa as $char) {
+			foreach ($sa as $ck => $char) {
 				// character width
-				$cw = $this->GetCharWidth($char);
+				$cw = $this->GetCharWidth($char, isset($sa[($ck + 1)]));
 				$wa[] = $cw;
 				$w += $cw;
 			}
@@ -4325,14 +4508,37 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
-		 * Returns the length of the char in user unit for the current font.
+		 * Returns the length of the char in user unit for the current font considering current stretching and kerning.
 		 * @param int $char The char code whose length is to be returned
-		 * @return int char width
+		 * @param boolean $notlast set to false for the latest character on string, true otherwise (default)
+		 * @return float char width
 		 * @author Nicola Asuni
 		 * @access public
 		 * @since 2.4.000 (2008-03-06)
 		 */
-		public function GetCharWidth($char) {
+		public function GetCharWidth($char, $notlast=true) {
+			// get raw width
+			$chw = $this->getRawCharWidth($char);
+			if (($this->font_spacing != 0) AND $notlast) {
+				// increase/decrease font spacing
+				$chw += $this->font_spacing;
+			}
+			if ($this->font_stretching != 100) {
+				// fixed stretching mode
+				$chw *= ($this->font_stretching / 100);
+			}
+			return $chw;
+		}
+
+		/**
+		 * Returns the length of the char in user unit for the current font.
+		 * @param int $char The char code whose length is to be returned
+		 * @return float char width
+		 * @author Nicola Asuni
+		 * @access public
+		 * @since 5.9.000 (2010-09-28)
+		 */
+		public function getRawCharWidth($char) {
 			if ($char == 173) {
 				// SHY character will not be printed
 				return (0);
@@ -4655,19 +4861,34 @@ if (!class_exists('TCPDF', false)) {
 		 * @see SetFont()
 		 */
 		public function SetFontSize($size, $out=true) {
-			//Set font size in points
+			// font size in points
 			$this->FontSizePt = $size;
+			// font size in user units
 			$this->FontSize = $size / $this->k;
-			if (isset($this->CurrentFont['desc']['Ascent']) AND ($this->CurrentFont['desc']['Ascent'] > 0)) {
-				$this->FontAscent = $this->CurrentFont['desc']['Ascent'] * $this->FontSize / 1000;
+			// calculate some font metrics
+			if (isset($this->CurrentFont['desc']['FontBBox'])) {
+				$bbox = explode(' ', substr($this->CurrentFont['desc']['FontBBox'], 1, -1));
+				$font_height = ((intval($bbox[3]) - intval($bbox[1])) * $size / 1000);
 			} else {
-				$this->FontAscent = 0.85 * $this->FontSize;
+				$font_height = $size * 1.219;
+			}
+			if (isset($this->CurrentFont['desc']['Ascent']) AND ($this->CurrentFont['desc']['Ascent'] > 0)) {
+				$font_ascent = ($this->CurrentFont['desc']['Ascent'] * $size / 1000);
 			}
 			if (isset($this->CurrentFont['desc']['Descent']) AND ($this->CurrentFont['desc']['Descent'] <= 0)) {
-				$this->FontDescent = - $this->CurrentFont['desc']['Descent'] * $this->FontSize / 1000;
-			} else {
-				$this->FontDescent = 0.15 * $this->FontSize;
+				$font_descent = (- $this->CurrentFont['desc']['Descent'] * $size / 1000);
 			}
+			if (!isset($font_ascent) AND !isset($font_descent)) {
+				// core font
+				$font_ascent = 0.76 * $font_height;
+				$font_descent = $font_height - $font_ascent;
+			} elseif (!isset($font_descent)) {
+				$font_descent = $font_height - $font_ascent;
+			} elseif (!isset($font_ascent)) {
+				$font_ascent = $font_height - $font_descent;
+			}
+			$this->FontAscent = $font_ascent / $this->k;
+			$this->FontDescent = $font_descent / $this->k;
 			if ($out AND ($this->page > 0) AND (isset($this->CurrentFont['i']))) {
 				$this->_out(sprintf('BT /F%d %.2F Tf ET', $this->CurrentFont['i'], $this->FontSizePt));
 			}
@@ -4684,16 +4905,14 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 4.9.003 (2010-03-30)
 		 */
 		public function getFontDescent($font, $style='', $size=0) {
-			//Set font size in points
-			$sizek = $size / $this->k;
 			$fontdata = $this->AddFont($font, $style);
 			$fontinfo = $this->getFontBuffer($fontdata['fontkey']);
 			if (isset($fontinfo['desc']['Descent']) AND ($fontinfo['desc']['Descent'] <= 0)) {
-				$descent = - $fontinfo['desc']['Descent'] * $sizek / 1000;
+				$descent = (- $fontinfo['desc']['Descent'] * $size / 1000);
 			} else {
-				$descent = 0.15 * $sizek;
+				$descent = 1.219 * 0.24 * $size;
 			}
-			return $descent;
+			return ($descent / $this->k);
 		}
 
 		/**
@@ -4707,16 +4926,14 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 4.9.003 (2010-03-30)
 		 */
 		public function getFontAscent($font, $style='', $size=0) {
-			//Set font size in points
-			$sizek = $size / $this->k;
 			$fontdata = $this->AddFont($font, $style);
 			$fontinfo = $this->getFontBuffer($fontdata['fontkey']);
 			if (isset($fontinfo['desc']['Ascent']) AND ($fontinfo['desc']['Ascent'] > 0)) {
-				$ascent = $fontinfo['desc']['Ascent'] * $sizek / 1000;
+				$ascent = ($fontinfo['desc']['Ascent'] * $size / 1000);
 			} else {
-				$ascent = 0.85 * $sizek;
+				$ascent = 1.219 * 0.76 * $size;
 			}
-			return $ascent;
+			return ($ascent / $this->k);
 		}
 
 		/**
@@ -5048,14 +5265,19 @@ if (!class_exists('TCPDF', false)) {
 		 * @see SetFont(), SetDrawColor(), SetFillColor(), SetTextColor(), SetLineWidth(), AddLink(), Ln(), MultiCell(), Write(), SetAutoPageBreak()
 		 */
 		public function Cell($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=false, $link='', $stretch=0, $ignore_min_height=false, $calign='T', $valign='M') {
+			$prev_cell_margin = $this->cell_margin;
+			$prev_cell_padding = $this->cell_padding;
+			$this->adjustCellPadding($border);
 			if (!$ignore_min_height) {
-				$min_cell_height = $this->FontSize * $this->cell_height_ratio;
+				$min_cell_height = ($this->FontSize * $this->cell_height_ratio) + $this->cell_padding['T'] + $this->cell_padding['B'];
 				if ($h < $min_cell_height) {
 					$h = $min_cell_height;
 				}
 			}
-			$this->checkPageBreak($h);
-			$this->_out($this->getCellCode($w, $h, $txt, $border, $ln, $align, $fill, $link, $stretch, $ignore_min_height, $calign, $valign));
+			$this->checkPageBreak($h + $this->cell_margin['T'] + $this->cell_margin['B']);
+			$this->_out($this->getCellCode($w, $h, $txt, $border, $ln, $align, $fill, $link, $stretch, true, $calign, $valign));
+			$this->cell_padding = $prev_cell_padding;
+			$this->cell_margin = $prev_cell_margin;
 		}
 
 		/**
@@ -5079,17 +5301,26 @@ if (!class_exists('TCPDF', false)) {
 		 * @see Cell()
 		 */
 		protected function getCellCode($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=false, $link='', $stretch=0, $ignore_min_height=false, $calign='T', $valign='M') {
+			$prev_cell_margin = $this->cell_margin;
+			$prev_cell_padding = $this->cell_padding;
 			$txt = $this->removeSHY($txt);
 			$rs = ''; //string to be returned
+			$this->adjustCellPadding($border);
 			if (!$ignore_min_height) {
-				$min_cell_height = $this->FontSize * $this->cell_height_ratio;
+				$min_cell_height = ($this->FontSize * $this->cell_height_ratio) + $this->cell_padding['T'] + $this->cell_padding['B'];
 				if ($h < $min_cell_height) {
 					$h = $min_cell_height;
 				}
 			}
 			$k = $this->k;
-			$x = $this->x;
-			$y = $this->y;
+			if ($this->rtl) {
+				$x = $this->x - $this->cell_margin['R'];
+			} else {
+				$x = $this->x + $this->cell_margin['L'];
+			}
+			$y = $this->y + $this->cell_margin['T'];
+			$prev_font_stretching = $this->font_stretching;
+			$prev_font_spacing = $this->font_spacing;
 			// cell vertical alignment
 			switch ($calign) {
 				case 'A': {
@@ -5097,12 +5328,12 @@ if (!class_exists('TCPDF', false)) {
 					switch ($valign) {
 						case 'T': {
 							// top
-							$y -= ($this->LineWidth / 2);
+							$y -= $this->cell_padding['T'];
 							break;
 						}
 						case 'B': {
 							// bottom
-							$y -= ($h - $this->FontAscent - $this->FontDescent - $this->cMargin - ($this->LineWidth / 2));
+							$y -= ($h - $this->cell_padding['B'] - $this->FontAscent - $this->FontDescent);
 							break;
 						}
 						default:
@@ -5120,12 +5351,12 @@ if (!class_exists('TCPDF', false)) {
 					switch ($valign) {
 						case 'T': {
 							// top
-							$y -= ($this->FontAscent + ($this->LineWidth / 2));
+							$y -= ($this->cell_padding['T'] + $this->FontAscent);
 							break;
 						}
 						case 'B': {
 							// bottom
-							$y -= ($h - $this->FontDescent- $this->cMargin - ($this->LineWidth / 2));
+							$y -= ($h - $this->cell_padding['B'] - $this->FontDescent);
 							break;
 						}
 						default:
@@ -5143,19 +5374,19 @@ if (!class_exists('TCPDF', false)) {
 					switch ($valign) {
 						case 'T': {
 							// top
-							$y -= ($this->FontAscent + $this->FontDescent + $this->cMargin + ($this->LineWidth / 2));
+							$y -= ($this->cell_padding['T'] + $this->FontAscent + $this->FontDescent);
 							break;
 						}
 						case 'B': {
 							// bottom
-							$y -= ($h - ($this->LineWidth / 2));
+							$y -= ($h - $this->cell_padding['B']);
 							break;
 						}
 						default:
 						case 'C':
 						case 'M': {
 							// center
-							$y -= (($h + $this->FontAscent + $this->FontDescent) / 2)  + $this->cMargin;
+							$y -= (($h + $this->FontAscent + $this->FontDescent) / 2);
 							break;
 						}
 					}
@@ -5166,7 +5397,8 @@ if (!class_exists('TCPDF', false)) {
 					$y -= $h;
 					break;
 				}
-				case 'C': {
+				case 'C':
+				case 'M': {
 					// cell center
 					$y -= ($h / 2);
 					break;
@@ -5181,25 +5413,23 @@ if (!class_exists('TCPDF', false)) {
 			switch ($valign) {
 				case 'T': {
 					// top
-					$basefonty = $y + $this->FontAscent + ($this->LineWidth / 2);
-					$yt = $y + ($this->LineWidth / 2);
+					$yt = $y + $this->cell_padding['T'];
 					break;
 				}
 				case 'B': {
 					// bottom
-					$basefonty = $y + $h - $this->FontDescent - $this->cMargin - ($this->LineWidth / 2);
-					$yt = $y + $h - $this->FontSize - $this->cMargin - ($this->LineWidth / 2);
+					$yt = $y + $h - $this->cell_padding['B'] - $this->FontAscent - $this->FontDescent;
 					break;
 				}
 				default:
 				case 'C':
 				case 'M': {
 					// center
-					$basefonty = $y + (($h + $this->FontAscent - $this->FontDescent) / 2);
-					$yt = $y + (($h - $this->FontSize) / 2);
+					$yt = $y + (($h - $this->FontAscent - $this->FontDescent) / 2);
 					break;
 				}
 			}
+			$basefonty = $yt + $this->FontAscent;
 			if ($this->empty_string($w) OR ($w <= 0)) {
 				if ($this->rtl) {
 					$w = $x - $this->lMargin;
@@ -5220,9 +5450,9 @@ if (!class_exists('TCPDF', false)) {
 					$op = 'S';
 				}
 				if ($this->rtl) {
-					$xk = (($this->x - $w) * $k);
+					$xk = (($x - $w) * $k);
 				} else {
-					$xk = ($this->x * $k);
+					$xk = ($x * $k);
 				}
 				$s .= sprintf('%.2F %.2F %.2F %.2F re %s ', $xk, (($this->h - $y) * $k), ($w * $k), (-$h * $k), $op);
 			}
@@ -5268,34 +5498,50 @@ if (!class_exists('TCPDF', false)) {
 					}
 				}
 				$txt2 = $this->_escape($txt2);
-				// text length
-				$txwidth = $this->GetStringWidth($txt);
-				$width = $txwidth;
-				// ratio between cell length and text length
-				if ($width <= 0) {
-					$ratio = 1;
-				} else {
-					$ratio = ($w - (2 * $this->cMargin)) / $width;
-				}
-				// stretch text if required
-				if (($stretch > 0) AND (($ratio < 1) OR (($ratio > 1) AND (($stretch % 2) == 0)))) {
-					if ($stretch > 2) {
-						// spacing
-						//Calculate character spacing in points
-						$char_space = (($w - $width - (2 * $this->cMargin)) * $this->k) / max($this->GetNumChars($txt)-1,1);
-						//Set character spacing
-						$rs .= sprintf('BT %.2F Tc ET ', $char_space);
+				if ($stretch > 0) {
+					$this->font_stretching = 100;
+					$this->font_spacing = 0;
+					// text length
+					$txwidth = $this->GetStringWidth($txt);
+					$width = $txwidth;
+					// ratio between cell length and text length
+					if ($width <= 0) {
+						$ratio = 1;
 					} else {
-						// scaling
-						//Calculate horizontal scaling
-						$horiz_scale = $ratio * 100.0;
-						//Set horizontal scaling
-						$rs .= sprintf('BT %.2F Tz ET ', $horiz_scale);
+						$ratio = ($w - $this->cell_padding['L'] - $this->cell_padding['R']) / $width;
 					}
-					$align = '';
-					$width = $w - (2 * $this->cMargin);
+					// stretch text if required
+					if (($ratio < 1) OR (($ratio > 1) AND (($stretch % 2) == 0))) {
+						if ($stretch > 2) {
+							// spacing
+							// calculate character spacing in points
+							$char_space = (($w - $width - $this->cell_padding['L'] - $this->cell_padding['R']) * $this->k) / max(($this->GetNumChars($txt) - 1), 1);
+							// set character spacing
+							$rs .= sprintf('BT %.2F Tc ET ', $char_space);
+						} else {
+							// scaling
+							// calculate horizontal scaling
+							$horiz_scale = $ratio * 100.0;
+							// set horizontal scaling
+							$rs .= sprintf('BT %.2F Tz ET ', $horiz_scale);
+						}
+						$align = '';
+						$width = $w - $this->cell_padding['L'] - $this->cell_padding['R'];
+					} else {
+						$stretch == 0;
+					}
 				} else {
-					$stretch == 0;
+					// text length
+					$txwidth = $this->GetStringWidth($txt);
+					$width = $txwidth;
+					if ($this->font_stretching != 100) {
+						// fixed stretching mode
+						$rs .= sprintf('BT %.2F Tz ET ', $this->font_stretching);
+					}
+					if ($this->font_spacing != 0) {
+						// increase/decrease font spacing
+						$rs .= sprintf('BT %.2F Tc ET ', ($this->font_spacing * $this->k));
+					}
 				}
 				if ($this->ColorFlag) {
 					$s .= 'q '.$this->TextColor.' ';
@@ -5303,7 +5549,7 @@ if (!class_exists('TCPDF', false)) {
 				// rendering mode
 				$s .= sprintf('BT %d Tr %.2F w ET ', $this->textrendermode, $this->textstrokewidth);
 				// count number of spaces
-				$ns = substr_count($txt, ' ');
+				$ns = substr_count($txt, chr(32));
 				// Justification
 				$spacewidth = 0;
 				if (($align == 'J') AND ($ns > 0)) {
@@ -5311,18 +5557,27 @@ if (!class_exists('TCPDF', false)) {
 						// get string width without spaces
 						$width = $this->GetStringWidth(str_replace(' ', '', $txt));
 						// calculate average space width
-						$spacewidth = -1000 * ($w - $width - (2 * $this->cMargin)) / ($ns?$ns:1) / $this->FontSize;
+						$spacewidth = -1000 * ($w - $width - $this->cell_padding['L'] - $this->cell_padding['R']) / ($ns?$ns:1) / $this->FontSize;
+						if ($this->font_stretching != 100) {
+							// word spacing is affected by stretching
+							$spacewidth /= ($this->font_stretching / 100);
+						}
 						// set word position to be used with TJ operator
 						$txt2 = str_replace(chr(0).chr(32), ') '.sprintf('%.3F', $spacewidth).' (', $txt2);
 						$unicode_justification = true;
 					} else {
 						// get string width
 						$width = $txwidth;
-						$spacewidth = (($w - $width - (2 * $this->cMargin)) / ($ns?$ns:1)) * $this->k;
+						// new space width
+						$spacewidth = (($w - $width - $this->cell_padding['L'] - $this->cell_padding['R']) / ($ns?$ns:1)) * $this->k;
+						if ($this->font_stretching != 100) {
+							// word spacing (Tw) is affected by stretching
+							$spacewidth /= ($this->font_stretching / 100);
+						}
 						// set word spacing
 						$rs .= sprintf('BT %.3F Tw ET ', $spacewidth);
 					}
-					$width = $w - (2 * $this->cMargin);
+					$width = $w - $this->cell_padding['L'] - $this->cell_padding['R'];
 				}
 				// replace carriage return characters
 				$txt2 = str_replace("\r", ' ', $txt2);
@@ -5333,30 +5588,34 @@ if (!class_exists('TCPDF', false)) {
 					}
 					case 'R': {
 						if ($this->rtl) {
-							$dx = $this->cMargin;
+							$dx = $this->cell_padding['R'];
 						} else {
-							$dx = $w - $width - $this->cMargin;
+							$dx = $w - $width - $this->cell_padding['R'];
 						}
 						break;
 					}
 					case 'L': {
 						if ($this->rtl) {
-							$dx = $w - $width - $this->cMargin;
+							$dx = $w - $width - $this->cell_padding['L'];
 						} else {
-							$dx = $this->cMargin;
+							$dx = $this->cell_padding['L'];
 						}
 						break;
 					}
 					case 'J':
 					default: {
-						$dx = $this->cMargin;
+						if ($this->rtl) {
+							$dx = $this->cell_padding['R'];
+						} else {
+							$dx = $this->cell_padding['L'];
+						}
 						break;
 					}
 				}
 				if ($this->rtl) {
-					$xdx = $this->x - $dx - $width;
+					$xdx = $x - $dx - $width;
 				} else {
-					$xdx = $this->x + $dx;
+					$xdx = $x + $dx;
 				}
 				$xdk = $xdx * $k;
 				// print text
@@ -5365,7 +5624,7 @@ if (!class_exists('TCPDF', false)) {
 					// print overlapping characters as separate string
 					$xshift = 0; // horizontal shift
 					$ty = (($this->h - $basefonty + (0.2 * $this->FontSize)) * $k);
-					$spw = (($w - $txwidth - (2 * $this->cMargin)) / ($ns?$ns:1));
+					$spw = (($w - $txwidth - $this->cell_padding['L'] - $this->cell_padding['R']) / ($ns?$ns:1));
 					foreach ($uniblock as $uk => $uniarr) {
 						if (($uk % 2) == 0) {
 							// x space to skip
@@ -5395,7 +5654,7 @@ if (!class_exists('TCPDF', false)) {
 					$s .= ' Q';
 				}
 				if ($link) {
-					$this->Link($xdx, $yt, $width, ($this->FontSize + $this->cMargin), $link, $ns);
+					$this->Link($xdx, $yt, $width, ($this->FontAscent + $this->FontDescent), $link, $ns);
 				}
 			}
 			// output cell
@@ -5404,21 +5663,33 @@ if (!class_exists('TCPDF', false)) {
 				$rs .= $s;
 				// reset text stretching
 				if ($stretch > 2) {
-					//Reset character horizontal spacing
+					// reset character horizontal spacing
 					$rs .= ' BT 0 Tc ET';
 				} elseif ($stretch > 0) {
-					//Reset character horizontal scaling
+					// reset character horizontal scaling
 					$rs .= ' BT 100 Tz ET';
+				} else {
+					if ($this->font_spacing != 0) {
+						// reset fixed kerning mode
+						$rs .= ' BT 0 Tc ET';
+					}
+					if ($this->font_stretching != 100) {
+						// reset fixed stretching mode
+						$rs .= ' BT 100 Tz ET';
+					}
 				}
 			}
 			// reset word spacing
 			if (!$this->isUnicodeFont() AND ($align == 'J')) {
 				$rs .= ' BT 0 Tw ET';
 			}
+			// reset stretching and spacing
+			$this->font_stretching = $prev_font_stretching;
+			$this->font_spacing = $prev_font_spacing;
 			$this->lasth = $h;
 			if ($ln > 0) {
 				//Go to the beginning of the next line
-				$this->y = $y + $h;
+				$this->y = $y + $h + $this->cell_margin['B'];
 				if ($ln == 1) {
 					if ($this->rtl) {
 						$this->x = $this->w - $this->rMargin;
@@ -5429,13 +5700,15 @@ if (!class_exists('TCPDF', false)) {
 			} else {
 				// go left or right by case
 				if ($this->rtl) {
-					$this->x -= $w;
+					$this->x = $x - $w - $this->cell_margin['L'];
 				} else {
-					$this->x += $w;
+					$this->x = $x + $w + $this->cell_margin['R'];
 				}
 			}
 			$gstyles = ''.$this->linestyleWidth.' '.$this->linestyleCap.' '.$this->linestyleJoin.' '.$this->linestyleDash.' '.$this->DrawColor.' '.$this->FillColor."\n";
 			$rs = $gstyles.$rs;
+			$this->cell_padding = $prev_cell_padding;
+			$this->cell_margin = $prev_cell_margin;
 			return $rs;
 		}
 
@@ -5656,9 +5929,18 @@ if (!class_exists('TCPDF', false)) {
 		 * @see SetFont(), SetDrawColor(), SetFillColor(), SetTextColor(), SetLineWidth(), Cell(), Write(), SetAutoPageBreak()
 		 */
 		public function MultiCell($w, $h, $txt, $border=0, $align='J', $fill=false, $ln=1, $x='', $y='', $reseth=true, $stretch=0, $ishtml=false, $autopadding=true, $maxh=0, $valign='T', $fitcell=false) {
+			$prev_cell_margin = $this->cell_margin;
+			$prev_cell_padding = $this->cell_padding;
+			// adjust internal padding
+			$this->adjustCellPadding($border);
+			$mc_padding = $this->cell_padding;
+			$mc_margin = $this->cell_margin;
+			$this->cell_padding['T'] = 0;
+			$this->cell_padding['B'] = 0;
+			$this->setCellMargins(0, 0, 0, 0);
 			if ($this->empty_string($this->lasth) OR $reseth) {
-				//set row height
-				$this->lasth = $this->FontSize * $this->cell_height_ratio;
+				// reset row height
+				$this->resetLastH();
 			}
 			if (!$this->empty_string($y)) {
 				$this->SetY($y);
@@ -5666,7 +5948,7 @@ if (!class_exists('TCPDF', false)) {
 				$y = $this->GetY();
 			}
 			$resth = 0;
-			if ((!$this->InFooter) AND (($y + $h) > $this->PageBreakTrigger)) {
+			if ((!$this->InFooter) AND (($y + $h + $mc_margin['T'] + $mc_margin['B']) > $this->PageBreakTrigger)) {
 				// spit cell in more pages/columns
 				$newh = $this->PageBreakTrigger - $y;
 				$resth = $h - $newh; // cell to be printed on the next page/column
@@ -5681,35 +5963,36 @@ if (!class_exists('TCPDF', false)) {
 			} else {
 				$x = $this->GetX();
 			}
+			// apply margins
+			$oy = $y + $mc_margin['T'];
+			if ($this->rtl) {
+				$ox = $x - $mc_margin['R'];
+			} else {
+				$ox = $x + $mc_margin['L'];
+			}
+			$this->x = $ox;
+			$this->y = $oy;
+			// set width
 			if ($this->empty_string($w) OR ($w <= 0)) {
 				if ($this->rtl) {
-					$w = $this->x - $this->lMargin;
+					$w = $this->x - $this->lMargin - $mc_margin['L'];
 				} else {
-					$w = $this->w - $this->rMargin - $this->x;
+					$w = $this->w - $this->x - $this->rMargin - $mc_margin['R'];
 				}
 			}
 			// store original margin values
 			$lMargin = $this->lMargin;
 			$rMargin = $this->rMargin;
 			if ($this->rtl) {
-				$this->SetRightMargin($this->w - $this->x);
-				$this->SetLeftMargin($this->x - $w);
+				$this->rMargin = $this->w - $this->x;
+				$this->lMargin = $this->x - $w;
 			} else {
-				$this->SetLeftMargin($this->x);
-				$this->SetRightMargin($this->w - $this->x - $w);
+				$this->lMargin = $this->x;
+				$this->rMargin = $this->w - $this->x - $w;
 			}
-			$starty = $this->y;
 			if ($autopadding) {
-				// Adjust internal padding
-				if ($this->cMargin < ($this->LineWidth / 2)) {
-					$this->cMargin = ($this->LineWidth / 2);
-				}
-				// Add top space if needed
-				if (($this->lasth - $this->FontSize) < $this->LineWidth) {
-					$this->y += $this->LineWidth / 2;
-				}
 				// add top padding
-				$this->y += $this->cMargin;
+				$this->y += $mc_padding['T'];
 			}
 			if ($ishtml) { // ******* Write HTML text
 				$this->writeHTML($txt, true, 0, $reseth, true, $align);
@@ -5718,7 +6001,7 @@ if (!class_exists('TCPDF', false)) {
 				// vertical alignment
 				if ($maxh > 0) {
 					// get text height
-					$text_height = $this->getStringHeight($w, $txt, $reseth, $autopadding, '', '');
+					$text_height = $this->getStringHeight($w, $txt, $reseth, $autopadding, $mc_padding, $border);
 					if ($fitcell) {
 						$prev_FontSizePt = $this->FontSizePt;
 						// try to reduce font size to fit text on cell (use a quick search algorithm)
@@ -5729,7 +6012,8 @@ if (!class_exists('TCPDF', false)) {
 						while ($maxit > 0) {
 							$fmid = (($fmax + $fmin) / 2);
 							$this->SetFontSize($fmid, false);
-							$text_height = $this->getStringHeight($w, $txt, $reseth, $autopadding, '', '');
+							$this->lasth = $this->FontSize * $this->cell_height_ratio;
+							$text_height = $this->getStringHeight($w, $txt, $reseth, $autopadding, $mc_padding, $border);
 							if (($text_height == $maxh) OR (($text_height < $maxh) AND ($fmin >= ($fmax - 0.01)))) {
 								break;
 							} elseif ($text_height < $maxh) {
@@ -5743,7 +6027,7 @@ if (!class_exists('TCPDF', false)) {
 					}
 					if ($text_height < $maxh) {
 						if ($valign == 'M') {
-							// text vertically aligned on middle
+							// text vertically centered
 							$this->y += (($maxh - $text_height) / 2);
 						} elseif ($valign == 'B') {
 							// text vertically aligned on bottom
@@ -5751,7 +6035,7 @@ if (!class_exists('TCPDF', false)) {
 						}
 					}
 				}
-				$nl = $this->Write($this->lasth, $txt, '', 0, $align, true, $stretch, false, true, $maxh);
+				$nl = $this->Write($this->lasth, $txt, '', 0, $align, true, $stretch, false, true, $maxh, 0, $mc_margin);
 				if ($fitcell) {
 					// restore font size
 					$this->SetFontSize($prev_FontSizePt);
@@ -5759,11 +6043,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 			if ($autopadding) {
 				// add bottom padding
-				$this->y += $this->cMargin;
-				// Add bottom space if needed
-				if (($this->lasth - $this->FontSize) < $this->LineWidth) {
-					$this->y += $this->LineWidth / 2;
-				}
+				$this->y += $mc_padding['B'];
 			}
 			// Get end-of-text Y position
 			$currentY = $this->y;
@@ -5817,13 +6097,18 @@ if (!class_exists('TCPDF', false)) {
 					// single page
 					for ($column = $startcolumn; $column <= $endcolumn; ++$column) { // for each column
 						$this->selectColumn($column);
+						if ($this->rtl) {
+							$this->x -= $mc_margin['R'];
+						} else {
+							$this->x += $mc_margin['L'];
+						}
 						if ($startcolumn == $endcolumn) { // single column
 							$cborder = $border;
-							$h = max($h, ($currentY - $y));
-							$this->y = $y;
+							$h = max($h, ($currentY - $oy));
+							$this->y = $oy;
 						} elseif ($column == $startcolumn) { // first column
 							$cborder = $border_start;
-							$this->y = $starty;
+							$this->y = $oy;
 							$h = $this->h - $this->y - $this->bMargin;
 						} elseif ($column == $endcolumn) { // end column
 							$cborder = $border_end;
@@ -5841,9 +6126,14 @@ if (!class_exists('TCPDF', false)) {
 				} elseif ($page == $startpage) { // first page
 					for ($column = $startcolumn; $column < $this->num_columns; ++$column) { // for each column
 						$this->selectColumn($column);
+						if ($this->rtl) {
+							$this->x -= $mc_margin['R'];
+						} else {
+							$this->x += $mc_margin['L'];
+						}
 						if ($column == $startcolumn) { // first column
 							$cborder = $border_start;
-							$this->y = $starty;
+							$this->y = $oy;
 							$h = $this->h - $this->y - $this->bMargin;
 						} else { // middle column
 							$cborder = $border_middle;
@@ -5855,6 +6145,11 @@ if (!class_exists('TCPDF', false)) {
 				} elseif ($page == $endpage) { // last page
 					for ($column = 0; $column <= $endcolumn; ++$column) { // for each column
 						$this->selectColumn($column);
+						if ($this->rtl) {
+							$this->x -= $mc_margin['R'];
+						} else {
+							$this->x += $mc_margin['L'];
+						}
 						if ($column == $endcolumn) {
 							// end column
 							$cborder = $border_end;
@@ -5873,6 +6168,11 @@ if (!class_exists('TCPDF', false)) {
 				} else { // middle page
 					for ($column = 0; $column < $this->num_columns; ++$column) { // for each column
 						$this->selectColumn($column);
+						if ($this->rtl) {
+							$this->x -= $mc_margin['R'];
+						} else {
+							$this->x += $mc_margin['L'];
+						}
 						$cborder = $border_middle;
 						$h = $this->h - $this->y - $this->bMargin;
 						$resth -= $h;
@@ -5881,19 +6181,34 @@ if (!class_exists('TCPDF', false)) {
 				}
 				if ($cborder OR $fill) {
 					// draw border and fill
-					if (end($this->transfmrk[$this->page]) !== false) {
-						$pagemarkkey = key($this->transfmrk[$this->page]);
-						$pagemark = &$this->transfmrk[$this->page][$pagemarkkey];
-					} elseif ($this->InFooter) {
-						$pagemark = &$this->footerpos[$this->page];
+					if ($this->inxobj) {
+						// we are inside an XObject template
+						if (end($this->xobjects[$this->xobjid]['transfmrk']) !== false) {
+							$pagemarkkey = key($this->xobjects[$this->xobjid]['transfmrk']);
+							$pagemark = &$this->xobjects[$this->xobjid]['transfmrk'][$pagemarkkey];
+						} else {
+							$pagemark = &$this->xobjects[$this->xobjid]['intmrk'];
+						}
+						$pagebuff = $this->xobjects[$this->xobjid]['outdata'];
+						$pstart = substr($pagebuff, 0, $pagemark);
+						$pend = substr($pagebuff, $pagemark);
+						$this->xobjects[$this->xobjid]['outdata'] = $pstart.$ccode.$pend;
+						$pagemark += strlen($ccode);
 					} else {
-						$pagemark = &$this->intmrk[$this->page];
+						if (end($this->transfmrk[$this->page]) !== false) {
+							$pagemarkkey = key($this->transfmrk[$this->page]);
+							$pagemark = &$this->transfmrk[$this->page][$pagemarkkey];
+						} elseif ($this->InFooter) {
+							$pagemark = &$this->footerpos[$this->page];
+						} else {
+							$pagemark = &$this->intmrk[$this->page];
+						}
+						$pagebuff = $this->getPageBuffer($this->page);
+						$pstart = substr($pagebuff, 0, $pagemark);
+						$pend = substr($pagebuff, $pagemark);
+						$this->setPageBuffer($this->page, $pstart.$ccode.$pend);
+						$pagemark += strlen($ccode);
 					}
-					$pagebuff = $this->getPageBuffer($this->page);
-					$pstart = substr($pagebuff, 0, $pagemark);
-					$pend = substr($pagebuff, $pagemark);
-					$this->setPageBuffer($this->page, $pstart.$ccode.$pend);
-					$pagemark += strlen($ccode);
 				}
 			} // end for each page
 			// Get end-of-cell Y position
@@ -5903,17 +6218,19 @@ if (!class_exists('TCPDF', false)) {
 			$this->SetRightMargin($rMargin);
 			if ($ln > 0) {
 				//Go to the beginning of the next line
-				$this->SetY($currentY);
+				$this->SetY($currentY + $mc_margin['B']);
 				if ($ln == 2) {
-					$this->SetX($x + $w);
+					$this->SetX($x + $w + $mc_margin['L'] + $mc_margin['R']);
 				}
 			} else {
 				// go left or right by case
 				$this->setPage($startpage);
 				$this->y = $y;
-				$this->SetX($x + $w);
+				$this->SetX($x + $w + $mc_margin['L'] + $mc_margin['R']);
 			}
 			$this->setContentMark();
+			$this->cell_padding = $prev_cell_padding;
+			$this->cell_margin = $prev_cell_margin;
 			return $nl;
 		}
 
@@ -5991,19 +6308,26 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
-		 * This method return the estimated number of lines for print a simple text string in Multicell() method.
+		 * This method return the estimated number of lines for print a simple text string using Multicell() method.
 		 * @param string $txt String for calculating his height
 		 * @param float $w Width of cells. If 0, they extend up to the right margin of the page.
 		 * @param boolean $reseth if true reset the last cell height (default false).
 		 * @param boolean $autopadding if true, uses internal padding and automatically adjust it to account for line width (default true).
-		 * @param float $cellMargin Internal cell margin, if empty or <= 0, extended up to current pdf cell margin (default '').
-		 * @param float $lineWidth Line width, if empty or <= 0, extended up to current pdf line width (default '').
+		 * @param float $cellpadding Internal cell padding, if empty uses default cell padding.
+		 * @param mixed $border Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
 		 * @return float Return the minimal height needed for multicell method for printing the $txt param.
 		 * @author Alexander Escalona Fernández, Nicola Asuni
 		 * @access public
 		 * @since 4.5.011
 		 */
-		public function getNumLines($txt, $w=0, $reseth=false, $autopadding=true, $cellMargin='', $lineWidth='') {
+		public function getNumLines($txt, $w=0, $reseth=false, $autopadding=true, $cellpadding='', $border=0) {
+			// adjust internal padding
+			$prev_cell_padding = $this->cell_padding;
+			$prev_lasth = $this->lasth;
+			if (is_array($cellpadding)) {
+				$this->cell_padding = $cellpadding;
+			}
+			$this->adjustCellPadding($border);
 			if ($this->empty_string($w) OR ($w <= 0)) {
 				if ($this->rtl) {
 					$w = $this->x - $this->lMargin;
@@ -6011,21 +6335,10 @@ if (!class_exists('TCPDF', false)) {
 					$w = $this->w - $this->rMargin - $this->x;
 				}
 			}
-			if ($this->empty_string($cellMargin) OR ($cellMargin <= 0)) {
-				$cellMargin = $this->cMargin;
-			}
-			if ($this->empty_string($lineWidth) OR ($lineWidth <= 0)) {
-				$lineWidth = $this->LineWidth;
-			}
-			if ($autopadding) {
-				// adjust internal padding
-				if ($cellMargin < ($lineWidth/2)) {
-					$cellMargin = ($lineWidth/2);
-				}
-			}
-			$wmax = $w - (2 * $cellMargin);
+			$wmax = $w - $this->cell_padding['L'] - $this->cell_padding['R'];
 			if ($reseth) {
-				$this->lasth = $this->FontSize * $this->cell_height_ratio;
+				// reset row height
+				$this->resetLastH();
 			}
 			$lines = 1;
 			$sum = 0;
@@ -6054,6 +6367,8 @@ if (!class_exists('TCPDF', false)) {
 			if ($chars[($length - 1)] == 10) {
 				--$lines;
 			}
+			$this->cell_padding = $prev_cell_padding;
+			$this->lasth = $prev_lasth;
 			return $lines;
 		}
 
@@ -6098,33 +6413,28 @@ if (!class_exists('TCPDF', false)) {
 		 * @param string $txt String for calculating his height
 		 * @param boolean $reseth if true reset the last cell height (default false).
 		 * @param boolean $autopadding if true, uses internal padding and automatically adjust it to account for line width (default true).
-		 * @param float $cellMargin Internal cell margin, if empty or <= 0, extended up to current pdf cell margin (default '').
-		 * @param float $lineWidth Line width, if empty or <= 0, extended up to current pdf line width (default '').
+		 * @param float $cellpadding Internal cell padding, if empty uses default cell padding.
+		 * @param mixed $border Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
 		 * @return float Return the minimal height needed for multicell method for printing the $txt param.
 		 * @author Nicola Asuni, Alexander Escalona Fernández
 		 * @access public
 		 */
-		public function getStringHeight($w, $txt, $reseth=false, $autopadding=true, $cellMargin='', $lineWidth='') {
-			$lines = $this->getNumLines($txt, $w, $reseth, $autopadding, $cellMargin, $lineWidth);
+		public function getStringHeight($w, $txt, $reseth=false, $autopadding=true, $cellpadding='', $border=0) {
+			// adjust internal padding
+			$prev_cell_padding = $this->cell_padding;
+			$prev_lasth = $this->lasth;
+			if (is_array($cellpadding)) {
+				$this->cell_padding = $cellpadding;
+			}
+			$this->adjustCellPadding($border);
+			$lines = $this->getNumLines($txt, $w, $reseth, $autopadding, $cellpadding, $border);
 			$height = $lines * ($this->FontSize * $this->cell_height_ratio);
 			if ($autopadding) {
-				if ($this->empty_string($cellMargin) OR ($cellMargin <= 0)) {
-					$cellMargin = $this->cMargin;
-				}
-				if ($this->empty_string($lineWidth) OR ($lineWidth <= 0)) {
-					$lineWidth = $this->LineWidth;
-				}
-				// adjust internal padding
-				if ($cellMargin < ($lineWidth/2)) {
-					$cellMargin = ($lineWidth/2);
-				}
-				// add top and bottom space if needed
-				if (($this->lasth - $this->FontSize) < $lineWidth) {
-					$height += $lineWidth;
-				}
 				// add top and bottom padding
-				$height += (2 * $cellMargin);
+				$height += ($this->cell_padding['T'] + $this->cell_padding['B']);
 			}
+			$this->cell_padding = $prev_cell_padding;
+			$this->lasth = $prev_lasth;
 			return $height;
 		}
 
@@ -6141,13 +6451,17 @@ if (!class_exists('TCPDF', false)) {
 		 * @param boolean $firstblock if true the string is the starting of a line.
 		 * @param float $maxh maximum height. The remaining unprinted text will be returned. It should be >= $h and less then remaining space to the bottom of the page, or 0 for disable this feature.
 		 * @param float $wadj first line width will be reduced by this amount (used in HTML mode).
+		 * @param array $margin margin array of the parent container
 		 * @return mixed Return the number of cells or the remaining string if $firstline = true.
 		 * @access public
 		 * @since 1.5
 		 */
-		public function Write($h, $txt, $link='', $fill=false, $align='', $ln=false, $stretch=0, $firstline=false, $firstblock=false, $maxh=0, $wadj=0) {
+		public function Write($h, $txt, $link='', $fill=false, $align='', $ln=false, $stretch=0, $firstline=false, $firstblock=false, $maxh=0, $wadj=0, $margin='') {
 			if (strlen($txt) == 0) {
 				$txt = ' ';
+			}
+			if ($margin === '') {
+				$margin = $this->cell_margin;
 			}
 			// remove carriage returns
 			$s = str_replace("\r", '', $txt);
@@ -6177,7 +6491,7 @@ if (!class_exists('TCPDF', false)) {
 			// widht for SHY replacement
 			$shy_replacement_width = $this->GetCharWidth($shy_replacement);
 			// max Y
-			$maxy = $this->y + $maxh - $h - (2 * $this->cMargin);
+			$maxy = $this->y + $maxh - $h - $this->cell_padding['T'] - $this->cell_padding['B'];
 			// calculate remaining line width ($w)
 			if ($this->rtl) {
 				$w = $this->x - $this->lMargin;
@@ -6185,7 +6499,7 @@ if (!class_exists('TCPDF', false)) {
 				$w = $this->w - $this->rMargin - $this->x;
 			}
 			// max column width
-			$wmax = $w - (2 * $this->cMargin) - $wadj;
+			$wmax = $w - $wadj - $this->cell_padding['L'] - $this->cell_padding['R'];
 			if ((!$firstline) AND (($chrwidth > $wmax) OR ($this->GetCharWidth($chars[0]) > $wmax))) {
 				// a single character do not fit on column
 				return '';
@@ -6234,9 +6548,9 @@ if (!class_exists('TCPDF', false)) {
 							$this->endlinex = $startx + $linew;
 						}
 						$w = $linew;
-						$tmpcmargin = $this->cMargin;
+						$tmpcellpadding = $this->cell_padding;
 						if ($maxh == 0) {
-							$this->cMargin = 0;
+							$this->SetCellPadding(0);
 						}
 					}
 					if ($firstblock AND $this->isRTLTextDir()) {
@@ -6248,7 +6562,7 @@ if (!class_exists('TCPDF', false)) {
 					}
 					unset($tmpstr);
 					if ($firstline) {
-						$this->cMargin = $tmpcmargin;
+						$this->cell_padding = $tmpcellpadding;
 						return ($this->UniArrSubString($uchars, $i));
 					}
 					++$nl;
@@ -6259,9 +6573,16 @@ if (!class_exists('TCPDF', false)) {
 					// account for margin changes
 					if ((($this->y + $this->lasth) > $this->PageBreakTrigger) AND (!$this->InFooter)) {
 						$this->AcceptPageBreak();
+						if ($this->rtl) {
+							$this->x -= $margin['R'];
+						} else {
+							$this->x += $margin['L'];
+						}
+						$this->lMargin += $margin['L'];
+						$this->rMargin += $margin['R'];
 					}
 					$w = $this->getRemainingWidth();
-					$wmax = $w - (2 * $this->cMargin);
+					$wmax = $w - $this->cell_padding['L'] - $this->cell_padding['R'];
 				} else {
 					// 160 is the non-breaking space.
 					// 173 is SHY (Soft Hypen).
@@ -6322,9 +6643,9 @@ if (!class_exists('TCPDF', false)) {
 										$this->endlinex = $startx + $linew;
 									}
 									$w = $linew;
-									$tmpcmargin = $this->cMargin;
+									$tmpcellpadding = $this->cell_padding;
 									if ($maxh == 0) {
-										$this->cMargin = 0;
+										$this->SetCellPadding(0);
 									}
 								}
 								if ($firstblock AND $this->isRTLTextDir()) {
@@ -6333,7 +6654,7 @@ if (!class_exists('TCPDF', false)) {
 								$this->Cell($w, $h, $tmpstr, 0, 1, $align, $fill, $link, $stretch);
 								unset($tmpstr);
 								if ($firstline) {
-									$this->cMargin = $tmpcmargin;
+									$this->cell_padding = $tmpcellpadding;
 									return ($this->UniArrSubString($uchars, $i));
 								}
 								$j = $i;
@@ -6376,9 +6697,9 @@ if (!class_exists('TCPDF', false)) {
 									$this->endlinex = $startx + $linew + $shy_width;
 								}
 								$w = $linew;
-								$tmpcmargin = $this->cMargin;
+								$tmpcellpadding = $this->cell_padding;
 								if ($maxh == 0) {
-									$this->cMargin = 0;
+									$this->SetCellPadding(0);
 								}
 							}
 							// print the line
@@ -6389,7 +6710,7 @@ if (!class_exists('TCPDF', false)) {
 							unset($tmpstr);
 							if ($firstline) {
 								// return the remaining text
-								$this->cMargin = $tmpcmargin;
+								$this->cell_padding = $tmpcellpadding;
 								return ($this->UniArrSubString($uchars, ($sep + $endspace)));
 							}
 							$i = $sep;
@@ -6400,9 +6721,16 @@ if (!class_exists('TCPDF', false)) {
 						// account for margin changes
 						if ((($this->y + $this->lasth) > $this->PageBreakTrigger) AND (!$this->InFooter)) {
 							$this->AcceptPageBreak();
+							if ($this->rtl) {
+								$this->x -= $margin['R'];
+							} else {
+								$this->x += $margin['L'];
+							}
+							$this->lMargin += $margin['L'];
+							$this->rMargin += $margin['R'];
 						}
 						$w = $this->getRemainingWidth();
-						$wmax = $w - (2 * $this->cMargin);
+						$wmax = $w - $this->cell_padding['L'] - $this->cell_padding['R'];
 						if ($linebreak) {
 							$linebreak = false;
 						} else {
@@ -6459,9 +6787,9 @@ if (!class_exists('TCPDF', false)) {
 						$this->endlinex = $startx + $linew;
 					}
 					$w = $linew;
-					$tmpcmargin = $this->cMargin;
+					$tmpcellpadding = $this->cell_padding;
 					if ($maxh == 0) {
-						$this->cMargin = 0;
+						$this->SetCellPadding(0);
 					}
 				}
 				if ($firstblock AND $this->isRTLTextDir()) {
@@ -6470,7 +6798,7 @@ if (!class_exists('TCPDF', false)) {
 				$this->Cell($w, $h, $tmpstr, 0, $ln, $align, $fill, $link, $stretch);
 				unset($tmpstr);
 				if ($firstline) {
-					$this->cMargin = $tmpcmargin;
+					$this->cell_padding = $tmpcellpadding;
 					return ($this->UniArrSubString($uchars, $nb));
 				}
 				++$nl;
@@ -7242,40 +7570,57 @@ if (!class_exists('TCPDF', false)) {
 		 * @param boolean $resize If true resize (reduce) the image to fit $w and $h (requires GD library).
 		 * @param int $dpi dot-per-inch resolution used on resize
 		 * @param string $palign Allows to center or align the image on the current line. Possible values are:<ul><li>L : left align</li><li>C : center</li><li>R : right align</li><li>'' : empty string : left for LTR or right for RTL</li></ul>
-		 * @author Valentin Schmidt, Nicola Asuni
+		 * @author Nicola Asuni
 		 * @access protected
 		 * @since 4.3.007 (2008-12-04)
 		 * @see Image()
 		 */
 		protected function ImagePngAlpha($file, $x, $y, $wpx, $hpx, $w, $h, $type, $link, $align, $resize, $dpi, $palign) {
-			// generate images
-			$img = imagecreatefrompng($file);
-			$imgalpha = imagecreate($wpx, $hpx);
-			// generate gray scale palette (0 -> 255)
-			for ($c = 0; $c < 256; ++$c) {
-				ImageColorAllocate($imgalpha, $c, $c, $c);
-			}
-			// extract alpha channel
-			for ($xpx = 0; $xpx < $wpx; ++$xpx) {
-				for ($ypx = 0; $ypx < $hpx; ++$ypx) {
-					$color = imagecolorat($img, $xpx, $ypx);
-					$alpha = ($color >> 24); // shifts off the first 24 bits (where 8x3 are used for each color), and returns the remaining 7 allocated bits (commonly used for alpha)
-					$alpha = (((127 - $alpha) / 127) * 255); // GD alpha is only 7 bit (0 -> 127)
-					$alpha = $this->getGDgamma($alpha); // correct gamma
-					imagesetpixel($imgalpha, $xpx, $ypx, $alpha);
-				}
-			}
+			// create temp image file (without alpha channel)
+			$tempfile_plain = tempnam(K_PATH_CACHE, 'mskp_');
 			// create temp alpha file
 			$tempfile_alpha = tempnam(K_PATH_CACHE, 'mska_');
-			imagepng($imgalpha, $tempfile_alpha);
-			imagedestroy($imgalpha);
-			// extract image without alpha channel
-			$imgplain = imagecreatetruecolor($wpx, $hpx);
-			imagecopy($imgplain, $img, 0, 0, 0, 0, $wpx, $hpx);
-			// create temp image file
-			$tempfile_plain = tempnam(K_PATH_CACHE, 'mskp_');
-			imagepng($imgplain, $tempfile_plain);
-			imagedestroy($imgplain);
+			if (extension_loaded('imagick')) { // ImageMagick
+				// ImageMagick library
+				$img = new Imagick();
+				$img->readImage($file);
+				// clone image object
+				$imga = $img->clone();
+				// extract alpha channel
+				$img->separateImageChannel(imagick::CHANNEL_ALPHA | imagick::CHANNEL_OPACITY | imagick::CHANNEL_MATTE);
+				$img->negateImage(true);
+				$img->setImageFormat('png');
+				$img->writeImage($tempfile_alpha);
+				// remove alpha channel
+				$imga->separateImageChannel(imagick::CHANNEL_ALL & ~(imagick::CHANNEL_ALPHA | imagick::CHANNEL_OPACITY | imagick::CHANNEL_MATTE));
+				$imga->setImageFormat('png');
+				$imga->writeImage($tempfile_plain);
+			} else { // GD library
+				// generate images
+				$img = imagecreatefrompng($file);
+				$imgalpha = imagecreate($wpx, $hpx);
+				// generate gray scale palette (0 -> 255)
+				for ($c = 0; $c < 256; ++$c) {
+					ImageColorAllocate($imgalpha, $c, $c, $c);
+				}
+				// extract alpha channel
+				for ($xpx = 0; $xpx < $wpx; ++$xpx) {
+					for ($ypx = 0; $ypx < $hpx; ++$ypx) {
+						$color = imagecolorat($img, $xpx, $ypx);
+						$alpha = ($color >> 24); // shifts off the first 24 bits (where 8x3 are used for each color), and returns the remaining 7 allocated bits (commonly used for alpha)
+						$alpha = (((127 - $alpha) / 127) * 255); // GD alpha is only 7 bit (0 -> 127)
+						$alpha = $this->getGDgamma($alpha); // correct gamma
+						imagesetpixel($imgalpha, $xpx, $ypx, $alpha);
+					}
+				}
+				imagepng($imgalpha, $tempfile_alpha);
+				imagedestroy($imgalpha);
+				// extract image without alpha channel
+				$imgplain = imagecreatetruecolor($wpx, $hpx);
+				imagecopy($imgplain, $img, 0, 0, 0, 0, $wpx, $hpx);
+				imagepng($imgplain, $tempfile_plain);
+				imagedestroy($imgplain);
+			}
 			// embed mask image
 			$imgmask = $this->Image($tempfile_alpha, $x, $y, $w, $h, 'PNG', '', '', $resize, $dpi, '', true, false);
 			// embed image, masked with previously embedded mask
@@ -7299,7 +7644,7 @@ if (!class_exists('TCPDF', false)) {
 		 * Performs a line break.
 		 * The current abscissa goes back to the left margin and the ordinate increases by the amount passed in parameter.
 		 * @param float $h The height of the break. By default, the value equals the height of the last printed cell.
-		 * @param boolean $cell if true add a cMargin to the x coordinate
+		 * @param boolean $cell if true add the current left (or right o for RTL) padding to the X coordinate
 		 * @access public
 		 * @since 1.0
 		 * @see Cell()
@@ -7310,14 +7655,18 @@ if (!class_exists('TCPDF', false)) {
 				return;
 			}
 			if ($cell) {
-				$cellmargin = $this->cMargin;
+				if ($this->rtl) {
+					$cellpadding = $this->cell_padding['R'];
+				} else {
+					$cellpadding = $this->cell_padding['L'];
+				}
 			} else {
-				$cellmargin = 0;
+				$cellpadding = 0;
 			}
 			if ($this->rtl) {
-				$this->x = $this->w - $this->rMargin - $cellmargin;
+				$this->x = $this->w - $this->rMargin - $cellpadding;
 			} else {
-				$this->x = $this->lMargin + $cellmargin;
+				$this->x = $this->lMargin + $cellpadding;
 			}
 			if (is_string($h)) {
 				$this->y += $this->lasth;
@@ -11604,7 +11953,12 @@ if (!class_exists('TCPDF', false)) {
 		 */
 		public function StartTransform() {
 			$this->_out('q');
-			$this->transfmrk[$this->page][] = $this->pagelen[$this->page];
+			if ($this->inxobj) {
+				// we are inside an XObject template
+				$this->xobjects[$this->xobjid]['transfmrk'][] = strlen($this->xobjects[$this->xobjid]['outdata']);
+			} else {
+				$this->transfmrk[$this->page][] = $this->pagelen[$this->page];
+			}
 			++$this->transfmatrix_key;
 			$this->transfmatrix[$this->transfmatrix_key] = array();
 		}
@@ -11623,7 +11977,12 @@ if (!class_exists('TCPDF', false)) {
 				array_pop($this->transfmatrix[$this->transfmatrix_key]);
 				--$this->transfmatrix_key;
 			}
-			array_pop($this->transfmrk[$this->page]);
+			if ($this->inxobj) {
+				// we are inside an XObject template
+				array_pop($this->xobjects[$this->xobjid]['transfmrk']);
+			} else {
+				array_pop($this->transfmrk[$this->page]);
+			}
 		}
 		/**
 		 * Horizontal Scaling.
@@ -11892,8 +12251,14 @@ if (!class_exists('TCPDF', false)) {
 			$this->_out(sprintf('%.3F %.3F %.3F %.3F %.3F %.3F cm', $tm[0], $tm[1], $tm[2], $tm[3], $tm[4], $tm[5]));
 			// add tranformation matrix
 			$this->transfmatrix[$this->transfmatrix_key][] = array('a' => $tm[0], 'b' => $tm[1], 'c' => $tm[2], 'd' => $tm[3], 'e' => $tm[4], 'f' => $tm[5]);
-			// update tranformation mark
-			if (end($this->transfmrk[$this->page]) !== false) {
+			// update transformation mark
+			if ($this->inxobj) {
+				// we are inside an XObject template
+				if (end($this->xobjects[$this->xobjid]['transfmrk']) !== false) {
+					$key = key($this->xobjects[$this->xobjid]['transfmrk']);
+					$this->xobjects[$this->xobjid]['transfmrk'][$key] = strlen($this->xobjects[$this->xobjid]['outdata']);
+				}
+			} elseif (end($this->transfmrk[$this->page]) !== false) {
 				$key = key($this->transfmrk[$this->page]);
 				$this->transfmrk[$this->page][$key] = $this->pagelen[$this->page];
 			}
@@ -16008,7 +16373,18 @@ if (!class_exists('TCPDF', false)) {
 		 * @param float $xres width of the smallest bar in user units (empty string = default value = 0.4mm)
 		 * @param array $style array of options:<ul>
 		 <li>boolean $style['border'] if true prints a border</li>
-		 <li>int $style['padding'] padding to leave around the barcode (minimum distance between the barcode and the containing cell border) in user units (set to 'auto' for automatic padding)</li><li>array $style['fgcolor'] color array for bars and text</li><li>mixed $style['bgcolor'] color array for background (set to false for transparent)</li><li>boolean $style["text"] boolean if true prints text below the barcode</li><li>string $style['font'] font name for text</li><li>int $style['fontsize'] font size for text</li><li>int $style['stretchtext']: 0 = disabled; 1 = horizontal scaling only if necessary; 2 = forced horizontal scaling; 3 = character spacing only if necessary; 4 = forced character spacing.</li><li>string $style['position'] horizontal position of the containing barcode cell on the page: L = left margin; C = center; R = right margin.</li><li>string $style['align'] horizontal position of the barcode on the containing rectangle: L = left; C = center; R = right.</li><li>string $style['stretch'] if true stretch the barcode to best fit the available width, otherwise uses $xres resolution for a single bar.</li><li>string $style['fitwidth'] if true reduce the width to fit the barcode width + padding. When this option is enabled the 'stretch' option is automatically disabled.</li><li>string $style['cellfitalign'] this option works only when 'fitwidth' is true and 'position' is unset or empty. Set the horizontal position of the containing barcode cell inside the specified rectangle: L = left; C = center; R = right.</li></ul>
+		 <li>int $style['padding'] padding to leave around the barcode (minimum distance between the barcode and the containing cell border) in user units (set to 'auto' for automatic padding)</li>
+		 <li>array $style['fgcolor'] color array for bars and text</li>
+		 <li>mixed $style['bgcolor'] color array for background (set to false for transparent)</li>
+		 <li>boolean $style['text'] if true prints text below the barcode</li>
+		 <li>string $style['label'] override default label</li>
+		 <li>string $style['font'] font name for text</li><li>int $style['fontsize'] font size for text</li>
+		 <li>int $style['stretchtext']: 0 = disabled; 1 = horizontal scaling only if necessary; 2 = forced horizontal scaling; 3 = character spacing only if necessary; 4 = forced character spacing.</li>
+		 <li>string $style['position'] horizontal position of the containing barcode cell on the page: L = left margin; C = center; R = right margin.</li>
+		 <li>string $style['align'] horizontal position of the barcode on the containing rectangle: L = left; C = center; R = right.</li>
+		 <li>string $style['stretch'] if true stretch the barcode to best fit the available width, otherwise uses $xres resolution for a single bar.</li>
+		 <li>string $style['fitwidth'] if true reduce the width to fit the barcode width + padding. When this option is enabled the 'stretch' option is automatically disabled.</li>
+		 <li>string $style['cellfitalign'] this option works only when 'fitwidth' is true and 'position' is unset or empty. Set the horizontal position of the containing barcode cell inside the specified rectangle: L = left; C = center; R = right.</li></ul>
 		 * @param string $align Indicates the alignment of the pointer next to barcode insertion relative to barcode height. The value can be:<ul><li>T: top-right for LTR or top-left for RTL</li><li>M: middle-right for LTR or middle-left for RTL</li><li>B: bottom-right for LTR or bottom-left for RTL</li><li>N: next line</li></ul>
 		 * @author Nicola Asuni
 		 * @since 3.1.000 (2008-06-09)
@@ -16236,17 +16612,22 @@ if (!class_exists('TCPDF', false)) {
 			}
 			// print text
 			if ($style['text']) {
+				if (isset($style['label']) AND !$this->empty_string($style['label'])) {
+					$label = $style['label'];
+				} else {
+					$label = $code;
+				}
 				$txtwidth = ($arrcode['maxw'] * $xres);
-				if ($this->GetStringWidth($code) > $txtwidth) {
+				if ($this->GetStringWidth($label) > $txtwidth) {
 					$style['stretchtext'] = 2;
 				}
 				// print text
 				$this->x = $xpos_text;
 				$this->y = $y + $vpadding + $barh;
-				$cmargin = $this->cMargin;
-				$this->cMargin = 0;
-				$this->Cell($txtwidth, '', $code, 0, 0, 'C', 0, '', $style['stretchtext'], false, 'T', 'T');
-				$this->cMargin = $cmargin;
+				$cellpadding = $this->cell_padding;
+				$this->SetCellPadding(0);
+				$this->Cell($txtwidth, '', $label, 0, 0, 'C', 0, '', $style['stretchtext'], false, 'T', 'T');
+				$this->cell_padding = $cellpadding;
 			}
 			// restore original direction
 			$this->rtl = $tempRTL;
@@ -16561,7 +16942,11 @@ if (!class_exists('TCPDF', false)) {
 				<li>$ret['bottom'] = bottom margin</li>
 				<li>$ret['header'] = header margin</li>
 				<li>$ret['footer'] = footer margin</li>
-				<li>$ret['cell'] = cell margin</li>
+				<li>$ret['cell'] = cell padding array</li>
+				<li>$ret['padding_left'] = cell left padding</li>
+				<li>$ret['padding_top'] = cell top padding</li>
+				<li>$ret['padding_right'] = cell right padding</li>
+				<li>$ret['padding_bottom'] = cell bottom padding</li>
 		 * </ul>
 		 * @return array containing all margins measures
 		 * @access public
@@ -16575,7 +16960,11 @@ if (!class_exists('TCPDF', false)) {
 				'bottom' => $this->bMargin,
 				'header' => $this->header_margin,
 				'footer' => $this->footer_margin,
-				'cell' => $this->cMargin,
+				'cell' => $this->cell_padding,
+				'padding_left' => $this->cell_padding['L'],
+				'padding_top' => $this->cell_padding['T'],
+				'padding_right' => $this->cell_padding['R'],
+				'padding_bottom' => $this->cell_padding['B']
 			);
 			return $ret;
 		}
@@ -17026,8 +17415,215 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
+		 * Get the internal Cell padding from CSS attribute.
+		 * @param string $csspadding padding properties
+		 * @param float $width width of the containing element
+		 * @access public
+		 * @since 5.9.000 (2010-10-04)
+		 */
+		public function getCSSPadding($csspadding, $width=0) {
+			$padding = preg_split('/[\s]+/', trim($csspadding));
+			$cell_padding = array(); // value to be returned
+			switch (count($padding)) {
+				case 4: {
+					$cell_padding['T'] = $padding[0];
+					$cell_padding['R'] = $padding[1];
+					$cell_padding['B'] = $padding[2];
+					$cell_padding['L'] = $padding[3];
+					break;
+				}
+				case 3: {
+					$cell_padding['T'] = $padding[0];
+					$cell_padding['R'] = $padding[1];
+					$cell_padding['B'] = $padding[2];
+					$cell_padding['L'] = $padding[1];
+					break;
+				}
+				case 2: {
+					$cell_padding['T'] = $padding[0];
+					$cell_padding['R'] = $padding[1];
+					$cell_padding['B'] = $padding[0];
+					$cell_padding['L'] = $padding[1];
+					break;
+				}
+				case 1: {
+					$cell_padding['T'] = $padding[0];
+					$cell_padding['R'] = $padding[0];
+					$cell_padding['B'] = $padding[0];
+					$cell_padding['L'] = $padding[0];
+					break;
+				}
+				default: {
+					return $this->cell_padding;
+				}
+			}
+			if ($width == 0) {
+				$width = $this->w - $this->lMargin - $this->rMargin;
+			}
+			$cell_padding['T'] = $this->getHTMLUnitToUnits($cell_padding['T'], $width, 'px', false);
+			$cell_padding['R'] = $this->getHTMLUnitToUnits($cell_padding['R'], $width, 'px', false);
+			$cell_padding['B'] = $this->getHTMLUnitToUnits($cell_padding['B'], $width, 'px', false);
+			$cell_padding['L'] = $this->getHTMLUnitToUnits($cell_padding['L'], $width, 'px', false);
+			return $cell_padding;
+		}
+
+		/**
+		 * Get the internal Cell margin from CSS attribute.
+		 * @param string $cssmargin margin properties
+		 * @param float $width width of the containing element
+		 * @access public
+		 * @since 5.9.000 (2010-10-04)
+		 */
+		public function getCSSMargin($cssmargin, $width=0) {
+			$margin = preg_split('/[\s]+/', trim($cssmargin));
+			$cell_margin = array(); // value to be returned
+			switch (count($margin)) {
+				case 4: {
+					$cell_margin['T'] = $margin[0];
+					$cell_margin['R'] = $margin[1];
+					$cell_margin['B'] = $margin[2];
+					$cell_margin['L'] = $margin[3];
+					break;
+				}
+				case 3: {
+					$cell_margin['T'] = $margin[0];
+					$cell_margin['R'] = $margin[1];
+					$cell_margin['B'] = $margin[2];
+					$cell_margin['L'] = $margin[1];
+					break;
+				}
+				case 2: {
+					$cell_margin['T'] = $margin[0];
+					$cell_margin['R'] = $margin[1];
+					$cell_margin['B'] = $margin[0];
+					$cell_margin['L'] = $margin[1];
+					break;
+				}
+				case 1: {
+					$cell_margin['T'] = $margin[0];
+					$cell_margin['R'] = $margin[0];
+					$cell_margin['B'] = $margin[0];
+					$cell_margin['L'] = $margin[0];
+					break;
+				}
+				default: {
+					return $this->cell_margin;
+				}
+			}
+			if ($width == 0) {
+				$width = $this->w - $this->lMargin - $this->rMargin;
+			}
+			$cell_margin['T'] = $this->getHTMLUnitToUnits(str_replace('auto', '0', $cell_margin['T']), $width, 'px', false);
+			$cell_margin['R'] = $this->getHTMLUnitToUnits(str_replace('auto', '0', $cell_margin['R']), $width, 'px', false);
+			$cell_margin['B'] = $this->getHTMLUnitToUnits(str_replace('auto', '0', $cell_margin['B']), $width, 'px', false);
+			$cell_margin['L'] = $this->getHTMLUnitToUnits(str_replace('auto', '0', $cell_margin['L']), $width, 'px', false);
+			return $cell_margin;
+		}
+
+		/**
+	 	 * Returns the letter-spacing value from CSS value
+		 * @param string $spacing letter-spacing value
+		 * @param float $parent kerning value of the parent element
+		 * @return float quantity to increases or decreases the space between characters in a text.
+		 * @access protected
+		 * @since 5.9.000 (2010-10-02)
+		 */
+		protected function getCSSFontSpacing($spacing, $parent=0) {
+			$val = 0; // value to be returned
+			$spacing = trim($spacing);
+			switch ($spacing) {
+				case 'normal': {
+					$val = 0;
+					break;
+				}
+				case 'inherit': {
+					if ($parent == 'normal') {
+						$val = 0;
+					} else {
+						$val = $parent;
+					}
+					break;
+				}
+				default: {
+					$val = $this->getHTMLUnitToUnits($spacing, 0, 'px', false);
+				}
+			}
+			return $val;
+		}
+
+		/**
+	 	 * Returns the percentage of font stretching from CSS value
+		 * @param string $stretch stretch mode
+		 * @param float $parent stretch value of the parent element
+		 * @return float font stretching percentage
+		 * @access protected
+		 * @since 5.9.000 (2010-10-02)
+		 */
+		protected function getCSSFontStretching($stretch, $parent=100) {
+			$val = 100; // value to be returned
+			$stretch = trim($stretch);
+			switch ($stretch) {
+				case 'ultra-condensed': {
+					$val = 40;
+					break;
+				}
+				case 'extra-condensed': {
+					$val = 55;
+					break;
+				}
+				case 'condensed': {
+					$val = 70;
+					break;
+				}
+				case 'semi-condensed': {
+					$val = 85;
+					break;
+				}
+				case 'normal': {
+					$val = 100;
+					break;
+				}
+				case 'semi-expanded': {
+					$val = 115;
+					break;
+				}
+				case 'expanded': {
+					$val = 130;
+					break;
+				}
+				case 'extra-expanded': {
+					$val = 145;
+					break;
+				}
+				case 'ultra-expanded': {
+					$val = 160;
+					break;
+				}
+				case 'wider': {
+					$val = $parent + 10;
+					break;
+				}
+				case 'narrower': {
+					$val = $parent - 10;
+					break;
+				}
+				case 'inherit': {
+					if ($parent == 'normal') {
+						$val = 100;
+					} else {
+						$val = $parent;
+					}
+					break;
+				}
+				default: {
+					$val = $this->getHTMLUnitToUnits($stretch, 100, '%', false);
+				}
+			}
+			return $val;
+		}
+
+		/**
 	 	 * Returns the HTML DOM array.
-	 	 * <ul><li>$dom[$key]['tag'] = true if tag, false otherwise;</li><li>$dom[$key]['value'] = tag name or text;</li><li>$dom[$key]['opening'] = true if opening tag, false otherwise;</li><li>$dom[$key]['attribute'] = array of attributes (attribute name is the key);</li><li>$dom[$key]['style'] = array of style attributes (attribute name is the key);</li><li>$dom[$key]['parent'] = id of parent element;</li><li>$dom[$key]['fontname'] = font family name;</li><li>$dom[$key]['fontstyle'] = font style;</li><li>$dom[$key]['fontsize'] = font size in points;</li><li>$dom[$key]['bgcolor'] = RGB array of background color;</li><li>$dom[$key]['fgcolor'] = RGB array of foreground color;</li><li>$dom[$key]['width'] = width in pixels;</li><li>$dom[$key]['height'] = height in pixels;</li><li>$dom[$key]['align'] = text alignment;</li><li>$dom[$key]['cols'] = number of colums in table;</li><li>$dom[$key]['rows'] = number of rows in table;</li></ul>
 		 * @param string $html html code
 		 * @return array
 		 * @access protected
@@ -17182,6 +17778,8 @@ if (!class_exists('TCPDF', false)) {
 			$dom[$key]['fontname'] = $this->FontFamily;
 			$dom[$key]['fontstyle'] = $this->FontStyle;
 			$dom[$key]['fontsize'] = $this->FontSizePt;
+			$dom[$key]['font-stretch'] = 100;
+			$dom[$key]['letter-spacing'] = 0;
 			$dom[$key]['stroke'] = $this->textstrokewidth;
 			$dom[$key]['fill'] = (($this->textrendermode % 2) == 0);
 			$dom[$key]['clip'] = ($this->textrendermode > 3);
@@ -17232,6 +17830,8 @@ if (!class_exists('TCPDF', false)) {
 						$dom[$key]['fontname'] = $dom[($dom[($dom[$key]['parent'])]['parent'])]['fontname'];
 						$dom[$key]['fontstyle'] = $dom[($dom[($dom[$key]['parent'])]['parent'])]['fontstyle'];
 						$dom[$key]['fontsize'] = $dom[($dom[($dom[$key]['parent'])]['parent'])]['fontsize'];
+						$dom[$key]['font-stretch'] = $dom[($dom[($dom[$key]['parent'])]['parent'])]['font-stretch'];
+						$dom[$key]['letter-spacing'] = $dom[($dom[($dom[$key]['parent'])]['parent'])]['letter-spacing'];
 						$dom[$key]['stroke'] = $dom[($dom[($dom[$key]['parent'])]['parent'])]['stroke'];
 						$dom[$key]['fill'] = $dom[($dom[($dom[$key]['parent'])]['parent'])]['fill'];
 						$dom[$key]['clip'] = $dom[($dom[($dom[$key]['parent'])]['parent'])]['clip'];
@@ -17306,6 +17906,8 @@ if (!class_exists('TCPDF', false)) {
 							$dom[$key]['fontname'] = $dom[$parentkey]['fontname'];
 							$dom[$key]['fontstyle'] = $dom[$parentkey]['fontstyle'];
 							$dom[$key]['fontsize'] = $dom[$parentkey]['fontsize'];
+							$dom[$key]['font-stretch'] = $dom[$parentkey]['font-stretch'];
+							$dom[$key]['letter-spacing'] = $dom[$parentkey]['letter-spacing'];
 							$dom[$key]['stroke'] = $dom[$parentkey]['stroke'];
 							$dom[$key]['fill'] = $dom[$parentkey]['fill'];
 							$dom[$key]['clip'] = $dom[$parentkey]['clip'];
@@ -17404,6 +18006,14 @@ if (!class_exists('TCPDF', false)) {
 										$dom[$key]['fontsize'] = $this->getHTMLUnitToUnits($fsize, $dom[$parentkey]['fontsize'], 'pt', true);
 									}
 								}
+							}
+							// font-stretch
+							if (isset($dom[$key]['style']['font-stretch'])) {
+								$dom[$key]['font-stretch'] = $this->getCSSFontStretching($dom[$key]['style']['font-stretch'], $dom[$parentkey]['font-stretch']);
+							}
+							// letter-spacing
+							if (isset($dom[$key]['style']['letter-spacing'])) {
+								$dom[$key]['letter-spacing'] = $this->getCSSFontSpacing($dom[$key]['style']['letter-spacing'], $dom[$parentkey]['letter-spacing']);
 							}
 							// line-height
 							if (isset($dom[$key]['style']['line-height'])) {
@@ -17544,8 +18154,8 @@ if (!class_exists('TCPDF', false)) {
 									}
 								}
 							}
-							$borderside = array('L' => 'left', 'R' => 'right', 'T' => 'top', 'B' => 'bottom');
-							foreach ($borderside as $bsk => $bsv) {
+							$cellside = array('L' => 'left', 'R' => 'right', 'T' => 'top', 'B' => 'bottom');
+							foreach ($cellside as $bsk => $bsv) {
 								if (isset($dom[$key]['style']['border-'.$bsv])) {
 									$borderstyle = $this->getCSSBorderStyle($dom[$key]['style']['border-'.$bsv]);
 									if (!empty($borderstyle)) {
@@ -17563,6 +18173,28 @@ if (!class_exists('TCPDF', false)) {
 									if ($dom[$key]['border'][$bsk]['dash'] < 0) {
 										$dom[$key]['border'][$bsk] = array();
 									}
+								}
+							}
+							// check for CSS padding properties
+							if (isset($dom[$key]['style']['padding'])) {
+								$dom[$key]['padding'] = $this->getCSSPadding($dom[$key]['style']['padding']);
+							} else {
+								$dom[$key]['padding'] = $this->cell_padding;
+							}
+							foreach ($cellside as $psk => $psv) {
+								if (isset($dom[$key]['style']['padding-'.$psv])) {
+									$dom[$key]['padding'][$psk] = $this->getHTMLUnitToUnits($dom[$key]['style']['padding-'.$psv], 0, 'px', false);
+								}
+							}
+							// check for CSS margin properties
+							if (isset($dom[$key]['style']['margin'])) {
+								$dom[$key]['margin'] = $this->getCSSMargin($dom[$key]['style']['margin']);
+							} else {
+								$dom[$key]['margin'] = $this->cell_margin;
+							}
+							foreach ($cellside as $psk => $psv) {
+								if (isset($dom[$key]['style']['margin-'.$psv])) {
+									$dom[$key]['margin'][$psk] = $this->getHTMLUnitToUnits(str_replace('auto', '0', $dom[$key]['style']['margin-'.$psv]), 0, 'px', false);
 								}
 							}
 							// page-break-inside
@@ -17795,13 +18427,15 @@ if (!class_exists('TCPDF', false)) {
 		 * @param boolean $ln if true add a new line after text (default = true)
 		 * @param boolean $fill Indicates if the background must be painted (true) or transparent (false).
 		 * @param boolean $reseth if true reset the last cell height (default false).
-		 * @param boolean $cell if true add the default cMargin space to each Write (default false).
+		 * @param boolean $cell if true add the current left (or right for RTL) padding to each Write (default false).
 		 * @param string $align Allows to center or align the text. Possible values are:<ul><li>L : left align</li><li>C : center</li><li>R : right align</li><li>'' : empty string : left for LTR or right for RTL</li></ul>
 		 * @access public
 		 */
 		public function writeHTML($html, $ln=true, $fill=false, $reseth=false, $cell=false, $align='') {
 			$gvars = $this->getGraphicVars();
 			// store current values
+			$prev_cell_margin = $this->cell_margin;
+			$prev_cell_padding = $this->cell_padding;
 			$prevPage = $this->page;
 			$prevlMargin = $this->lMargin;
 			$prevrMargin = $this->rMargin;
@@ -17810,6 +18444,8 @@ if (!class_exists('TCPDF', false)) {
 			$curfontsize = $this->FontSizePt;
 			$curfontascent = $this->getFontAscent($curfontname, $curfontstyle, $curfontsize);
 			$curfontdescent = $this->getFontDescent($curfontname, $curfontstyle, $curfontsize);
+			$curfontstretcing = $this->font_stretching;
+			$curfontkerning = $this->font_spacing;
 			$this->newline = true;
 			$newline = true;
 			$startlinepage = $this->page;
@@ -17824,12 +18460,18 @@ if (!class_exists('TCPDF', false)) {
 			$undo = false;
 			$fontaligned = false;
 			$this->premode = false;
-			if (isset($this->PageAnnots[$this->page])) {
+			if ($this->inxobj) {
+				// we are inside an XObject template
+				$pask = count($this->xobjects[$this->xobjid]['annotations']);
+			} elseif (isset($this->PageAnnots[$this->page])) {
 				$pask = count($this->PageAnnots[$this->page]);
 			} else {
 				$pask = 0;
 			}
-			if (!$this->InFooter) {
+			if ($this->inxobj) {
+				// we are inside an XObject template
+				$startlinepos = strlen($this->xobjects[$this->xobjid]['outdata']);
+			} elseif (!$this->InFooter) {
 				if (isset($this->footerlen[$this->page])) {
 					$this->footerpos[$this->page] = $this->pagelen[$this->page] - $this->footerlen[$this->page];
 				} else {
@@ -17837,6 +18479,7 @@ if (!class_exists('TCPDF', false)) {
 				}
 				$startlinepos = $this->footerpos[$this->page];
 			} else {
+				// we are inside the footer
 				$startlinepos = $this->pagelen[$this->page];
 			}
 			$lalign = $align;
@@ -17846,14 +18489,14 @@ if (!class_exists('TCPDF', false)) {
 			} else {
 				$w = $this->w - $this->rMargin - $this->x;
 			}
-			$w -= (2 * $this->cMargin);
+			$w -= ($this->cell_padding['L'] + $this->cell_padding['R']);
 			if ($cell) {
 				if ($this->rtl) {
-					$this->x -= $this->cMargin;
-					$this->lMargin += $this->cMargin;
+					$this->x -= $this->cell_padding['R'];
+					$this->lMargin += $this->cell_padding['R'];
 				} else {
-					$this->x += $this->cMargin;
-					$this->rMargin += $this->cMargin;
+					$this->x += $this->cell_padding['L'];
+					$this->rMargin += $this->cell_padding['L'];
 				}
 			}
 			if ($this->customlistindent >= 0) {
@@ -17873,8 +18516,8 @@ if (!class_exists('TCPDF', false)) {
 			$this->listcount = array();
 			$this->lispacer = '';
 			if (($this->empty_string($this->lasth)) OR ($reseth)) {
-				//set row height
-				$this->lasth = $this->FontSize * $this->cell_height_ratio;
+				// reset row height
+				$this->resetLastH();
 			}
 			$dom = $this->getHtmlDomArray($html);
 			$maxel = count($dom);
@@ -17907,6 +18550,8 @@ if (!class_exists('TCPDF', false)) {
 						$this_method_vars['align'] = $align;
 						$this_method_vars['gvars'] = $gvars;
 						$this_method_vars['prevPage'] = $prevPage;
+						$this_method_vars['prev_cell_margin'] = $prev_cell_margin;
+						$this_method_vars['prev_cell_padding'] = $prev_cell_padding;
 						$this_method_vars['prevlMargin'] = $prevlMargin;
 						$this_method_vars['prevrMargin'] = $prevrMargin;
 						$this_method_vars['curfontname'] = $curfontname;
@@ -17914,6 +18559,8 @@ if (!class_exists('TCPDF', false)) {
 						$this_method_vars['curfontsize'] = $curfontsize;
 						$this_method_vars['curfontascent'] = $curfontascent;
 						$this_method_vars['curfontdescent'] = $curfontdescent;
+						$this_method_vars['curfontstretcing'] = $curfontstretcing;
+						$this_method_vars['curfontkerning'] = $curfontkerning;
 						$this_method_vars['minstartliney'] = $minstartliney;
 						$this_method_vars['maxbottomliney'] = $maxbottomliney;
 						$this_method_vars['yshift'] = $yshift;
@@ -17999,8 +18646,8 @@ if (!class_exists('TCPDF', false)) {
 						$autolinebreak = false;
 						if (isset($dom[$key]['width']) AND ($dom[$key]['width'] > 0)) {
 							$imgw = $this->getHTMLUnitToUnits($dom[$key]['width'], 1, 'px', false);
-							if (($this->rtl AND (($this->x - $imgw) < ($this->lMargin + $this->cMargin)))
-								OR (!$this->rtl AND (($this->x + $imgw) > ($this->w - $this->rMargin - $this->cMargin)))) {
+							if (($this->rtl AND (($this->x - $imgw) < ($this->lMargin + $this->cell_padding['L'])))
+								OR (!$this->rtl AND (($this->x + $imgw) > ($this->w - $this->rMargin - $this->cell_padding['R'])))) {
 								// add automatic line break
 								$autolinebreak = true;
 								$this->Ln('', $cell);
@@ -18133,7 +18780,8 @@ if (!class_exists('TCPDF', false)) {
 								$fontaligned = true;
 							}
 							$this->SetFont($fontname, $fontstyle, $fontsize);
-							$this->lasth = $this->FontSize * $this->cell_height_ratio;
+							// reset row height
+							$this->resetLastH();
 							$curfontname = $fontname;
 							$curfontstyle = $fontstyle;
 							$curfontsize = $fontsize;
@@ -18146,6 +18794,12 @@ if (!class_exists('TCPDF', false)) {
 					$textfill = isset($dom[$key]['fill']) ? $dom[$key]['fill'] : (($this->textrendermode % 2) == 0);
 					$textclip = isset($dom[$key]['clip']) ? $dom[$key]['clip'] : ($this->textrendermode > 3);
 					$this->setTextRenderingMode($textstroke, $textfill, $textclip);
+					if (isset($dom[$key]['font-stretch']) AND ($dom[$key]['font-stretch'] !== false)) {
+						$this->setFontStretching($dom[$key]['font-stretch']);
+					}
+					if (isset($dom[$key]['letter-spacing']) AND ($dom[$key]['letter-spacing'] !== false)) {
+						$this->setFontSpacing($dom[$key]['letter-spacing']);
+					}
 					if (($plalign == 'J') AND $dom[$key]['block']) {
 						$plalign = '';
 					}
@@ -18183,30 +18837,47 @@ if (!class_exists('TCPDF', false)) {
 						$t_x = 0;
 						// the last line must be shifted to be aligned as requested
 						$linew = abs($this->endlinex - $startlinex);
-						$pstart = substr($this->getPageBuffer($startlinepage), 0, $startlinepos);
-						if (isset($opentagpos) AND isset($this->footerlen[$startlinepage]) AND (!$this->InFooter)) {
-							$this->footerpos[$startlinepage] = $this->pagelen[$startlinepage] - $this->footerlen[$startlinepage];
-							$midpos = min($opentagpos, $this->footerpos[$startlinepage]);
-						} elseif (isset($opentagpos)) {
-							$midpos = $opentagpos;
-						} elseif (isset($this->footerlen[$startlinepage]) AND (!$this->InFooter)) {
-							$this->footerpos[$startlinepage] = $this->pagelen[$startlinepage] - $this->footerlen[$startlinepage];
-							$midpos = $this->footerpos[$startlinepage];
+						if ($this->inxobj) {
+							// we are inside an XObject template
+							$pstart = substr($this->xobjects[$this->xobjid]['outdata'], 0, $startlinepos);
+							if (isset($opentagpos)) {
+								$midpos = $opentagpos;
+							} else {
+								$midpos = 0;
+							}
+							if ($midpos > 0) {
+								$pmid = substr($this->xobjects[$this->xobjid]['outdata'], $startlinepos, ($midpos - $startlinepos));
+								$pend = substr($this->xobjects[$this->xobjid]['outdata'], $midpos);
+							} else {
+								$pmid = substr($this->xobjects[$this->xobjid]['outdata'], $startlinepos);
+								$pend = '';
+							}
 						} else {
-							$midpos = 0;
-						}
-						if ($midpos > 0) {
-							$pmid = substr($this->getPageBuffer($startlinepage), $startlinepos, ($midpos - $startlinepos));
-							$pend = substr($this->getPageBuffer($startlinepage), $midpos);
-						} else {
-							$pmid = substr($this->getPageBuffer($startlinepage), $startlinepos);
-							$pend = '';
+							$pstart = substr($this->getPageBuffer($startlinepage), 0, $startlinepos);
+							if (isset($opentagpos) AND isset($this->footerlen[$startlinepage]) AND (!$this->InFooter)) {
+								$this->footerpos[$startlinepage] = $this->pagelen[$startlinepage] - $this->footerlen[$startlinepage];
+								$midpos = min($opentagpos, $this->footerpos[$startlinepage]);
+							} elseif (isset($opentagpos)) {
+								$midpos = $opentagpos;
+							} elseif (isset($this->footerlen[$startlinepage]) AND (!$this->InFooter)) {
+								$this->footerpos[$startlinepage] = $this->pagelen[$startlinepage] - $this->footerlen[$startlinepage];
+								$midpos = $this->footerpos[$startlinepage];
+							} else {
+								$midpos = 0;
+							}
+							if ($midpos > 0) {
+								$pmid = substr($this->getPageBuffer($startlinepage), $startlinepos, ($midpos - $startlinepos));
+								$pend = substr($this->getPageBuffer($startlinepage), $midpos);
+							} else {
+								$pmid = substr($this->getPageBuffer($startlinepage), $startlinepos);
+								$pend = '';
+							}
 						}
 						if ((isset($plalign) AND ((($plalign == 'C') OR ($plalign == 'J') OR (($plalign == 'R') AND (!$this->rtl)) OR (($plalign == 'L') AND ($this->rtl)))))) {
 							// calculate shifting amount
 							$tw = $w;
 							if (($plalign == 'J') AND $this->isRTLTextDir() AND ($this->num_columns > 1)) {
-								$tw += $this->cMargin;
+								$tw += $this->cell_padding['R'];
 							}
 							if ($this->lMargin != $prevlMargin) {
 								$tw += ($prevlMargin - $this->lMargin);
@@ -18299,6 +18970,11 @@ if (!class_exists('TCPDF', false)) {
 									// calculate additional space to add to each existing space
 									$spacewidth = ($mdiff / ($ns - $no)) * $this->k;
 									$spacewidthu = -1000 * ($mdiff + (($ns + $no) * $one_space_width)) / $ns / $this->FontSize;
+									if ($this->font_spacing != 0) {
+										// fixed kerning mode
+										$osw = -1000 * $this->font_spacing / $this->FontSize;
+										$spacewidthu += $osw;
+									}
 									$nsmax = $ns;
 									$ns = 0;
 									reset($lnstring);
@@ -18429,9 +19105,22 @@ if (!class_exists('TCPDF', false)) {
 											}
 										}
 										// shift the annotations and links
-										if (isset($this->PageAnnots[$this->page])) {
-											$cxpos = ($currentxpos / $this->k);
-											$lmpos = ($this->lMargin + $this->cMargin + $this->feps);
+										$cxpos = ($currentxpos / $this->k);
+										$lmpos = ($this->lMargin + $this->cell_padding['L'] + $this->feps);
+										if ($this->inxobj) {
+											// we are inside an XObject template
+											foreach ($this->xobjects[$this->xobjid]['annotations'] as $pak => $pac) {
+												if (($pac['y'] >= $minstartliney) AND (($pac['x'] * $this->k) >= ($currentxpos - $this->feps)) AND (($pac['x'] * $this->k) <= ($currentxpos + $this->feps))) {
+													if ($cxpos > $lmpos) {
+														$this->xobjects[$this->xobjid]['annotations'][$pak]['x'] += ($spacew / $this->k);
+														$this->xobjects[$this->xobjid]['annotations'][$pak]['w'] += (($spacewidth * $pac['numspaces']) / $this->k);
+													} else {
+														$this->xobjects[$this->xobjid]['annotations'][$pak]['w'] += (($spacewidth * $pac['numspaces']) / $this->k);
+													}
+													break;
+												}
+											}
+										} elseif (isset($this->PageAnnots[$this->page])) {
 											foreach ($this->PageAnnots[$this->page] as $pak => $pac) {
 												if (($pac['y'] >= $minstartliney) AND (($pac['x'] * $this->k) >= ($currentxpos - $this->feps)) AND (($pac['x'] * $this->k) <= ($currentxpos + $this->feps))) {
 													if ($cxpos > $lmpos) {
@@ -18450,6 +19139,10 @@ if (!class_exists('TCPDF', false)) {
 									if ($this->isUnicodeFont()) {
 										// multibyte characters
 										$spacew = $spacewidthu;
+										if ($this->font_stretching != 100) {
+											// word spacing is affected by stretching
+											$spacew /= ($this->font_stretching / 100);
+										}
 										$pmidtemp = $pmid;
 										// escape special characters
 										$pmidtemp = preg_replace('/[\\\][\(]/x', '\\#!#OP#!#', $pmidtemp);
@@ -18459,13 +19152,27 @@ if (!class_exists('TCPDF', false)) {
 													$matches[1] = str_replace("#!#OP#!#", "(", $matches[1]);
 													$matches[1] = str_replace("#!#CP#!#", ")", $matches[1]);
 													return "[(".str_replace(chr(0).chr(32), ") ".sprintf("%.3F", $spacew)." (", $matches[1]).")]";'), $pmidtemp);
-										$this->setPageBuffer($startlinepage, $pstart."\n".$pmid."\n".$pend);
+										if ($this->inxobj) {
+											// we are inside an XObject template
+											$this->xobjects[$this->xobjid]['outdata'] = $pstart."\n".$pmid."\n".$pend;
+										} else {
+											$this->setPageBuffer($startlinepage, $pstart."\n".$pmid."\n".$pend);
+										}
 										$endlinepos = strlen($pstart."\n".$pmid."\n");
 									} else {
 										// non-unicode (single-byte characters)
+										if ($this->font_stretching != 100) {
+											// word spacing (Tw) is affected by stretching
+											$spacewidth /= ($this->font_stretching / 100);
+										}
 										$rs = sprintf('%.3F Tw', $spacewidth);
 										$pmid = preg_replace("/\[\(/x", $rs.' [(', $pmid);
-										$this->setPageBuffer($startlinepage, $pstart."\n".$pmid."\nBT 0 Tw ET\n".$pend);
+										if ($this->inxobj) {
+											// we are inside an XObject template
+											$this->xobjects[$this->xobjid]['outdata'] = $pstart."\n".$pmid."\nBT 0 Tw ET\n".$pend;
+										} else {
+											$this->setPageBuffer($startlinepage, $pstart."\n".$pmid."\nBT 0 Tw ET\n".$pend);
+										}
 										$endlinepos = strlen($pstart."\n".$pmid."\nBT 0 Tw ET\n");
 									}
 								}
@@ -18474,14 +19181,26 @@ if (!class_exists('TCPDF', false)) {
 						if (($t_x != 0) OR ($yshift < 0)) {
 							// shift the line
 							$trx = sprintf('1 0 0 1 %.3F %.3F cm', ($t_x * $this->k), ($yshift * $this->k));
-							$this->setPageBuffer($startlinepage, $pstart."\nq\n".$trx."\n".$pmid."\nQ\n".$pend);
-							$endlinepos = strlen($pstart."\nq\n".$trx."\n".$pmid."\nQ\n");
-							// shift the annotations and links
-							if (isset($this->PageAnnots[$this->page])) {
-								foreach ($this->PageAnnots[$this->page] as $pak => $pac) {
+							$pstart .= "\nq\n".$trx."\n".$pmid."\nQ\n";
+							$endlinepos = strlen($pstart);
+							if ($this->inxobj) {
+								// we are inside an XObject template
+								$this->xobjects[$this->xobjid]['outdata'] = $pstart.$pend;
+								foreach ($this->xobjects[$this->xobjid]['annotations'] as $pak => $pac) {
 									if ($pak >= $pask) {
-										$this->PageAnnots[$this->page][$pak]['x'] += $t_x;
-										$this->PageAnnots[$this->page][$pak]['y'] -= $yshift;
+										$this->xobjects[$this->xobjid]['annotations'][$pak]['x'] += $t_x;
+										$this->xobjects[$this->xobjid]['annotations'][$pak]['y'] -= $yshift;
+									}
+								}
+							} else {
+								$this->setPageBuffer($startlinepage, $pstart.$pend);
+								// shift the annotations and links
+								if (isset($this->PageAnnots[$this->page])) {
+									foreach ($this->PageAnnots[$this->page] as $pak => $pac) {
+										if ($pak >= $pask) {
+											$this->PageAnnots[$this->page][$pak]['x'] += $t_x;
+											$this->PageAnnots[$this->page][$pak]['y'] -= $yshift;
+										}
 									}
 								}
 							}
@@ -18504,7 +19223,10 @@ if (!class_exists('TCPDF', false)) {
 					if (isset($endlinepos) AND (!$pbrk)) {
 						$startlinepos = $endlinepos;
 					} else {
-						if (!$this->InFooter) {
+						if ($this->inxobj) {
+							// we are inside an XObject template
+							$startlinepos = strlen($this->xobjects[$this->xobjid]['outdata']);
+						} elseif (!$this->InFooter) {
 							if (isset($this->footerlen[$this->page])) {
 								$this->footerpos[$this->page] = $this->pagelen[$this->page] - $this->footerlen[$this->page];
 							} else {
@@ -18592,13 +19314,13 @@ if (!class_exists('TCPDF', false)) {
 								$tdborder = $dom[$key]['border'];
 							}
 							$colspan = $dom[$key]['attribute']['colspan'];
-							$oldmargin = $this->cMargin;
+							$old_cell_padding = $this->cell_padding;
 							if (isset($dom[($dom[$trid]['parent'])]['attribute']['cellpadding'])) {
-								$currentcmargin = $this->getHTMLUnitToUnits($dom[($dom[$trid]['parent'])]['attribute']['cellpadding'], 1, 'px');
+								$current_cell_padding = $this->getHTMLUnitToUnits($dom[($dom[$trid]['parent'])]['attribute']['cellpadding'], 1, 'px');
 							} else {
-								$currentcmargin = 0;
+								$current_cell_padding = 0;
 							}
-							$this->cMargin = $currentcmargin;
+							$this->SetCellPadding($current_cell_padding);
 							if (isset($dom[$key]['height'])) {
 								// minimum cell height
 								$cellh = $this->getHTMLUnitToUnits($dom[$key]['height'], 0, 'px');
@@ -18665,8 +19387,8 @@ if (!class_exists('TCPDF', false)) {
 										}
 									}
 									if (($trwsp['rowspan'] > 0)
-										AND ($rsstartx > ($this->x - $cellspacing - $currentcmargin - $this->feps))
-										AND ($rsstartx < ($this->x + $cellspacing + $currentcmargin + $this->feps))
+										AND ($rsstartx > ($this->x - $cellspacing - $current_cell_padding - $this->feps))
+										AND ($rsstartx < ($this->x + $cellspacing + $current_cell_padding + $this->feps))
 										AND (($trwsp['starty'] < ($this->y - $this->feps)) OR ($trwsp['startpage'] < $this->page) OR ($trwsp['startcolumn'] < $this->current_column))) {
 										// set the starting X position of the current cell
 										$this->x = $rsendx + $cellspacingx;
@@ -18729,13 +19451,13 @@ if (!class_exists('TCPDF', false)) {
 								$this->colxshift['x'] = $this->x - $this->lMargin;
 							}
 							$this->colxshift['s'] = $cellspacing;
-							$this->colxshift['p'] = $currentcmargin;
+							$this->colxshift['p'] = $current_cell_padding;
 							// ****** write the cell content ******
 							$this->MultiCell($cellw, $cellh, $cell_content, false, $lalign, false, 2, '', '', true, 0, true);
 							// restore some values
 							$this->colxshift = array('x' => 0, 's' => 0, 'p' => 0);
 							$this->lasth = $prevLastH;
-							$this->cMargin = $oldmargin;
+							$this->cell_padding = $old_cell_padding;
 							$dom[$trid]['cellpos'][($cellid - 1)]['endx'] = $this->x;
 							// update the end of row position
 							if ($rowspan <= 1) {
@@ -18787,7 +19509,10 @@ if (!class_exists('TCPDF', false)) {
 						} else {
 							// opening tag (or self-closing tag)
 							if (!isset($opentagpos)) {
-								if (!$this->InFooter) {
+								if ($this->inxobj) {
+									// we are inside an XObject template
+									$opentagpos = strlen($this->xobjects[$this->xobjid]['outdata']);
+								} elseif (!$this->InFooter) {
 									if (isset($this->footerlen[$this->page])) {
 										$this->footerpos[$this->page] = $this->pagelen[$this->page] - $this->footerlen[$this->page];
 									} else {
@@ -18813,12 +19538,12 @@ if (!class_exists('TCPDF', false)) {
 					// print list-item
 					if (!$this->empty_string($this->lispacer) AND ($this->lispacer != '^')) {
 						$this->SetFont($pfontname, $pfontstyle, $pfontsize);
-						$this->lasth = $this->FontSize * $this->cell_height_ratio;
+						$this->resetLastH();
 						$minstartliney = $this->y;
 						$maxbottomliney = ($startliney + ($this->FontSize * $this->cell_height_ratio));
 						$this->putHtmlListBullet($this->listnum, $this->lispacer, $pfontsize);
 						$this->SetFont($curfontname, $curfontstyle, $curfontsize);
-						$this->lasth = $this->FontSize * $this->cell_height_ratio;
+						$this->resetLastH();
 						if (is_numeric($pfontsize) AND ($pfontsize > 0) AND is_numeric($curfontsize) AND ($curfontsize > 0) AND ($pfontsize != $curfontsize)) {
 							$pfontascent = $this->getFontAscent($pfontname, $pfontstyle, $pfontsize);
 							$pfontdescent = $this->getFontDescent($pfontname, $pfontstyle, $pfontsize);
@@ -18913,9 +19638,9 @@ if (!class_exists('TCPDF', false)) {
 						$dom[$key]['value'] = $strrest;
 						if ($cell) {
 							if ($this->rtl) {
-								$this->x -= $this->cMargin;
+								$this->x -= $this->cell_padding['R'];
 							} else {
-								$this->x += $this->cMargin;
+								$this->x += $this->cell_padding['L'];
 							}
 						}
 						if ($loop < 3) {
@@ -18954,24 +19679,41 @@ if (!class_exists('TCPDF', false)) {
 				$t_x = 0;
 				// the last line must be shifted to be aligned as requested
 				$linew = abs($this->endlinex - $startlinex);
-				$pstart = substr($this->getPageBuffer($startlinepage), 0, $startlinepos);
-				if (isset($opentagpos) AND isset($this->footerlen[$startlinepage]) AND (!$this->InFooter)) {
-					$this->footerpos[$startlinepage] = $this->pagelen[$startlinepage] - $this->footerlen[$startlinepage];
-					$midpos = min($opentagpos, $this->footerpos[$startlinepage]);
-				} elseif (isset($opentagpos)) {
-					$midpos = $opentagpos;
-				} elseif (isset($this->footerlen[$startlinepage]) AND (!$this->InFooter)) {
-					$this->footerpos[$startlinepage] = $this->pagelen[$startlinepage] - $this->footerlen[$startlinepage];
-					$midpos = $this->footerpos[$startlinepage];
+				if ($this->inxobj) {
+					// we are inside an XObject template
+					$pstart = substr($this->xobjects[$this->xobjid]['outdata'], 0, $startlinepos);
+					if (isset($opentagpos)) {
+						$midpos = $opentagpos;
+					} else {
+						$midpos = 0;
+					}
+					if ($midpos > 0) {
+						$pmid = substr($this->xobjects[$this->xobjid]['outdata'], $startlinepos, ($midpos - $startlinepos));
+						$pend = substr($this->xobjects[$this->xobjid]['outdata'], $midpos);
+					} else {
+						$pmid = substr($this->xobjects[$this->xobjid]['outdata'], $startlinepos);
+						$pend = '';
+					}
 				} else {
-					$midpos = 0;
-				}
-				if ($midpos > 0) {
-					$pmid = substr($this->getPageBuffer($startlinepage), $startlinepos, ($midpos - $startlinepos));
-					$pend = substr($this->getPageBuffer($startlinepage), $midpos);
-				} else {
-					$pmid = substr($this->getPageBuffer($startlinepage), $startlinepos);
-					$pend = '';
+					$pstart = substr($this->getPageBuffer($startlinepage), 0, $startlinepos);
+					if (isset($opentagpos) AND isset($this->footerlen[$startlinepage]) AND (!$this->InFooter)) {
+						$this->footerpos[$startlinepage] = $this->pagelen[$startlinepage] - $this->footerlen[$startlinepage];
+						$midpos = min($opentagpos, $this->footerpos[$startlinepage]);
+					} elseif (isset($opentagpos)) {
+						$midpos = $opentagpos;
+					} elseif (isset($this->footerlen[$startlinepage]) AND (!$this->InFooter)) {
+						$this->footerpos[$startlinepage] = $this->pagelen[$startlinepage] - $this->footerlen[$startlinepage];
+						$midpos = $this->footerpos[$startlinepage];
+					} else {
+						$midpos = 0;
+					}
+					if ($midpos > 0) {
+						$pmid = substr($this->getPageBuffer($startlinepage), $startlinepos, ($midpos - $startlinepos));
+						$pend = substr($this->getPageBuffer($startlinepage), $midpos);
+					} else {
+						$pmid = substr($this->getPageBuffer($startlinepage), $startlinepos);
+						$pend = '';
+					}
 				}
 				if ((isset($plalign) AND ((($plalign == 'C') OR (($plalign == 'R') AND (!$this->rtl)) OR (($plalign == 'L') AND ($this->rtl)))))) {
 					// calculate shifting amount
@@ -19041,14 +19783,26 @@ if (!class_exists('TCPDF', false)) {
 				if (($t_x != 0) OR ($yshift < 0)) {
 					// shift the line
 					$trx = sprintf('1 0 0 1 %.3F %.3F cm', ($t_x * $this->k), ($yshift * $this->k));
-					$this->setPageBuffer($startlinepage, $pstart."\nq\n".$trx."\n".$pmid."\nQ\n".$pend);
-					$endlinepos = strlen($pstart."\nq\n".$trx."\n".$pmid."\nQ\n");
-					// shift the annotations and links
-					if (isset($this->PageAnnots[$this->page])) {
-						foreach ($this->PageAnnots[$this->page] as $pak => $pac) {
+					$pstart .= "\nq\n".$trx."\n".$pmid."\nQ\n";
+					$endlinepos = strlen($pstart);
+					if ($this->inxobj) {
+						// we are inside an XObject template
+						$this->xobjects[$this->xobjid]['outdata'] = $pstart.$pend;
+						foreach ($this->xobjects[$this->xobjid]['annotations'] as $pak => $pac) {
 							if ($pak >= $pask) {
-								$this->PageAnnots[$this->page][$pak]['x'] += $t_x;
-								$this->PageAnnots[$this->page][$pak]['y'] -= $yshift;
+								$this->xobjects[$this->xobjid]['annotations'][$pak]['x'] += $t_x;
+								$this->xobjects[$this->xobjid]['annotations'][$pak]['y'] -= $yshift;
+							}
+						}
+					} else {
+						$this->setPageBuffer($startlinepage, $pstart.$pend);
+						// shift the annotations and links
+						if (isset($this->PageAnnots[$this->page])) {
+							foreach ($this->PageAnnots[$this->page] as $pak => $pac) {
+								if ($pak >= $pask) {
+									$this->PageAnnots[$this->page][$pak]['x'] += $t_x;
+									$this->PageAnnots[$this->page][$pak]['y'] -= $yshift;
+								}
 							}
 						}
 					}
@@ -19082,7 +19836,7 @@ if (!class_exists('TCPDF', false)) {
 		 * Process opening tags.
 		 * @param array $dom html dom array
 		 * @param int $key current element id
-		 * @param boolean $cell if true add the default cMargin space to each new line (default false).
+		 * @param boolean $cell if true add the default left (or right if RTL) padding to each new line (default false).
 		 * @access protected
 		 */
 		protected function openHTMLTagHandler(&$dom, $key, $cell) {
@@ -19135,7 +19889,7 @@ if (!class_exists('TCPDF', false)) {
 							$this->thead = $dom[$key]['thead'];
 							if (!isset($this->theadMargins) OR (empty($this->theadMargins))) {
 								$this->theadMargins = array();
-								$this->theadMargins['cmargin'] = $this->cMargin;
+								$this->theadMargins['cell_padding'] = $this->cell_padding;
 								$this->theadMargins['lmargin'] = $this->lMargin;
 								$this->theadMargins['rmargin'] = $this->rMargin;
 								$this->theadMargins['page'] = $this->page;
@@ -19143,9 +19897,10 @@ if (!class_exists('TCPDF', false)) {
 						}
 					}
 					// store current margins and page
-					$dom[$key]['oldcmargin'] = $this->cMargin;
+					$dom[$key]['old_cell_padding'] = $this->cell_padding;
 					if (isset($tag['attribute']['cellpadding'])) {
-						$this->cMargin = $this->getHTMLUnitToUnits($tag['attribute']['cellpadding'], 1, 'px');
+						$pad = $this->getHTMLUnitToUnits($tag['attribute']['cellpadding'], 1, 'px');
+						$this->SetCellPadding($pad);
 					}
 					if (isset($tag['attribute']['cellspacing'])) {
 						$cs = $this->getHTMLUnitToUnits($tag['attribute']['cellspacing'], 1, 'px');
@@ -19174,7 +19929,7 @@ if (!class_exists('TCPDF', false)) {
 					$y = $this->GetY();
 					$wtmp = $this->w - $this->lMargin - $this->rMargin;
 					if ($cell) {
-						$wtmp -= 2 * $this->cMargin;
+						$wtmp -= ($this->cell_padding['L'] + $this->cell_padding['R']);
 					}
 					if ((isset($tag['width'])) AND ($tag['width'] != '')) {
 						$hrWidth = $this->getHTMLUnitToUnits($tag['width'], $wtmp, 'px');
@@ -19682,7 +20437,7 @@ if (!class_exists('TCPDF', false)) {
 		 * Process closing tags.
 		 * @param array $dom html dom array
 		 * @param int $key current element id
-		 * @param boolean $cell if true add the default cMargin space to each new line (default false).
+		 * @param boolean $cell if true add the default left (or right if RTL) padding to each new line (default false).
 		 * @param int $maxbottomliney maximum y value of current line
 		 * @access protected
 		 */
@@ -20002,19 +20757,35 @@ if (!class_exists('TCPDF', false)) {
 								}
 								if ($cborder OR $fill) {
 									// draw border and fill
-									if (end($this->transfmrk[$this->page]) !== false) {
-										$pagemarkkey = key($this->transfmrk[$this->page]);
-										$pagemark = &$this->transfmrk[$this->page][$pagemarkkey];
-									} elseif ($this->InFooter) {
-										$pagemark = &$this->footerpos[$this->page];
+									if ($this->inxobj) {
+										// we are inside an XObject template
+										if (end($this->xobjects[$this->xobjid]['transfmrk']) !== false) {
+											$pagemarkkey = key($this->xobjects[$this->xobjid]['transfmrk']);
+											$pagemark = &$this->xobjects[$this->xobjid]['transfmrk'][$pagemarkkey];
+										} else {
+											$pagemark = &$this->xobjects[$this->xobjid]['intmrk'];
+										}
+										$pagebuff = $this->xobjects[$this->xobjid]['outdata'];
+										$pstart = substr($pagebuff, 0, $pagemark);
+										$pend = substr($pagebuff, $pagemark);
+										$this->xobjects[$this->xobjid]['outdata'] = $pstart.$ccode.$pend;
+										$pagemark += strlen($ccode);
 									} else {
-										$pagemark = &$this->intmrk[$this->page];
+										// draw border and fill
+										if (end($this->transfmrk[$this->page]) !== false) {
+											$pagemarkkey = key($this->transfmrk[$this->page]);
+											$pagemark = &$this->transfmrk[$this->page][$pagemarkkey];
+										} elseif ($this->InFooter) {
+											$pagemark = &$this->footerpos[$this->page];
+										} else {
+											$pagemark = &$this->intmrk[$this->page];
+										}
+										$pagebuff = $this->getPageBuffer($this->page);
+										$pstart = substr($pagebuff, 0, $pagemark);
+										$pend = substr($pagebuff, $pagemark);
+										$this->setPageBuffer($this->page, $pstart.$ccode.$pend);
+										$pagemark += strlen($ccode);
 									}
-									$pagebuff = $this->getPageBuffer($this->page);
-									$pstart = substr($pagebuff, 0, $pagemark);
-									$pend = substr($pagebuff, $pagemark);
-									$this->setPageBuffer($this->page, $pstart.$ccode.$pend);
-									$pagemark += strlen($ccode);
 								}
 							} // end for each page
 							// restore default border
@@ -20035,8 +20806,9 @@ if (!class_exists('TCPDF', false)) {
 						}
 					}
 					if (!$in_table_head) { // we are not inside a thead section
-						$this->cMargin = $table_el['oldcmargin'];
-						$this->lasth = $this->FontSize * $this->cell_height_ratio;
+						$this->cell_padding = $table_el['old_cell_padding'];
+						// reset row height
+						$this->resetLastH();
 						if (($this->page == ($this->numpages - 1)) AND ($this->pageopen[$this->numpages]) AND ($this->emptypagemrk[$this->numpages] == $this->pagelen[$this->numpages])) {
 							// remove last blank page
 							$this->deletePage($this->numpages);
@@ -20098,7 +20870,7 @@ if (!class_exists('TCPDF', false)) {
 					} else {
 						$this->addHTMLVertSpace(0, 0, $cell, false, $lasttag);
 					}
-					$this->lasth = $this->FontSize * $this->cell_height_ratio;
+					$this->resetLastH();
 					break;
 				}
 				case 'dt': {
@@ -20133,7 +20905,7 @@ if (!class_exists('TCPDF', false)) {
 					} else {
 						$this->addHTMLVertSpace(0, 0, $cell, false, $lasttag);
 					}
-					$this->lasth = $this->FontSize * $this->cell_height_ratio;
+					$this->resetLastH();
 					break;
 				}
 				case 'li': {
@@ -20182,7 +20954,7 @@ if (!class_exists('TCPDF', false)) {
 		 * Add vertical spaces if needed.
 		 * @param string $hbz Distance between current y and line bottom.
 		 * @param string $hb The height of the break.
-		 * @param boolean $cell if true add the default cMargin space to each new line (default false).
+		 * @param boolean $cell if true add the default left (or right if RTL) padding to each new line (default false).
 		 * @param boolean $firsttag set to true when the tag is the first.
 		 * @param boolean $lasttag set to true when the tag is the last.
 		 * @access protected
@@ -20374,22 +21146,37 @@ if (!class_exists('TCPDF', false)) {
 				}
 				if ($cborder OR $fill) {
 					// draw border and fill
-					if (end($this->transfmrk[$this->page]) !== false) {
-						$pagemarkkey = key($this->transfmrk[$this->page]);
-						$pagemark = &$this->transfmrk[$this->page][$pagemarkkey];
-					} elseif ($this->InFooter) {
-						$pagemark = &$this->footerpos[$this->page];
+					if ($this->inxobj) {
+						// we are inside an XObject template
+						if (end($this->xobjects[$this->xobjid]['transfmrk']) !== false) {
+							$pagemarkkey = key($this->xobjects[$this->xobjid]['transfmrk']);
+							$pagemark = &$this->xobjects[$this->xobjid]['transfmrk'][$pagemarkkey];
+						} else {
+							$pagemark = &$this->xobjects[$this->xobjid]['intmrk'];
+						}
+						$pagebuff = $this->xobjects[$this->xobjid]['outdata'];
+						$pstart = substr($pagebuff, 0, $pagemark);
+						$pend = substr($pagebuff, $pagemark);
+						$this->xobjects[$this->xobjid]['outdata'] = $pstart.$ccode.$pend;
+						$pagemark += strlen($ccode);
 					} else {
-						$pagemark = &$this->intmrk[$this->page];
+						if (end($this->transfmrk[$this->page]) !== false) {
+							$pagemarkkey = key($this->transfmrk[$this->page]);
+							$pagemark = &$this->transfmrk[$this->page][$pagemarkkey];
+						} elseif ($this->InFooter) {
+							$pagemark = &$this->footerpos[$this->page];
+						} else {
+							$pagemark = &$this->intmrk[$this->page];
+						}
+						$pagebuff = $this->getPageBuffer($this->page);
+						$pstart = substr($pagebuff, 0, $this->bordermrk[$this->page]);
+						$pend = substr($pagebuff, $this->bordermrk[$this->page]);
+						$this->setPageBuffer($this->page, $pstart.$ccode.$pend);
+						$offsetlen = strlen($ccode);
+						$this->bordermrk[$this->page] += $offsetlen;
+						$this->cntmrk[$this->page] += $offsetlen;
+						$pagemark += $offsetlen;
 					}
-					$pagebuff = $this->getPageBuffer($this->page);
-					$pstart = substr($pagebuff, 0, $this->bordermrk[$this->page]);
-					$pend = substr($pagebuff, $this->bordermrk[$this->page]);
-					$this->setPageBuffer($this->page, $pstart.$ccode.$pend);
-					$offsetlen = strlen($ccode);
-					$this->bordermrk[$this->page] += $offsetlen;
-					$this->cntmrk[$this->page] += $offsetlen;
-					$pagemark += $offsetlen;
 				}
 			} // end for each page
 			if (isset($old_bgcolor)) {
@@ -20829,7 +21616,8 @@ if (!class_exists('TCPDF', false)) {
 				'FontSizePt' => $this->FontSizePt,
 				'rMargin' => $this->rMargin,
 				'lMargin' => $this->lMargin,
-				'cMargin' => $this->cMargin,
+				'cell_padding' => $this->cell_padding,
+				'cell_margin' => $this->cell_margin,
 				'LineWidth' => $this->LineWidth,
 				'linestyleWidth' => $this->linestyleWidth,
 				'linestyleCap' => $this->linestyleCap,
@@ -20851,6 +21639,8 @@ if (!class_exists('TCPDF', false)) {
 				'listcount' => $this->listcount,
 				'lispacer' => $this->lispacer,
 				'cell_height_ratio' => $this->cell_height_ratio,
+				'font_stretching' => $this->font_stretching,
+				'font_spacing' => $this->font_spacing,
 				// extended
 				'lasth' => $this->lasth,
 				'tMargin' => $this->tMargin,
@@ -20885,7 +21675,8 @@ if (!class_exists('TCPDF', false)) {
 			$this->FontSizePt = $gvars['FontSizePt'];
 			$this->rMargin = $gvars['rMargin'];
 			$this->lMargin = $gvars['lMargin'];
-			$this->cMargin = $gvars['cMargin'];
+			$this->cell_padding = $gvars['cell_padding'];
+			$this->cell_margin = $gvars['cell_margin'];
 			$this->LineWidth = $gvars['LineWidth'];
 			$this->linestyleWidth = $gvars['linestyleWidth'];
 			$this->linestyleCap = $gvars['linestyleCap'];
@@ -20907,6 +21698,8 @@ if (!class_exists('TCPDF', false)) {
 			$this->listcount = $gvars['listcount'];
 			$this->lispacer = $gvars['lispacer'];
 			$this->cell_height_ratio = $gvars['cell_height_ratio'];
+			$this->font_stretching = $gvars['font_stretching'];
+			$this->font_spacing = $gvars['font_spacing'];
 			if ($extended) {
 				// restore extended values
 				$this->lasth = $gvars['lasth'];
@@ -22549,6 +23342,8 @@ if (!class_exists('TCPDF', false)) {
 			// store current graphic state
 			$this->xobjects[$this->xobjid]['gvars'] = $this->getGraphicVars();
 			// initialize data
+			$this->xobjects[$this->xobjid]['intmrk'] = 0;
+			$this->xobjects[$this->xobjid]['transfmrk'] = array();
 			$this->xobjects[$this->xobjid]['outdata'] = '';
 			$this->xobjects[$this->xobjid]['xobjects'] = array();
 			$this->xobjects[$this->xobjid]['images'] = array();
@@ -22733,6 +23528,50 @@ if (!class_exists('TCPDF', false)) {
 					break;
 				}
 			}
+		}
+
+		/**
+		 * Set the percentage of character stretching.
+		 * @param int $perc percentage of stretching (100 = no stretching)
+		 * @author Nicola Asuni
+		 * @access public
+		 * @since 5.9.000 (2010-09-29)
+		 */
+		public function setFontStretching($perc=100) {
+			$this->font_stretching = $perc;
+		}
+
+		/**
+		 * Get the percentage of character stretching.
+		 * @return float stretching value
+		 * @author Nicola Asuni
+		 * @access public
+		 * @since 5.9.000 (2010-09-29)
+		 */
+		public function getFontStretching() {
+			return $this->font_stretching;
+		}
+
+		/**
+		 * Set the amount to increase or decrease the space between characters in a text.
+		 * @param float $spacing amount to increase or decrease the space between characters in a text (0 = default spacing)
+		 * @author Nicola Asuni
+		 * @access public
+		 * @since 5.9.000 (2010-09-29)
+		 */
+		public function setFontSpacing($spacing=0) {
+			$this->font_spacing = $spacing;
+		}
+
+		/**
+		 * Get the amount to increase or decrease the space between characters in a text.
+		 * @return int kerning value
+		 * @author Nicola Asuni
+		 * @access public
+		 * @since 5.9.000 (2010-09-29)
+		 */
+		public function getFontSpacing() {
+			return $this->font_spacing;
 		}
 
 		// -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
@@ -22944,8 +23783,8 @@ if (!class_exists('TCPDF', false)) {
 			// store current page break mode
 			$page_break_mode = $this->AutoPageBreak;
 			$page_break_margin = $this->getBreakMargin();
-			$cMargin = $this->cMargin;
-			$this->cMargin = 0;
+			$cell_padding = $this->cell_padding;
+			$this->SetCellPadding(0);
 			$this->SetAutoPageBreak(false);
 			// save the current graphic state
 			$this->_out('q'.$this->epsmarker);
@@ -23033,7 +23872,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->endlinex = $this->img_rb_x;
 			// restore page break
 			$this->SetAutoPageBreak($page_break_mode, $page_break_margin);
-			$this->cMargin = $cMargin;
+			$this->cell_padding = $cell_padding;
 		}
 
 		/**
@@ -23383,13 +24222,27 @@ if (!class_exists('TCPDF', false)) {
 				} else {
 					$font_weight = $svgstyle['font-weight'];
 				}
+				if (preg_match('/font-stretch[\s]*:[\s]*([^\s\;\"]*)/si', $svgstyle['font'], $regs)) {
+					$font_stretch = trim($regs[1]);
+				} else {
+					$font_stretch = $svgstyle['font-stretch'];
+				}
+				if (preg_match('/letter-spacing[\s]*:[\s]*([^\s\;\"]*)/si', $svgstyle['font'], $regs)) {
+					$font_spacing = trim($regs[1]);
+				} else {
+					$font_spacing = $svgstyle['letter-spacing'];
+				}
 			} else {
 				$font_family = $this->getFontFamilyName($svgstyle['font-family']);
 				$font_size = $svgstyle['font-size'];
 				$font_style = $svgstyle['font-style'];
 				$font_weight = $svgstyle['font-weight'];
+				$font_stretch = $svgstyle['font-stretch'];
+				$font_spacing = $svgstyle['letter-spacing'];
 			}
 			$font_size = $this->getHTMLUnitToUnits($font_size, $prevsvgstyle['font-size'], $this->svgunit, false) * $this->k;
+			$font_stretch = $this->getCSSFontStretching($font_stretch, $svgstyle['font-stretch']);
+			$font_spacing = $this->getCSSFontSpacing($font_spacing, $svgstyle['letter-spacing']);
 			switch ($font_style) {
 				case 'italic': {
 					$font_style = 'I';
@@ -23431,6 +24284,8 @@ if (!class_exists('TCPDF', false)) {
 				}
 			}
 			$this->SetFont($font_family, $font_style, $font_size);
+			$this->setFontStretching($font_stretch);
+			$this->setFontSpacing($font_spacing);
 			return $objstyle;
 		}
 

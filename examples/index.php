@@ -8,7 +8,6 @@ echo '<'.'?'.'xml version="1.0" encoding="UTF-8"'.'?'.'>';
 <head>
 <title>TCPDF Examples</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<meta name="aiocp_level" content="0" />
 <meta name="description" content="TCPDF is a PHP class for generating PDF documents on the fly" />
 <meta name="author" content="Nicola Asuni" />
 <meta name="keywords" content="Examples, TCPDF, PDF, PHP class" />
@@ -81,6 +80,7 @@ echo '<'.'?'.'xml version="1.0" encoding="UTF-8"'.'?'.'>';
 <li>Advanced page settings: [<a href="example_060.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>XHTML + CSS: [<a href="example_061.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>XObject Templates: [<a href="example_062.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
+<li>Text stretching and spacing (kerning): [<a href="example_063.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 </ol>
 
 </body>
