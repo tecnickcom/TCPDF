@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_057.php
 // Begin       : 2010-04-03
-// Last Update : 2010-10-04
+// Last Update : 2010-10-05
 //
 // Description : Example 057 for TCPDF class
 //               Cell vertical alignments
@@ -130,14 +130,17 @@ $pdf->Line(15, 120, 195, 120, $linestyle);
 
 // Print an image to explain cell measures
 
-$pdf->Image('../images/tcpdf_cell.png', 15, 160, 100, 0, 'PNG', '', '', false, 300, '', false, false, 0, false, false, false);
+$pdf->Image('../images/tcpdf_cell.png', 15, 160, 100, 100, 'PNG', '', '', false, 300, '', false, false, 0, false, false, false);
 $legend = 'LEGEND:
 
-X: cell X origin (top-left, top-right for RTL)
-Y: cell Y origin (top-left, top-right for RTL)
+X: cell x top-left origin (top-right for RTL)
+Y: cell y top-left origin (top-right for RTL)
 CW: cell width
 CH: cell height
 LW: line width
+NRL: normal line position
+EXT: external line position
+INT: internal line position
 ML: margin left
 MR: margin right
 MT: margin top
@@ -148,6 +151,7 @@ PT: padding top
 PB: padding bottom
 TW: text width
 FA: font ascent
+FB: font baseline
 FD: font descent';
 $pdf->SetFont('helvetica', '', 10);
 $pdf->setCellHeightRatio(1.25);

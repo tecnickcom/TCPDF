@@ -1,4 +1,4 @@
-5.9.000 (2010-10-04)
+5.9.000 (2010-10-06)
 	- Support for text stretching and spacing (kerning) was added, see example n. 63 and methods setFontStretching(), getFontStretching(), setFontSpacing(), getFontSpacing().
 	- Support for CSS properties 'font-stretch' and 'letter-spacing' was added (see example n. 63).
 	- The cMargin state was replaced by cell_padding array that can be set/get using setCellPadding() and getCellPadding() methods.
