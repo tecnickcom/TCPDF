@@ -1,3 +1,6 @@
+5.9.001 (2010-10-07)
+	- The problem of blank page for nobr table higher than a single page was fixed.
+
 5.9.000 (2010-10-06)
 	- Support for text stretching and spacing (kerning) was added, see example n. 63 and methods setFontStretching(), getFontStretching(), setFontSpacing(), getFontSpacing().
 	- Support for CSS properties 'font-stretch' and 'letter-spacing' was added (see example n. 63).

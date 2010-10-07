@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.000
+// Version     : 5.9.001
 // Begin       : 2002-08-03
-// Last Update : 2010-10-06
+// Last Update : 2010-10-07
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -132,7 +132,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.9.000
+ * @version 5.9.001
  */
 
 /**
@@ -156,14 +156,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.9.000 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.9.001 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.9.000
+	* @version 5.9.001
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -18591,7 +18591,9 @@ if (!class_exists('TCPDF', false)) {
 						$this->inthead = true;
 						// print table header (thead)
 						$this->writeHTML($this->thead, false, false, false, false, '');
-						if (($this->start_transaction_page == ($this->numpages - 1)) OR ($this->y < $this->start_transaction_y) OR ($this->checkPageBreak($this->lasth, '', false))) {
+						// check if we are on a new page or on a new column
+						if (($this->y < $this->start_transaction_y) OR ($this->checkPageBreak($this->lasth, '', false))) {
+							// we are on a new page or on a new column and the total object height is less than the available vertical space.
 							// restore previous object
 							$this->rollbackTransaction(true);
 							// restore previous values
@@ -19652,7 +19654,9 @@ if (!class_exists('TCPDF', false)) {
 				}
 				++$key;
 				if (isset($dom[$key]['tag']) AND $dom[$key]['tag'] AND (!isset($dom[$key]['opening']) OR !$dom[$key]['opening']) AND isset($dom[($dom[$key]['parent'])]['attribute']['nobr']) AND ($dom[($dom[$key]['parent'])]['attribute']['nobr'] == 'true')) {
-					if ( (!$undo) AND (($this->start_transaction_page == ($this->numpages - 1)) OR ($this->y < $this->start_transaction_y))) {
+					// check if we are on a new page or on a new column
+					if ((!$undo) AND ($this->y < $this->start_transaction_y)) {
+						// we are on a new page or on a new column and the total object height is less than the available vertical space.
 						// restore previous object
 						$this->rollbackTransaction(true);
 						// restore previous values
