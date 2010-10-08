@@ -1,3 +1,6 @@
+5.9.002 (2010-10-08)
+	- Cell method was improved to preserve the font stretching and spacing values when using the $stretch parameter (see example n. 4).
+
 5.9.001 (2010-10-07)
 	- The problem of blank page for nobr table higher than a single page was fixed.
 

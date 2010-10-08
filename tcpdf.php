@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.001
+// Version     : 5.9.002
 // Begin       : 2002-08-03
 // Last Update : 2010-10-07
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
@@ -132,7 +132,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.9.001
+ * @version 5.9.002
  */
 
 /**
@@ -156,14 +156,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.9.001 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.9.002 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.9.001
+	* @version 5.9.002
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -5128,7 +5128,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @param string $align Allows to center or align the text. Possible values are:<ul><li>L or empty string: left align (default value)</li><li>C: center</li><li>R: right align</li><li>J: justify</li></ul>
 		 * @param boolean $fill Indicates if the cell background must be painted (true) or transparent (false).
 		 * @param mixed $link URL or identifier returned by AddLink().
-		 * @param int $stretch stretch carachter mode: <ul><li>0 = disabled</li><li>1 = horizontal scaling only if necessary</li><li>2 = forced horizontal scaling</li><li>3 = character spacing only if necessary</li><li>4 = forced character spacing</li></ul>
+		 * @param int $stretch font stretch mode: <ul><li>0 = disabled</li><li>1 = horizontal scaling only if text is larger than cell width</li><li>2 = forced horizontal scaling to fit cell width</li><li>3 = character spacing only if text is larger than cell width</li><li>4 = forced character spacing to fit cell width</li></ul> General font stretching and scaling values will be preserved when possible.
 		 * @param boolean $ignore_min_height if true ignore automatic minimum height value.
 		 * @param string $calign cell vertical alignment relative to the specified Y value. Possible values are:<ul><li>T : cell top</li><li>A : font top</li><li>L : font baseline</li><li>D : font bottom</li><li>B : cell bottom</li></ul>
 		 * @param string $valign text vertical alignment inside the cell. Possible values are:<ul><li>T : top</li><li>C : center</li><li>B : bottom</li></ul>
@@ -5256,7 +5256,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @param string $align Allows to center or align the text. Possible values are:<ul><li>L or empty string: left align (default value)</li><li>C: center</li><li>R: right align</li><li>J: justify</li></ul>
 		 * @param boolean $fill Indicates if the cell background must be painted (true) or transparent (false).
 		 * @param mixed $link URL or identifier returned by AddLink().
-		 * @param int $stretch stretch carachter mode: <ul><li>0 = disabled</li><li>1 = horizontal scaling only if necessary</li><li>2 = forced horizontal scaling</li><li>3 = character spacing only if necessary</li><li>4 = forced character spacing</li></ul>
+		 * @param int $stretch font stretch mode: <ul><li>0 = disabled</li><li>1 = horizontal scaling only if text is larger than cell width</li><li>2 = forced horizontal scaling to fit cell width</li><li>3 = character spacing only if text is larger than cell width</li><li>4 = forced character spacing to fit cell width</li></ul> General font stretching and scaling values will be preserved when possible.
 		 * @param boolean $ignore_min_height if true ignore automatic minimum height value.
 		 * @param string $calign cell vertical alignment relative to the specified Y value. Possible values are:<ul><li>T : cell top</li><li>C : center</li><li>B : cell bottom</li><li>A : font top</li><li>L : font baseline</li><li>D : font bottom</li></ul>
 		 * @param string $valign text vertical alignment inside the cell. Possible values are:<ul><li>T : top</li><li>C : center</li><li>B : bottom</li></ul>
@@ -5291,7 +5291,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @param string $align Allows to center or align the text. Possible values are:<ul><li>L or empty string: left align (default value)</li><li>C: center</li><li>R: right align</li><li>J: justify</li></ul>
 		 * @param boolean $fill Indicates if the cell background must be painted (true) or transparent (false).
 		 * @param mixed $link URL or identifier returned by AddLink().
-		 * @param int $stretch stretch carachter mode: <ul><li>0 = disabled</li><li>1 = horizontal scaling only if necessary</li><li>2 = forced horizontal scaling</li><li>3 = character spacing only if necessary</li><li>4 = forced character spacing</li></ul>
+		 * @param int $stretch font stretch mode: <ul><li>0 = disabled</li><li>1 = horizontal scaling only if text is larger than cell width</li><li>2 = forced horizontal scaling to fit cell width</li><li>3 = character spacing only if text is larger than cell width</li><li>4 = forced character spacing to fit cell width</li></ul> General font stretching and scaling values will be preserved when possible.
 		 * @param boolean $ignore_min_height if true ignore automatic minimum height value.
 		 * @param string $calign cell vertical alignment relative to the specified Y value. Possible values are:<ul><li>T : cell top</li><li>C : center</li><li>B : cell bottom</li><li>A : font top</li><li>L : font baseline</li><li>D : font bottom</li></ul>
 		 * @param string $valign text vertical alignment inside the cell. Possible values are:<ul><li>T : top</li><li>M : middle</li><li>B : bottom</li></ul>
@@ -5498,50 +5498,40 @@ if (!class_exists('TCPDF', false)) {
 					}
 				}
 				$txt2 = $this->_escape($txt2);
+				// get current text width (considering general font stretching and spacing)
+				$txwidth = $this->GetStringWidth($txt);
+				$width = $txwidth;
+				// check for stretch mode
 				if ($stretch > 0) {
-					$this->font_stretching = 100;
-					$this->font_spacing = 0;
-					// text length
-					$txwidth = $this->GetStringWidth($txt);
-					$width = $txwidth;
-					// ratio between cell length and text length
+					// calculate ratio between cell width and text width
 					if ($width <= 0) {
 						$ratio = 1;
 					} else {
-						$ratio = ($w - $this->cell_padding['L'] - $this->cell_padding['R']) / $width;
+						$ratio = (($w - $this->cell_padding['L'] - $this->cell_padding['R']) / $width);
 					}
-					// stretch text if required
+					// check if stretching is required
 					if (($ratio < 1) OR (($ratio > 1) AND (($stretch % 2) == 0))) {
+						// the text will be stretched to fit cell width
 						if ($stretch > 2) {
-							// spacing
-							// calculate character spacing in points
-							$char_space = (($w - $width - $this->cell_padding['L'] - $this->cell_padding['R']) * $this->k) / max(($this->GetNumChars($txt) - 1), 1);
-							// set character spacing
-							$rs .= sprintf('BT %.2F Tc ET ', $char_space);
+							// set new character spacing
+							$this->font_spacing += ($w - $this->cell_padding['L'] - $this->cell_padding['R'] - $width) / (max(($this->GetNumChars($txt) - 1), 1) * ($this->font_stretching / 100));
 						} else {
-							// scaling
-							// calculate horizontal scaling
-							$horiz_scale = $ratio * 100.0;
-							// set horizontal scaling
-							$rs .= sprintf('BT %.2F Tz ET ', $horiz_scale);
+							// set new horizontal stretching
+							$this->font_stretching *= $ratio;
 						}
-						$align = '';
+						// recalculate text width (the text fills the entire cell)
 						$width = $w - $this->cell_padding['L'] - $this->cell_padding['R'];
-					} else {
-						$stretch == 0;
+						// reset alignment
+						$align = '';
 					}
-				} else {
-					// text length
-					$txwidth = $this->GetStringWidth($txt);
-					$width = $txwidth;
-					if ($this->font_stretching != 100) {
-						// fixed stretching mode
-						$rs .= sprintf('BT %.2F Tz ET ', $this->font_stretching);
-					}
-					if ($this->font_spacing != 0) {
-						// increase/decrease font spacing
-						$rs .= sprintf('BT %.2F Tc ET ', ($this->font_spacing * $this->k));
-					}
+				}
+				if ($this->font_stretching != 100) {
+					// apply font stretching
+					$rs .= sprintf('BT %.2F Tz ET ', $this->font_stretching);
+				}
+				if ($this->font_spacing != 0) {
+					// increase/decrease font spacing
+					$rs .= sprintf('BT %.2F Tc ET ', ($this->font_spacing * $this->k));
 				}
 				if ($this->ColorFlag) {
 					$s .= 'q '.$this->TextColor.' ';
@@ -5661,22 +5651,13 @@ if (!class_exists('TCPDF', false)) {
 			if ($s) {
 				// output cell
 				$rs .= $s;
-				// reset text stretching
-				if ($stretch > 2) {
-					// reset character horizontal spacing
+				if ($this->font_spacing != 0) {
+					// reset font spacing mode
 					$rs .= ' BT 0 Tc ET';
-				} elseif ($stretch > 0) {
-					// reset character horizontal scaling
+				}
+				if ($this->font_stretching != 100) {
+					// reset font stretching mode
 					$rs .= ' BT 100 Tz ET';
-				} else {
-					if ($this->font_spacing != 0) {
-						// reset fixed kerning mode
-						$rs .= ' BT 0 Tc ET';
-					}
-					if ($this->font_stretching != 100) {
-						// reset fixed stretching mode
-						$rs .= ' BT 100 Tz ET';
-					}
 				}
 			}
 			// reset word spacing
@@ -5917,7 +5898,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @param float $x x position in user units
 		 * @param float $y y position in user units
 		 * @param boolean $reseth if true reset the last cell height (default true).
-		 * @param int $stretch stretch carachter mode: <ul><li>0 = disabled</li><li>1 = horizontal scaling only if necessary</li><li>2 = forced horizontal scaling</li><li>3 = character spacing only if necessary</li><li>4 = forced character spacing</li></ul>
+		 * @param int $stretch font stretch mode: <ul><li>0 = disabled</li><li>1 = horizontal scaling only if text is larger than cell width</li><li>2 = forced horizontal scaling to fit cell width</li><li>3 = character spacing only if text is larger than cell width</li><li>4 = forced character spacing to fit cell width</li></ul> General font stretching and scaling values will be preserved when possible.
 		 * @param boolean $ishtml set to true if $txt is HTML content (default = false).
 		 * @param boolean $autopadding if true, uses internal padding and automatically adjust it to account for line width.
 		 * @param float $maxh maximum height. It should be >= $h and less then remaining space to the bottom of the page, or 0 for disable this feature. This feature works only when $ishtml=false.
@@ -6446,7 +6427,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @param boolean $fill Indicates if the cell background must be painted (true) or transparent (false).
 		 * @param string $align Allows to center or align the text. Possible values are:<ul><li>L or empty string: left align (default value)</li><li>C: center</li><li>R: right align</li><li>J: justify</li></ul>
 		 * @param boolean $ln if true set cursor at the bottom of the line, otherwise set cursor at the top of the line.
-		 * @param int $stretch stretch carachter mode: <ul><li>0 = disabled</li><li>1 = horizontal scaling only if necessary</li><li>2 = forced horizontal scaling</li><li>3 = character spacing only if necessary</li><li>4 = forced character spacing</li></ul>
+		 * @param int $stretch font stretch mode: <ul><li>0 = disabled</li><li>1 = horizontal scaling only if text is larger than cell width</li><li>2 = forced horizontal scaling to fit cell width</li><li>3 = character spacing only if text is larger than cell width</li><li>4 = forced character spacing to fit cell width</li></ul> General font stretching and scaling values will be preserved when possible.
 		 * @param boolean $firstline if true prints only the first line and return the remaining string.
 		 * @param boolean $firstblock if true the string is the starting of a line.
 		 * @param float $maxh maximum height. The remaining unprinted text will be returned. It should be >= $h and less then remaining space to the bottom of the page, or 0 for disable this feature.
