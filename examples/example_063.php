@@ -5,7 +5,7 @@
 // Last Update : 2010-10-05
 //
 // Description : Example 063 for TCPDF class
-//               Text stretching and spacing (kerning)
+//               Text stretching and spacing (tracking/kerning)
 //
 // Author: Nicola Asuni
 //
@@ -22,7 +22,7 @@
 /**
  * Creates an example PDF TEST document using TCPDF
  * @package com.tecnick.tcpdf
- * @abstract TCPDF - Example: Text stretching and spacing (kerning)
+ * @abstract TCPDF - Example: Text stretching and spacing (tracking/kerning)
  * @author Nicola Asuni
  * @copyright 2063-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://tcpdf.org
@@ -70,12 +70,12 @@ $pdf->setLanguageArray($l);
 // ---------------------------------------------------------
 
 // set font
-$pdf->SetFont('helvetica', 'B', 20);
+$pdf->SetFont('helvetica', 'B', 16);
 
 // add a page
 $pdf->AddPage();
 
-$pdf->Write(0, 'Example of Text Stretching and Spacing (kerning)', '', 0, 'L', true, 0, false, false, 0);
+$pdf->Write(0, 'Example of Text Stretching and Spacing (tracking/kerning)', '', 0, 'L', true, 0, false, false, 0);
 $pdf->Ln(5);
 
 // create several cells to display all cases of stretching and kerning combinations.

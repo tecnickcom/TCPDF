@@ -107,6 +107,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodAddLink">TCPDF::AddLink()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Creates a new internal link and returns its identifier. An internal link is a clickable area which directs to another place within the document.<br />  The identifier can then be passed to Cell(), Write(), Image() or Link(). The destination is defined with SetLink().</dd>
 							<dt><b>AddPage</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodAddPage">TCPDF::AddPage()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Adds a new page to the document. If a page is already present, the Footer() method is called first to output the footer (if enabled). Then the page is added, the current position set to the top-left corner according to the left and top margins (or top-right if in RTL mode), and Header() is called to display the header (if enabled).</dd>
+							<dt><b>addPageRegion</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodaddPageRegion">TCPDF::addPageRegion()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Add a single no-write region on selected page.</dd>
 							<dt><b>AddSpotColor</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodAddSpotColor">TCPDF::AddSpotColor()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Defines a new spot color.</dd>
 							<dt><b>addTOC</b></dt>
@@ -291,6 +293,8 @@
 				<dd>in file qrcode.php, method <a href="com-tecnick-tcpdf/QRcode.html#methodcheckModeNum">QRcode::checkModeNum()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;checkModeNum</dd>
 							<dt><b>checkPageBreak</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodcheckPageBreak">TCPDF::checkPageBreak()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Add page if needed.</dd>
+							<dt><b>checkPageRegions</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodcheckPageRegions">TCPDF::checkPageRegions()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Check page for no-write regions and adapt current coordinates and page margins if necessary.</dd>
 							<dt><b>checksum_code39</b></dt>
 				<dd>in file barcodes.php, method <a href="com-tecnick-tcpdf/TCPDFBarcode.html#methodchecksum_code39">TCPDFBarcode::checksum_code39()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Calculate CODE 39 checksum (modulo 43).</dd>
 							<dt><b>checksum_code93</b></dt>
@@ -596,7 +600,7 @@
 							<dt><b>getCellPaddings</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetCellPaddings">TCPDF::getCellPaddings()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Get the internal Cell padding array.</dd>
 							<dt><b>GetCharWidth</b></dt>
-				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodGetCharWidth">TCPDF::GetCharWidth()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns the length of the char in user unit for the current font considering current stretching and kerning.</dd>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodGetCharWidth">TCPDF::GetCharWidth()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns the length of the char in user unit for the current font considering current stretching and spacing (tracking/kerning).</dd>
 							<dt><b>getCode</b></dt>
 				<dd>in file qrcode.php, method <a href="com-tecnick-tcpdf/QRcode.html#methodgetCode">QRcode::getCode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Return Reed-Solomon block code.</dd>
 							<dt><b>getColumn</b></dt>
@@ -729,6 +733,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetPageHeight">TCPDF::getPageHeight()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns the page height in units.</dd>
 							<dt><b>getPageNumGroupAlias</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetPageNumGroupAlias">TCPDF::getPageNumGroupAlias()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Return the alias for the page number on the current page group  If the current font is unicode type, the returned string is surrounded by additional curly braces.</dd>
+							<dt><b>getPageRegions</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetPageRegions">TCPDF::getPageRegions()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Return an array of no-write page regions</dd>
 							<dt><b>getPageSizeFromFormat</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetPageSizeFromFormat">TCPDF::getPageSizeFromFormat()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Get page dimensions from format name.</dd>
 							<dt><b>getPageWidth</b></dt>
@@ -1187,6 +1193,8 @@
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$pages">TCPDF::$pages</a></dd>
 							<dt><b>$page_obj_id</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$page_obj_id">TCPDF::$page_obj_id</a><br>&nbsp;&nbsp;&nbsp;&nbsp;ID of page objects</dd>
+							<dt><b>$page_regions</b></dt>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$page_regions">TCPDF::$page_regions</a></dd>
 							<dt><b>$pdfunit</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$pdfunit">TCPDF::$pdfunit</a></dd>
 							<dt><b>$PDFVersion</b></dt>
@@ -1373,6 +1381,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodregistrationMark">TCPDF::registrationMark()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Paints a registration mark</dd>
 							<dt><b>RegularPolygon</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodRegularPolygon">TCPDF::RegularPolygon()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Draws a regular polygon.</dd>
+							<dt><b>removePageRegion</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodremovePageRegion">TCPDF::removePageRegion()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Remove a single no-write region.</dd>
 							<dt><b>removeSHY</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodremoveSHY">TCPDF::removeSHY()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Removes SHY characters from text.</dd>
 							<dt><b>replaceBuffer</b></dt>
@@ -1625,6 +1635,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetPageMark">TCPDF::setPageMark()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set start-writing mark on current page stream used to put borders and fills.</dd>
 							<dt><b>setPageOrientation</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetPageOrientation">TCPDF::setPageOrientation()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set page orientation.</dd>
+							<dt><b>setPageRegions</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetPageRegions">TCPDF::setPageRegions()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set no-write regions on page.</dd>
 							<dt><b>setPageUnit</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetPageUnit">TCPDF::setPageUnit()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set the units of measure for the document.</dd>
 							<dt><b>setPDFVersion</b></dt>
@@ -2094,7 +2106,7 @@
 	<a href="elementindex.html#top">top</a><br>
         <div class="credit">
 		    <hr />
-		    Documentation generated on Fri, 08 Oct 2010 15:55:18 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
+		    Documentation generated on Fri, 15 Oct 2010 10:47:46 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
 	      </div>
       </td></tr></table>
     </td>

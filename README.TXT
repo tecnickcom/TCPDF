@@ -8,8 +8,8 @@ http://sourceforge.net/donate/index.php?group_id=128076
 ------------------------------------------------------------
 
 Name: TCPDF
-Version: 5.9.002
-Release date: 2010-10-08
+Version: 5.9.003
+Release date: 2010-10-15
 Author:	Nicola Asuni
 
 Copyright (c) 2002-2010:
@@ -44,15 +44,15 @@ Main Features:
     * PDF annotations, including links, text and file attachments;
     * text rendering modes (fill, stroke and clipping);
     * multiple columns mode;
+    * no-write page regions;
     * bookmarks and table of content;
     * text hyphenation;
-    * text stretching and kerning;
+    * text stretching and spacing (tracking/kerning);
     * automatic page break, line break and text alignments including justification;
     * automatic page numbering and page groups;
     * move and delete pages;
     * page compression (requires php-zlib extension);
     * XOBject Templates;
-
 
 Installation (full instructions on http:  www.tcpdf.org):
 	1. copy the folder on your Web server

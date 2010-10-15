@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.002
+// Version     : 5.9.003
 // Begin       : 2002-08-03
-// Last Update : 2010-10-07
+// Last Update : 2010-10-15
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -53,9 +53,10 @@
 //  * PDF annotations, including links, text and file attachments;
 //  * text rendering modes (fill, stroke and clipping);
 //  * multiple columns mode;
+//  * no-write page regions;
 //  * bookmarks and table of content;
 //  * text hyphenation;
-//  * font stretching and spacing (kerning);
+//  * text stretching and spacing (tracking/kerning);
 //  * automatic page break, line break and text alignments including justification;
 //  * automatic page numbering and page groups;
 //  * move and delete pages;
@@ -116,9 +117,10 @@
  * <li>PDF annotations, including links, text and file attachments;</li>
  * <li>text rendering modes (fill, stroke and clipping);</li>
  * <li>multiple columns mode;</li>
+ * <li>no-write page regions;</li>
  * <li>bookmarks and table of content;</li>
  * <li>text hyphenation;</li>
- * <li>font stretching and spacing (kerning);</li>
+ * <li>text stretching and spacing (tracking/kerning);</li>
  * <li>automatic page break, line break and text alignments including justification;</li>
  * <li>automatic page numbering and page groups;</li>
  * <li>move and delete pages;</li>
@@ -132,7 +134,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.9.002
+ * @version 5.9.003
  */
 
 /**
@@ -156,14 +158,14 @@ if (!class_exists('TCPDF', false)) {
 	/**
 	 * define default PDF document producer
 	 */
-	define('PDF_PRODUCER', 'TCPDF 5.9.002 (http://www.tcpdf.org)');
+	define('PDF_PRODUCER', 'TCPDF 5.9.003 (http://www.tcpdf.org)');
 
 	/**
 	* This is a PHP class for generating PDF documents without requiring external extensions.<br>
 	* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 	* @name TCPDF
 	* @package com.tecnick.tcpdf
-	* @version 5.9.002
+	* @version 5.9.003
 	* @author Nicola Asuni - info@tecnick.com
 	* @link http://www.tcpdf.org
 	* @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1553,11 +1555,19 @@ if (!class_exists('TCPDF', false)) {
 		protected $font_stretching = 100;
 
 		/**
-		 * @var increases or decreases the space between characters in a text by the specified amount (kerning).
+		 * @var increases or decreases the space between characters in a text by the specified amount (tracking/kerning).
 		 * @access protected
 		 * @since 5.9.000 (2010-09-29)
 		 */
 		protected $font_spacing = 0;
+
+		/**
+		 * @var array of no-write regions
+		 * ('page' => page number or empy for current page, 'xt' => X top, 'yt' => Y top, 'xb' => X bottom, 'yb' => Y bottom, 'side' => page side 'L' = left or 'R' = right)
+		 * @access protected
+		 * @since 5.9.003 (2010-10-14)
+		 */
+		protected $page_regions = array();
 
 		/**
 		 * @var directory used for the last SVG image
@@ -4508,7 +4518,7 @@ if (!class_exists('TCPDF', false)) {
 		}
 
 		/**
-		 * Returns the length of the char in user unit for the current font considering current stretching and kerning.
+		 * Returns the length of the char in user unit for the current font considering current stretching and spacing (tracking/kerning).
 		 * @param int $char The char code whose length is to be returned
 		 * @param boolean $notlast set to false for the latest character on string, true otherwise (default)
 		 * @return float char width
@@ -5021,6 +5031,8 @@ if (!class_exists('TCPDF', false)) {
 			if ($y === '') {
 				$y = $this->y;
 			}
+			// check page for no-write regions and adapt page margins if necessary
+			$this->checkPageRegions($h, $x, $y);
 			// recalculate coordinates to account for graphic transformations
 			if (isset($this->transfmatrix) AND !empty($this->transfmatrix)) {
 				for ($i=$this->transfmatrix_key; $i > 0; --$i) {
@@ -5312,6 +5324,8 @@ if (!class_exists('TCPDF', false)) {
 					$h = $min_cell_height;
 				}
 			}
+			// check page for no-write regions and adapt page margins if necessary
+			$this->checkPageRegions($h);
 			$k = $this->k;
 			if ($this->rtl) {
 				$x = $this->x - $this->cell_margin['R'];
@@ -5944,10 +5958,12 @@ if (!class_exists('TCPDF', false)) {
 			} else {
 				$x = $this->GetX();
 			}
+			// check page for no-write regions and adapt page margins if necessary
+			$this->checkPageRegions(0, $x, $y);
 			// apply margins
 			$oy = $y + $mc_margin['T'];
 			if ($this->rtl) {
-				$ox = $x - $mc_margin['R'];
+				$ox = $this->w - $x - $mc_margin['R'];
 			} else {
 				$ox = $x + $mc_margin['L'];
 			}
@@ -5993,7 +6009,7 @@ if (!class_exists('TCPDF', false)) {
 						while ($maxit > 0) {
 							$fmid = (($fmax + $fmin) / 2);
 							$this->SetFontSize($fmid, false);
-							$this->lasth = $this->FontSize * $this->cell_height_ratio;
+							$this->resetLastH();
 							$text_height = $this->getStringHeight($w, $txt, $reseth, $autopadding, $mc_padding, $border);
 							if (($text_height == $maxh) OR (($text_height < $maxh) AND ($fmin >= ($fmax - 0.01)))) {
 								break;
@@ -6438,10 +6454,14 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 1.5
 		 */
 		public function Write($h, $txt, $link='', $fill=false, $align='', $ln=false, $stretch=0, $firstline=false, $firstblock=false, $maxh=0, $wadj=0, $margin='') {
+			// check page for no-write regions and adapt page margins if necessary
+			$this->checkPageRegions($h);
 			if (strlen($txt) == 0) {
+				// fix empty text
 				$txt = ' ';
 			}
 			if ($margin === '') {
+				// set default margins
 				$margin = $this->cell_margin;
 			}
 			// remove carriage returns
@@ -6796,6 +6816,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @access protected
 		 */
 		protected function getRemainingWidth() {
+			$this->checkPageRegions();
 			if ($this->rtl) {
 				return ($this->x - $this->lMargin);
 			} else {
@@ -7008,6 +7029,8 @@ if (!class_exists('TCPDF', false)) {
 			if ($y === '') {
 				$y = $this->y;
 			}
+			// check page for no-write regions and adapt page margins if necessary
+			$this->checkPageRegions($h, $x, $y);
 			$cached_file = false; // true when the file is cached
 			// get image dimensions
 			$imsize = @getimagesize($file);
@@ -14360,6 +14383,8 @@ if (!class_exists('TCPDF', false)) {
 			if ($y === '') {
 				$y = $this->y;
 			}
+			// check page for no-write regions and adapt page margins if necessary
+			$this->checkPageRegions($h, $x, $y);
 			if ($js) {
 				$this->_addfield('text', $name, $x, $y, $w, $h, $prop);
 				return;
@@ -14447,6 +14472,8 @@ if (!class_exists('TCPDF', false)) {
 			if ($y === '') {
 				$y = $this->y;
 			}
+			// check page for no-write regions and adapt page margins if necessary
+			$this->checkPageRegions($w, $x, $y);
 			if ($js) {
 				$this->_addfield('radiobutton', $name, $x, $y, $w, $w, $prop);
 				return;
@@ -14537,6 +14564,8 @@ if (!class_exists('TCPDF', false)) {
 			if ($y === '') {
 				$y = $this->y;
 			}
+			// check page for no-write regions and adapt page margins if necessary
+			$this->checkPageRegions($h, $x, $y);
 			if ($js) {
 				$this->_addfield('listbox', $name, $x, $y, $w, $h, $prop);
 				$s = '';
@@ -14593,6 +14622,8 @@ if (!class_exists('TCPDF', false)) {
 			if ($y === '') {
 				$y = $this->y;
 			}
+			// check page for no-write regions and adapt page margins if necessary
+			$this->checkPageRegions($h, $x, $y);
 			if ($js) {
 				$this->_addfield('combobox', $name, $x, $y, $w, $h, $prop);
 				$s = '';
@@ -14650,6 +14681,8 @@ if (!class_exists('TCPDF', false)) {
 			if ($y === '') {
 				$y = $this->y;
 			}
+			// check page for no-write regions and adapt page margins if necessary
+			$this->checkPageRegions($w, $x, $y);
 			if ($js) {
 				$this->_addfield('checkbox', $name, $x, $y, $w, $w, $prop);
 				return;
@@ -14718,6 +14751,8 @@ if (!class_exists('TCPDF', false)) {
 			if ($y === '') {
 				$y = $this->y;
 			}
+			// check page for no-write regions and adapt page margins if necessary
+			$this->checkPageRegions($h, $x, $y);
 			if ($js) {
 				$this->_addfield('button', $name, $this->x, $this->y, $w, $h, $prop);
 				$this->javascript .= 'f'.$name.".buttonSetCaption('".addslashes($caption)."');\n";
@@ -16083,6 +16118,8 @@ if (!class_exists('TCPDF', false)) {
 			if ($y === '') {
 				$y = $this->y;
 			}
+			// check page for no-write regions and adapt page margins if necessary
+			$this->checkPageRegions($h, $x, $y);
 			$k = $this->k;
 			$data = file_get_contents($file);
 			if ($data === false) {
@@ -16438,6 +16475,8 @@ if (!class_exists('TCPDF', false)) {
 			if ($y === '') {
 				$y = $this->y;
 			}
+			// check page for no-write regions and adapt page margins if necessary
+			$this->checkPageRegions($h, $x, $y);
 			if (($w === '') OR ($w <= 0)) {
 				if ($this->rtl) {
 					$w = $x - $this->lMargin;
@@ -16767,6 +16806,8 @@ if (!class_exists('TCPDF', false)) {
 			if ($y === '') {
 				$y = $this->y;
 			}
+			// check page for no-write regions and adapt page margins if necessary
+			$this->checkPageRegions($h, $x, $y);
 			// number of barcode columns and rows
 			$rows = $arrcode['num_rows'];
 			$cols = $arrcode['num_cols'];
@@ -17504,7 +17545,7 @@ if (!class_exists('TCPDF', false)) {
 		/**
 	 	 * Returns the letter-spacing value from CSS value
 		 * @param string $spacing letter-spacing value
-		 * @param float $parent kerning value of the parent element
+		 * @param float $parent font spacing (tracking/kerning) value of the parent element
 		 * @return float quantity to increases or decreases the space between characters in a text.
 		 * @access protected
 		 * @since 5.9.000 (2010-10-02)
@@ -18954,7 +18995,7 @@ if (!class_exists('TCPDF', false)) {
 									$spacewidth = ($mdiff / ($ns - $no)) * $this->k;
 									$spacewidthu = -1000 * ($mdiff + (($ns + $no) * $one_space_width)) / $ns / $this->FontSize;
 									if ($this->font_spacing != 0) {
-										// fixed kerning mode
+										// fixed spacing mode
 										$osw = -1000 * $this->font_spacing / $this->FontSize;
 										$spacewidthu += $osw;
 									}
@@ -23420,6 +23461,8 @@ if (!class_exists('TCPDF', false)) {
 			if ($y === '') {
 				$y = $this->y;
 			}
+			// check page for no-write regions and adapt page margins if necessary
+			$this->checkPageRegions($h, $x, $y);
 			$ow = $this->xobjects[$id]['w'];
 			$oh = $this->xobjects[$id]['h'];
 			// calculate image width and height on document
@@ -23550,13 +23593,157 @@ if (!class_exists('TCPDF', false)) {
 
 		/**
 		 * Get the amount to increase or decrease the space between characters in a text.
-		 * @return int kerning value
+		 * @return int font spacing (tracking/kerning) value
 		 * @author Nicola Asuni
 		 * @access public
 		 * @since 5.9.000 (2010-09-29)
 		 */
 		public function getFontSpacing() {
 			return $this->font_spacing;
+		}
+
+		/**
+		 * Return an array of no-write page regions
+		 * @return array of no-write page regions
+		 * @author Nicola Asuni
+		 * @access public
+		 * @since 5.9.003 (2010-10-13)
+		 * @see setPageRegions(), addPageRegion()
+		 */
+		public function getPageRegions() {
+			return $this->page_regions;
+		}
+
+		/**
+		 * Set no-write regions on page.
+		 * A no-write region is a portion of the page with a rectangular or trapezium shape that will not be covered when writing text or html code.
+		 * A region is always aligned on the left or right side of the page ad is defined using a vertical segment.
+		 * You can set multiple regions for the same page.
+		 * @param array $regions array of no-write regions. For each region you can define an array as follow: ('page' => page number or empy for current page, 'xt' => X top, 'yt' => Y top, 'xb' => X bottom, 'yb' => Y bottom, 'side' => page side 'L' = left or 'R' = right). Omit this parameter to remove all regions.
+		 * @author Nicola Asuni
+		 * @access public
+		 * @since 5.9.003 (2010-10-13)
+		 * @see addPageRegion(), getPageRegions()
+		 */
+		public function setPageRegions($regions=array()) {
+			// empty current regions array
+			$this->page_regions = array();
+			// add regions
+			foreach ($regions as $data) {
+				$this->addPageRegion($data);
+			}
+		}
+
+		/**
+		 * Add a single no-write region on selected page.
+		 * A no-write region is a portion of the page with a rectangular or trapezium shape that will not be covered when writing text or html code.
+		 * A region is always aligned on the left or right side of the page ad is defined using a vertical segment.
+		 * You can set multiple regions for the same page.
+		 * @param array $region array of a single no-write region array: ('page' => page number or empy for current page, 'xt' => X top, 'yt' => Y top, 'xb' => X bottom, 'yb' => Y bottom, 'side' => page side 'L' = left or 'R' = right).
+		 * @author Nicola Asuni
+		 * @access public
+		 * @since 5.9.003 (2010-10-13)
+		 * @see setPageRegions(), getPageRegions()
+		 */
+		public function addPageRegion($region) {
+			if (!isset($region['page']) OR empty($region['page'])) {
+				$region['page'] = $this->page;
+			}
+			if (isset($region['xt']) AND isset($region['xb']) AND ($region['xt'] > 0) AND ($region['xb'] > 0)
+				AND isset($region['yt'])  AND isset($region['yb']) AND ($region['yt'] > 0) AND ($region['yt'] < $region['yb'])
+				AND isset($region['side']) AND (($region['side'] == 'L') OR ($region['side'] == 'R'))) {
+				$this->page_regions[] = $region;
+			}
+		}
+
+		/**
+		 * Remove a single no-write region.
+		 * @param int $key region key
+		 * @author Nicola Asuni
+		 * @access public
+		 * @since 5.9.003 (2010-10-13)
+		 * @see setPageRegions(), getPageRegions()
+		 */
+		public function removePageRegion($key) {
+			if (isset($this->page_regions[$key])) {
+				unset($this->page_regions[$key]);
+			}
+		}
+
+		/**
+		 * Check page for no-write regions and adapt current coordinates and page margins if necessary.
+		 * A no-write region is a portion of the page with a rectangular or trapezium shape that will not be covered when writing text or html code.
+		 * A region is always aligned on the left or right side of the page ad is defined using a vertical segment.
+		 * @param float $h height of the text/image/object to print in user units
+		 * @param float $x current X coordinate in user units
+		 * @param float $y current Y coordinate in user units
+		 * @author Nicola Asuni
+		 * @access protected
+		 * @since 5.9.003 (2010-10-13)
+		 */
+		protected function checkPageRegions($h=0, &$x='', &$y='') {
+			// set default values
+			if ($x === '') {
+				$x = &$this->x;
+			}
+			if ($y === '') {
+				$y = &$this->y;
+			}
+			if (empty($this->page_regions)) {
+				// no page regions defined
+				return;
+			}
+			if (empty($h)) {
+				$h = ($this->FontSize * $this->cell_height_ratio) + $this->cell_padding['T'] + $this->cell_padding['B'];
+			}
+			if ($this->rtl) {
+				$this->lMargin = $this->original_lMargin;
+			} else {
+				$this->rMargin = $this->original_rMargin;
+			}
+			if ($this->AutoPageBreak AND !$this->InFooter AND (($y + $h) > $this->PageBreakTrigger)) {
+				// the content will be printed on a new page
+				return;
+			}
+			// adjust coordinates and page margins
+			foreach ($this->page_regions as $regid => $regdata) {
+				if ($regdata['page'] == $this->page) {
+					// check region boundaries
+					if (($y > ($regdata['yt'] - $h)) AND ($y <= $regdata['yb'])) {
+						// Y is inside the region
+						$minv = ($regdata['xb'] - $regdata['xt']) / ($regdata['yb'] - $regdata['yt']); // inverse of angular coefficient
+						$yt = max($y, $regdata['yt']);
+						$yb = min(($yt + $h), $regdata['yb']);
+						$xt = (($yt - $regdata['yt']) * $minv) + $regdata['xt'];
+						$xb = (($yb - $regdata['yt']) * $minv) + $regdata['xt'];
+						if ($regdata['side'] == 'L') { // left side
+							$new_margin = max($xt, $xb);
+							if ($this->lMargin < $new_margin) {
+								if ($this->rtl) {
+									// adjust left page margin
+									$this->lMargin = $new_margin;
+								}
+								if ($x < $new_margin) {
+									// adjust x position
+									$x = $new_margin;
+								}
+							}
+						} elseif ($regdata['side'] == 'R') { // right side
+							$new_margin = min($xt, $xb);
+							if (($this->w - $this->rMargin) > $new_margin) {
+								if (!$this->rtl) {
+									// adjust right page margin
+									$this->rMargin = ($this->w - $new_margin);
+								}
+								if ($x > $new_margin) {
+									// adjust x position
+									$x = $new_margin;
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 
 		// -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
@@ -23596,6 +23783,8 @@ if (!class_exists('TCPDF', false)) {
 			if ($y === '') {
 				$y = $this->y;
 			}
+			// check page for no-write regions and adapt page margins if necessary
+			$this->checkPageRegions($x, $y);
 			$k = $this->k;
 			$ox = 0;
 			$oy = 0;

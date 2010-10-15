@@ -1,3 +1,7 @@
+5.9.003 (2010-10-15)
+	- Support for no-write page regions was added. Check the example n. 64 and new methods setPageRegions(), addPageRegion(), getPageRegions(), removePageRegion().
+	- A bug on Right-To-Left alignment was fixed.
+
 5.9.002 (2010-10-08)
 	- Cell method was improved to preserve the font stretching and spacing values when using the $stretch parameter (see example n. 4).
 

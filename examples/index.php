@@ -80,7 +80,8 @@ echo '<'.'?'.'xml version="1.0" encoding="UTF-8"'.'?'.'>';
 <li>Advanced page settings: [<a href="example_060.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>XHTML + CSS: [<a href="example_061.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>XObject Templates: [<a href="example_062.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
-<li>Text stretching and spacing (kerning): [<a href="example_063.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
+<li>Text stretching and spacing (tracking/kerning): [<a href="example_063.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
+<li>No-write page regions: [<a href="example_064.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 </ol>
 
 </body>
