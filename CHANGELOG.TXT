@@ -1,3 +1,6 @@
+5.9.005 (2010-10-18)
+	- Method addPageRegion() was changed to accept regions starting exactly from the top of the page.
+
 5.9.004 (2010-10-18)
 	- A bug related to annotations was fixed.
 	- The file unicode_data.php was canged to encapsulate all data in a class.

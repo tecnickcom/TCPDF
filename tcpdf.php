@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.004
+// Version     : 5.9.005
 // Begin       : 2002-08-03
 // Last Update : 2010-10-18
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
@@ -134,7 +134,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.9.004
+ * @version 5.9.005
  */
 
 /**
@@ -146,14 +146,14 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
 /**
  * define default PDF document producer
  */
-define('PDF_PRODUCER', 'TCPDF 5.9.004 (http://www.tcpdf.org)');
+define('PDF_PRODUCER', 'TCPDF 5.9.005 (http://www.tcpdf.org)');
 
 /**
 * This is a PHP class for generating PDF documents without requiring external extensions.<br>
 * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 * @name TCPDF
 * @package com.tecnick.tcpdf
-* @version 5.9.004
+* @version 5.9.005
 * @author Nicola Asuni - info@tecnick.com
 * @link http://www.tcpdf.org
 * @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -23654,7 +23654,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			$region['page'] = $this->page;
 		}
 		if (isset($region['xt']) AND isset($region['xb']) AND ($region['xt'] > 0) AND ($region['xb'] > 0)
-			AND isset($region['yt'])  AND isset($region['yb']) AND ($region['yt'] > 0) AND ($region['yt'] < $region['yb'])
+			AND isset($region['yt'])  AND isset($region['yb']) AND ($region['yt'] >= 0) AND ($region['yt'] < $region['yb'])
 			AND isset($region['side']) AND (($region['side'] == 'L') OR ($region['side'] == 'R'))) {
 			$this->page_regions[] = $region;
 		}
