@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_006.php
 // Begin       : 2008-03-04
-// Last Update : 2010-08-08
+// Last Update : 2010-10-18
 //
 // Description : Example 006 for TCPDF class
 //               WriteHTML and RTL support
@@ -236,7 +236,7 @@ $pdf->lastPage();
 // add a page
 $pdf->AddPage();
 
-require_once('../htmlcolors.php');
+require('../htmlcolors.php');
 
 $textcolors = '<h1>HTML Text Colors</h1>';
 $bgcolors = '<hr /><h1>HTML Background Colors</h1>';

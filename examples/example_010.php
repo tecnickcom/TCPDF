@@ -71,7 +71,7 @@ class MC_TCPDF extends TCPDF {
 	public function ChapterTitle($num, $title) {
 		$this->SetFont('helvetica', '', 14);
 		$this->SetFillColor(200, 220, 255);
-		$this->Cell(0, 6, 'Chapter '.$num.' : '.$title, 0, 1, '', 1);
+		$this->Cell(180, 6, 'Chapter '.$num.' : '.$title, 0, 1, '', 1);
 		$this->Ln(4);
 	}
 
