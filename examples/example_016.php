@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_016.php
 // Begin       : 2008-03-04
-// Last Update : 2010-08-08
+// Last Update : 2010-10-19
 //
 // Description : Example 016 for TCPDF class
 //               Document Encryption / Security
@@ -53,12 +53,13 @@ $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8',
 
  If you don't set any password, the document will open as usual.
  If you set a user password, the PDF viewer will ask for it before displaying the document.
- The master (owner) password, if different from the user one, can be used to get full access.
+ The master (owner) password, if different from the user one, can be used to get full document access.
 
  Possible encryption modes are:
- 	- 0 = RSA 40 bit
- 	- 1 = RSA 128 bit
- 	- 2 = AES 128 bit
+ 	0 = RSA 40 bit
+ 	1 = RSA 128 bit
+ 	2 = AES 128 bit
+ 	3 = AES 256 bit
 
  NOTES:
  - To create self-signed signature: openssl req -x509 -nodes -days 365000 -newkey rsa:1024 -keyout tcpdf.crt -out tcpdf.crt

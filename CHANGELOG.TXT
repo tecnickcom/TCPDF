@@ -1,3 +1,7 @@
+5.9.006 (2010-10-16)
+	- Support for AES 256 bit encryption was added (see example n. 16).
+	- Method getNumLines() was fixed for the empty string case.
+
 5.9.005 (2010-10-18)
 	- Method addPageRegion() was changed to accept regions starting exactly from the top of the page.
 

@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.005
+// Version     : 5.9.006
 // Begin       : 2002-08-03
-// Last Update : 2010-10-18
+// Last Update : 2010-10-19
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -48,7 +48,7 @@
 //  * 1D and 2D barcodes: CODE 39, ANSI MH10.8M-1983, USD-3, 3 of 9, CODE 93, USS-93, Standard 2 of 5, Interleaved 2 of 5, CODE 128 A/B/C, 2 and 5 Digits UPC-Based Extention, EAN 8, EAN 13, UPC-A, UPC-E, MSI, POSTNET, PLANET, RMS4CC (Royal Mail 4-state Customer Code), CBC (Customer Bar Code), KIX (Klant index - Customer index), Intelligent Mail Barcode, Onecode, USPS-B-3200, CODABAR, CODE 11, PHARMACODE, PHARMACODE TWO-TRACKS, QR-Code, PDF417;
 //  * Grayscale, RGB, CMYK, Spot Colors and Transparencies;
 //  * automatic page header and footer management;
-//  * document encryption and digital signature certifications;
+//  * document encryption up to 256 bit and digital signature certifications;
 //  * transactions to UNDO commands;
 //  * PDF annotations, including links, text and file attachments;
 //  * text rendering modes (fill, stroke and clipping);
@@ -112,7 +112,7 @@
  * <li>1D and 2D barcodes: CODE 39, ANSI MH10.8M-1983, USD-3, 3 of 9, CODE 93, USS-93, Standard 2 of 5, Interleaved 2 of 5, CODE 128 A/B/C, 2 and 5 Digits UPC-Based Extention, EAN 8, EAN 13, UPC-A, UPC-E, MSI, POSTNET, PLANET, RMS4CC (Royal Mail 4-state Customer Code), CBC (Customer Bar Code), KIX (Klant index - Customer index), Intelligent Mail Barcode, Onecode, USPS-B-3200, CODABAR, CODE 11, PHARMACODE, PHARMACODE TWO-TRACKS, QR-Code, PDF417;</li>
  * <li>Grayscale, RGB, CMYK, Spot Colors and Transparencies;</li>
  * <li>automatic page header and footer management;</li>
- * <li>document encryption and digital signature certifications;</li>
+ * <li>document encryption up to 256 bit and digital signature certifications;</li>
  * <li>transactions to UNDO commands;</li>
  * <li>PDF annotations, including links, text and file attachments;</li>
  * <li>text rendering modes (fill, stroke and clipping);</li>
@@ -134,7 +134,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.9.005
+ * @version 5.9.006
  */
 
 /**
@@ -146,14 +146,14 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
 /**
  * define default PDF document producer
  */
-define('PDF_PRODUCER', 'TCPDF 5.9.005 (http://www.tcpdf.org)');
+define('PDF_PRODUCER', 'TCPDF 5.9.006 (http://www.tcpdf.org)');
 
 /**
 * This is a PHP class for generating PDF documents without requiring external extensions.<br>
 * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 * @name TCPDF
 * @package com.tecnick.tcpdf
-* @version 5.9.005
+* @version 5.9.006
 * @author Nicola Asuni - info@tecnick.com
 * @link http://www.tcpdf.org
 * @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1880,7 +1880,7 @@ class TCPDF {
 		}
 		$this->default_form_prop = array('lineWidth'=>1, 'borderStyle'=>'solid', 'fillColor'=>array(255, 255, 255), 'strokeColor'=>array(128, 128, 128));
 		// set file ID for trailer
-		$this->file_id = md5(microtime().__FILE__.'TCPDF'.$orientation.$unit.$format.$encoding.uniqid(''.rand()));
+		$this->file_id = md5($this->getRandomSeed('TCPDF'.$orientation.$unit.$format.$encoding));
 		// get default graphic vars
 		$this->default_graphic_vars = $this->getGraphicVars();
 	}
@@ -6325,6 +6325,10 @@ class TCPDF {
 	 * @since 4.5.011
 	 */
 	public function getNumLines($txt, $w=0, $reseth=false, $autopadding=true, $cellpadding='', $border=0) {
+		if ($txt === '') {
+			// empty string
+			return 1;
+		}
 		// adjust internal padding
 		$prev_cell_padding = $this->cell_padding;
 		$prev_lasth = $this->lasth;
@@ -11393,18 +11397,61 @@ class TCPDF {
 	// ENCRYPTION METHODS ----------------------------------
 
 	/**
+	 * Returns a string containing random data to be used as a seed for encryption methods.
+	 * @seed string starting seed value
+	 * @return string containing random data
+	 * @author Nicola Asuni
+	 * @since 5.9.006 (2010-10-19)
+	 * @access protected
+	 */
+	protected function getRandomSeed($seed='') {
+		$seed .= microtime();
+		if (function_exists('openssl_random_pseudo_bytes')) {
+			$seed .= openssl_random_pseudo_bytes(512);
+		}
+		$seed .= uniqid('', true);
+		$seed .= rand();
+		$seed .= getmypid();
+		$seed .= __FILE__;
+		$seed .= $this->bufferlen;
+		if (isset($_SERVER['REMOTE_ADDR'])) {
+			$seed .= $_SERVER['REMOTE_ADDR'];
+		}
+		if (isset($_SERVER['HTTP_USER_AGENT'])) {
+			$seed .= $_SERVER['HTTP_USER_AGENT'];
+		}
+		if (isset($_SERVER['HTTP_ACCEPT'])) {
+			$seed .= $_SERVER['HTTP_ACCEPT'];
+		}
+		if (isset($_SERVER['HTTP_ACCEPT_ENCODING'])) {
+			$seed .= $_SERVER['HTTP_ACCEPT_ENCODING'];
+		}
+		if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+			$seed .= $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+		}
+		if (isset($_SERVER['HTTP_ACCEPT_CHARSET'])) {
+			$seed .= $_SERVER['HTTP_ACCEPT_CHARSET'];
+		}
+		$seed .= rand();
+		$seed .= uniqid('', true);
+		$seed .= microtime();
+		return $seed;
+	}
+
+	/**
 	 * Compute encryption key depending on object number where the encrypted data is stored.
 	 * This is used for all strings and streams without crypt filter specifier.
 	 * @param int $n object number
+	 * @return int object key
 	 * @access protected
 	 * @author Nicola Asuni
 	 * @since 2.0.000 (2008-01-02)
 	 */
 	protected function _objectkey($n) {
 		$objkey = $this->encryptdata['key'].pack('VXxx', $n);
-		if ($this->encryptdata['mode'] == 2) {
+		if ($this->encryptdata['mode'] == 2) { // AES-128
 			// AES padding
-			$objkey .= "\x73\x41\x6C\x54";
+			$objkey .= "\x73\x41\x6C\x54"; // sAlT
 		}
 		$objkey = substr($this->_md5_16($objkey), 0, (($this->encryptdata['Length'] / 8) + 5));
 		$objkey = substr($objkey, 0, 16);
@@ -11415,6 +11462,7 @@ class TCPDF {
 	 * Encrypt the input string.
 	 * @param int $n object number
 	 * @param string $s data string to encrypt
+	 * @return encrypted string
 	 * @access protected
 	 * @author Nicola Asuni
 	 * @since 5.0.005 (2010-05-11)
@@ -11424,13 +11472,17 @@ class TCPDF {
 			return $s;
 		}
 		switch ($this->encryptdata['mode']) {
-			case 0:   // RC4 40 bit
-			case 1: { // RC4 128 bit
+			case 0:   // RC4-40
+			case 1: { // RC4-128
 				$s = $this->_RC4($this->_objectkey($n), $s);
 				break;
 			}
-			case 2: { // AES 128 bit
+			case 2: { // AES-128
 				$s = $this->_AES($this->_objectkey($n), $s);
+				break;
+			}
+			case 3: { // AES-256
+				$s = $this->_AES($this->encryptdata['key'], $s);
 				break;
 			}
 		}
@@ -11461,16 +11513,13 @@ class TCPDF {
 		}
 		// V is a code specifying the algorithm to be used in encrypting and decrypting the document
 		$out .= ' /V '.$this->encryptdata['V'];
-		if ($this->encryptdata['V'] == 1) {
+		if (isset($this->encryptdata['Length']) AND !empty($this->encryptdata['Length'])) {
+			// The length of the encryption key, in bits. The value shall be a multiple of 8, in the range 40 to 256
+			$out .= ' /Length '.$this->encryptdata['Length'];
+		} else {
 			$out .= ' /Length 40';
-		} elseif (($this->encryptdata['V'] == 2) OR ($this->encryptdata['V'] == 3)) {
-			if (isset($this->encryptdata['Length']) AND !empty($this->encryptdata['Length'])) {
-				// The length of the encryption key, in bits. The value shall be a multiple of 8, in the range 40 to 128
-				$out .= ' /Length '.$this->encryptdata['Length'];
-			} else {
-				$out .= ' /Length 40';
-			}
-		} elseif ($this->encryptdata['V'] == 4) {
+		}
+		if ($this->encryptdata['V'] >= 4) {
 			if (!isset($this->encryptdata['StmF']) OR empty($this->encryptdata['StmF'])) {
 				$this->encryptdata['StmF'] = 'Identity';
 			}
@@ -11533,11 +11582,16 @@ class TCPDF {
 			}
 		} else {
 			$out .= ' /R';
-			if ($this->encryptdata['V'] == 4) {
+			if ($this->encryptdata['V'] == 5) { // AES-256
+				$out .= ' 5';
+				$out .= ' /OE ('.$this->_escape($this->encryptdata['OE']).')';
+				$out .= ' /UE ('.$this->_escape($this->encryptdata['UE']).')';
+				$out .= ' /Perms ('.$this->_escape($this->encryptdata['perms']).')';
+			} elseif ($this->encryptdata['V'] == 4) { // AES-128
 				$out .= ' 4';
-			} elseif ($this->encryptdata['V'] < 2) {
+			} elseif ($this->encryptdata['V'] < 2) { // RC-40
 				$out .= ' 2';
-			} else {
+			} else { // RC-128
 				$out .= ' 3';
 			}
 			$out .= ' /O ('.$this->_escape($this->encryptdata['O']).')';
@@ -11555,7 +11609,7 @@ class TCPDF {
 	}
 
 	/**
-	 * Returns the input text exrypted using RC4 algorithm and the specified key.
+	 * Returns the input text encrypted using RC4 algorithm and the specified key.
 	 * RC4 is the standard encryption algorithm used in PDF format
 	 * @param string $key encryption key
 	 * @param String $text input text to be encrypted
@@ -11633,102 +11687,186 @@ class TCPDF {
 	}
 
 	/**
-	 * Compute O value (used for encryption)
-	 * @param String $user_pass user password
-	 * @param String $owner_pass user password
-	 * @return String O value
-	 * @access protected
-	 * @since 2.0.000 (2008-01-02)
-	 * @author Nicola Asuni
-	 */
-	protected function _Ovalue($user_pass, $owner_pass) {
-		$tmp = $this->_md5_16($owner_pass);
-		if ($this->encryptdata['mode'] > 0) {
-			for ($i = 0; $i < 50; ++$i) {
-				$tmp = $this->_md5_16($tmp);
-			}
-		}
-		$owner_key = substr($tmp, 0, ($this->encryptdata['Length'] / 8));
-		$enc = $this->_RC4($owner_key, $user_pass);
-		if ($this->encryptdata['mode'] > 0) {
-			$len = strlen($owner_key);
-			for ($i = 1; $i <= 19; ++$i) {
-				$ek = '';
-				for ($j = 0; $j < $len; ++$j) {
-					$ek .= chr(ord($owner_key{$j}) ^ $i);
-				}
-				$enc = $this->_RC4($ek, $enc);
-			}
-		}
-		return $enc;
-	}
-
-	/**
 	 * Compute U value (used for encryption)
-	 * @return String U value
+	 * @return string U value
 	 * @access protected
 	 * @since 2.0.000 (2008-01-02)
 	 * @author Nicola Asuni
 	 */
 	protected function _Uvalue() {
-		if ($this->encryptdata['mode'] == 0) {
+		if ($this->encryptdata['mode'] == 0) { // RC4-40
 			return $this->_RC4($this->encryptdata['key'], $this->enc_padding);
-		}
-		$tmp = $this->_md5_16($this->enc_padding.$this->encryptdata['fileid']);
-		$enc = $this->_RC4($this->encryptdata['key'], $tmp);
-		$len = strlen($tmp);
-		for ($i = 1; $i <= 19; ++$i) {
-			$ek = '';
-			for ($j = 0; $j < $len; ++$j) {
-				$ek .= chr(ord($this->encryptdata['key']{$j}) ^ $i);
+		} elseif ($this->encryptdata['mode'] < 3) { // RC4-128, AES-128
+			$tmp = $this->_md5_16($this->enc_padding.$this->encryptdata['fileid']);
+			$enc = $this->_RC4($this->encryptdata['key'], $tmp);
+			$len = strlen($tmp);
+			for ($i = 1; $i <= 19; ++$i) {
+				$ek = '';
+				for ($j = 0; $j < $len; ++$j) {
+					$ek .= chr(ord($this->encryptdata['key']{$j}) ^ $i);
+				}
+				$enc = $this->_RC4($ek, $enc);
 			}
-			$enc = $this->_RC4($ek, $enc);
+			$enc .= str_repeat("\x00", 16);
+			return substr($enc, 0, 32);
+		} elseif ($this->encryptdata['mode'] == 3) { // AES-256
+			$seed = $this->_md5_16($this->getRandomSeed());
+			// User Validation Salt
+			$this->encryptdata['UVS'] = substr($seed, 0, 8);
+			// User Key Salt
+			$this->encryptdata['UKS'] = substr($seed, 8, 16);
+			return hash('sha256', $this->encryptdata['user_password'].$this->encryptdata['UVS'], true).$this->encryptdata['UVS'].$this->encryptdata['UKS'];
 		}
-		$enc .= str_repeat("\x00", 16);
-		return substr($enc, 0, 32);
 	}
 
 	/**
-	 * Compute encryption key
-	 * @param String $user_pass user password
-	 * @param String $owner_pass user password
-	 * @param String $protection protection type
+	 * Compute UE value (used for encryption)
+	 * @return string UE value
+	 * @access protected
+	 * @since 5.9.006 (2010-10-19)
+	 * @author Nicola Asuni
+	 */
+	protected function _UEvalue() {
+		$hashkey = hash('sha256', $this->encryptdata['user_password'].$this->encryptdata['UKS'], true);
+		$iv = str_repeat("\x00", mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC));
+		return mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $hashkey, $this->encryptdata['key'], MCRYPT_MODE_CBC, $iv);
+	}
+
+	/**
+	 * Compute O value (used for encryption)
+	 * @return string O value
 	 * @access protected
 	 * @since 2.0.000 (2008-01-02)
 	 * @author Nicola Asuni
 	 */
-	protected function _generateencryptionkey($user_pass, $owner_pass, $protection) {
-		$keybytelen = ($this->encryptdata['Length'] / 8);
-		if (!$this->encryptdata['pubkey']) { // standard mode
-			// Pad passwords
-			$user_pass = substr($user_pass.$this->enc_padding, 0, 32);
-			$owner_pass = substr($owner_pass.$this->enc_padding, 0, 32);
-			// Compute O value
-			$this->encryptdata['O'] = $this->_Ovalue($user_pass, $owner_pass);
-			// get default permissions (reverse byte order)
-			$permissions = $this->getEncPermissionsString($protection);
-			// Compute encryption key
-			$tmp = $this->_md5_16($user_pass.$this->encryptdata['O'].$permissions.$this->encryptdata['fileid']);
+	protected function _Ovalue() {
+		if ($this->encryptdata['mode'] < 3) { // RC4-40, RC4-128, AES-128
+			$tmp = $this->_md5_16($this->encryptdata['owner_password']);
 			if ($this->encryptdata['mode'] > 0) {
 				for ($i = 0; $i < 50; ++$i) {
-					$tmp = $this->_md5_16(substr($tmp, 0, $keybytelen));
+					$tmp = $this->_md5_16($tmp);
 				}
 			}
-			$this->encryptdata['key'] = substr($tmp, 0, $keybytelen);
-			// Compute U value
-			$this->encryptdata['U'] = $this->_Uvalue();
-			// Compute P value
-			$this->encryptdata['P'] = $protection;
+			$owner_key = substr($tmp, 0, ($this->encryptdata['Length'] / 8));
+			$enc = $this->_RC4($owner_key, $this->encryptdata['user_password']);
+			if ($this->encryptdata['mode'] > 0) {
+				$len = strlen($owner_key);
+				for ($i = 1; $i <= 19; ++$i) {
+					$ek = '';
+					for ($j = 0; $j < $len; ++$j) {
+						$ek .= chr(ord($owner_key{$j}) ^ $i);
+					}
+					$enc = $this->_RC4($ek, $enc);
+				}
+			}
+			return $enc;
+		} elseif ($this->encryptdata['mode'] == 3) { // AES-256
+			$seed = $this->_md5_16($this->getRandomSeed());
+			// Owner Validation Salt
+			$this->encryptdata['OVS'] = substr($seed, 0, 8);
+			// Owner Key Salt
+			$this->encryptdata['OKS'] = substr($seed, 8, 16);
+			return hash('sha256', $this->encryptdata['owner_password'].$this->encryptdata['OVS'].$this->encryptdata['U'], true).$this->encryptdata['OVS'].$this->encryptdata['OKS'];
+		}
+	}
+
+	/**
+	 * Compute OE value (used for encryption)
+	 * @return string OE value
+	 * @access protected
+	 * @since 5.9.006 (2010-10-19)
+	 * @author Nicola Asuni
+	 */
+	protected function _OEvalue() {
+		$hashkey = hash('sha256', $this->encryptdata['owner_password'].$this->encryptdata['OKS'].$this->encryptdata['U'], true);
+		$iv = str_repeat("\x00", mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC));
+		return mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $hashkey, $this->encryptdata['key'], MCRYPT_MODE_CBC, $iv);
+	}
+
+	/**
+	 * Convert password for AES-256 encryption mode
+	 * @return string password
+	 * @access protected
+	 * @since 5.9.006 (2010-10-19)
+	 * @author Nicola Asuni
+	 */
+	protected function _fixAES256Password($password) {
+		$psw = ''; // password to be returned
+		$psw_array = $this->utf8Bidi($this->UTF8StringToArray($password), $password, $this->rtl);
+		foreach ($psw_array as $c) {
+			$psw .= $this->unichr($c);
+		}
+		return substr($psw, 0, 127);
+	}
+
+	/**
+	 * Compute encryption key
+	 * @access protected
+	 * @since 2.0.000 (2008-01-02)
+	 * @author Nicola Asuni
+	 */
+	protected function _generateencryptionkey() {
+		$keybytelen = ($this->encryptdata['Length'] / 8);
+		if (!$this->encryptdata['pubkey']) { // standard mode
+			if ($this->encryptdata['mode'] == 3) { // AES-256
+				// generate 256 bit random key
+				$this->encryptdata['key'] = substr(hash('sha256', $this->getRandomSeed(), true), 0, $keybytelen);
+				// truncate passwords
+				$this->encryptdata['user_password'] = $this->_fixAES256Password($this->encryptdata['user_password']);
+				$this->encryptdata['owner_password'] = $this->_fixAES256Password($this->encryptdata['owner_password']);
+				// Compute U value
+				$this->encryptdata['U'] = $this->_Uvalue();
+				// Compute UE value
+				$this->encryptdata['UE'] = $this->_UEvalue();
+				// Compute O value
+				$this->encryptdata['O'] = $this->_Ovalue();
+				// Compute OE value
+				$this->encryptdata['OE'] = $this->_OEvalue();
+				// Compute P value
+				$this->encryptdata['P'] = $this->encryptdata['protection'];
+				// Computing the encryption dictionary's Perms (permissions) value
+				$perms = $this->getEncPermissionsString($this->encryptdata['protection']); // bytes 0-3
+				$perms .= chr(255).chr(255).chr(255).chr(255); // bytes 4-7
+				if (isset($this->encryptdata['CF']['EncryptMetadata']) AND (!$this->encryptdata['CF']['EncryptMetadata'])) { // byte 8
+					$perms .= 'F';
+				} else {
+					$perms .= 'T';
+				}
+				$perms .= 'adb'; // bytes 9-11
+				$perms .= 'nick'; // bytes 12-15
+				$iv = str_repeat("\x00", mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_ECB));
+				$this->encryptdata['perms'] = mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $this->encryptdata['key'], $perms, MCRYPT_MODE_ECB, $iv);
+			} else { // RC4-40, RC4-128, AES-128
+				// Pad passwords
+				$this->encryptdata['user_password'] = substr($this->encryptdata['user_password'].$this->enc_padding, 0, 32);
+				$this->encryptdata['owner_password'] = substr($this->encryptdata['owner_password'].$this->enc_padding, 0, 32);
+				// Compute O value
+				$this->encryptdata['O'] = $this->_Ovalue();
+				// get default permissions (reverse byte order)
+				$permissions = $this->getEncPermissionsString($this->encryptdata['protection']);
+				// Compute encryption key
+				$tmp = $this->_md5_16($this->encryptdata['user_password'].$this->encryptdata['O'].$permissions.$this->encryptdata['fileid']);
+				if ($this->encryptdata['mode'] > 0) {
+					for ($i = 0; $i < 50; ++$i) {
+						$tmp = $this->_md5_16(substr($tmp, 0, $keybytelen));
+					}
+				}
+				$this->encryptdata['key'] = substr($tmp, 0, $keybytelen);
+				// Compute U value
+				$this->encryptdata['U'] = $this->_Uvalue();
+				// Compute P value
+				$this->encryptdata['P'] = $this->encryptdata['protection'];
+			}
 		} else { // Public-Key mode
 			// random 20-byte seed
-			$seed = sha1(microtime().uniqid(''.rand()).$this->file_id, true);
+			$seed = sha1($this->getRandomSeed(), true);
 			$recipient_bytes = '';
 			foreach ($this->encryptdata['pubkeys'] as $pubkey) {
 				// for each public certificate
 				if (isset($pubkey['p'])) {
 					$pkprotection = $this->getUserPermissionCode($pubkey['p'], $this->encryptdata['mode']);
 				} else {
-					$pkprotection = $protection;
+					$pkprotection = $this->encryptdata['protection'];
 				}
 				// get default permissions (reverse byte order)
 				$pkpermissions = $this->getEncPermissionsString($pkprotection);
@@ -11766,14 +11904,18 @@ class TCPDF {
 				$recipient_bytes .= $signature;
 			}
 			// calculate encryption key
-			$this->encryptdata['key'] = substr(sha1($seed.$recipient_bytes, true), 0, $keybytelen);
+			if ($this->encryptdata['mode'] == 3) { // AES-256
+				$this->encryptdata['key'] = substr(hash('sha256', $seed.$recipient_bytes, true), 0, $keybytelen);
+			} else { // RC4-40, RC4-128, AES-128
+				$this->encryptdata['key'] = substr(sha1($seed.$recipient_bytes, true), 0, $keybytelen);
+			}
 		}
 	}
 
 	/**
 	 * Return the premission code used on encryption (P value).
 	 * @param Array $permissions the set of permissions (specify the ones you want to block).
-	 * @param int $mode encryption strength: 0 = RC4 40 bit; 1 = RC4 128 bit; 2 = AES 128 bit.
+	 * @param int $mode encryption strength: 0 = RC4 40 bit; 1 = RC4 128 bit; 2 = AES 128 bit; 3 = AES 256 bit.
 	 * @access protected
 	 * @since 5.0.005 (2010-05-12)
 	 * @author Nicola Asuni
@@ -11790,7 +11932,7 @@ class TCPDF {
 			'assemble' => 1024,// bit 11
 			'print-high' => 2048 // bit 12
 			);
-		$protection = 2147422012; // (01111111111111110000111100111100)
+		$protection = 2147422012; // 32 bit: (01111111 11111111 00001111 00111100)
 		foreach ($permissions as $permission) {
 			if (!isset($options[$permission])) {
 				$this->Error('Incorrect permission: '.$permission);
@@ -11816,14 +11958,14 @@ class TCPDF {
 	 * @param Array $permissions the set of permissions (specify the ones you want to block):<ul><li>print : Print the document;</li><li>modify : Modify the contents of the document by operations other than those controlled by 'fill-forms', 'extract' and 'assemble';</li><li>copy : Copy or otherwise extract text and graphics from the document;</li><li>annot-forms : Add or modify text annotations, fill in interactive form fields, and, if 'modify' is also set, create or modify interactive form fields (including signature fields);</li><li>fill-forms : Fill in existing interactive form fields (including signature fields), even if 'annot-forms' is not specified;</li><li>extract : Extract text and graphics (in support of accessibility to users with disabilities or for other purposes);</li><li>assemble : Assemble the document (insert, rotate, or delete pages and create bookmarks or thumbnail images), even if 'modify' is not set;</li><li>print-high : Print the document to a representation from which a faithful digital copy of the PDF content could be generated. When this is not set, printing is limited to a low-level representation of the appearance, possibly of degraded quality.</li><li>owner : (inverted logic - only for public-key) when set permits change of encryption and enables all other permissions.</li></ul>
 	 * @param String $user_pass user password. Empty by default.
 	 * @param String $owner_pass owner password. If not specified, a random value is used.
-	 * @param int $mode encryption strength: 0 = RC4 40 bit; 1 = RC4 128 bit; 2 = AES 128 bit.
+	 * @param int $mode encryption strength: 0 = RC4 40 bit; 1 = RC4 128 bit; 2 = AES 128 bit; 3 = AES 256 bit.
 	 * @param String $pubkeys array of recipients containing public-key certificates ('c') and permissions ('p'). For example: array(array('c' => 'file://../tcpdf.crt', 'p' => array('print')))
 	 * @access public
 	 * @since 2.0.000 (2008-01-02)
 	 * @author Nicola Asuni
 	 */
 	public function SetProtection($permissions=array('print', 'modify', 'copy', 'annot-forms', 'fill-forms', 'extract', 'assemble', 'print-high'), $user_pass='', $owner_pass=null, $mode=0, $pubkeys=null) {
-		$protection = $this->getUserPermissionCode($permissions, $mode);
+		$this->encryptdata['protection'] = $this->getUserPermissionCode($permissions, $mode);
 		if (($pubkeys !== null) AND (is_array($pubkeys))) {
 			// public-key mode
 			$this->encryptdata['pubkeys'] = $pubkeys;
@@ -11848,15 +11990,21 @@ class TCPDF {
 		}
 		if ($mode > 1) { // AES
 			if (!extension_loaded('mcrypt')) {
-				$this->Error('AES encryption requires mcrypt library.');
+				$this->Error('AES encryption requires mcrypt library (http://www.php.net/manual/en/mcrypt.requirements.php).');
 			}
 			if (mcrypt_get_cipher_name(MCRYPT_RIJNDAEL_128) === false) {
 				$this->Error('AES encryption requires MCRYPT_RIJNDAEL_128 cypher.');
 			}
+			if (($mode == 3) AND !function_exists('hash')) {
+				// the Hash extension requires no external libraries and is enabled by default as of PHP 5.1.2.
+				$this->Error('AES 256 encryption requires HASH Message Digest Framework (http://www.php.net/manual/en/book.hash.php).');
+			}
 		}
 		if ($owner_pass === null) {
-			$owner_pass = uniqid(''.rand());
+			$owner_pass = md5($this->getRandomSeed());
 		}
+		$this->encryptdata['user_password'] = $user_pass;
+		$this->encryptdata['owner_password'] = $owner_pass;
 		$this->encryptdata['mode'] = $mode;
 		switch ($mode) {
 			case 0: { // RC4 40 bit
@@ -11879,6 +12027,18 @@ class TCPDF {
 				$this->encryptdata['V'] = 4;
 				$this->encryptdata['Length'] = 128;
 				$this->encryptdata['CF']['CFM'] = 'AESV2';
+				$this->encryptdata['CF']['Length'] = 128;
+				if ($this->encryptdata['pubkey']) {
+					$this->encryptdata['SubFilter'] = 'adbe.pkcs7.s5';
+					$this->encryptdata['Recipients'] = array();
+				}
+				break;
+			}
+			case 3: { // AES 256 bit
+				$this->encryptdata['V'] = 5;
+				$this->encryptdata['Length'] = 256;
+				$this->encryptdata['CF']['CFM'] = 'AESV3';
+				$this->encryptdata['CF']['Length'] = 256;
 				if ($this->encryptdata['pubkey']) {
 					$this->encryptdata['SubFilter'] = 'adbe.pkcs7.s5';
 					$this->encryptdata['Recipients'] = array();
@@ -11888,7 +12048,7 @@ class TCPDF {
 		}
 		$this->encrypted = true;
 		$this->encryptdata['fileid'] = $this->convertHexStringToString($this->file_id);
-		$this->_generateencryptionkey($user_pass, $owner_pass, $protection);
+		$this->_generateencryptionkey();
 	}
 
 	/**
