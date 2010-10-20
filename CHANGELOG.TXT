@@ -1,4 +1,7 @@
-5.9.006 (2010-10-16)
+5.9.007 (2010-10-20)
+	- Method adjustCellPadding() was fixed to handle bad input.
+
+5.9.006 (2010-10-19)
 	- Support for AES 256 bit encryption was added (see example n. 16).
 	- Method getNumLines() was fixed for the empty string case.
 

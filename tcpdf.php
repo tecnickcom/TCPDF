@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.006
+// Version     : 5.9.007
 // Begin       : 2002-08-03
-// Last Update : 2010-10-19
+// Last Update : 2010-10-20
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -134,7 +134,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.9.006
+ * @version 5.9.007
  */
 
 /**
@@ -146,14 +146,14 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
 /**
  * define default PDF document producer
  */
-define('PDF_PRODUCER', 'TCPDF 5.9.006 (http://www.tcpdf.org)');
+define('PDF_PRODUCER', 'TCPDF 5.9.007 (http://www.tcpdf.org)');
 
 /**
 * This is a PHP class for generating PDF documents without requiring external extensions.<br>
 * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 * @name TCPDF
 * @package com.tecnick.tcpdf
-* @version 5.9.006
+* @version 5.9.007
 * @author Nicola Asuni - info@tecnick.com
 * @link http://www.tcpdf.org
 * @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -3321,11 +3321,6 @@ class TCPDF {
 		if (empty($brd)) {
 			return;
 		}
-		// current cell padding
-		$cp = $this->cell_padding;
-		if ($brd === 1) {
-			$brd = array('LRTB' => true);
-		}
 		if (is_string($brd)) {
 			// convert string to array
 			$slen = strlen($brd);
@@ -3334,13 +3329,22 @@ class TCPDF {
 				$newbrd[$brd{$i}] = true;
 			}
 			$brd = $newbrd;
+		} elseif (($brd === 1) OR ($brd === true) OR (is_numeric($brd) AND (intval($brd) > 0))) {
+			$brd = array('LRTB' => true);
 		}
+		if (!is_array($brd)) {
+			return;
+		}
+		// store current cell padding
+		$cp = $this->cell_padding;
+		// select border mode
 		if (isset($brd['mode'])) {
 			$mode = $brd['mode'];
 			unset($brd['mode']);
 		} else {
 			$mode = 'normal';
 		}
+		// process borders
 		foreach ($brd as $border => $style) {
 			$line_width = $this->LineWidth;
 			if (is_array($style) AND isset($style['width'])) {
