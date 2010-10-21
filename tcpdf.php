@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.007
+// Version     : 5.9.008
 // Begin       : 2002-08-03
-// Last Update : 2010-10-20
+// Last Update : 2010-10-21
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -134,7 +134,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.9.007
+ * @version 5.9.008
  */
 
 /**
@@ -146,14 +146,14 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
 /**
  * define default PDF document producer
  */
-define('PDF_PRODUCER', 'TCPDF 5.9.007 (http://www.tcpdf.org)');
+define('PDF_PRODUCER', 'TCPDF 5.9.008 (http://www.tcpdf.org)');
 
 /**
 * This is a PHP class for generating PDF documents without requiring external extensions.<br>
 * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 * @name TCPDF
 * @package com.tecnick.tcpdf
-* @version 5.9.007
+* @version 5.9.008
 * @author Nicola Asuni - info@tecnick.com
 * @link http://www.tcpdf.org
 * @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -11274,7 +11274,7 @@ class TCPDF {
 
 	/**
 	 * Output anchor link.
-	 * @param string $url link URL or internal link (i.e.: &lt;a href="#23"&gt;link to page 23&lt;/a&gt;)
+	 * @param string $url link URL or internal link (i.e.: &lt;a href="#23,4.5"&gt;link to page 23 at 4.5 Y position&lt;/a&gt;)
 	 * @param string $name link name
 	 * @param boolean $fill Indicates if the cell background must be painted (true) or transparent (false).
 	 * @param boolean $firstline if true prints only the first line and return the remaining string.
@@ -11287,9 +11287,20 @@ class TCPDF {
 	public function addHtmlLink($url, $name, $fill=false, $firstline=false, $color='', $style=-1, $firstblock=false) {
 		if (!$this->empty_string($url) AND ($url{0} == '#')) {
 			// convert url to internal link
-			$page = intval(substr($url, 1));
-			$url = $this->AddLink();
-			$this->SetLink($url, 0, $page);
+			$lnkdata = explode(',', $url);
+			if (isset($lnkdata[0])) {
+				$page = intval(substr($lnkdata[0], 1));
+				if (empty($page) OR ($page <= 0)) {
+					$page = $this->page;
+				}
+				if (isset($lnkdata[1]) AND (strlen($lnkdata[1]) > 0)) {
+					$lnky = floatval($lnkdata[1]);
+				} else {
+					$lnky = 0;
+				}
+				$url = $this->AddLink();
+				$this->SetLink($url, $lnky, $page);
+			}
 		}
 		// store current settings
 		$prevcolor = $this->fgcolor;
@@ -11402,7 +11413,7 @@ class TCPDF {
 
 	/**
 	 * Returns a string containing random data to be used as a seed for encryption methods.
-	 * @seed string starting seed value
+	 * @param string $seed starting seed value
 	 * @return string containing random data
 	 * @author Nicola Asuni
 	 * @since 5.9.006 (2010-10-19)
@@ -16557,19 +16568,21 @@ class TCPDF {
 	 * @param int $h height in user units (empty string = remaining page height)
 	 * @param float $xres width of the smallest bar in user units (empty string = default value = 0.4mm)
 	 * @param array $style array of options:<ul>
-	 <li>boolean $style['border'] if true prints a border</li>
-	 <li>int $style['padding'] padding to leave around the barcode (minimum distance between the barcode and the containing cell border) in user units (set to 'auto' for automatic padding)</li>
-	 <li>array $style['fgcolor'] color array for bars and text</li>
-	 <li>mixed $style['bgcolor'] color array for background (set to false for transparent)</li>
-	 <li>boolean $style['text'] if true prints text below the barcode</li>
-	 <li>string $style['label'] override default label</li>
-	 <li>string $style['font'] font name for text</li><li>int $style['fontsize'] font size for text</li>
-	 <li>int $style['stretchtext']: 0 = disabled; 1 = horizontal scaling only if necessary; 2 = forced horizontal scaling; 3 = character spacing only if necessary; 4 = forced character spacing.</li>
-	 <li>string $style['position'] horizontal position of the containing barcode cell on the page: L = left margin; C = center; R = right margin.</li>
-	 <li>string $style['align'] horizontal position of the barcode on the containing rectangle: L = left; C = center; R = right.</li>
-	 <li>string $style['stretch'] if true stretch the barcode to best fit the available width, otherwise uses $xres resolution for a single bar.</li>
-	 <li>string $style['fitwidth'] if true reduce the width to fit the barcode width + padding. When this option is enabled the 'stretch' option is automatically disabled.</li>
-	 <li>string $style['cellfitalign'] this option works only when 'fitwidth' is true and 'position' is unset or empty. Set the horizontal position of the containing barcode cell inside the specified rectangle: L = left; C = center; R = right.</li></ul>
+	 * <li>boolean $style['border'] if true prints a border</li>
+	 * <li>int $style['padding'] padding to leave around the barcode in user units (set to 'auto' for automatic padding)</li>
+	 * <li>int $style['hpadding'] horizontal padding in user units (set to 'auto' for automatic padding)</li>
+	 * <li>int $style['vpadding'] vertical padding in user units (set to 'auto' for automatic padding)</li>
+	 * <li>array $style['fgcolor'] color array for bars and text</li>
+	 * <li>mixed $style['bgcolor'] color array for background (set to false for transparent)</li>
+	 * <li>boolean $style['text'] if true prints text below the barcode</li>
+	 * <li>string $style['label'] override default label</li>
+	 * <li>string $style['font'] font name for text</li><li>int $style['fontsize'] font size for text</li>
+	 * <li>int $style['stretchtext']: 0 = disabled; 1 = horizontal scaling only if necessary; 2 = forced horizontal scaling; 3 = character spacing only if necessary; 4 = forced character spacing.</li>
+	 * <li>string $style['position'] horizontal position of the containing barcode cell on the page: L = left margin; C = center; R = right margin.</li>
+	 * <li>string $style['align'] horizontal position of the barcode on the containing rectangle: L = left; C = center; R = right.</li>
+	 * <li>string $style['stretch'] if true stretch the barcode to best fit the available width, otherwise uses $xres resolution for a single bar.</li>
+	 * <li>string $style['fitwidth'] if true reduce the width to fit the barcode width + padding. When this option is enabled the 'stretch' option is automatically disabled.</li>
+	 * <li>string $style['cellfitalign'] this option works only when 'fitwidth' is true and 'position' is unset or empty. Set the horizontal position of the containing barcode cell inside the specified rectangle: L = left; C = center; R = right.</li></ul>
 	 * @param string $align Indicates the alignment of the pointer next to barcode insertion relative to barcode height. The value can be:<ul><li>T: top-right for LTR or top-left for RTL</li><li>M: middle-right for LTR or middle-left for RTL</li><li>B: bottom-right for LTR or bottom-left for RTL</li><li>N: next line</li></ul>
 	 * @author Nicola Asuni
 	 * @since 3.1.000 (2008-06-09)
@@ -16651,13 +16664,29 @@ class TCPDF {
 				$w = $this->w - $this->rMargin - $x;
 			}
 		}
-		// horizontal padding
+		// padding
 		if (!isset($style['padding'])) {
-			$hpadding = 0;
+			$padding = 0;
 		} elseif ($style['padding'] === 'auto') {
-			$hpadding = 5 * ($w / ($arrcode['maxw'] + 10));
+			$padding = 10 * ($w / ($arrcode['maxw'] + 20));
 		} else {
-			$hpadding = $style['padding'];
+			$padding = floatval($style['padding']);
+		}
+		// horizontal padding
+		if (!isset($style['hpadding'])) {
+			$hpadding = $padding;
+		} elseif ($style['hpadding'] === 'auto') {
+			$hpadding = 10 * ($w / ($arrcode['maxw'] + 20));
+		} else {
+			$hpadding = floatval($style['hpadding']);
+		}
+		// vertical padding
+		if (!isset($style['vpadding'])) {
+			$vpadding = $padding;
+		} elseif ($style['vpadding'] === 'auto') {
+			$vpadding = ($hpadding / 2);
+		} else {
+			$vpadding = floatval($style['vpadding']);
 		}
 		// calculate xres (single bar width)
 		$max_xres = ($w - (2 * $hpadding)) / $arrcode['maxw'];
@@ -16669,10 +16698,14 @@ class TCPDF {
 			}
 			if ($xres > $max_xres) {
 				// correct xres to fit on $w
-				$max_xres = $max_xres;
+				$xres = $max_xres;
 			}
-			if (isset($style['padding']) AND ($style['padding'] === 'auto')) {
-				$hpadding = 5 * $xres;
+			if ((isset($style['padding']) AND ($style['padding'] === 'auto'))
+				OR (isset($style['hpadding']) AND ($style['hpadding'] === 'auto'))) {
+				$hpadding = 10 * $xres;
+				if (isset($style['vpadding']) AND ($style['vpadding'] === 'auto')) {
+					$vpadding = ($hpadding / 2);
+				}
 			}
 		}
 		if ($style['fitwidth']) {
@@ -16706,8 +16739,6 @@ class TCPDF {
 				}
 			}
 		}
-		// vertical padding
-		$vpadding = $hpadding;
 		$text_height = ($this->cell_height_ratio * $fontsize / $this->k);
 		// height
 		if (($h === '') OR ($h <= 0)) {
@@ -16911,7 +16942,17 @@ class TCPDF {
 	 * @param int $y y position in user units
 	 * @param int $w width in user units
 	 * @param int $h height in user units
-	 * @param array $style array of options:<ul><li>boolean $style['border'] if true prints a border around the barcode</li><li>int $style['padding'] padding to leave around the barcode in barcode units (set to 'auto' for automatic padding)</li><li>int $style['hpadding'] horizontal padding in barcode units (set to 'auto' for automatic padding)</li><li>int $style['vpadding'] vertical padding in barcode units (set to 'auto' for automatic padding)</li><li>int $style['module_width'] width of a single module in points</li><li>int $style['module_height'] height of a single module in points</li><li>array $style['fgcolor'] color array for bars and text</li><li>mixed $style['bgcolor'] color array for background or false for transparent</li><li>string $style['position'] barcode position on the page: L = left margin; C = center; R = right margin; S = stretch</li><li>$style['module_width'] width of a single module in points</li><li>$style['module_height'] height of a single module in points</li></ul>
+	 * @param array $style array of options:<ul>
+	 * <li>boolean $style['border'] if true prints a border around the barcode</li>
+	 * <li>int $style['padding'] padding to leave around the barcode in barcode units (set to 'auto' for automatic padding)</li>
+	 * <li>int $style['hpadding'] horizontal padding in barcode units (set to 'auto' for automatic padding)</li>
+	 * <li>int $style['vpadding'] vertical padding in barcode units (set to 'auto' for automatic padding)</li>
+	 * <li>int $style['module_width'] width of a single module in points</li>
+	 * <li>int $style['module_height'] height of a single module in points</li>
+	 * <li>array $style['fgcolor'] color array for bars and text</li>
+	 * <li>mixed $style['bgcolor'] color array for background or false for transparent</li>
+	 * <li>string $style['position'] barcode position on the page: L = left margin; C = center; R = right margin; S = stretch</li><li>$style['module_width'] width of a single module in points</li>
+	 * <li>$style['module_height'] height of a single module in points</li></ul>
 	 * @param string $align Indicates the alignment of the pointer next to barcode insertion relative to barcode height. The value can be:<ul><li>T: top-right for LTR or top-left for RTL</li><li>M: middle-right for LTR or middle-left for RTL</li><li>B: bottom-right for LTR or bottom-left for RTL</li><li>N: next line</li></ul>
 	 * @param boolean $distort if true distort the barcode to fit width and height, otherwise preserve aspect ratio
 	 * @author Nicola Asuni
@@ -20202,9 +20243,20 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						$imglink = $this->HREF['url'];
 						if ($imglink{0} == '#') {
 							// convert url to internal link
-							$page = intval(substr($imglink, 1));
-							$imglink = $this->AddLink();
-							$this->SetLink($imglink, 0, $page);
+							$lnkdata = explode(',', $imglink);
+							if (isset($lnkdata[0])) {
+								$page = intval(substr($lnkdata[0], 1));
+								if (empty($page) OR ($page <= 0)) {
+									$page = $this->page;
+								}
+								if (isset($lnkdata[1]) AND (strlen($lnkdata[1]) > 0)) {
+									$lnky = floatval($lnkdata[1]);
+								} else {
+									$lnky = 0;
+								}
+								$imglink = $this->AddLink();
+								$this->SetLink($imglink, $lnky, $page);
+							}
 						}
 					}
 					$border = 0;
@@ -22616,7 +22668,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				$this->x += $indent;
 			}
 			$link = $this->AddLink();
-			$this->SetLink($link, 0, $outline['p']);
+			$this->SetLink($link, $outline['y'], $outline['p']);
 			// write the text
 			$this->Write(0, $outline['t'], $link, 0, $aligntext, false, 0, false, false, 0);
 			$this->SetFont($numbersfont, $fontstyle, $fontsize);
@@ -22755,7 +22807,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			$row = str_replace('#TOC_DESCRIPTION#', $outline['t'], $row);
 			$row = str_replace('#TOC_PAGE_NUMBER#', $pagenum, $row);
 			// add link to page
-			$row = '<a href="#'.$outline['p'].'">'.$row.'</a>';
+			$row = '<a href="#'.$outline['p'].','.$outline['y'].'">'.$row.'</a>';
 			// write bookmark entry
 			$this->writeHTML($row, false, false, true, false, '');
 		}

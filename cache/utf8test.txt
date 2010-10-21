@@ -94,8 +94,10 @@ Hebrew (iw)
 Polish (pl)
 -----------
 
-  Pchnąć w tę łódź jeża lub ośm skrzyń fig
+  Pchnąć w tę łódź jeża lub osiem skrzyń fig
   (= To push a hedgehog or eight bins of figs in this boat)
+  
+  Zażółć gęślą jaźń
 
 Russian (ru)
 ------------

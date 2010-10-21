@@ -1,3 +1,8 @@
+5.9.008 (2010-10-21)
+	- Bug item #3091502 "Bookmark oddity" was fixed.
+	- HTML internal links now accepts page number and Y position.
+	- The method write1DBarcode() was improved to accept separate horizontal and vertical padding (see example n. 27).
+
 5.9.007 (2010-10-20)
 	- Method adjustCellPadding() was fixed to handle bad input.
 
