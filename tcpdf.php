@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.008
+// Version     : 5.9.009
 // Begin       : 2002-08-03
 // Last Update : 2010-10-21
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
@@ -134,7 +134,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.9.008
+ * @version 5.9.009
  */
 
 /**
@@ -146,14 +146,14 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
 /**
  * define default PDF document producer
  */
-define('PDF_PRODUCER', 'TCPDF 5.9.008 (http://www.tcpdf.org)');
+define('PDF_PRODUCER', 'TCPDF 5.9.009 (http://www.tcpdf.org)');
 
 /**
 * This is a PHP class for generating PDF documents without requiring external extensions.<br>
 * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 * @name TCPDF
 * @package com.tecnick.tcpdf
-* @version 5.9.008
+* @version 5.9.009
 * @author Nicola Asuni - info@tecnick.com
 * @link http://www.tcpdf.org
 * @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -2990,8 +2990,7 @@ class TCPDF {
 	 */
 	public function setTempRTL($mode) {
 		$newmode = false;
-		switch ($mode) {
-			case 'ltr':
+		switch (strtoupper($mode)) {
 			case 'LTR':
 			case 'L': {
 				if ($this->rtl) {
@@ -2999,7 +2998,6 @@ class TCPDF {
 				}
 				break;
 			}
-			case 'rtl':
 			case 'RTL':
 			case 'R': {
 				if (!$this->rtl) {
@@ -6515,7 +6513,10 @@ class TCPDF {
 			$w = $this->w - $this->rMargin - $this->x;
 		}
 		// max column width
-		$wmax = $w - $wadj - $this->cell_padding['L'] - $this->cell_padding['R'];
+		$wmax = $w - $wadj;
+		if (!$firstline) {
+			$wmax -= ($this->cell_padding['L'] + $this->cell_padding['R']);
+		}
 		if ((!$firstline) AND (($chrwidth > $wmax) OR ($this->GetCharWidth($chars[0]) > $wmax))) {
 			// a single character do not fit on column
 			return '';
@@ -18021,6 +18022,7 @@ class TCPDF {
 		$dom[$key]['listtype'] = '';
 		$dom[$key]['text-indent'] = 0;
 		$dom[$key]['border'] = array();
+		$dom[$key]['dir'] = $this->rtl?'rtl':'ltr';
 		$thead = false; // true when we are inside the THEAD tag
 		++$key;
 		$level = array();
@@ -18070,6 +18072,7 @@ class TCPDF {
 					$dom[$key]['fgcolor'] = $dom[($dom[($dom[$key]['parent'])]['parent'])]['fgcolor'];
 					$dom[$key]['strokecolor'] = $dom[($dom[($dom[$key]['parent'])]['parent'])]['strokecolor'];
 					$dom[$key]['align'] = $dom[($dom[($dom[$key]['parent'])]['parent'])]['align'];
+					$dom[$key]['dir'] = $dom[($dom[($dom[$key]['parent'])]['parent'])]['dir'];
 					if (isset($dom[($dom[($dom[$key]['parent'])]['parent'])]['listtype'])) {
 						$dom[$key]['listtype'] = $dom[($dom[($dom[$key]['parent'])]['parent'])]['listtype'];
 					}
@@ -18149,6 +18152,7 @@ class TCPDF {
 						$dom[$key]['listtype'] = $dom[$parentkey]['listtype'];
 						$dom[$key]['text-indent'] = $dom[$parentkey]['text-indent'];
 						$dom[$key]['border'] = array();
+						$dom[$key]['dir'] = $dom[$parentkey]['dir'];
 					}
 					// get attributes
 					preg_match_all('/([^=\s]*)[\s]*=[\s]*"([^"]*)"/', $element, $attr_array, PREG_PATTERN_ORDER);
@@ -18170,11 +18174,13 @@ class TCPDF {
 							$dom[$key]['style'][strtolower($name)] = trim($style_array[2][$id]);
 						}
 						// --- get some style attributes ---
+						// text direction
+						if (isset($dom[$key]['style']['direction'])) {
+							$dom[$key]['dir'] = $dom[$key]['style']['direction'];
+						}
+						// font family
 						if (isset($dom[$key]['style']['font-family'])) {
-							// font family
-							if (isset($dom[$key]['style']['font-family'])) {
-								$dom[$key]['fontname'] = $this->getFontFamilyName($dom[$key]['style']['font-family']);
-							}
+							$dom[$key]['fontname'] = $this->getFontFamilyName($dom[$key]['style']['font-family']);
 						}
 						// list-style-type
 						if (isset($dom[$key]['style']['list-style-type'])) {
@@ -18548,6 +18554,10 @@ class TCPDF {
 						$dom[$key]['attribute']['colspan'] = $colspan;
 						$dom[($dom[$key]['parent'])]['cols'] += $colspan;
 					}
+					// text direction
+					if (isset($dom[$key]['attribute']['dir'])) {
+						$dom[$key]['dir'] = $dom[$key]['attribute']['dir'];
+					}
 					// set foreground color attribute
 					if (isset($dom[$key]['attribute']['color']) AND (!$this->empty_string($dom[$key]['attribute']['color']))) {
 						$dom[$key]['fgcolor'] = $this->convertHTMLColorToDec($dom[$key]['attribute']['color']);
@@ -18689,6 +18699,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$this_method_vars = array();
 		$undo = false;
 		$fontaligned = false;
+		$reverse_dir = false; // true when the text direction is reversed
 		$this->premode = false;
 		if ($this->inxobj) {
 			// we are inside an XObject template
@@ -19839,22 +19850,56 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						}
 						$strrest = $this->addHtmlLink($this->HREF['url'], $dom[$key]['value'], $wfill, true, $hrefcolor, $hrefstyle, true);
 					} else {
-						// check the next text block for continuity
-						$wadj = 0;
+						$wadj = 0; // space to leave for block continuity
+						$adjblks = 0; // number of blocks
+						// check the next text blocks for continuity
 						$nkey = ($key + 1);
-						while (isset($dom[$nkey]) AND $dom[$nkey]['tag'] AND (!$dom[$nkey]['block'])) {
+						$write_block = true;
+						$tmp_fontname = $this->FontFamily;
+						$tmp_fontstyle = $this->FontStyle;
+						$tmp_fontsize = $this->FontSizePt;
+						while ($write_block AND isset($dom[$nkey])) {
+							if ($dom[$nkey]['tag']) {
+								if ($dom[$nkey]['block']) {
+									// end of block
+									$write_block = false;
+								}
+								$tmp_fontname = isset($dom[$nkey]['fontname']) ? $dom[$nkey]['fontname'] : $this->FontFamily;
+								$tmp_fontstyle = isset($dom[$nkey]['fontstyle']) ? $dom[$nkey]['fontstyle'] : $this->FontStyle;
+								$tmp_fontsize = isset($dom[$nkey]['fontsize']) ? $dom[$nkey]['fontsize'] : $this->FontSizePt;
+							} else {
+								$nextstr = preg_split('/'.$this->re_space['p'].'+/'.$this->re_space['m'], $dom[$nkey]['value']);
+								if (isset($nextstr[0])) {
+									$wadj += $this->GetStringWidth($nextstr[0], $tmp_fontname, $tmp_fontstyle, $tmp_fontsize);
+									++$adjblks;
+								}
+								if (isset($nextstr[1])) {
+									$write_block = false;
+								}
+							}
 							++$nkey;
 						}
-						if (isset($dom[$nkey]) AND (!$dom[$nkey]['block'])) {
-							$nextstr = preg_split('/'.$this->re_space['p'].'+/'.$this->re_space['m'], $dom[$nkey]['value']);
-							$nextstr = $nextstr[0];
-							if (!$this->empty_string($nextstr)) {
-								// preserve line continuity
-								$wadj = $this->GetStringWidth($nextstr);
+						// check for reversed text direction
+						if (($wadj > 0) AND (($this->rtl AND ($this->tmprtl == 'L')) OR (!$this->rtl AND ($this->tmprtl == 'R')))) {
+							// LTR text on RTL direction or RTL text on LTR direction
+							$reverse_dir = true;
+							$this->rtl = !$this->rtl;
+							$revshift = ($this->GetStringWidth($dom[$key]['value']) + $wadj) + 0.000001; // add little quantity for rounding problems
+							if ($this->rtl) {
+								$this->x += $revshift;
+							} else {
+								$this->x -= $revshift;
 							}
+							$xws = $this->x;
 						}
 						// ****** write only until the end of the line and get the rest ******
 						$strrest = $this->Write($this->lasth, $dom[$key]['value'], '', $wfill, '', false, 0, true, $firstblock, 0, $wadj);
+						// restore default direction
+						if ($reverse_dir AND ($wadj == 0)) {
+							$this->x = $xws;
+							$this->rtl = !$this->rtl;
+							$reverse_dir = false;
+						}
 					}
 				}
 				$this->textindent = 0;
@@ -20078,8 +20123,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$parent = $dom[($dom[$key]['parent'])];
 		$firsttag = ($key == 1);
 		// check for text direction attribute
-		if (isset($tag['attribute']['dir'])) {
-			$this->setTempRTL($tag['attribute']['dir']);
+		if (isset($tag['dir'])) {
+			$this->setTempRTL($tag['dir']);
 		} else {
 			$this->tmprtl = false;
 		}
