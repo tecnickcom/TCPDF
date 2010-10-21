@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_027.php
 // Begin       : 2008-03-04
-// Last Update : 2010-10-01
+// Last Update : 2010-10-21
 //
 // Description : Example 027 for TCPDF class
 //               1D Barcodes
@@ -86,7 +86,8 @@ $style = array(
 	'fitwidth' => true,
 	'cellfitalign' => '',
 	'border' => true,
-	'padding' => 'auto',
+	'hpadding' => 'auto',
+	'vpadding' => 'auto',
 	'fgcolor' => array(0,0,0),
 	'bgcolor' => false, //array(255,255,255),
 	'text' => true,
@@ -379,7 +380,8 @@ $style = array(
 	'fitwidth' => false,
 	'cellfitalign' => '',
 	'border' => true,
-	'padding' => 'auto',
+	'hpadding' => 'auto',
+	'vpadding' => 'auto',
 	'fgcolor' => array(0,0,128),
 	'bgcolor' => array(255,255,128),
 	'text' => true,
