@@ -1,3 +1,7 @@
+5.9.010 (2010-10-27)
+	- Support for CSS properties 'border-spacing' and 'padding' for tables were added.
+	- Several language files were added.
+
 5.9.009 (2010-10-21)
 	- HTML text alignment was improved to include the case of RTL text on LTR direction and LTR text on RTL direction.
 

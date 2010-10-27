@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.009
+// Version     : 5.9.010
 // Begin       : 2002-08-03
-// Last Update : 2010-10-21
+// Last Update : 2010-10-27
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -134,7 +134,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.9.009
+ * @version 5.9.010
  */
 
 /**
@@ -146,14 +146,14 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
 /**
  * define default PDF document producer
  */
-define('PDF_PRODUCER', 'TCPDF 5.9.009 (http://www.tcpdf.org)');
+define('PDF_PRODUCER', 'TCPDF 5.9.010 (http://www.tcpdf.org)');
 
 /**
 * This is a PHP class for generating PDF documents without requiring external extensions.<br>
 * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 * @name TCPDF
 * @package com.tecnick.tcpdf
-* @version 5.9.009
+* @version 5.9.010
 * @author Nicola Asuni - info@tecnick.com
 * @link http://www.tcpdf.org
 * @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -1465,7 +1465,7 @@ class TCPDF {
 	 * @access protected
 	 * @since 5.8.000 (2010-08-11)
 	 */
-	protected $colxshift = array('x' => 0, 's' => 0, 'p' => 0);
+	protected $colxshift = array('x' => 0, 's' => array('H' => 0, 'V' => 0), 'p' => array('L' => 0, 'T' => 0, 'R' => 0, 'B' => 0));
 
 	/**
 	 * Text rendering mode: 0 = Fill text; 1 = Stroke text; 2 = Fill, then stroke text; 3 = Neither fill nor stroke text (invisible); 4 = Fill text and add to path for clipping; 5 = Stroke text and add to path for clipping; 6 = Fill, then stroke text and add to path for clipping; 7 = Add text to path for clipping.
@@ -17649,6 +17649,7 @@ class TCPDF {
 	 * Get the internal Cell padding from CSS attribute.
 	 * @param string $csspadding padding properties
 	 * @param float $width width of the containing element
+	 * @return array of cell paddings
 	 * @access public
 	 * @since 5.9.000 (2010-10-04)
 	 */
@@ -17702,6 +17703,7 @@ class TCPDF {
 	 * Get the internal Cell margin from CSS attribute.
 	 * @param string $cssmargin margin properties
 	 * @param float $width width of the containing element
+	 * @return array of cell margins
 	 * @access public
 	 * @since 5.9.000 (2010-10-04)
 	 */
@@ -17749,6 +17751,40 @@ class TCPDF {
 		$cell_margin['B'] = $this->getHTMLUnitToUnits(str_replace('auto', '0', $cell_margin['B']), $width, 'px', false);
 		$cell_margin['L'] = $this->getHTMLUnitToUnits(str_replace('auto', '0', $cell_margin['L']), $width, 'px', false);
 		return $cell_margin;
+	}
+
+	/**
+	 * Get the border-spacing from CSS attribute.
+	 * @param string $cssbspace border-spacing CSS properties
+	 * @param float $width width of the containing element
+	 * @return array of border spacings
+	 * @access public
+	 * @since 5.9.010 (2010-10-27)
+	 */
+	public function getCSSBorderMargin($cssbspace, $width=0) {
+		$space = preg_split('/[\s]+/', trim($cssbspace));
+		$border_spacing = array(); // value to be returned
+		switch (count($space)) {
+			case 2: {
+				$border_spacing['H'] = $space[0];
+				$border_spacing['V'] = $space[1];
+				break;
+			}
+			case 1: {
+				$border_spacing['H'] = $space[0];
+				$border_spacing['V'] = $space[0];
+				break;
+			}
+			default: {
+				return array('H' => 0, 'V' => 0);
+			}
+		}
+		if ($width == 0) {
+			$width = $this->w - $this->lMargin - $this->rMargin;
+		}
+		$border_spacing['H'] = $this->getHTMLUnitToUnits($border_spacing['H'], $width, 'px', false);
+		$border_spacing['V'] = $this->getHTMLUnitToUnits($border_spacing['V'], $width, 'px', false);
+		return $border_spacing;
 	}
 
 	/**
@@ -18086,17 +18122,8 @@ class TCPDF {
 							$dom[($dom[$key]['parent'])]['content'] .= $a[$dom[$i]['elkey']];
 						}
 						$key = $i;
-						$parent_table = $dom[$dom[$dom[($dom[$key]['parent'])]['parent']]['parent']];
-						$parent_padding = 0;
-						$parent_spacing = 0;
-						if (isset($parent_table['attribute']['cellpadding'])) {
-							$parent_padding = $this->getHTMLUnitToUnits($parent_table['attribute']['cellpadding'], 1, 'px');
-						}
-						if (isset($parent_table['attribute']['cellspacing'])) {
-							$parent_spacing = $this->getHTMLUnitToUnits($parent_table['attribute']['cellspacing'], 1, 'px');
-						}
 						// mark nested tables
-						$dom[($dom[$key]['parent'])]['content'] = str_replace('<table', '<table nested="true" pcellpadding="'.$parent_padding.'" pcellspacing="'.$parent_spacing.'"', $dom[($dom[$key]['parent'])]['content']);
+						$dom[($dom[$key]['parent'])]['content'] = str_replace('<table', '<table nested="true"', $dom[($dom[$key]['parent'])]['content']);
 						// remove thead sections from nested tables
 						$dom[($dom[$key]['parent'])]['content'] = str_replace('<thead>', '', $dom[($dom[$key]['parent'])]['content']);
 						$dom[($dom[$key]['parent'])]['content'] = str_replace('</thead>', '', $dom[($dom[$key]['parent'])]['content']);
@@ -18432,6 +18459,10 @@ class TCPDF {
 							if (isset($dom[$key]['style']['margin-'.$psv])) {
 								$dom[$key]['margin'][$psk] = $this->getHTMLUnitToUnits(str_replace('auto', '0', $dom[$key]['style']['margin-'.$psv]), 0, 'px', false);
 							}
+						}
+						// check for CSS border-spacing properties
+						if (isset($dom[$key]['style']['border-spacing'])) {
+							$dom[$key]['border-spacing'] = $this->getCSSBorderMargin($dom[$key]['style']['border-spacing']);
 						}
 						// page-break-inside
 						if (isset($dom[$key]['style']['page-break-inside']) AND ($dom[$key]['style']['page-break-inside'] == 'avoid')) {
@@ -18857,6 +18888,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						// fix table border properties
 						if (isset($dom[$dom[$key]['parent']]['attribute']['cellspacing'])) {
 							$tmp_cellspacing = $this->getHTMLUnitToUnits($dom[$dom[$key]['parent']]['attribute']['cellspacing'], 1, 'px');
+						} elseif (isset($dom[$dom[$key]['parent']]['border-spacing'])) {
+							$tmp_cellspacing = $dom[$dom[$key]['parent']]['border-spacing']['V'];
 						} else {
 							$tmp_cellspacing = 0;
 						}
@@ -19512,10 +19545,14 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						} else {
 							$wtmp = $this->w - $this->rMargin - $this->x;
 						}
+						// get cell spacing
 						if (isset($dom[$key]['attribute']['cellspacing'])) {
-							$cellspacing = $this->getHTMLUnitToUnits($dom[$key]['attribute']['cellspacing'], 1, 'px');
+							$clsp = $this->getHTMLUnitToUnits($dom[$key]['attribute']['cellspacing'], 1, 'px');
+							$cellspacing = array('H' => $clsp, 'V' => $clsp);
+						} elseif (isset($dom[$key]['border-spacing'])) {
+							$cellspacing = $dom[$key]['border-spacing'];
 						} else {
-							$cellspacing = 0;
+							$cellspacing = array('H' => 0, 'V' => 0);
 						}
 						// table width
 						if (isset($dom[$key]['width'])) {
@@ -19523,17 +19560,17 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						} else {
 							$table_width = $wtmp;
 						}
-						$table_width -= (2 * $cellspacing);
+						$table_width -= (2 * $cellspacing['H']);
 						if (!$this->inthead) {
-							$this->y += $cellspacing;
+							$this->y += $cellspacing['V'];
 						}
 						if ($this->rtl) {
-							$cellspacingx = -$cellspacing;
+							$cellspacingx = -$cellspacing['H'];
 						} else {
-							$cellspacingx = $cellspacing;
+							$cellspacingx = $cellspacing['H'];
 						}
 						// total table width without cellspaces
-						$table_columns_width = ($table_width - ($cellspacing * ($dom[$key]['cols'] - 1)));
+						$table_columns_width = ($table_width - ($cellspacing['H'] * ($dom[$key]['cols'] - 1)));
 						// minimum column width
 						$table_min_column_width = ($table_columns_width / $dom[$key]['cols']);
 						// array of custom column widths
@@ -19559,11 +19596,14 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						$colspan = $dom[$key]['attribute']['colspan'];
 						$old_cell_padding = $this->cell_padding;
 						if (isset($dom[($dom[$trid]['parent'])]['attribute']['cellpadding'])) {
-							$current_cell_padding = $this->getHTMLUnitToUnits($dom[($dom[$trid]['parent'])]['attribute']['cellpadding'], 1, 'px');
+							$crclpd = $this->getHTMLUnitToUnits($dom[($dom[$trid]['parent'])]['attribute']['cellpadding'], 1, 'px');
+							$current_cell_padding = array('L' => $crclpd, 'T' => $crclpd, 'R' => $crclpd, 'B' => $crclpd);
+						} elseif (isset($dom[($dom[$trid]['parent'])]['padding'])) {
+							$current_cell_padding = $dom[($dom[$trid]['parent'])]['padding'];
 						} else {
-							$current_cell_padding = 0;
+							$current_cell_padding = array('L' => 0, 'T' => 0, 'R' => 0, 'B' => 0);
 						}
-						$this->SetCellPadding($current_cell_padding);
+						$this->cell_padding = $current_cell_padding;
 						if (isset($dom[$key]['height'])) {
 							// minimum cell height
 							$cellh = $this->getHTMLUnitToUnits($dom[$key]['height'], 0, 'px');
@@ -19630,8 +19670,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 									}
 								}
 								if (($trwsp['rowspan'] > 0)
-									AND ($rsstartx > ($this->x - $cellspacing - $current_cell_padding - $this->feps))
-									AND ($rsstartx < ($this->x + $cellspacing + $current_cell_padding + $this->feps))
+									AND ($rsstartx > ($this->x - $cellspacing['H'] - $current_cell_padding['L'] - $this->feps))
+									AND ($rsstartx < ($this->x + $cellspacing['H'] + $current_cell_padding['R'] + $this->feps))
 									AND (($trwsp['starty'] < ($this->y - $this->feps)) OR ($trwsp['startpage'] < $this->page) OR ($trwsp['startcolumn'] < $this->current_column))) {
 									// set the starting X position of the current cell
 									$this->x = $rsendx + $cellspacingx;
@@ -19667,7 +19707,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 								$cellw += $table_colwidths[($colid + $i)];
 							}
 						}
-						$cellw += (($colspan - 1) * $cellspacing);
+						$cellw += (($colspan - 1) * $cellspacing['H']);
 						// increment column indicator
 						$colid += $colspan;
 						// add rowspan information to table element
@@ -19698,7 +19738,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						// ****** write the cell content ******
 						$this->MultiCell($cellw, $cellh, $cell_content, false, $lalign, false, 2, '', '', true, 0, true);
 						// restore some values
-						$this->colxshift = array('x' => 0, 's' => 0, 'p' => 0);
+						$this->colxshift = array('x' => 0, 's' => array('H' => 0, 'V' => 0), 'p' => array('L' => 0, 'T' => 0, 'R' => 0, 'B' => 0));
 						$this->lasth = $prevLastH;
 						$this->cell_padding = $old_cell_padding;
 						$dom[$trid]['cellpos'][($cellid - 1)]['endx'] = $this->x;
@@ -20180,9 +20220,13 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				if (isset($tag['attribute']['cellpadding'])) {
 					$pad = $this->getHTMLUnitToUnits($tag['attribute']['cellpadding'], 1, 'px');
 					$this->SetCellPadding($pad);
+				} elseif (isset($tag['padding'])) {
+					$this->cell_padding = $tag['padding'];
 				}
 				if (isset($tag['attribute']['cellspacing'])) {
 					$cs = $this->getHTMLUnitToUnits($tag['attribute']['cellspacing'], 1, 'px');
+				} elseif (isset($tag['border-spacing'])) {
+					$cs = $tag['border-spacing']['V'];
 				}
 				$prev_y = $this->y;
 				if ($this->checkPageBreak(((2 * $cp) + (2 * $cs) + $this->lasth), '', false) OR ($this->y < $prev_y)) {
@@ -20821,8 +20865,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				}
 				$this->y = $dom[($dom[$key]['parent'])]['endy'];
 				if (isset($dom[$table_el]['attribute']['cellspacing'])) {
-					$cellspacing = $this->getHTMLUnitToUnits($dom[$table_el]['attribute']['cellspacing'], 1, 'px');
-					$this->y += $cellspacing;
+					$this->y += $this->getHTMLUnitToUnits($dom[$table_el]['attribute']['cellspacing'], 1, 'px');
+				} elseif (isset($dom[$table_el]['border-spacing'])) {
+					$this->y += $dom[$table_el]['border-spacing']['V'];
 				}
 				$this->Ln(0, $cell);
 				if ($this->current_column == $parent['startcolumn']) {
@@ -20852,11 +20897,6 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					$border = 0;
 				}
 				$default_border = $border;
-				if (isset($table_el['attribute']['cellspacing'])) {
-					$cellspacing = $this->getHTMLUnitToUnits($table_el['attribute']['cellspacing'], 1, 'px');
-				} else {
-					$cellspacing = 0;
-				}
 				// fix bottom line alignment of last line before page break
 				foreach ($dom[($dom[$key]['parent'])]['trids'] as $j => $trkey) {
 					// update row-spanned cells
@@ -21082,8 +21122,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						$border = $default_border;
 					} // end for each cell on the row
 					if (isset($table_el['attribute']['cellspacing'])) {
-						$cellspacing = $this->getHTMLUnitToUnits($table_el['attribute']['cellspacing'], 1, 'px');
-						$this->y += $cellspacing;
+						$this->y += $this->getHTMLUnitToUnits($table_el['attribute']['cellspacing'], 1, 'px');
+					} elseif (isset($table_el['border-spacing'])) {
+						$this->y += $table_el['border-spacing']['V'];
 					}
 					$this->Ln(0, $cell);
 					$this->x = $parent['startx'];
@@ -21321,9 +21362,12 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			return;
 		}
 		if (isset($tag['attribute']['cellspacing'])) {
-			$cellspacing = $this->getHTMLUnitToUnits($tag['attribute']['cellspacing'], 1, 'px');
+			$clsp = $this->getHTMLUnitToUnits($tag['attribute']['cellspacing'], 1, 'px');
+			$cellspacing = array('H' => $clsp, 'V' => $clsp);
+		} elseif (isset($tag['border-spacing'])) {
+			$cellspacing = $tag['border-spacing'];
 		} else {
-			$cellspacing = 0;
+			$cellspacing = array('H' => 0, 'V' => 0);
 		}
 		if (($tag['value'] != 'table') AND (is_array($border)) AND (!empty($border))) {
 			// draw the border externally respect the sqare edge.
@@ -21343,13 +21387,13 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		if ($w <= 0) {
 			return;
 		}
-		$w += $cellspacing;
+		$w += $cellspacing['H'];
 		$startpage = $tag['borderposition']['page'];
 		$startcolumn = $tag['borderposition']['column'];
 		$x = $tag['borderposition']['x'];
 		$y = $tag['borderposition']['y'];
 		$endpage = $this->page;
-		$starty = $tag['borderposition']['y'] - $cellspacing;
+		$starty = $tag['borderposition']['y'] - $cellspacing['V'];
 		$currentY = $this->y;
 		$this->x = $x;
 		// get latest column
@@ -21384,7 +21428,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					$this->selectColumn($column);
 					if ($startcolumn == $endcolumn) { // single column
 						$cborder = $border;
-						$h = ($currentY - $y) + $cellspacing;
+						$h = ($currentY - $y) + $cellspacing['V'];
 						$this->y = $starty;
 					} elseif ($column == $startcolumn) { // first column
 						$cborder = $border_start;
@@ -23119,7 +23163,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			if ($enable_thead) {
 				// print table header
 				$this->writeHTML($this->thead, false, false, false, false, '');
-				$this->y += $xshift['s'];
+				$this->y += $xshift['s']['V'];
 				// store end of header position
 				if (!isset($this->columns[$col]['th'])) {
 					$this->columns[$col]['th'] = array();
@@ -23133,10 +23177,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		// account for an html table cell over multiple columns
 		if ($this->rtl) {
 			$this->rMargin += $xshift['x'];
-			$this->x -= ($xshift['x'] + $xshift['p']);
+			$this->x -= ($xshift['x'] + $xshift['p']['R']);
 		} else {
 			$this->lMargin += $xshift['x'];
-			$this->x += $xshift['x'] + $xshift['p'];
+			$this->x += $xshift['x'] + $xshift['p']['L'];
 		}
 	}
 
