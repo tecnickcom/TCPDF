@@ -1,3 +1,6 @@
+5.9.011 (2010-11-02)
+	- Bug item #3101486 "Bug Fix for image loading" was fixed.
+
 5.9.010 (2010-10-27)
 	- Support for CSS properties 'border-spacing' and 'padding' for tables were added.
 	- Several language files were added.

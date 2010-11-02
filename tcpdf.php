@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.010
+// Version     : 5.9.011
 // Begin       : 2002-08-03
-// Last Update : 2010-10-27
+// Last Update : 2010-11-02
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -134,7 +134,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.9.010
+ * @version 5.9.011
  */
 
 /**
@@ -146,14 +146,14 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
 /**
  * define default PDF document producer
  */
-define('PDF_PRODUCER', 'TCPDF 5.9.010 (http://www.tcpdf.org)');
+define('PDF_PRODUCER', 'TCPDF 5.9.011 (http://www.tcpdf.org)');
 
 /**
 * This is a PHP class for generating PDF documents without requiring external extensions.<br>
 * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 * @name TCPDF
 * @package com.tecnick.tcpdf
-* @version 5.9.010
+* @version 5.9.011
 * @author Nicola Asuni - info@tecnick.com
 * @link http://www.tcpdf.org
 * @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -7048,44 +7048,44 @@ class TCPDF {
 		// check page for no-write regions and adapt page margins if necessary
 		$this->checkPageRegions($h, $x, $y);
 		$cached_file = false; // true when the file is cached
+		// check if is local file
+		if (!@file_exists($file)) {
+			// encode spaces on filename (file is probably an URL)
+			$file = str_replace(' ', '%20', $file);
+		}
 		// get image dimensions
 		$imsize = @getimagesize($file);
 		if ($imsize === FALSE) {
-			// try to encode spaces on filename
-			$file = str_replace(' ', '%20', $file);
-			$imsize = @getimagesize($file);
-			if ($imsize === FALSE) {
-				if (function_exists('curl_init')) {
-					// try to get remote file data using cURL
-					$cs = curl_init(); // curl session
-					curl_setopt($cs, CURLOPT_URL, $file);
-					curl_setopt($cs, CURLOPT_BINARYTRANSFER, true);
-					curl_setopt($cs, CURLOPT_FAILONERROR, true);
-					curl_setopt($cs, CURLOPT_RETURNTRANSFER, true);
-					curl_setopt($cs, CURLOPT_CONNECTTIMEOUT, 5);
-					curl_setopt($cs, CURLOPT_TIMEOUT, 30);
-					$imgdata = curl_exec($cs);
-					curl_close($cs);
-					if($imgdata !== FALSE) {
-						// copy image to cache
-						$file = tempnam(K_PATH_CACHE, 'img_');
-						$fp = fopen($file, 'w');
-						fwrite($fp, $imgdata);
-						fclose($fp);
-						unset($imgdata);
-						$cached_file = true;
-						$imsize = @getimagesize($file);
-						if ($imsize === FALSE) {
-							unlink($file);
-							$cached_file = false;
-						}
+			if (function_exists('curl_init')) {
+				// try to get remote file data using cURL
+				$cs = curl_init(); // curl session
+				curl_setopt($cs, CURLOPT_URL, $file);
+				curl_setopt($cs, CURLOPT_BINARYTRANSFER, true);
+				curl_setopt($cs, CURLOPT_FAILONERROR, true);
+				curl_setopt($cs, CURLOPT_RETURNTRANSFER, true);
+				curl_setopt($cs, CURLOPT_CONNECTTIMEOUT, 5);
+				curl_setopt($cs, CURLOPT_TIMEOUT, 30);
+				$imgdata = curl_exec($cs);
+				curl_close($cs);
+				if($imgdata !== FALSE) {
+					// copy image to cache
+					$file = tempnam(K_PATH_CACHE, 'img_');
+					$fp = fopen($file, 'w');
+					fwrite($fp, $imgdata);
+					fclose($fp);
+					unset($imgdata);
+					$cached_file = true;
+					$imsize = @getimagesize($file);
+					if ($imsize === FALSE) {
+						unlink($file);
+						$cached_file = false;
 					}
-				} elseif (($w > 0) AND ($h > 0)) {
-					// get measures from specified data
-					$pw = $this->getHTMLUnitToUnits($w, 0, $this->pdfunit, true) * $this->imgscale * $this->k;
-					$ph = $this->getHTMLUnitToUnits($h, 0, $this->pdfunit, true) * $this->imgscale * $this->k;
-					$imsize = array($pw, $ph);
 				}
+			} elseif (($w > 0) AND ($h > 0)) {
+				// get measures from specified data
+				$pw = $this->getHTMLUnitToUnits($w, 0, $this->pdfunit, true) * $this->imgscale * $this->k;
+				$ph = $this->getHTMLUnitToUnits($h, 0, $this->pdfunit, true) * $this->imgscale * $this->k;
+				$imsize = array($pw, $ph);
 			}
 		}
 		if ($imsize === FALSE) {
