@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.011
+// Version     : 5.9.012
 // Begin       : 2002-08-03
-// Last Update : 2010-11-02
+// Last Update : 2010-11-12
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -134,7 +134,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.9.011
+ * @version 5.9.012
  */
 
 /**
@@ -144,21 +144,24 @@
 require_once(dirname(__FILE__).'/config/tcpdf_config.php');
 
 /**
- * define default PDF document producer
- */
-define('PDF_PRODUCER', 'TCPDF 5.9.011 (http://www.tcpdf.org)');
-
-/**
 * This is a PHP class for generating PDF documents without requiring external extensions.<br>
 * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 * @name TCPDF
 * @package com.tecnick.tcpdf
-* @version 5.9.011
+* @version 5.9.012
 * @author Nicola Asuni - info@tecnick.com
 * @link http://www.tcpdf.org
 * @license http://www.gnu.org/copyleft/lesser.html LGPL
 */
 class TCPDF {
+
+	// private properties
+
+	/**
+	 * @var current TCPDF version
+	 * @access private
+	 */
+	private $tcpdf_version = '5.9.012';
 
 	// Protected properties
 
@@ -1573,6 +1576,13 @@ class TCPDF {
 	protected $webcolor = array();
 
 	/**
+	 * @var array containing spot color names and values
+	 * @access protected
+	 * @since 5.9.012 (2010-11-11)
+	 */
+	protected $spotcolor = array();
+
+	/**
 	 * @var directory used for the last SVG image
 	 * @access protected
 	 * @since 5.0.000 (2010-05-05)
@@ -1756,8 +1766,16 @@ class TCPDF {
 			$this->internal_encoding = mb_internal_encoding();
 			mb_internal_encoding('ASCII');
 		}
+		// get array of HTML colors
 		require(dirname(__FILE__).'/htmlcolors.php');
 		$this->webcolor = $webcolor;
+		// get array of custom spot colors
+		if (file_exists(dirname(__FILE__).'/spotcolors.php')) {
+			require(dirname(__FILE__).'/spotcolors.php');
+			$this->spotcolor = $spotcolor;
+		} else {
+			$this->spotcolor = array();
+		}
 		require_once(dirname(__FILE__).'/unicode_data.php');
 		$this->unicode = new TCPDF_UNICODE_DATA();
 		$this->font_obj_ids = array();
@@ -1897,6 +1915,16 @@ class TCPDF {
 		}
 		// unset all class variables
 		$this->_destroy(true);
+	}
+
+	/**
+	 * Return the current TCPDF version.
+	 * @return TCPDF version string
+	 * @access public
+	 * @since 5.9.012 (2010-11-10)
+	 */
+	public function getTCPDFVersion() {
+		return $this->tcpdf_version;
 	}
 
 	/**
@@ -3602,13 +3630,12 @@ class TCPDF {
 		$this->y = $this->h - (1 / $this->k);
 		$this->lMargin = 0;
 		$this->_out('q');
-		$this->setVisibility('screen');
 		$this->SetFont('helvetica', '', 1);
-		$this->SetTextColor(255, 255, 255);
+		$this->AddSpotColor('trnsprnt', 0, 0, 0, 50);
+		$this->SetTextSpotColor('trnsprnt', 0);
 		$msg = "\x50\x6f\x77\x65\x72\x65\x64\x20\x62\x79\x20\x54\x43\x50\x44\x46\x20\x28\x77\x77\x77\x2e\x74\x63\x70\x64\x66\x2e\x6f\x72\x67\x29";
 		$lnk = "\x68\x74\x74\x70\x3a\x2f\x2f\x77\x77\x77\x2e\x74\x63\x70\x64\x66\x2e\x6f\x72\x67";
 		$this->Cell(0, 0, $msg, 0, 0, 'L', 0, $lnk, 0, false, 'D', 'B');
-		$this->setVisibility('all');
 		$this->_out('Q');
 		// restore graphic settings
 		$this->setGraphicVars($gvars);
@@ -3971,7 +3998,14 @@ class TCPDF {
 		$headerfont = $this->getHeaderFont();
 		$headerdata = $this->getHeaderData();
 		if (($headerdata['logo']) AND ($headerdata['logo'] != K_BLANK_IMAGE)) {
-			$this->Image(K_PATH_IMAGES.$headerdata['logo'], '', '', $headerdata['logo_width']);
+			$imgtype = $this->getImageFileType(K_PATH_IMAGES.$headerdata['logo']);
+			if (($imgtype == 'eps') OR ($imgtype == 'ai')) {
+				$this->ImageEps(K_PATH_IMAGES.$headerdata['logo'], '', '', $headerdata['logo_width']);
+			} elseif ($imgtype == 'svg') {
+				$this->ImageSVG(K_PATH_IMAGES.$headerdata['logo'], '', '', $headerdata['logo_width']);
+			} else {
+				$this->Image(K_PATH_IMAGES.$headerdata['logo'], '', '', $headerdata['logo_width']);
+			}
 			$imgy = $this->getImageRBY();
 		} else {
 			$imgy = $this->GetY();
@@ -4197,10 +4231,10 @@ class TCPDF {
 	 * Defines a new spot color.
 	 * It can be expressed in RGB components or gray scale.
 	 * The method can be called before the first page is created and the value is retained from page to page.
-	 * @param int $c Cyan color for CMYK. Value between 0 and 255
-	 * @param int $m Magenta color for CMYK. Value between 0 and 255
-	 * @param int $y Yellow color for CMYK. Value between 0 and 255
-	 * @param int $k Key (Black) color for CMYK. Value between 0 and 255
+	 * @param int $c Cyan color for CMYK. Value between 0 and 100
+	 * @param int $m Magenta color for CMYK. Value between 0 and 100
+	 * @param int $y Yellow color for CMYK. Value between 0 and 100
+	 * @param int $k Key (Black) color for CMYK. Value between 0 and 100
 	 * @access public
 	 * @since 4.0.024 (2008-09-12)
 	 * @see SetDrawSpotColor(), SetFillSpotColor(), SetTextSpotColor()
@@ -4214,10 +4248,10 @@ class TCPDF {
 
 	/**
 	 * Defines the color used for all drawing operations (lines, rectangles and cell borders).
-	 * It can be expressed in RGB components or gray scale.
+	 * It can be expressed in RGB, CMYK or GRAY SCALE components.
 	 * The method can be called before the first page is created and the value is retained from page to page.
 	 * @param array $color array of colors
-	 * @param boolean $ret if true do not send the command.
+	 * @param boolean $ret if true do not send the PDF command.
 	 * @return string the PDF command
 	 * @access public
 	 * @since 3.1.000 (2008-06-11)
@@ -4230,8 +4264,9 @@ class TCPDF {
 			$g = isset($color[1]) ? $color[1] : -1;
 			$b = isset($color[2]) ? $color[2] : -1;
 			$k = isset($color[3]) ? $color[3] : -1;
+			$name = isset($color[4]) ? $color[4] : ''; // spot color name
 			if ($r >= 0) {
-				return $this->SetDrawColor($r, $g, $b, $k, $ret);
+				return $this->SetDrawColor($r, $g, $b, $k, $ret, $name);
 			}
 		}
 		return '';
@@ -4239,17 +4274,18 @@ class TCPDF {
 
 	/**
 	 * Defines the color used for all drawing operations (lines, rectangles and cell borders). It can be expressed in RGB components or gray scale. The method can be called before the first page is created and the value is retained from page to page.
-	 * @param int $col1 Gray level for single color, or Red color for RGB, or Cyan color for CMYK. Value between 0 and 255
-	 * @param int $col2 Green color for RGB, or Magenta color for CMYK. Value between 0 and 255
-	 * @param int $col3 Blue color for RGB, or Yellow color for CMYK. Value between 0 and 255
-	 * @param int $col4 Key (Black) color for CMYK. Value between 0 and 255
+	 * @param int $col1 GRAY level for single color, or Red color for RGB (0-255), or CYAN color for CMYK (0-100).
+	 * @param int $col2 GREEN color for RGB (0-255), or MAGENTA color for CMYK (0-100).
+	 * @param int $col3 BLUE color for RGB (0-255), or YELLOW color for CMYK (0-100).
+	 * @param int $col4 KEY (BLACK) color for CMYK (0-100).
 	 * @param boolean $ret if true do not send the command.
+	 * @param string $name spot color name (if any)
 	 * @return string the PDF command
 	 * @access public
 	 * @since 1.3
 	 * @see SetDrawColorArray(), SetFillColor(), SetTextColor(), Line(), Rect(), Cell(), MultiCell()
 	 */
-	public function SetDrawColor($col1=0, $col2=-1, $col3=-1, $col4=-1, $ret=false) {
+	public function SetDrawColor($col1=0, $col2=-1, $col3=-1, $col4=-1, $ret=false, $name='') {
 		// set default values
 		if (!is_numeric($col1)) {
 			$col1 = 0;
@@ -4266,16 +4302,21 @@ class TCPDF {
 		//Set color for all stroking operations
 		if (($col2 == -1) AND ($col3 == -1) AND ($col4 == -1)) {
 			// Grey scale
-			$this->DrawColor = sprintf('%.3F G', $col1/255);
+			$this->DrawColor = sprintf('%.3F G', ($col1 / 255));
 			$this->strokecolor = array('G' => $col1);
 		} elseif ($col4 == -1) {
 			// RGB
-			$this->DrawColor = sprintf('%.3F %.3F %.3F RG', $col1/255, $col2/255, $col3/255);
+			$this->DrawColor = sprintf('%.3F %.3F %.3F RG', ($col1 / 255), ($col2 / 255), ($col3 / 255));
 			$this->strokecolor = array('R' => $col1, 'G' => $col2, 'B' => $col3);
-		} else {
+		} elseif (empty($name)) {
 			// CMYK
-			$this->DrawColor = sprintf('%.3F %.3F %.3F %.3F K', $col1/100, $col2/100, $col3/100, $col4/100);
+			$this->DrawColor = sprintf('%.3F %.3F %.3F %.3F K', ($col1 / 100), ($col2 / 100), ($col3 / 100), ($col4 / 100));
 			$this->strokecolor = array('C' => $col1, 'M' => $col2, 'Y' => $col3, 'K' => $col4);
+		} else {
+			// SPOT COLOR
+			$this->AddSpotColor($name, $col1, $col2, $col3, $col4);
+			$this->DrawColor = sprintf('/CS%d CS %.3F SCN', $this->spot_colors[$name]['i'], 1);
+			$this->strokecolor = array('C' => $col1, 'M' => $col2, 'Y' => $col3, 'K' => $col4, 'name' => $name);
 		}
 		if ($this->page > 0) {
 			if (!$ret) {
@@ -4298,7 +4339,7 @@ class TCPDF {
 		if (!isset($this->spot_colors[$name])) {
 			$this->Error('Undefined spot color: '.$name);
 		}
-		$this->DrawColor = sprintf('/CS%d CS %.3F SCN', $this->spot_colors[$name]['i'], $tint/100);
+		$this->DrawColor = sprintf('/CS%d CS %.3F SCN', $this->spot_colors[$name]['i'], ($tint / 100));
 		if ($this->page > 0) {
 			$this->_out($this->DrawColor);
 		}
@@ -4306,37 +4347,42 @@ class TCPDF {
 
 	/**
 	 * Defines the color used for all filling operations (filled rectangles and cell backgrounds).
-	 * It can be expressed in RGB components or gray scale.
+	 * It can be expressed in RGB, CMYK or GRAY SCALE components.
 	 * The method can be called before the first page is created and the value is retained from page to page.
 	 * @param array $color array of colors
+	 * @param boolean $ret if true do not send the PDF command.
 	 * @access public
 	 * @since 3.1.000 (2008-6-11)
 	 * @see SetFillColor()
 	 */
-	public function SetFillColorArray($color) {
+	public function SetFillColorArray($color, $ret=false) {
 		if (is_array($color)) {
 			$color = array_values($color);
 			$r = isset($color[0]) ? $color[0] : -1;
 			$g = isset($color[1]) ? $color[1] : -1;
 			$b = isset($color[2]) ? $color[2] : -1;
 			$k = isset($color[3]) ? $color[3] : -1;
+			$name = isset($color[4]) ? $color[4] : ''; // spot color name
 			if ($r >= 0) {
-				$this->SetFillColor($r, $g, $b, $k);
+				$this->SetFillColor($r, $g, $b, $k, $ret, $name);
 			}
 		}
 	}
 
 	/**
 	 * Defines the color used for all filling operations (filled rectangles and cell backgrounds). It can be expressed in RGB components or gray scale. The method can be called before the first page is created and the value is retained from page to page.
-	 * @param int $col1 Gray level for single color, or Red color for RGB, or Cyan color for CMYK. Value between 0 and 255
-	 * @param int $col2 Green color for RGB, or Magenta color for CMYK. Value between 0 and 255
-	 * @param int $col3 Blue color for RGB, or Yellow color for CMYK. Value between 0 and 255
-	 * @param int $col4 Key (Black) color for CMYK. Value between 0 and 255
+	 * @param int $col1 GRAY level for single color, or Red color for RGB (0-255), or CYAN color for CMYK (0-100).
+	 * @param int $col2 GREEN color for RGB (0-255), or MAGENTA color for CMYK (0-100).
+	 * @param int $col3 BLUE color for RGB (0-255), or YELLOW color for CMYK (0-100).
+	 * @param int $col4 KEY (BLACK) color for CMYK (0-100).
+	 * @param boolean $ret if true do not send the command.
+	 * @param string $name spot color name (if any)
+	 * @return string the PDF command
 	 * @access public
 	 * @since 1.3
 	 * @see SetFillColorArray(), SetDrawColor(), SetTextColor(), Rect(), Cell(), MultiCell()
 	 */
-	public function SetFillColor($col1=0, $col2=-1, $col3=-1, $col4=-1) {
+	public function SetFillColor($col1=0, $col2=-1, $col3=-1, $col4=-1, $ret=false, $name='') {
 		// set default values
 		if (!is_numeric($col1)) {
 			$col1 = 0;
@@ -4353,21 +4399,30 @@ class TCPDF {
 		//Set color for all filling operations
 		if (($col2 == -1) AND ($col3 == -1) AND ($col4 == -1)) {
 			// Grey scale
-			$this->FillColor = sprintf('%.3F g', $col1/255);
+			$this->FillColor = sprintf('%.3F g', ($col1 / 255));
 			$this->bgcolor = array('G' => $col1);
 		} elseif ($col4 == -1) {
 			// RGB
-			$this->FillColor = sprintf('%.3F %.3F %.3F rg', $col1/255, $col2/255, $col3/255);
+			$this->FillColor = sprintf('%.3F %.3F %.3F rg', ($col1 / 255), ($col2 / 255), ($col3 / 255));
 			$this->bgcolor = array('R' => $col1, 'G' => $col2, 'B' => $col3);
-		} else {
+		} elseif (empty($name)) {
 			// CMYK
-			$this->FillColor = sprintf('%.3F %.3F %.3F %.3F k', $col1/100, $col2/100, $col3/100, $col4/100);
+			$this->FillColor = sprintf('%.3F %.3F %.3F %.3F k', ($col1 / 100), ($col2 / 100), ($col3 / 100), ($col4 / 100));
 			$this->bgcolor = array('C' => $col1, 'M' => $col2, 'Y' => $col3, 'K' => $col4);
+		} else {
+			// SPOT COLOR
+			$this->AddSpotColor($name, $col1, $col2, $col3, $col4);
+			$this->FillColor = sprintf('/CS%d cs %.3F scn', $this->spot_colors[$name]['i'], 1);
+			$this->bgcolor = array('C' => $col1, 'M' => $col2, 'Y' => $col3, 'K' => $col4, 'name' => $name);
 		}
 		$this->ColorFlag = ($this->FillColor != $this->TextColor);
 		if ($this->page > 0) {
-			$this->_out($this->FillColor);
+			if (!$ret) {
+				$this->_out($this->FillColor);
+			}
+			return $this->FillColor;
 		}
+		return '';
 	}
 
 	/**
@@ -4382,7 +4437,7 @@ class TCPDF {
 		if (!isset($this->spot_colors[$name])) {
 			$this->Error('Undefined spot color: '.$name);
 		}
-		$this->FillColor = sprintf('/CS%d cs %.3F scn', $this->spot_colors[$name]['i'], $tint/100);
+		$this->FillColor = sprintf('/CS%d cs %.3F scn', $this->spot_colors[$name]['i'], ($tint / 100));
 		$this->ColorFlag = ($this->FillColor != $this->TextColor);
 		if ($this->page > 0) {
 			$this->_out($this->FillColor);
@@ -4393,34 +4448,38 @@ class TCPDF {
 	 * Defines the color used for text. It can be expressed in RGB components or gray scale.
 	 * The method can be called before the first page is created and the value is retained from page to page.
 	 * @param array $color array of colors
+	 * @param boolean $ret if true do not send the PDF command.
 	 * @access public
 	 * @since 3.1.000 (2008-6-11)
 	 * @see SetFillColor()
 	 */
-	public function SetTextColorArray($color) {
+	public function SetTextColorArray($color, $ret=false) {
 		if (is_array($color)) {
 			$color = array_values($color);
 			$r = isset($color[0]) ? $color[0] : -1;
 			$g = isset($color[1]) ? $color[1] : -1;
 			$b = isset($color[2]) ? $color[2] : -1;
 			$k = isset($color[3]) ? $color[3] : -1;
+			$name = isset($color[4]) ? $color[4] : ''; // spot color name
 			if ($r >= 0) {
-				$this->SetTextColor($r, $g, $b, $k);
+				$this->SetTextColor($r, $g, $b, $k, $ret, $name);
 			}
 		}
 	}
 
 	/**
 	 * Defines the color used for text. It can be expressed in RGB components or gray scale. The method can be called before the first page is created and the value is retained from page to page.
-	 * @param int $col1 Gray level for single color, or Red color for RGB, or Cyan color for CMYK. Value between 0 and 255
-	 * @param int $col2 Green color for RGB, or Magenta color for CMYK. Value between 0 and 255
-	 * @param int $col3 Blue color for RGB, or Yellow color for CMYK. Value between 0 and 255
-	 * @param int $col4 Key (Black) color for CMYK. Value between 0 and 255
+	 * @param int $col1 GRAY level for single color, or Red color for RGB (0-255), or CYAN color for CMYK (0-100).
+	 * @param int $col2 GREEN color for RGB (0-255), or MAGENTA color for CMYK (0-100).
+	 * @param int $col3 BLUE color for RGB (0-255), or YELLOW color for CMYK (0-100).
+	 * @param int $col4 KEY (BLACK) color for CMYK (0-100).
+	 * @param boolean $ret if true do not send the command.
+	 * @param string $name spot color name (if any)
 	 * @access public
 	 * @since 1.3
 	 * @see SetTextColorArray(), SetDrawColor(), SetFillColor(), Text(), Cell(), MultiCell()
 	 */
-	public function SetTextColor($col1=0, $col2=-1, $col3=-1, $col4=-1) {
+	public function SetTextColor($col1=0, $col2=-1, $col3=-1, $col4=-1, $ret=false, $name='') {
 		// set default values
 		if (!is_numeric($col1)) {
 			$col1 = 0;
@@ -4437,16 +4496,21 @@ class TCPDF {
 		//Set color for text
 		if (($col2 == -1) AND ($col3 == -1) AND ($col4 == -1)) {
 			// Grey scale
-			$this->TextColor = sprintf('%.3F g', $col1/255);
+			$this->TextColor = sprintf('%.3F g', ($col1 / 255));
 			$this->fgcolor = array('G' => $col1);
 		} elseif ($col4 == -1) {
 			// RGB
-			$this->TextColor = sprintf('%.3F %.3F %.3F rg', $col1/255, $col2/255, $col3/255);
+			$this->TextColor = sprintf('%.3F %.3F %.3F rg', ($col1 / 255), ($col2 / 255), ($col3 / 255));
 			$this->fgcolor = array('R' => $col1, 'G' => $col2, 'B' => $col3);
-		} else {
+		} elseif (empty($name)) {
 			// CMYK
-			$this->TextColor = sprintf('%.3F %.3F %.3F %.3F k', $col1/100, $col2/100, $col3/100, $col4/100);
+			$this->TextColor = sprintf('%.3F %.3F %.3F %.3F k', ($col1 / 100), ($col2 / 100), ($col3 / 100), ($col4 / 100));
 			$this->fgcolor = array('C' => $col1, 'M' => $col2, 'Y' => $col3, 'K' => $col4);
+		} else {
+			// SPOT COLOR
+			$this->AddSpotColor($name, $col1, $col2, $col3, $col4);
+			$this->TextColor = sprintf('/CS%d cs %.3F scn', $this->spot_colors[$name]['i'], 1);
+			$this->fgcolor = array('C' => $col1, 'M' => $col2, 'Y' => $col3, 'K' => $col4, 'name' => $name);
 		}
 		$this->ColorFlag = ($this->FillColor != $this->TextColor);
 	}
@@ -4463,7 +4527,7 @@ class TCPDF {
 		if (!isset($this->spot_colors[$name])) {
 			$this->Error('Undefined spot color: '.$name);
 		}
-		$this->TextColor = sprintf('/CS%d cs %.3F scn', $this->spot_colors[$name]['i'], $tint/100);
+		$this->TextColor = sprintf('/CS%d cs %.3F scn', $this->spot_colors[$name]['i'], ($tint / 100));
 		$this->ColorFlag = ($this->FillColor != $this->TextColor);
 		if ($this->page > 0) {
 			$this->_out($this->TextColor);
@@ -10225,7 +10289,7 @@ class TCPDF {
 			$out = '[/Separation /'.str_replace(' ', '#20', $name);
 			$out .= ' /DeviceCMYK <<';
 			$out .= ' /Range [0 1 0 1 0 1 0 1] /C0 [0 0 0 0]';
-			$out .= ' '.sprintf('/C1 [%.4F %.4F %.4F %.4F] ', $color['c']/100, $color['m']/100, $color['y']/100, $color['k']/100);
+			$out .= ' '.sprintf('/C1 [%.4F %.4F %.4F %.4F] ', ($color['c'] / 100), ($color['m'] / 100), ($color['y'] / 100), ($color['k'] / 100));
 			$out .= ' /FunctionType 2 /Domain [0 1] /N 1>>]';
 			$out .= "\n".'endobj';
 			$this->_out($out);
@@ -10347,19 +10411,14 @@ class TCPDF {
 		}
 		if (!$this->empty_string($this->keywords)) {
 			// Keywords associated with the document.
-			$out .= ' /Keywords '.$this->_textstring($this->keywords.' TCP'.'DF', $oid);
+			$out .= ' /Keywords '.$this->_textstring($this->keywords.' TCPDF', $oid);
 		}
 		if (!$this->empty_string($this->creator)) {
 			// If the document was converted to PDF from another format, the name of the conforming product that created the original document from which it was converted.
 			$out .= ' /Creator '.$this->_textstring($this->creator, $oid);
 		}
-		if (defined('PDF_PRODUCER')) {
-			// If the document was converted to PDF from another format, the name of the conforming product that converted it to PDF.
-			$out .= ' /Producer '.$this->_textstring(PDF_PRODUCER.' (TCP'.'DF)', $oid);
-		} else {
-			// default producer
-			$out .= ' /Producer '.$this->_textstring('TCP'.'DF', $oid);
-		}
+		// default producer
+		$out .= ' /Producer '.$this->_textstring("\x54\x43\x50\x44\x46\x20".$this->tcpdf_version."\x20\x28\x68\x74\x74\x70\x3a\x2f\x2f\x77\x77\x77\x2e\x74\x63\x70\x64\x66\x2e\x6f\x72\x67\x29", $oid);
 		// The date and time the document was created, in human-readable form
 		$out .= ' /CreationDate '.$this->_datestring();
 		// The date and time the document was most recently modified, in human-readable form
@@ -11324,14 +11383,14 @@ class TCPDF {
 	}
 
 	/**
-	 * Returns an associative array (keys: R,G,B) from an html color name or a six-digit or three-digit hexadecimal color representation (i.e. #3FE5AA or #7FF).
-	 * @param string $color html color
-	 * @return array RGB color or false in case of error.
+	 * Returns an array (RGB or CMYK) from an html color name or a six-digit (i.e. #3FE5AA) or three-digit (i.e. #7FF) hexadecimal color representation.
+	 * @param string $hcolor html color
+	 * @return array RGB or CMYK color, or false in case of error.
 	 * @access public
 	 */
-	public function convertHTMLColorToDec($color='#FFFFFF') {
+	public function convertHTMLColorToDec($hcolor='#FFFFFF') {
 		$returncolor = false;
-		$color = preg_replace('/[\s]*/', '', $color); // remove extra spaces
+		$color = preg_replace('/[\s]*/', '', $hcolor); // remove extra spaces
 		$color = strtolower($color);
 		if (($dotpos = strpos($color, '.')) !== false) {
 			// remove class parent (i.e.: color.red)
@@ -11345,6 +11404,16 @@ class TCPDF {
 			$codes = substr($color, 4);
 			$codes = str_replace(')', '', $codes);
 			$returncolor = explode(',', $codes);
+			foreach ($returncolor as $key => $val) {
+				if (strpos($val, '%') > 0) {
+					// percentage
+					$returncolor[$key] = (255 * intval($val) / 100);
+				} else {
+					$returncolor[$key] = intval($val);
+				}
+				// normalize value
+				$returncolor[$key] = max(0, min(255, $returncolor[$key]));
+			}
 			return $returncolor;
 		}
 		// CMYK ARRAY
@@ -11352,13 +11421,30 @@ class TCPDF {
 			$codes = substr($color, 5);
 			$codes = str_replace(')', '', $codes);
 			$returncolor = explode(',', $codes);
+			foreach ($returncolor as $key => $val) {
+				if (strpos($val, '%') !== false) {
+					// percentage
+					$returncolor[$key] = (100 * intval($val) / 100);
+				} else {
+					$returncolor[$key] = intval($val);
+				}
+				// normalize value
+				$returncolor[$key] = max(0, min(100, $returncolor[$key]));
+			}
 			return $returncolor;
 		}
 		// COLOR NAME
 		if (substr($color, 0, 1) != '#') {
 			// decode color name
 			if (isset($this->webcolor[$color])) {
+				// web color
 				$color_code = $this->webcolor[$color];
+			} elseif (isset($this->spot_colors[$hcolor])) {
+				// custom defined spot color
+				return array($this->spot_colors[$hcolor]['c'], $this->spot_colors[$hcolor]['m'], $this->spot_colors[$hcolor]['y'], $this->spot_colors[$hcolor]['k'], $hcolor);
+			} elseif (isset($this->spotcolor[$color])) {
+				// spot color from configuration file
+				return $this->spotcolor[$color];
 			} else {
 				return false;
 			}
@@ -11372,16 +11458,18 @@ class TCPDF {
 				$r = substr($color_code, 0, 1);
 				$g = substr($color_code, 1, 1);
 				$b = substr($color_code, 2, 1);
-				$returncolor['R'] = hexdec($r.$r);
-				$returncolor['G'] = hexdec($g.$g);
-				$returncolor['B'] = hexdec($b.$b);
+				$returncolor = array();
+				$returncolor['R'] = max(0, min(255, hexdec($r.$r)));
+				$returncolor['G'] = max(0, min(255, hexdec($g.$g)));
+				$returncolor['B'] = max(0, min(255, hexdec($b.$b)));
 				break;
 			}
 			case 6: {
 				// six-digit hexadecimal representation
-				$returncolor['R'] = hexdec(substr($color_code, 0, 2));
-				$returncolor['G'] = hexdec(substr($color_code, 2, 2));
-				$returncolor['B'] = hexdec(substr($color_code, 4, 2));
+				$returncolor = array();
+				$returncolor['R'] = max(0, min(255, hexdec(substr($color_code, 0, 2))));
+				$returncolor['G'] = max(0, min(255, hexdec(substr($color_code, 2, 2))));
+				$returncolor['B'] = max(0, min(255, hexdec(substr($color_code, 4, 2))));
 				break;
 			}
 		}
@@ -12830,6 +12918,7 @@ class TCPDF {
 	 * @param float $angf: Angle finish of draw line. Default value: 360.
 	 * @param boolean $pie if true do not mark the border point (used to draw pie sectors).
 	 * @param integer $nc Number of curves used to draw a 90 degrees portion of ellipse.
+	 * @return array bounding box coordinates (x min, y min, x max, y max)
 	 * @author Nicola Asuni
 	 * @access protected
 	 * @since 4.9.019 (2010-04-26)
@@ -12839,6 +12928,10 @@ class TCPDF {
 		if ($nc < 2) {
 			$nc = 2;
 		}
+		$xmin = 2147483647;
+		$ymin = 2147483647;
+		$xmax = 0;
+		$ymax = 0;
 		if ($pie) {
 			// center of the arc
 			$this->_outPoint($xc, $yc);
@@ -12903,7 +12996,18 @@ class TCPDF {
 			$qx2 = ($alpha * ((-$rx * $cos_xang * $sin_ang) - ($ry * $sin_xang * $cos_ang)));
 			$qy2 = ($alpha * ((-$rx * $sin_xang * $sin_ang) + ($ry * $cos_xang * $cos_ang)));
 			// draw arc
-			$this->_outCurve(($px1 + $qx1), ($this->h - ($py1 + $qy1)), ($px2 - $qx2), ($this->h - ($py2 - $qy2)), $px2, ($this->h - $py2));
+			$cx1 = ($px1 + $qx1);
+			$cy1 = ($this->h - ($py1 + $qy1));
+			$cx2 = ($px2 - $qx2);
+			$cy2 = ($this->h - ($py2 - $qy2));
+			$cx3 = $px2;
+			$cy3 = ($this->h - $py2);
+			$this->_outCurve($cx1, $cy1, $cx2, $cy2, $cx3, $cy3);
+			// get bounding box coordinates
+			$xmin = min($xmin, $cx1, $cx2, $cx3);
+			$ymin = min($ymin, $cy1, $cy2, $cy3);
+			$xmax = max($xmax, $cx1, $cx2, $cx3);
+			$ymax = max($ymax, $cy1, $cy2, $cy3);
 			// move to next point
 			$px1 = $px2;
 			$py1 = $py2;
@@ -12912,7 +13016,13 @@ class TCPDF {
 		}
 		if ($pie) {
 			$this->_outLine($xc, $yc);
+			// get bounding box coordinates
+			$xmin = min($xmin, $xc);
+			$ymin = min($ymin, $yc);
+			$xmax = max($xmax, $xc);
+			$ymax = max($ymax, $yc);
 		}
+		return array($xmin, $ymin, $xmax, $ymax);
 	}
 
 	/**
@@ -24617,6 +24727,12 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					$gradient['coords'][2] += $x;
 					$gradient['coords'][3] += $y;
 				}
+				if ($w <= 0) {
+					$w = 1;
+				}
+				if ($h <= 0) {
+					$h = 1;
+				}
 				// calculate percentages
 				$gradient['coords'][0] = ($gradient['coords'][0] - $x) / $w;
 				$gradient['coords'][1] = ($gradient['coords'][1] - $y) / $h;
@@ -24997,10 +25113,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 							$xb = ($x + (2 * $x1)) / 3;
 							$yb = ($y + (2 * $y1)) / 3;
 							$this->_outCurve($xa, $ya, $xb, $yb, $x, $y);
-							$xmin = min($xmin, $x, $x1, $x2);
-							$ymin = min($ymin, $y, $y1, $y2);
-							$xmax = max($xmax, $x, $x1, $x2);
-							$ymax = max($ymax, $y, $y1, $y2);
+							$xmin = min($xmin, $x, $xa, $xb);
+							$ymin = min($ymin, $y, $ya, $yb);
+							$xmax = max($xmax, $x, $xa, $xb);
+							$ymax = max($ymax, $y, $ya, $yb);
 							if ($relcoord) {
 								$xoffset = $x;
 								$yoffset = $y;
@@ -25074,7 +25190,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 							if ((isset($paths[($key + 1)][1])) AND (trim($paths[($key + 1)][1]) == 'z')) {
 								$pie = true;
 							}
-							$this->_outellipticalarc($cx, $cy, $rx, $ry, $ang, $angs, $angf, $pie, 2);
+							list($xmin, $ymin, $xmax, $ymax) = $this->_outellipticalarc($cx, $cy, $rx, $ry, $ang, $angs, $angf, $pie, 2);
 							$this->_outPoint($x, $y);
 							$xmin = min($xmin, $x);
 							$ymin = min($ymin, $y);

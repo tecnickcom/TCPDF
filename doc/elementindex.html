@@ -320,7 +320,7 @@
 							<dt><b>convertHexStringToString</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodconvertHexStringToString">TCPDF::convertHexStringToString()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Convert hexadecimal string to string</dd>
 							<dt><b>convertHTMLColorToDec</b></dt>
-				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodconvertHTMLColorToDec">TCPDF::convertHTMLColorToDec()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns an associative array (keys: R,G,B) from an html color name or a six-digit or three-digit hexadecimal color representation (i.e. #3FE5AA or #7FF).</dd>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodconvertHTMLColorToDec">TCPDF::convertHTMLColorToDec()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns an array (RGB or CMYK) from an html color name or a six-digit (i.e. #3FE5AA) or three-digit (i.e. #7FF) hexadecimal color representation.</dd>
 							<dt><b>convertStringToHexString</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodconvertStringToHexString">TCPDF::convertStringToHexString()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Convert string to hexadecimal string (byte string)</dd>
 							<dt><b>convertSVGtMatrix</b></dt>
@@ -570,13 +570,13 @@
 							<dt><b>getBarcode</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetBarcode">TCPDF::getBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Get current barcode.</dd>
 							<dt><b>getBarcodeArray</b></dt>
-				<dd>in file barcodes.php, method <a href="com-tecnick-tcpdf/TCPDFBarcode.html#methodgetBarcodeArray">TCPDFBarcode::getBarcodeArray()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Return an array representations of barcode.</dd>
-							<dt><b>getBarcodeArray</b></dt>
 				<dd>in file pdf417.php, method <a href="com-tecnick-tcpdf/PDF417.html#methodgetBarcodeArray">PDF417::getBarcodeArray()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns a barcode array which is readable by TCPDF</dd>
 							<dt><b>getBarcodeArray</b></dt>
 				<dd>in file 2dbarcodes.php, method <a href="com-tecnick-tcpdf/TCPDF2DBarcode.html#methodgetBarcodeArray">TCPDF2DBarcode::getBarcodeArray()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Return an array representations of barcode.</dd>
 							<dt><b>getBarcodeArray</b></dt>
 				<dd>in file qrcode.php, method <a href="com-tecnick-tcpdf/QRcode.html#methodgetBarcodeArray">QRcode::getBarcodeArray()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns a barcode array which is readable by TCPDF</dd>
+							<dt><b>getBarcodeArray</b></dt>
+				<dd>in file barcodes.php, method <a href="com-tecnick-tcpdf/TCPDFBarcode.html#methodgetBarcodeArray">TCPDFBarcode::getBarcodeArray()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Return an array representations of barcode.</dd>
 							<dt><b>getBitStream</b></dt>
 				<dd>in file qrcode.php, method <a href="com-tecnick-tcpdf/QRcode.html#methodgetBitStream">QRcode::getBitStream()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns a stream of bits.</dd>
 							<dt><b>getBorderMode</b></dt>
@@ -767,6 +767,8 @@
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetSVGTransformMatrix">TCPDF::getSVGTransformMatrix()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Get the tranformation matrix from SVG transform attribute</dd>
 							<dt><b>getTagStyleFromCSS</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetTagStyleFromCSS">TCPDF::getTagStyleFromCSS()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Returns the styles that apply for the selected HTML tag.</dd>
+							<dt><b>getTCPDFVersion</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetTCPDFVersion">TCPDF::getTCPDFVersion()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Return the current TCPDF version.</dd>
 							<dt><b>getTransformationMatrixProduct</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodgetTransformationMatrixProduct">TCPDF::getTransformationMatrixProduct()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Get the product of two SVG tranformation matrices</dd>
 							<dt><b>getUserPermissionCode</b></dt>
@@ -1241,8 +1243,6 @@
 				<dd>in file tcpdf_config.php, constant <a href="com-tecnick-tcpdf/_config---tcpdf_config.php.html#definePDF_PAGE_FORMAT">PDF_PAGE_FORMAT</a><br>&nbsp;&nbsp;&nbsp;&nbsp;page format</dd>
 							<dt><b>PDF_PAGE_ORIENTATION</b></dt>
 				<dd>in file tcpdf_config.php, constant <a href="com-tecnick-tcpdf/_config---tcpdf_config.php.html#definePDF_PAGE_ORIENTATION">PDF_PAGE_ORIENTATION</a><br>&nbsp;&nbsp;&nbsp;&nbsp;page orientation (P=portrait, L=landscape)</dd>
-							<dt><b>PDF_PRODUCER</b></dt>
-				<dd>in file tcpdf.php, constant <a href="com-tecnick-tcpdf/_tcpdf.php.html#definePDF_PRODUCER">PDF_PRODUCER</a><br>&nbsp;&nbsp;&nbsp;&nbsp;define default PDF document producer</dd>
 							<dt><b>PDF_UNIT</b></dt>
 				<dd>in file tcpdf_config.php, constant <a href="com-tecnick-tcpdf/_config---tcpdf_config.php.html#definePDF_UNIT">PDF_UNIT</a><br>&nbsp;&nbsp;&nbsp;&nbsp;document unit of measure [pt=point, mm=millimeter, cm=centimeter, in=inch]</dd>
 							<dt><b>PieSector</b></dt>
@@ -1427,6 +1427,8 @@
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$sig_annot_ref">TCPDF::$sig_annot_ref</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Placemark used during signature process.</dd>
 							<dt><b>$sig_obj_id</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$sig_obj_id">TCPDF::$sig_obj_id</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Signature object ID</dd>
+							<dt><b>$spotcolor</b></dt>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$spotcolor">TCPDF::$spotcolor</a></dd>
 							<dt><b>$spot_colors</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$spot_colors">TCPDF::$spot_colors</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Array of Spot colors</dd>
 							<dt><b>$start_pattern</b></dt>
@@ -1494,11 +1496,11 @@
 							<dt><b>SetAutoPageBreak</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodSetAutoPageBreak">TCPDF::SetAutoPageBreak()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Enables or disables the automatic page breaking mode. When enabling, the second parameter is the distance from the bottom of the page that defines the triggering limit. By default, the mode is on and the margin is 2 cm.</dd>
 							<dt><b>setBarcode</b></dt>
-				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetBarcode">TCPDF::setBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set document barcode.</dd>
-							<dt><b>setBarcode</b></dt>
 				<dd>in file 2dbarcodes.php, method <a href="com-tecnick-tcpdf/TCPDF2DBarcode.html#methodsetBarcode">TCPDF2DBarcode::setBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set the barcode.</dd>
 							<dt><b>setBarcode</b></dt>
 				<dd>in file barcodes.php, method <a href="com-tecnick-tcpdf/TCPDFBarcode.html#methodsetBarcode">TCPDFBarcode::setBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set the barcode.</dd>
+							<dt><b>setBarcode</b></dt>
+				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodsetBarcode">TCPDF::setBarcode()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set document barcode.</dd>
 							<dt><b>SetBooklet</b></dt>
 				<dd>in file tcpdf.php, method <a href="com-tecnick-tcpdf/TCPDF.html#methodSetBooklet">TCPDF::SetBooklet()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Set the booklet mode for double-sided pages.</dd>
 							<dt><b>setBuffer</b></dt>
@@ -1731,6 +1733,8 @@
 		<dl>
 							<dt><b>$tagvspaces</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$tagvspaces">TCPDF::$tagvspaces</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Array used for custom vertical spaces for HTML tags</dd>
+							<dt><b>$tcpdf_version</b></dt>
+				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$tcpdf_version">TCPDF::$tcpdf_version</a></dd>
 							<dt><b>$tempfontsize</b></dt>
 				<dd>in file tcpdf.php, variable <a href="com-tecnick-tcpdf/TCPDF.html#var$tempfontsize">TCPDF::$tempfontsize</a></dd>
 							<dt><b>$TextColor</b></dt>
@@ -2134,7 +2138,7 @@
 	<a href="elementindex.html#top">top</a><br>
         <div class="credit">
 		    <hr />
-		    Documentation generated on Tue, 02 Nov 2010 12:30:42 +0100 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
+		    Documentation generated on Fri, 12 Nov 2010 14:39:53 +0100 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.3</a>
 	      </div>
       </td></tr></table>
     </td>

@@ -1,3 +1,11 @@
+5.9.012 (2010-11-12)
+	- Method getTCPDFVersion() was added.
+	- PDF_PRODUCER constat was removed.
+	- Method convertHTMLColorToDec() was improved.
+	- HTML colors now support spot color names defined on the new spotcolors.php file.
+	- The default method Header() was improved to support SVG and EPS/AI images.
+	- A bug on SVG importer was fixed.
+
 5.9.011 (2010-11-02)
 	- Bug item #3101486 "Bug Fix for image loading" was fixed.
 
