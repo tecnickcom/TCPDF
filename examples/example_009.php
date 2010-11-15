@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_009.php
 // Begin       : 2008-03-04
-// Last Update : 2010-08-08
+// Last Update : 2010-11-15
 //
 // Description : Example 009 for TCPDF class
 //               Test Image
@@ -77,8 +77,16 @@ $pdf->setJPEGQuality(75);
 
 // Image($file, $x='', $y='', $w=0, $h=0, $type='', $link='', $align='', $resize=false, $dpi=300, $palign='', $ismask=false, $imgmask=false, $border=0, $fitbox=false, $hidden=false, $fitonpage=false)
 
+
 // Image example
 $pdf->Image('../images/image_demo.jpg', 50, 50, 100, 150, 'JPG', 'http://www.tcpdf.org', '', true, 150, '', false, false, 1, false, false, false);
+
+
+// Example of Image from data stream
+$imgdata = base64_decode('iVBORw0KGgoAAAANSUhEUgAAABwAAAASCAMAAAB/2U7WAAAABlBMVEUAAAD///+l2Z/dAAAASUlEQVR4XqWQUQoAIAxC2/0vXZDrEX4IJTRkb7lobNUStXsB0jIXIAMSsQnWlsV+wULF4Avk9fLq2r8a5HSE35Q3eO2XP1A1wQkZSgETvDtKdQAAAABJRU5ErkJggg==');
+
+// The '@' character is used to indicate that follows image data stream and not image file name
+$pdf->Image('@'.$imgdata);
 
 // ---------------------------------------------------------
 
@@ -86,5 +94,5 @@ $pdf->Image('../images/image_demo.jpg', 50, 50, 100, 150, 'JPG', 'http://www.tcp
 $pdf->Output('example_009.pdf', 'I');
 
 //============================================================+
-// END OF FILE                                                
+// END OF FILE
 //============================================================+

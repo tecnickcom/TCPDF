@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.012
+// Version     : 5.9.013
 // Begin       : 2002-08-03
-// Last Update : 2010-11-12
+// Last Update : 2010-11-15
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -134,7 +134,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.9.012
+ * @version 5.9.013
  */
 
 /**
@@ -148,7 +148,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
 * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 * @name TCPDF
 * @package com.tecnick.tcpdf
-* @version 5.9.012
+* @version 5.9.013
 * @author Nicola Asuni - info@tecnick.com
 * @link http://www.tcpdf.org
 * @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -161,7 +161,7 @@ class TCPDF {
 	 * @var current TCPDF version
 	 * @access private
 	 */
-	private $tcpdf_version = '5.9.012';
+	private $tcpdf_version = '5.9.013';
 
 	// Protected properties
 
@@ -7081,7 +7081,7 @@ class TCPDF {
 	 * The format can be specified explicitly or inferred from the file extension.<br />
 	 * It is possible to put a link on the image.<br />
 	 * Remark: if an image is used several times, only one copy will be embedded in the file.<br />
-	 * @param string $file Name of the file containing the image.
+	 * @param string $file Name of the file containing the image or a '@' character followed by the image data string.
 	 * @param float $x Abscissa of the upper-left corner (LTR) or upper-right corner (RTL).
 	 * @param float $y Ordinate of the upper-left corner (LTR) or upper-right corner (RTL).
 	 * @param float $w Width of the image in the page. If not specified or equal to zero, it is automatically calculated.
@@ -7112,44 +7112,60 @@ class TCPDF {
 		// check page for no-write regions and adapt page margins if necessary
 		$this->checkPageRegions($h, $x, $y);
 		$cached_file = false; // true when the file is cached
-		// check if is local file
-		if (!@file_exists($file)) {
-			// encode spaces on filename (file is probably an URL)
-			$file = str_replace(' ', '%20', $file);
-		}
-		// get image dimensions
-		$imsize = @getimagesize($file);
-		if ($imsize === FALSE) {
-			if (function_exists('curl_init')) {
-				// try to get remote file data using cURL
-				$cs = curl_init(); // curl session
-				curl_setopt($cs, CURLOPT_URL, $file);
-				curl_setopt($cs, CURLOPT_BINARYTRANSFER, true);
-				curl_setopt($cs, CURLOPT_FAILONERROR, true);
-				curl_setopt($cs, CURLOPT_RETURNTRANSFER, true);
-				curl_setopt($cs, CURLOPT_CONNECTTIMEOUT, 5);
-				curl_setopt($cs, CURLOPT_TIMEOUT, 30);
-				$imgdata = curl_exec($cs);
-				curl_close($cs);
-				if($imgdata !== FALSE) {
-					// copy image to cache
-					$file = tempnam(K_PATH_CACHE, 'img_');
-					$fp = fopen($file, 'w');
-					fwrite($fp, $imgdata);
-					fclose($fp);
-					unset($imgdata);
-					$cached_file = true;
-					$imsize = @getimagesize($file);
-					if ($imsize === FALSE) {
-						unlink($file);
-						$cached_file = false;
+		// check if we are passing an image as file or string
+		if ($file{0} === '@') { // image from string
+			$imgdata = substr($file, 1);
+			$file = tempnam(K_PATH_CACHE, 'img_');
+			$fp = fopen($file, 'w');
+			fwrite($fp, $imgdata);
+			fclose($fp);
+			unset($imgdata);
+			$cached_file = true;
+			$imsize = @getimagesize($file);
+			if ($imsize === FALSE) {
+				unlink($file);
+				$cached_file = false;
+			}
+		} else { // image file
+			// check if is local file
+			if (!@file_exists($file)) {
+				// encode spaces on filename (file is probably an URL)
+				$file = str_replace(' ', '%20', $file);
+			}
+			// get image dimensions
+			$imsize = @getimagesize($file);
+			if ($imsize === FALSE) {
+				if (function_exists('curl_init')) {
+					// try to get remote file data using cURL
+					$cs = curl_init(); // curl session
+					curl_setopt($cs, CURLOPT_URL, $file);
+					curl_setopt($cs, CURLOPT_BINARYTRANSFER, true);
+					curl_setopt($cs, CURLOPT_FAILONERROR, true);
+					curl_setopt($cs, CURLOPT_RETURNTRANSFER, true);
+					curl_setopt($cs, CURLOPT_CONNECTTIMEOUT, 5);
+					curl_setopt($cs, CURLOPT_TIMEOUT, 30);
+					$imgdata = curl_exec($cs);
+					curl_close($cs);
+					if($imgdata !== FALSE) {
+						// copy image to cache
+						$file = tempnam(K_PATH_CACHE, 'img_');
+						$fp = fopen($file, 'w');
+						fwrite($fp, $imgdata);
+						fclose($fp);
+						unset($imgdata);
+						$cached_file = true;
+						$imsize = @getimagesize($file);
+						if ($imsize === FALSE) {
+							unlink($file);
+							$cached_file = false;
+						}
 					}
+				} elseif (($w > 0) AND ($h > 0)) {
+					// get measures from specified data
+					$pw = $this->getHTMLUnitToUnits($w, 0, $this->pdfunit, true) * $this->imgscale * $this->k;
+					$ph = $this->getHTMLUnitToUnits($h, 0, $this->pdfunit, true) * $this->imgscale * $this->k;
+					$imsize = array($pw, $ph);
 				}
-			} elseif (($w > 0) AND ($h > 0)) {
-				// get measures from specified data
-				$pw = $this->getHTMLUnitToUnits($w, 0, $this->pdfunit, true) * $this->imgscale * $this->k;
-				$ph = $this->getHTMLUnitToUnits($h, 0, $this->pdfunit, true) * $this->imgscale * $this->k;
-				$imsize = array($pw, $ph);
 			}
 		}
 		if ($imsize === FALSE) {
@@ -7458,9 +7474,15 @@ class TCPDF {
 	 * @since 4.9.016 (2010-04-20)
 	 */
 	protected function _toPNG($image) {
+		// set temporary image file name
 		$tempname = tempnam(K_PATH_CACHE, 'jpg_');
+		// turn off interlaced mode
+		imageinterlace($image, 0);
+		// create temporary PNG image
 		imagepng($image, $tempname);
+		// remove image from memory
 		imagedestroy($image);
+		// get PNG image data
 		$retvars = $this->_parsepng($tempname);
 		// tidy up by removing temporary image
 		unlink($tempname);

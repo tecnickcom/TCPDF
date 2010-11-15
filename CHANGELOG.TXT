@@ -1,6 +1,10 @@
+5.9.013 (2010-11-15)
+	- Bug item #3109257 "Problem with interlaced GIFs and PNGs" was fixed.
+	- Image function now accepts image data streams (check example n. 9).
+
 5.9.012 (2010-11-12)
 	- Method getTCPDFVersion() was added.
-	- PDF_PRODUCER constat was removed.
+	- PDF_PRODUCER constant was removed.
 	- Method convertHTMLColorToDec() was improved.
 	- HTML colors now support spot color names defined on the new spotcolors.php file.
 	- The default method Header() was improved to support SVG and EPS/AI images.
@@ -212,7 +216,7 @@
 	- CSS borders are now supported for HTML tables and other block tags (see example n. 61);
 	- Cell borders were improved (see example n. 57);
 	- Minor bugs were fixed.
-encry
+
 ------------------------------------------------------------
 
 5.6.000 (2010-07-31)
