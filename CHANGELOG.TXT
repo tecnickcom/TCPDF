@@ -1,3 +1,6 @@
+5.9.014 (2010-11-15)
+	- Bug item #3109464 "QRCode error" was fixed.
+
 5.9.013 (2010-11-15)
 	- Bug item #3109257 "Problem with interlaced GIFs and PNGs" was fixed.
 	- Image function now accepts image data streams (check example n. 9).
