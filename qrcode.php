@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : qrcode.php
-// Version     : 1.0.007
+// Version     : 1.0.008
 // Begin       : 2010-03-22
 // Last Update : 2010-11-15
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
@@ -79,7 +79,7 @@
  * @copyright 2010-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 1.0.007
+ * @version 1.0.008
  */
 
 // definitions
@@ -1352,7 +1352,7 @@ if (!class_exists('QRcode', false)) {
 		 protected function eatAn() {
 			$la = $this->lengthIndicator(QR_MODE_AN,  $this->version);
 			$ln = $this->lengthIndicator(QR_MODE_NM, $this->version);
-			$p = 0;
+			$p =1 ;
 			while($this->isalnumat($this->dataStr, $p)) {
 				if ($this->isdigitat($this->dataStr, $p)) {
 					$q = $p;
@@ -1703,7 +1703,10 @@ if (!class_exists('QRcode', false)) {
 		 *
 		 */
 		protected function appendNewInputItem($items, $mode, $size, $data) {
-			$items[] = $this->newInputItem($mode, $size, $data);
+			$newitem = $this->newInputItem($mode, $size, $data);
+			if (!empty($newitem)) {
+				$items[] = $newitem;
+			}
 			return $items;
 		}
 
@@ -1761,30 +1764,6 @@ if (!class_exists('QRcode', false)) {
 		}
 
 		/**
-		 * estimateBitsModeNum
-		 * @param int $size
-		 * @return int number of bits
-		 */
-		 protected function estimateBitsModeNum($size) {
-			$w = (int)ceil($size / 3);
-			$bits = $w * 10;
-			switch($size - $w * 3) {
-				case 1: {
-					$bits += 4;
-					break;
-				}
-				case 2: {
-					$bits += 7;
-					break;
-				}
-				default: {
-					break;
-				}
-			}
-			return $bits;
-		}
-
-		/**
 		 * Look up the alphabet-numeric convesion table (see JIS X0510:2004, pp.19).
 		 * @param int $c character value
 		 * @return value
@@ -1809,13 +1788,33 @@ if (!class_exists('QRcode', false)) {
 		}
 
 		/**
+		 * estimateBitsModeNum
+		 * @param int $size
+		 * @return int number of bits
+		 */
+		 protected function estimateBitsModeNum($size) {
+			$w = (int)($size / 3);
+			$bits = ($w * 10);
+			switch($size - ($w * 3)) {
+				case 1: {
+					$bits += 4;
+					break;
+				}
+				case 2: {
+					$bits += 7;
+					break;
+				}
+			}
+			return $bits;
+		}
+
+		/**
 		 * estimateBitsModeAn
 		 * @param int $size
 		 * @return int number of bits
 		 */
 		 protected function estimateBitsModeAn($size) {
-			$w = (int)ceil($size / 2);
-			$bits = $w * 11;
+			$bits = (int)($size * 5.5); // (size / 2 ) * 11
 			if ($size & 1) {
 				$bits += 6;
 			}
@@ -1828,7 +1827,7 @@ if (!class_exists('QRcode', false)) {
 		 * @return int number of bits
 		 */
 		 protected function estimateBitsMode8($size) {
-			return (int)ceil($size * 8);
+			return (int)($size * 8);
 		}
 
 		/**
@@ -1837,7 +1836,7 @@ if (!class_exists('QRcode', false)) {
 		 * @return int number of bits
 		 */
 		 protected function estimateBitsModeKanji($size) {
-			return (int)ceil(($size / 2) * 13);
+			return (int)($size * 6.5); // (size / 2 ) * 13
 		}
 
 		/**

@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.014
+// Version     : 5.9.015
 // Begin       : 2002-08-03
-// Last Update : 2010-11-15
+// Last Update : 2010-11-16
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -134,7 +134,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.9.014
+ * @version 5.9.015
  */
 
 /**
@@ -148,7 +148,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
 * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 * @name TCPDF
 * @package com.tecnick.tcpdf
-* @version 5.9.014
+* @version 5.9.015
 * @author Nicola Asuni - info@tecnick.com
 * @link http://www.tcpdf.org
 * @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -161,7 +161,7 @@ class TCPDF {
 	 * @var current TCPDF version
 	 * @access private
 	 */
-	private $tcpdf_version = '5.9.014';
+	private $tcpdf_version = '5.9.015';
 
 	// Protected properties
 
@@ -5295,12 +5295,10 @@ class TCPDF {
 					}
 				}
 			}
-			$this->newline = true;
 			return true;
 		}
 		if ($current_page != $this->page) {
 			// account for columns mode
-			$this->newline = true;
 			return true;
 		}
 		return false;
@@ -5397,9 +5395,9 @@ class TCPDF {
 				$h = $min_cell_height;
 			}
 		}
-		// check page for no-write regions and adapt page margins if necessary
-		$this->checkPageRegions($h);
 		$k = $this->k;
+		// check page for no-write regions and adapt page margins if necessary
+		$this->checkPageRegions($h, $this->x, $this->y);
 		if ($this->rtl) {
 			$x = $this->x - $this->cell_margin['R'];
 		} else {
@@ -6532,7 +6530,7 @@ class TCPDF {
 	 */
 	public function Write($h, $txt, $link='', $fill=false, $align='', $ln=false, $stretch=0, $firstline=false, $firstblock=false, $maxh=0, $wadj=0, $margin='') {
 		// check page for no-write regions and adapt page margins if necessary
-		$this->checkPageRegions($h);
+		$this->checkPageRegions($h, $this->x, $this->y);
 		if (strlen($txt) == 0) {
 			// fix empty text
 			$txt = ' ';
@@ -6896,7 +6894,7 @@ class TCPDF {
 	 * @access protected
 	 */
 	protected function getRemainingWidth() {
-		$this->checkPageRegions();
+		$this->checkPageRegions(0, $this->x, $this->y);
 		if ($this->rtl) {
 			return ($this->x - $this->lMargin);
 		} else {
@@ -7026,6 +7024,14 @@ class TCPDF {
 	 * @since 5.5.009 (2010-07-05)
 	 */
 	protected function fitBlock(&$w, &$h, &$x, &$y, $fitonpage=false) {
+		if ($w <= 0) {
+			// set maximum width
+			$w = ($this->w - $this->lMargin - $this->rMargin);
+		}
+		if ($h <= 0) {
+			// set maximum height
+			$h = ($this->PageBreakTrigger - $this->tMargin);
+		}
 		// resize the block to be vertically contained on a single page or single column
 		if ($fitonpage OR $this->AutoPageBreak) {
 			$ratio_wh = ($w / $h);
@@ -7693,12 +7699,12 @@ class TCPDF {
 			// clone image object
 			$imga = $img->clone();
 			// extract alpha channel
-			$img->separateImageChannel(imagick::CHANNEL_ALPHA | imagick::CHANNEL_OPACITY | imagick::CHANNEL_MATTE);
+			$img->separateImageChannel(8); // 8 = (imagick::CHANNEL_ALPHA | imagick::CHANNEL_OPACITY | imagick::CHANNEL_MATTE);
 			$img->negateImage(true);
 			$img->setImageFormat('png');
 			$img->writeImage($tempfile_alpha);
 			// remove alpha channel
-			$imga->separateImageChannel(imagick::CHANNEL_ALL & ~(imagick::CHANNEL_ALPHA | imagick::CHANNEL_OPACITY | imagick::CHANNEL_MATTE));
+			$imga->separateImageChannel(39); // 39 = (imagick::CHANNEL_ALL & ~(imagick::CHANNEL_ALPHA | imagick::CHANNEL_OPACITY | imagick::CHANNEL_MATTE));
 			$imga->setImageFormat('png');
 			$imga->writeImage($tempfile_plain);
 		} else { // GD library
@@ -16546,8 +16552,20 @@ class TCPDF {
 				continue;
 			}
 			$len = strlen($line);
+			// check for spot color names
+			$color_name = '';
+			if (strcasecmp('x', substr(trim($line), -1)) == 0) {
+				if (preg_match('/\([^\)]*\)/', $line, $matches) > 0) {
+					// extract spot color name
+					$color_name = $matches[0];
+					// remove color name from string
+					$line = str_replace(' '.$color_name, '', $line);
+					// remove pharentesis from color name
+					$color_name = substr($color_name, 1, -1);
+				}
+			}
 			$chunks = explode(' ', $line);
-			$cmd = array_pop($chunks);
+			$cmd = trim(array_pop($chunks));
 			// RGB
 			if (($cmd == 'Xa') OR ($cmd == 'XA')) {
 				$b = array_pop($chunks);
@@ -16578,13 +16596,31 @@ class TCPDF {
 					break;
 				}
 				case 'x': {// custom fill color
-					list($c,$m,$y,$k) = $chunks;
-					$this->_out(''.$c.' '.$m.' '.$y.' '.$k.' k');
+					if (empty($color_name)) {
+						// CMYK color
+						list($col_c, $col_m, $col_y, $col_k) = $chunks;
+						$this->_out(''.$col_c.' '.$col_m.' '.$col_y.' '.$col_k.' k');
+					} else {
+						// Spot Color (CMYK + tint)
+						list($col_c, $col_m, $col_y, $col_k, $col_t) = $chunks;
+						$this->AddSpotColor($color_name, ($col_c * 100), ($col_m * 100), ($col_y * 100), ($col_k * 100));
+						$color_cmd = sprintf('/CS%d cs %.3F scn', $this->spot_colors[$color_name]['i'], (1 - $col_t));
+						$this->_out($color_cmd);
+					}
 					break;
 				}
 				case 'X': { // custom stroke color
-					list($c,$m,$y,$k) = $chunks;
-					$this->_out(''.$c.' '.$m.' '.$y.' '.$k.' K');
+					if (empty($color_name)) {
+						// CMYK color
+						list($col_c, $col_m, $col_y, $col_k) = $chunks;
+						$this->_out(''.$col_c.' '.$col_m.' '.$col_y.' '.$col_k.' K');
+					} else {
+						// Spot Color (CMYK + tint)
+						list($col_c, $col_m, $col_y, $col_k, $col_t) = $chunks;
+						$this->AddSpotColor($color_name, ($col_c * 100), ($col_m * 100), ($col_y * 100), ($col_k * 100));
+						$color_cmd = sprintf('/CS%d CS %.3F SCN', $this->spot_colors[$color_name]['i'], (1 - $col_t));
+						$this->_out($color_cmd);
+					}
 					break;
 				}
 				case 'Y':
@@ -16605,8 +16641,8 @@ class TCPDF {
 				case 'F': {
 					if ($u > 0) {
 						$isU = false;
-						$max = min($i+5, $cnt);
-						for ($j=$i+1; $j < $max; ++$j) {
+						$max = min(($i + 5), $cnt);
+						for ($j = ($i + 1); $j < $max; ++$j) {
 							$isU = ($isU OR (($lines[$j] == 'U') OR ($lines[$j] == '*U')));
 						}
 						if ($isU) {
@@ -22051,6 +22087,12 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			}
 		}
 		if (!$this->empty_string($textitem)) {
+			// Check whether we need a new page or new column
+			$prev_y = $this->y;
+			$h = ($this->FontSize * $this->cell_height_ratio) + $this->cell_padding['T'] + $this->cell_padding['B'];
+			if ($this->checkPageBreak($h) OR ($this->y < $prev_y)) {
+				$tmpx = $this->x;
+			}
 			// print ordered item
 			if ($this->rtl) {
 				$textitem = '.'.$textitem;
@@ -24122,7 +24164,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @access protected
 	 * @since 5.9.003 (2010-10-13)
 	 */
-	protected function checkPageRegions($h=0, &$x='', &$y='') {
+	protected function checkPageRegions($h, &$x, &$y) {
 		// set default values
 		if ($x === '') {
 			$x = &$this->x;
@@ -24225,7 +24267,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			$y = $this->y;
 		}
 		// check page for no-write regions and adapt page margins if necessary
-		$this->checkPageRegions($x, $y);
+		$this->checkPageRegions($h, $x, $y);
 		$k = $this->k;
 		$ox = 0;
 		$oy = 0;
@@ -24338,6 +24380,13 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		if (isset($view_box[2]) AND ($view_box[2] > 0) AND ($view_box[3] > 0)) {
 			$ow = $view_box[2];
 			$oh = $view_box[3];
+		} else {
+			if ($ow <= 0) {
+				$ow = $w;
+			}
+			if ($oh <= 0) {
+				$oh = $h;
+			}
 		}
 		$svgscale_x = $w / $ow;
 		$svgscale_y = $h / $oh;
@@ -24763,28 +24812,32 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				if (isset($gradient['coords'][4])) {
 					$gradient['coords'][4] /= $w;
 				}
-				// fix values
+			} elseif ($gradient['mode'] == 'percentage') {
 				foreach($gradient['coords'] as $key => $val) {
-					if ($val < 0) {
-						$gradient['coords'][$key] = 0;
-					} elseif ($val > 1) {
-						$gradient['coords'][$key] = 1;
-					}
+					$gradient['coords'][$key] = (intval($val) / 100);
 				}
-				if (($gradient['type'] == 2) AND ($gradient['coords'][0] == $gradient['coords'][2]) AND ($gradient['coords'][1] == $gradient['coords'][3])) {
-					// single color (no shading)
-					$gradient['coords'][0] = 1;
-					$gradient['coords'][1] = 0;
-					$gradient['coords'][2] = 0.999;
-					$gradient['coords'][3] = 0;
+			}
+			// fix values
+			foreach($gradient['coords'] as $key => $val) {
+				if ($val < 0) {
+					$gradient['coords'][$key] = 0;
+				} elseif ($val > 1) {
+					$gradient['coords'][$key] = 1;
 				}
+			}
+			if (($gradient['type'] == 2) AND ($gradient['coords'][0] == $gradient['coords'][2]) AND ($gradient['coords'][1] == $gradient['coords'][3])) {
+				// single color (no shading)
+				$gradient['coords'][0] = 1;
+				$gradient['coords'][1] = 0;
+				$gradient['coords'][2] = 0.999;
+				$gradient['coords'][3] = 0;
 			}
 			// swap Y coordinates
 			$tmp = $gradient['coords'][1];
 			$gradient['coords'][1] = $gradient['coords'][3];
 			$gradient['coords'][3] = $tmp;
 			// set transformation map for gradient
-			if (($gradient['type'] == 3) AND ($gradient['mode'] == 'measure')) {
+			if ($gradient['type'] == 3) {
 				// gradient is always circular
 				$cy = $this->h - $y - ($gradient['coords'][1] * ($w + $h));
 				$this->_out(sprintf('%.3F 0 0 %.3F %.3F %.3F cm', $w*$this->k, $w*$this->k, $x*$this->k, $cy*$this->k));

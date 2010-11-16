@@ -1,3 +1,9 @@
+5.9.015 (2010-11-16)
+	- Bug item affecting QRCode was fixed.
+	- Some bugs affecting HTML lists were fixed.
+	- ImageSVG() and fitBlock() methods were improved to handle some SVG problems.
+	- Some problems with PHP4 compatibility were fixed.
+
 5.9.014 (2010-11-15)
 	- Bug item #3109464 "QRCode error" was fixed.
 
