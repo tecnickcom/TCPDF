@@ -1,3 +1,7 @@
+5.9.017 (2010-11-16)
+	- Tagline color was set to transparent.
+	- The method fixHTMLCode() was added to automatically clean up HTML code (requires HTML Tidy).
+
 5.9.016 (2010-11-16)
 	- Bug item #3109705 "list item page break hanging bullet" was fixed.
 

@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.016
+// Version     : 5.9.017
 // Begin       : 2002-08-03
 // Last Update : 2010-11-16
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
@@ -134,7 +134,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.9.016
+ * @version 5.9.017
  */
 
 /**
@@ -148,7 +148,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
 * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 * @name TCPDF
 * @package com.tecnick.tcpdf
-* @version 5.9.016
+* @version 5.9.017
 * @author Nicola Asuni - info@tecnick.com
 * @link http://www.tcpdf.org
 * @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -161,7 +161,7 @@ class TCPDF {
 	 * @var current TCPDF version
 	 * @access private
 	 */
-	private $tcpdf_version = '5.9.016';
+	private $tcpdf_version = '5.9.017';
 
 	// Protected properties
 
@@ -3631,8 +3631,7 @@ class TCPDF {
 		$this->lMargin = 0;
 		$this->_out('q');
 		$this->SetFont('helvetica', '', 1);
-		$this->AddSpotColor('trnsprnt', 0, 0, 0, 50);
-		$this->SetTextSpotColor('trnsprnt', 0);
+		$this->setTextRenderingMode(0, false, false);
 		$msg = "\x50\x6f\x77\x65\x72\x65\x64\x20\x62\x79\x20\x54\x43\x50\x44\x46\x20\x28\x77\x77\x77\x2e\x74\x63\x70\x64\x66\x2e\x6f\x72\x67\x29";
 		$lnk = "\x68\x74\x74\x70\x3a\x2f\x2f\x77\x77\x77\x2e\x74\x63\x70\x64\x66\x2e\x6f\x72\x67";
 		$this->Cell(0, 0, $msg, 0, 0, 'L', 0, $lnk, 0, false, 'D', 'B');
@@ -17427,6 +17426,71 @@ class TCPDF {
 	}
 
 	/**
+	 * Cleanup HTML code (requires HTML Tidy library).
+	 * @param string $html htmlcode to fix
+	 * @param string $default_css CSS commands to add
+	 * @param array $tagvs parameters for setHtmlVSpace method
+	 * @param array $tidy_options options for tidy_parse_string function
+	 * @return string XHTML code cleaned up
+	 * @author Nicola Asuni
+	 * @access public
+	 * @since 5.9.017 (2010-11-16)
+	 * @see setHtmlVSpace()
+	 */
+	public function fixHTMLCode($html, $default_css='', $tagvs='', $tidy_options='') {
+		// configure parameters for HTML Tidy
+		if ($tidy_options === '') {
+			$tidy_options = array (
+				'clean' => 1,
+				'drop-empty-paras' => 0,
+				'drop-proprietary-attributes' => 1,
+				'fix-backslash' => 1,
+				'hide-comments' => 1,
+				'join-styles' => 1,
+				'lower-literals' => 1,
+				'merge-divs' => 1,
+				'merge-spans' => 1,
+				'output-xhtml' => 1,
+				'word-2000' => 1,
+				'wrap' => 0,
+				'output-bom' => 0,
+				//'char-encoding' => 'utf8',
+				//'input-encoding' => 'utf8',
+				//'output-encoding' => 'utf8'
+			);
+		}
+		// clean up the HTML code
+		$tidy = tidy_parse_string($html, $tidy_options);
+		// fix the HTML
+		$tidy->cleanRepair();
+		// get the CSS part
+		$tidy_head = tidy_get_head($tidy);
+		$css = $tidy_head->value;
+		$css = preg_replace('/<style([^>]+)>/ims', '<style>', $css);
+		$css = preg_replace('/<\/style>(.*)<style>/ims', "\n", $css);
+		$css = str_replace('/*<![CDATA[*/', '', $css);
+		$css = str_replace('/*]]>*/', '', $css);
+		preg_match('/<style>(.*)<\/style>/ims', $css, $matches);
+		$css = strtolower($matches[1]);
+		// include default css
+		$css = '<style>'.$default_css.$css.'</style>';
+		// get the body part
+		$tidy_body = tidy_get_body($tidy);
+		$html = $tidy_body->value;
+		// fix some self-closing tags
+		$html = str_replace('<br>', '<br />', $html);
+		// remove some empty tag blocks
+		$html = preg_replace('/<div([^\>]*)><\/div>/', '', $html);
+		$html = preg_replace('/<p([^\>]*)><\/p>/', '', $html);
+		if ($tagvs !== '') {
+			// set vertical space for some XHTML tags
+			$this->setHtmlVSpace($tagvs);
+		}
+		// return the cleaned XHTML code + CSS
+		return $css.$html;
+	}
+
+	/**
 	 * Extracts the CSS properties from a CSS string.
 	 * @param string $cssdata string containing CSS definitions.
 	 * @return An array where the keys are the CSS selectors and the values are the CSS properties.
@@ -19166,7 +19230,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					$fontsize = isset($dom[$key]['fontsize']) ? $dom[$key]['fontsize'] : $curfontsize;
 					$fontascent = $this->getFontAscent($fontname, $fontstyle, $fontsize);
 					$fontdescent = $this->getFontDescent($fontname, $fontstyle, $fontsize);
-					if ( ($fontname != $curfontname) OR ($fontstyle != $curfontstyle) OR ($fontsize != $curfontsize) 
+					if ( ($fontname != $curfontname) OR ($fontstyle != $curfontstyle) OR ($fontsize != $curfontsize)
 						OR ($this->cell_height_ratio != $dom[$key]['line-height'])
 						OR ($dom[$key]['tag'] AND $dom[$key]['opening'] AND ($dom[$key]['value'] == 'li')) ) {
 						if ((!$this->newline) AND ($key < ($maxel - 1))
