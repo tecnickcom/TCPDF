@@ -1,8 +1,8 @@
 <?php
 //============================================================+
-// File name   : eng.php
+// File name   : ger.php
 // Begin       : 2004-03-03
-// Last Update : 2010-10-26
+// Last Update : 2010-11-16
 //
 // Description : Language module for TCPDF
 //               (contains translated texts)
@@ -43,7 +43,7 @@ $l['a_meta_dir'] = 'ltr';
 $l['a_meta_language'] = 'de';
 
 // TRANSLATIONS --------------------------------------
-$l['w_page'] = 'seite';
+$l['w_page'] = 'Seite';
 
 //============================================================+
 // END OF FILE

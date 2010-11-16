@@ -1,3 +1,6 @@
+5.9.016 (2010-11-16)
+	- Bug item #3109705 "list item page break hanging bullet" was fixed.
+
 5.9.015 (2010-11-16)
 	- Bug item affecting QRCode was fixed.
 	- Some bugs affecting HTML lists were fixed.
