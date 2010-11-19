@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.019
+// Version     : 5.9.020
 // Begin       : 2002-08-03
 // Last Update : 2010-11-19
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
@@ -134,7 +134,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.9.019
+ * @version 5.9.020
  */
 
 /**
@@ -148,7 +148,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
 * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 * @name TCPDF
 * @package com.tecnick.tcpdf
-* @version 5.9.019
+* @version 5.9.020
 * @author Nicola Asuni - info@tecnick.com
 * @link http://www.tcpdf.org
 * @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -161,7 +161,7 @@ class TCPDF {
 	 * @var current TCPDF version
 	 * @access private
 	 */
-	private $tcpdf_version = '5.9.019';
+	private $tcpdf_version = '5.9.020';
 
 	// Protected properties
 
@@ -3624,6 +3624,7 @@ class TCPDF {
 		}
 		// save current graphic settings
 		$gvars = $this->getGraphicVars();
+		$this->setEqualColumns();
 		$this->lastpage(true);
 		$this->SetAutoPageBreak(false);
 		$this->x = 0;

@@ -1,3 +1,6 @@
+5.9.020 (2010-11-20)
+	- A problem related to additional page when using multicolumn mode was fixed.
+
 5.9.019 (2010-11-19)
 	- An SVG bug was fixed.
 	- ImageSVG() and ImageEPS() methods now accepts image data streams (put the string on the $file parameter preceded by '@' character).
