@@ -1,3 +1,8 @@
+5.9.019 (2010-11-19)
+	- An SVG bug was fixed.
+	- ImageSVG() and ImageEPS() methods now accepts image data streams (put the string on the $file parameter preceded by '@' character).
+	- Option 'E' was added to the $dest parameter of Output() method to return the document as base64 mime multi-part email attachment (RFC 2045).
+
 5.9.018 (2010-11-19)
 	- An SVG bug was fixed.
 

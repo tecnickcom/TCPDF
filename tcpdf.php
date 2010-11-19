@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.018
+// Version     : 5.9.019
 // Begin       : 2002-08-03
 // Last Update : 2010-11-19
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
@@ -134,7 +134,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.9.018
+ * @version 5.9.019
  */
 
 /**
@@ -148,7 +148,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
 * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 * @name TCPDF
 * @package com.tecnick.tcpdf
-* @version 5.9.018
+* @version 5.9.019
 * @author Nicola Asuni - info@tecnick.com
 * @link http://www.tcpdf.org
 * @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -161,7 +161,7 @@ class TCPDF {
 	 * @var current TCPDF version
 	 * @access private
 	 */
-	private $tcpdf_version = '5.9.018';
+	private $tcpdf_version = '5.9.019';
 
 	// Protected properties
 
@@ -7909,7 +7909,7 @@ class TCPDF {
 	 * In the last case, the plug-in may be used (if present) or a download ("Save as" dialog box) may be forced.<br />
 	 * The method first calls Close() if necessary to terminate the document.
 	 * @param string $name The name of the file when saved. Note that special characters are removed and blanks characters are replaced with the underscore character.
-	 * @param string $dest Destination where to send the document. It can take one of the following values:<ul><li>I: send the file inline to the browser (default). The plug-in is used if available. The name given by name is used when one selects the "Save as" option on the link generating the PDF.</li><li>D: send to the browser and force a file download with the name given by name.</li><li>F: save to a local server file with the name given by name.</li><li>S: return the document as a string. name is ignored.</li><li>FI: equivalent to F + I option</li><li>FD: equivalent to F + D option</li></ul>
+	 * @param string $dest Destination where to send the document. It can take one of the following values:<ul><li>I: send the file inline to the browser (default). The plug-in is used if available. The name given by name is used when one selects the "Save as" option on the link generating the PDF.</li><li>D: send to the browser and force a file download with the name given by name.</li><li>F: save to a local server file with the name given by name.</li><li>S: return the document as a string (name is ignored).</li><li>FI: equivalent to F + I option</li><li>FD: equivalent to F + D option</li><li>E: return the document as base64 mime multi-part email attachment (RFC 2045)</li></ul>
 	 * @access public
 	 * @since 1.0
 	 * @see Close()
@@ -8089,6 +8089,16 @@ class TCPDF {
 					echo file_get_contents($name);
 				}
 				break;
+			}
+			case 'E': {
+				// Return PDF as base64 mime multi-part email attachment (RFC 2045)
+				$retval = 'Content-Type: application/pdf;'."\r\n";
+				$retval .= ' name="'.$name.'"'."\r\n";
+				$retval .= 'Content-Transfer-Encoding: base64'."\r\n";
+				$retval .= 'Content-Disposition: attachment;'."\r\n";
+				$retval .= ' filename="'.$name.'"'."\r\n\r\n";
+				$retval .= chunk_split(base64_encode($this->getBuffer()), 76, "\r\n");
+				return $retval;
 			}
 			case 'S': {
 				// Returns PDF as a string
@@ -16415,7 +16425,7 @@ class TCPDF {
 	 * NOTE: EPS is not yet fully implemented, use the setRasterizeVectorImages() method to enable/disable rasterization of vector images using ImageMagick library.
 	 * Only vector drawing is supported, not text or bitmap.
 	 * Although the script was successfully tested with various AI format versions, best results are probably achieved with files that were exported in the AI3 format (tested with Illustrator CS2, Freehand MX and Photoshop CS2).
-	 * @param string $file Name of the file containing the image.
+	 * @param string $file Name of the file containing the image or a '@' character followed by the EPS/AI data string.
 	 * @param float $x Abscissa of the upper-left corner.
 	 * @param float $y Ordinate of the upper-left corner.
 	 * @param float $w Width of the image in the page. If not specified or equal to zero, it is automatically calculated.
@@ -16444,7 +16454,11 @@ class TCPDF {
 		// check page for no-write regions and adapt page margins if necessary
 		$this->checkPageRegions($h, $x, $y);
 		$k = $this->k;
-		$data = file_get_contents($file);
+		if ($file{0} === '@') { // image from string
+			$data = substr($file, 1);
+		} else { // EPS/AI file
+			$data = file_get_contents($file);
+		}
 		if ($data === false) {
 			$this->Error('EPS file not found: '.$file);
 		}
@@ -24310,7 +24324,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	/**
 	 * Embedd a Scalable Vector Graphics (SVG) image.
 	 * NOTE: SVG standard is not yet fully implemented, use the setRasterizeVectorImages() method to enable/disable rasterization of vector images using ImageMagick library.
-	 * @param string $file Name of the SVG file.
+	 * @param string $file Name of the SVG file or a '@' character followed by the SVG data string.
 	 * @param float $x Abscissa of the upper-left corner.
 	 * @param float $y Ordinate of the upper-left corner.
 	 * @param float $w Width of the image in the page. If not specified or equal to zero, it is automatically calculated.
@@ -24329,8 +24343,13 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			// convert SVG to raster image using GD or ImageMagick libraries
 			return $this->Image($file, $x, $y, $w, $h, 'SVG', $link, $align, true, 300, $palign, false, false, $border, false, false, false);
 		}
-		$this->svgdir = dirname($file);
-		$svgdata = file_get_contents($file);
+		if ($file{0} === '@') { // image from string
+			$this->svgdir = '';
+			$svgdata = substr($file, 1);
+		} else { // SVG file
+			$this->svgdir = dirname($file);
+			$svgdata = file_get_contents($file);
+		}
 		if ($svgdata === false) {
 			$this->Error('SVG file not found: '.$file);
 		}
@@ -25063,7 +25082,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$paths = array();
 		$d = str_replace('-', ' -', $d);
 		$d = str_replace('+', ' +', $d);
-		preg_match_all('/([a-zA-Z])[\s]*([^a-zA-Z\"]*)/si', $d, $paths, PREG_SET_ORDER);
+		$d = str_replace('e ', 'e', $d);
+		preg_match_all('/([ACHLMQSTVZ])[\s]*([^ACHLMQSTVZ\"]*)/si', $d, $paths, PREG_SET_ORDER);
 		$x = 0;
 		$y = 0;
 		$x1 = 0;
