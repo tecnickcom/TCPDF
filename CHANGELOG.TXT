@@ -1,3 +1,6 @@
+5.9.018 (2010-11-19)
+	- An SVG bug was fixed.
+
 5.9.017 (2010-11-16)
 	- Tagline color was set to transparent.
 	- The method fixHTMLCode() was added to automatically clean up HTML code (requires HTML Tidy).

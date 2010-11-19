@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.017
+// Version     : 5.9.018
 // Begin       : 2002-08-03
-// Last Update : 2010-11-16
+// Last Update : 2010-11-19
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -134,7 +134,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.9.017
+ * @version 5.9.018
  */
 
 /**
@@ -148,7 +148,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
 * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 * @name TCPDF
 * @package com.tecnick.tcpdf
-* @version 5.9.017
+* @version 5.9.018
 * @author Nicola Asuni - info@tecnick.com
 * @link http://www.tcpdf.org
 * @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -161,7 +161,7 @@ class TCPDF {
 	 * @var current TCPDF version
 	 * @access private
 	 */
-	private $tcpdf_version = '5.9.017';
+	private $tcpdf_version = '5.9.018';
 
 	// Protected properties
 
@@ -12945,12 +12945,14 @@ class TCPDF {
 	 * @param float $angf: Angle finish of draw line. Default value: 360.
 	 * @param boolean $pie if true do not mark the border point (used to draw pie sectors).
 	 * @param integer $nc Number of curves used to draw a 90 degrees portion of ellipse.
+	 * @param boolean $startpoint if true output a starting point
+	 * @param boolean $ccw if true draws in counter-clockwise
 	 * @return array bounding box coordinates (x min, y min, x max, y max)
 	 * @author Nicola Asuni
 	 * @access protected
 	 * @since 4.9.019 (2010-04-26)
 	 */
-	protected function _outellipticalarc($xc, $yc, $rx, $ry, $xang=0, $angs=0, $angf=360, $pie=false, $nc=2) {
+	protected function _outellipticalarc($xc, $yc, $rx, $ry, $xang=0, $angs=0, $angf=360, $pie=false, $nc=2, $startpoint=true, $ccw=true) {
 		$k = $this->k;
 		if ($nc < 2) {
 			$nc = 2;
@@ -12974,9 +12976,12 @@ class TCPDF {
 		if ($af < 0) {
 			$af += (2 * M_PI);
 		}
-		if ($as > $af) {
-			// reverse rotation go clockwise
+		if ($ccw AND ($as > $af)) {
+			// reverse rotation
 			$as -= (2 * M_PI);
+		} elseif (!$ccw AND ($as < $af)) {
+			// reverse rotation
+			$af -= (2 * M_PI);
 		}
 		$total_angle = ($af - $as);
 		if ($nc < 2) {
@@ -13004,8 +13009,10 @@ class TCPDF {
 		$qx1 = ($alpha * ((-$rx * $cos_xang * $sin_ang) - ($ry * $sin_xang * $cos_ang)));
 		$qy1 = ($alpha * ((-$rx * $sin_xang * $sin_ang) + ($ry * $cos_xang * $cos_ang)));
 		if ($pie) {
+			// line from center to arc starting point
 			$this->_outLine($px1, $this->h - $py1);
-		} else {
+		} elseif ($startpoint) {
+			// arc starting point
 			$this->_outPoint($px1, $this->h - $py1);
 		}
 		// draw arcs
@@ -19236,7 +19243,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						if ((!$this->newline) AND ($key < ($maxel - 1))
 							AND ( (is_numeric($fontsize) AND ($fontsize >= 0) AND is_numeric($curfontsize) AND ($curfontsize >= 0) AND ($fontsize != $curfontsize))
 								OR ($this->cell_height_ratio != $dom[$key]['line-height']))
-								OR ($dom[$key]['tag'] AND $dom[$key]['opening'] AND ($dom[$key]['value'] == 'li')) ) { //DEBUG
+								OR ($dom[$key]['tag'] AND $dom[$key]['opening'] AND ($dom[$key]['value'] == 'li')) ) {
 							if ($this->page > $startlinepage) {
 								// fix lines splitted over two pages
 								if (isset($this->footerlen[$startlinepage])) {
@@ -24847,7 +24854,6 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					$gradient['coords'][1] = $ya;
 					$gradient['coords'][2] = $xb;
 					$gradient['coords'][3] = $yb;
-
 				}
 				// convert SVG coordinates to user units
 				$gradient['coords'][0] = $this->getHTMLUnitToUnits($gradient['coords'][0], 0, $this->svgunit, false);
@@ -25321,23 +25327,28 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 								$dang += (2 * M_PI);
 							}
 							$angf = $angs - $dang;
-							if (($fs == 1) AND ($angs > $angf)) {
+							if ((($fs == 0) AND ($angs > $angf)) OR (($fs == 1) AND ($angs < $angf))) {
+								// reverse angles
 								$tmp = $angs;
 								$angs = $angf;
 								$angf = $tmp;
 							}
-							$angs = rad2deg($angs);
-							$angf = rad2deg($angf);
+							$angs = round(rad2deg($angs), 6);
+							$angf = round(rad2deg($angf), 6);
+							// covent angles to positive values
+							if (($angs < 0) AND ($angf < 0)) {
+								$angs += 360;
+								$angf += 360;
+							}
 							$pie = false;
-							if ((isset($paths[($key + 1)][1])) AND (trim($paths[($key + 1)][1]) == 'z')) {
+							if (($key==0) AND (isset($paths[($key + 1)][1])) AND (trim($paths[($key + 1)][1]) == 'z')) {
 								$pie = true;
 							}
-							list($xmin, $ymin, $xmax, $ymax) = $this->_outellipticalarc($cx, $cy, $rx, $ry, $ang, $angs, $angf, $pie, 2);
-							$this->_outPoint($x, $y);
-							$xmin = min($xmin, $x);
-							$ymin = min($ymin, $y);
-							$xmax = max($xmax, $x);
-							$ymax = max($ymax, $y);
+							list($axmin, $aymin, $axmax, $aymax) = $this->_outellipticalarc($cx, $cy, $rx, $ry, $ang, $angs, $angf, $pie, 2, false, ($fs == 0));
+							$xmin = min($xmin, $x, $axmin);
+							$ymin = min($ymin, $y, $aymin);
+							$xmax = max($xmax, $x, $axmax);
+							$ymax = max($ymax, $y, $aymax);
 							if ($relcoord) {
 								$xoffset = $x;
 								$yoffset = $y;
