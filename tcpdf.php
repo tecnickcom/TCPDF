@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.020
+// Version     : 5.9.021
 // Begin       : 2002-08-03
-// Last Update : 2010-11-19
+// Last Update : 2010-11-20
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -134,7 +134,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.9.020
+ * @version 5.9.021
  */
 
 /**
@@ -148,7 +148,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
 * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 * @name TCPDF
 * @package com.tecnick.tcpdf
-* @version 5.9.020
+* @version 5.9.021
 * @author Nicola Asuni - info@tecnick.com
 * @link http://www.tcpdf.org
 * @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -161,7 +161,7 @@ class TCPDF {
 	 * @var current TCPDF version
 	 * @access private
 	 */
-	private $tcpdf_version = '5.9.020';
+	private $tcpdf_version = '5.9.021';
 
 	// Protected properties
 
@@ -21782,11 +21782,16 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 
 	/**
 	 * Set the default bullet to be used as LI bullet symbol
-	 * @param string $symbol character or string to be used (legal values are: '' = automatic, '!' = auto bullet, '#' = auto numbering, 'disc', 'disc', 'circle', 'square', '1', 'decimal', 'decimal-leading-zero', 'i', 'lower-roman', 'I', 'upper-roman', 'a', 'lower-alpha', 'lower-latin', 'A', 'upper-alpha', 'upper-latin', 'lower-greek')
+	 * @param string $symbol character or string to be used (legal values are: '' = automatic, '!' = auto bullet, '#' = auto numbering, 'disc', 'disc', 'circle', 'square', '1', 'decimal', 'decimal-leading-zero', 'i', 'lower-roman', 'I', 'upper-roman', 'a', 'lower-alpha', 'lower-latin', 'A', 'upper-alpha', 'upper-latin', 'lower-greek', 'img|type|width|height|image.ext')
 	 * @access public
 	 * @since 4.0.028 (2008-09-26)
 	 */
 	public function setLIsymbol($symbol='!') {
+		// check for custom image symbol
+		if (substr($symbol, 0, 4) == 'img|') {
+			$this->lisymbol = $symbol;
+			return;
+		}
 		$symbol = strtolower($symbol);
 		switch ($symbol) {
 			case '!' :
@@ -22074,6 +22079,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		} elseif ($listtype == '#') {
 			// set default list type for ordered list
 			$listtype = 'decimal';
+		} elseif(substr($listtype, 0, 4) == 'img|') {
+			// custom image type ('img|type|width|height|image.ext')
+			$img = explode('|', $listtype);
+			$listtype = 'img';
 		}
 		switch ($listtype) {
 			// unordered types
@@ -22103,7 +22112,35 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				} else {
 					$this->x -= $lspace;
 				}
-				$this->Rect($this->x, ($this->y + (($this->lasth - $l)/ 2)), $l, $l, 'F', array(), $color);
+				$this->Rect($this->x, ($this->y + (($this->lasth - $l) / 2)), $l, $l, 'F', array(), $color);
+				break;
+			}
+			case 'img': {
+				// 1=>type, 2=>width, 3=>height, 4=>image.ext
+				$lspace += $img[2];
+				if ($this->rtl) {;
+					$this->x += $lspace;
+				} else {
+					$this->x -= $lspace;
+				}
+				$imgtype = strtolower($img[1]);
+				$prev_y = $this->y;
+				switch ($imgtype) {
+					case 'svg': {
+						$this->ImageSVG($img[4], $this->x, ($this->y + (($this->lasth - $img[3]) / 2)), $img[2], $img[3], '', 'T', '', 0, false);
+						break;
+					}
+					case 'ai':
+					case 'eps': {
+						$this->ImageEps($img[4], $this->x, ($this->y + (($this->lasth - $img[3]) / 2)), $img[2], $img[3], '', true, 'T', '', 0, false);
+						break;
+					}
+					default: {
+						$this->Image($img[4], $this->x, ($this->y + (($this->lasth - $img[3]) / 2)), $img[2], $img[3], $img[1], '', 'T', false, 300, '', false, false, 0, false, false, false);
+						break;
+					}
+				}
+				$this->y = $prev_y;
 				break;
 			}
 			// ordered types
@@ -25081,9 +25118,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			return;
 		}
 		$paths = array();
-		$d = str_replace('-', ' -', $d);
-		$d = str_replace('+', ' +', $d);
-		$d = str_replace('e ', 'e', $d);
+		$d = preg_replace('/([0-9ACHLMQSTVZ])([\-\+])/si', '\\1 \\2', $d);
 		preg_match_all('/([ACHLMQSTVZ])[\s]*([^ACHLMQSTVZ\"]*)/si', $d, $paths, PREG_SET_ORDER);
 		$x = 0;
 		$y = 0;

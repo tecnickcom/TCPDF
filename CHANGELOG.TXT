@@ -1,4 +1,8 @@
-5.9.020 (2010-11-20)
+5.9.021 (2010-11-20)
+	- Support for custom bullet points images was added (check the example n.6)
+	- Examples n. 6 and 61 were update (check the comments inside).
+
+5.9.020 (2010-11-19)
 	- A problem related to additional page when using multicolumn mode was fixed.
 
 5.9.019 (2010-11-19)
