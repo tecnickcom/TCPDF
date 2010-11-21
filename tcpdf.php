@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.021
+// Version     : 5.9.022
 // Begin       : 2002-08-03
-// Last Update : 2010-11-20
+// Last Update : 2010-11-21
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -134,7 +134,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.9.021
+ * @version 5.9.022
  */
 
 /**
@@ -148,7 +148,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
 * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 * @name TCPDF
 * @package com.tecnick.tcpdf
-* @version 5.9.021
+* @version 5.9.022
 * @author Nicola Asuni - info@tecnick.com
 * @link http://www.tcpdf.org
 * @license http://www.gnu.org/copyleft/lesser.html LGPL
@@ -161,7 +161,7 @@ class TCPDF {
 	 * @var current TCPDF version
 	 * @access private
 	 */
-	private $tcpdf_version = '5.9.021';
+	private $tcpdf_version = '5.9.022';
 
 	// Protected properties
 
@@ -2957,9 +2957,9 @@ class TCPDF {
 	 * Unicode and PCRE unicode support: '/[^\S\P{Z}\xa0]/u'
 	 * Unicode and PCRE unicode support in Chinese mode: '/[^\S\P{Z}\P{Lo}\xa0]/u'
 	 * if PCRE unicode support is turned ON (\P is the negate class of \p):
-	 * 	\p{Z} or \p{Separator}: any kind of Unicode whitespace or invisible separator.
-	 * 	\p{Lo} or \p{Other_Letter}: a Unicode letter or ideograph that does not have lowercase and uppercase variants.
-	 * 	\p{Lo} is needed for Chinese characters because are packed next to each other without spaces in between.
+	 * \p{Z} or \p{Separator}: any kind of Unicode whitespace or invisible separator.
+	 * \p{Lo} or \p{Other_Letter}: a Unicode letter or ideograph that does not have lowercase and uppercase variants.
+	 * \p{Lo} is needed for Chinese characters because are packed next to each other without spaces in between.
 	 * </pre>
 	 * @param string $re regular expression (leave empty for default).
 	 * @access public
@@ -3851,12 +3851,12 @@ class TCPDF {
 	}
 
 	/**
- 	 * Set start-writing mark on current page stream used to put borders and fills.
- 	 * Borders and fills are always created after content and inserted on the position marked by this method.
- 	 * This function must be called after calling Image() function for a background image.
- 	 * Background images must be always inserted before calling Multicell() or WriteHTMLCell() or WriteHTML() functions.
- 	 * @access public
- 	 * @since 4.0.016 (2008-07-30)
+	 * Set start-writing mark on current page stream used to put borders and fills.
+	 * Borders and fills are always created after content and inserted on the position marked by this method.
+	 * This function must be called after calling Image() function for a background image.
+	 * Background images must be always inserted before calling Multicell() or WriteHTMLCell() or WriteHTML() functions.
+	 * @access public
+	 * @since 4.0.016 (2008-07-30)
 	 */
 	public function setPageMark() {
 		$this->intmrk[$this->page] = $this->pagelen[$this->page];
@@ -3865,11 +3865,11 @@ class TCPDF {
 	}
 
 	/**
- 	 * Set start-writing mark on selected page.
- 	 * Borders and fills are always created after content and inserted on the position marked by this method.
- 	 * @param int $page page number (default is the current page)
- 	 * @access protected
- 	 * @since 4.6.021 (2009-07-20)
+	 * Set start-writing mark on selected page.
+	 * Borders and fills are always created after content and inserted on the position marked by this method.
+	 * @param int $page page number (default is the current page)
+	 * @access protected
+	 * @since 4.6.021 (2009-07-20)
 	 */
 	protected function setContentMark($page=0) {
 		if ($page <= 0) {
@@ -3883,7 +3883,7 @@ class TCPDF {
 	}
 
 	/**
- 	 * Set header data.
+	 * Set header data.
 	 * @param string $ln header image logo
 	 * @param string $lw header image logo width in mm
 	 * @param string $ht string to print as title on document header
@@ -3898,8 +3898,8 @@ class TCPDF {
 	}
 
 	/**
- 	 * Returns header data:
- 	 * <ul><li>$ret['logo'] = logo image</li><li>$ret['logo_width'] = width of the image logo in user units</li><li>$ret['title'] = header title</li><li>$ret['string'] = header description string</li></ul>
+	 * Returns header data:
+	 * <ul><li>$ret['logo'] = logo image</li><li>$ret['logo_width'] = width of the image logo in user units</li><li>$ret['title'] = header title</li><li>$ret['string'] = header description string</li></ul>
 	 * @return array()
 	 * @access public
 	 * @since 4.0.012 (2008-07-24)
@@ -3914,7 +3914,7 @@ class TCPDF {
 	}
 
 	/**
- 	 * Set header margin.
+	 * Set header margin.
 	 * (minimum distance between header and top page margin)
 	 * @param int $hm distance in user units
 	 * @access public
@@ -3924,7 +3924,7 @@ class TCPDF {
 	}
 
 	/**
- 	 * Returns header margin in user units.
+	 * Returns header margin in user units.
 	 * @return float
 	 * @since 4.0.012 (2008-07-24)
 	 * @access public
@@ -3934,7 +3934,7 @@ class TCPDF {
 	}
 
 	/**
- 	 * Set footer margin.
+	 * Set footer margin.
 	 * (minimum distance between footer and bottom page margin)
 	 * @param int $fm distance in user units
 	 * @access public
@@ -3944,7 +3944,7 @@ class TCPDF {
 	}
 
 	/**
- 	 * Returns footer margin in user units.
+	 * Returns footer margin in user units.
 	 * @return float
 	 * @since 4.0.012 (2008-07-24)
 	 * @access public
@@ -3953,7 +3953,7 @@ class TCPDF {
 		return $this->footer_margin;
 	}
 	/**
- 	 * Set a flag to print page header.
+	 * Set a flag to print page header.
 	 * @param boolean $val set to true to print the page header (default), false otherwise.
 	 * @access public
 	 */
@@ -3962,7 +3962,7 @@ class TCPDF {
 	}
 
 	/**
- 	 * Set a flag to print page footer.
+	 * Set a flag to print page footer.
 	 * @param boolean $value set to true to print the page footer (default), false otherwise.
 	 * @access public
 	 */
@@ -3971,7 +3971,7 @@ class TCPDF {
 	}
 
 	/**
- 	 * Return the right-bottom (or left-bottom for RTL) corner X coordinate of last inserted image
+	 * Return the right-bottom (or left-bottom for RTL) corner X coordinate of last inserted image
 	 * @return float
 	 * @access public
 	 */
@@ -3980,7 +3980,7 @@ class TCPDF {
 	}
 
 	/**
- 	 * Return the right-bottom (or left-bottom for RTL) corner Y coordinate of last inserted image
+	 * Return the right-bottom (or left-bottom for RTL) corner Y coordinate of last inserted image
 	 * @return float
 	 * @access public
 	 */
@@ -3989,8 +3989,8 @@ class TCPDF {
 	}
 
 	/**
- 	 * This method is used to render the page header.
- 	 * It is automatically called by AddPage() and could be overwritten in your own inherited class.
+	 * This method is used to render the page header.
+	 * It is automatically called by AddPage() and could be overwritten in your own inherited class.
 	 * @access public
 	 */
 	public function Header() {
@@ -4038,8 +4038,8 @@ class TCPDF {
 	}
 
 	/**
- 	 * This method is used to render the page footer.
- 	 * It is automatically called by AddPage() and could be overwritten in your own inherited class.
+	 * This method is used to render the page footer.
+	 * It is automatically called by AddPage() and could be overwritten in your own inherited class.
 	 * @access public
 	 */
 	public function Footer() {
@@ -4085,9 +4085,9 @@ class TCPDF {
 	}
 
 	/**
- 	 * This method is used to render the page header.
- 	 * @access protected
- 	 * @since 4.0.012 (2008-07-24)
+	 * This method is used to render the page header.
+	 * @access protected
+	 * @since 4.0.012 (2008-07-24)
 	 */
 	protected function setHeader() {
 		if ($this->print_header) {
@@ -4122,9 +4122,9 @@ class TCPDF {
 	}
 
 	/**
- 	 * This method is used to render the page footer.
- 	 * @access protected
- 	 * @since 4.0.012 (2008-07-24)
+	 * This method is used to render the page footer.
+	 * @access protected
+	 * @since 4.0.012 (2008-07-24)
 	 */
 	protected function setFooter() {
 		//Page footer
@@ -4173,9 +4173,9 @@ class TCPDF {
 	}
 
 	/**
- 	 * This method is used to render the table header on new page (if any).
- 	 * @access protected
- 	 * @since 4.5.030 (2009-03-25)
+	 * This method is used to render the table header on new page (if any).
+	 * @access protected
+	 * @since 4.5.030 (2009-03-25)
 	 */
 	protected function setTableHeader() {
 		if ($this->num_columns > 1) {
@@ -6902,7 +6902,7 @@ class TCPDF {
 		}
 	}
 
- 	/**
+	/**
 	 * Extract a slice of the $strarr array and return it as string.
 	 * @param string $strarr The input array of characters.
 	 * @param int $start the starting element of $strarr.
@@ -6924,7 +6924,7 @@ class TCPDF {
 		return $string;
 	}
 
- 	/**
+	/**
 	 * Extract a slice of the $uniarr array and return it as string.
 	 * @param string $uniarr The input array of characters.
 	 * @param int $start the starting element of $strarr.
@@ -6947,7 +6947,7 @@ class TCPDF {
 		return $string;
 	}
 
- 	/**
+	/**
 	 * Convert an array of UTF8 values to array of unicode characters
 	 * @param string $ta The input array of UTF8 values.
 	 * @return Return array of unicode characters
@@ -8825,63 +8825,63 @@ class TCPDF {
 							if (isset($pl['opt']['h']) AND in_array($pl['opt']['h'], $hmode)) {
 								$annots .= ' /H /'.$pl['opt']['h'];
 							}
-						 	if (isset($pl['opt']['mk']) AND (is_array($pl['opt']['mk'])) AND !empty($pl['opt']['mk'])) {
-						 		$annots .= ' /MK <<';
-						 		if (isset($pl['opt']['mk']['r'])) {
-						 			$annots .= ' /R '.$pl['opt']['mk']['r'];
-						 		}
-						 		if (isset($pl['opt']['mk']['bc']) AND (is_array($pl['opt']['mk']['bc']))) {
-						 			$annots .= ' /BC [';
-						 			foreach($pl['opt']['mk']['bc'] AS $col) {
-						 				$col = intval($col);
+							if (isset($pl['opt']['mk']) AND (is_array($pl['opt']['mk'])) AND !empty($pl['opt']['mk'])) {
+								$annots .= ' /MK <<';
+								if (isset($pl['opt']['mk']['r'])) {
+									$annots .= ' /R '.$pl['opt']['mk']['r'];
+								}
+								if (isset($pl['opt']['mk']['bc']) AND (is_array($pl['opt']['mk']['bc']))) {
+									$annots .= ' /BC [';
+									foreach($pl['opt']['mk']['bc'] AS $col) {
+										$col = intval($col);
 										$color = $col <= 0 ? 0 : ($col >= 255 ? 1 : $col / 255);
-						 				$annots .= sprintf(' %.2F', $color);
-						 			}
-						 			$annots .= ']';
-						 		}
-						 		if (isset($pl['opt']['mk']['bg']) AND (is_array($pl['opt']['mk']['bg']))) {
-						 			$annots .= ' /BG [';
-						 			foreach($pl['opt']['mk']['bg'] AS $col) {
-						 				$col = intval($col);
+										$annots .= sprintf(' %.2F', $color);
+									}
+									$annots .= ']';
+								}
+								if (isset($pl['opt']['mk']['bg']) AND (is_array($pl['opt']['mk']['bg']))) {
+									$annots .= ' /BG [';
+									foreach($pl['opt']['mk']['bg'] AS $col) {
+										$col = intval($col);
 										$color = $col <= 0 ? 0 : ($col >= 255 ? 1 : $col / 255);
-						 				$annots .= sprintf(' %.2F', $color);
-						 			}
-						 			$annots .= ']';
-						 		}
-						 		if (isset($pl['opt']['mk']['ca'])) {
-						 			$annots .= ' /CA '.$pl['opt']['mk']['ca'];
-						 		}
-						 		if (isset($pl['opt']['mk']['rc'])) {
-						 			$annots .= ' /RC '.$pl['opt']['mk']['rc'];
-						 		}
-						 		if (isset($pl['opt']['mk']['ac'])) {
-						 			$annots .= ' /AC '.$pl['opt']['mk']['ac'];
-						 		}
-						 		if (isset($pl['opt']['mk']['i'])) {
-						 			$info = $this->getImageBuffer($pl['opt']['mk']['i']);
-						 			if ($info !== false) {
-						 				$annots .= ' /I '.$info['n'].' 0 R';
-						 			}
-						 		}
-						 		if (isset($pl['opt']['mk']['ri'])) {
-						 			$info = $this->getImageBuffer($pl['opt']['mk']['ri']);
-						 			if ($info !== false) {
-						 				$annots .= ' /RI '.$info['n'].' 0 R';
-						 			}
-						 		}
-						 		if (isset($pl['opt']['mk']['ix'])) {
-						 			$info = $this->getImageBuffer($pl['opt']['mk']['ix']);
-						 			if ($info !== false) {
-						 				$annots .= ' /IX '.$info['n'].' 0 R';
-						 			}
-						 		}
-						 		if (isset($pl['opt']['mk']['if']) AND (is_array($pl['opt']['mk']['if'])) AND !empty($pl['opt']['mk']['if'])) {
-						 			$annots .= ' /IF <<';
-						 			$if_sw = array('A', 'B', 'S', 'N');
+										$annots .= sprintf(' %.2F', $color);
+									}
+									$annots .= ']';
+								}
+								if (isset($pl['opt']['mk']['ca'])) {
+									$annots .= ' /CA '.$pl['opt']['mk']['ca'];
+								}
+								if (isset($pl['opt']['mk']['rc'])) {
+									$annots .= ' /RC '.$pl['opt']['mk']['rc'];
+								}
+								if (isset($pl['opt']['mk']['ac'])) {
+									$annots .= ' /AC '.$pl['opt']['mk']['ac'];
+								}
+								if (isset($pl['opt']['mk']['i'])) {
+									$info = $this->getImageBuffer($pl['opt']['mk']['i']);
+									if ($info !== false) {
+										$annots .= ' /I '.$info['n'].' 0 R';
+									}
+								}
+								if (isset($pl['opt']['mk']['ri'])) {
+									$info = $this->getImageBuffer($pl['opt']['mk']['ri']);
+									if ($info !== false) {
+										$annots .= ' /RI '.$info['n'].' 0 R';
+									}
+								}
+								if (isset($pl['opt']['mk']['ix'])) {
+									$info = $this->getImageBuffer($pl['opt']['mk']['ix']);
+									if ($info !== false) {
+										$annots .= ' /IX '.$info['n'].' 0 R';
+									}
+								}
+								if (isset($pl['opt']['mk']['if']) AND (is_array($pl['opt']['mk']['if'])) AND !empty($pl['opt']['mk']['if'])) {
+									$annots .= ' /IF <<';
+									$if_sw = array('A', 'B', 'S', 'N');
 									if (isset($pl['opt']['mk']['if']['sw']) AND in_array($pl['opt']['mk']['if']['sw'], $if_sw)) {
 										$annots .= ' /SW /'.$pl['opt']['mk']['if']['sw'];
 									}
-						 			$if_s = array('A', 'P');
+									$if_s = array('A', 'P');
 									if (isset($pl['opt']['mk']['if']['s']) AND in_array($pl['opt']['mk']['if']['s'], $if_s)) {
 										$annots .= ' /S /'.$pl['opt']['mk']['if']['s'];
 									}
@@ -8891,21 +8891,21 @@ class TCPDF {
 									if (isset($pl['opt']['mk']['if']['fb']) AND ($pl['opt']['mk']['if']['fb'])) {
 										$annots .= ' /FB true';
 									}
-						 			$annots .= '>>';
-						 		}
-						 		if (isset($pl['opt']['mk']['tp']) AND ($pl['opt']['mk']['tp'] >= 0) AND ($pl['opt']['mk']['tp'] <= 6)) {
-						 			$annots .= ' /TP '.intval($pl['opt']['mk']['tp']);
-						 		} else {
-						 			$annots .= ' /TP 0';
-						 		}
-						 		$annots .= '>>';
-						 	} // end MK
-						 	// --- Entries for field dictionaries ---
-						 	if (isset($this->radiobutton_groups[$n][$pl['txt']])) {
-						 		// set parent
-						 		$annots .= ' /Parent '.$this->radiobutton_groups[$n][$pl['txt']].' 0 R';
-						 	}
-						 	if (isset($pl['opt']['t']) AND is_string($pl['opt']['t'])) {
+									$annots .= '>>';
+								}
+								if (isset($pl['opt']['mk']['tp']) AND ($pl['opt']['mk']['tp'] >= 0) AND ($pl['opt']['mk']['tp'] <= 6)) {
+									$annots .= ' /TP '.intval($pl['opt']['mk']['tp']);
+								} else {
+									$annots .= ' /TP 0';
+								}
+								$annots .= '>>';
+							} // end MK
+							// --- Entries for field dictionaries ---
+							if (isset($this->radiobutton_groups[$n][$pl['txt']])) {
+								// set parent
+								$annots .= ' /Parent '.$this->radiobutton_groups[$n][$pl['txt']].' 0 R';
+							}
+							if (isset($pl['opt']['t']) AND is_string($pl['opt']['t'])) {
 								$annots .= ' /T '.$this->_datastring($pl['opt']['t'], $annot_obj_id);
 							}
 							if (isset($pl['opt']['tu']) AND is_string($pl['opt']['tu'])) {
@@ -8981,26 +8981,26 @@ class TCPDF {
 								$annots .= ' /Q '.intval($pl['opt']['q']);
 							}
 							if (isset($pl['opt']['opt']) AND (is_array($pl['opt']['opt'])) AND !empty($pl['opt']['opt'])) {
-					 			$annots .= ' /Opt [';
-					 			foreach($pl['opt']['opt'] AS $copt) {
-					 				if (is_array($copt)) {
-					 					$annots .= ' ['.$this->_textstring($copt[0], $annot_obj_id).' '.$this->_textstring($copt[1], $annot_obj_id).']';
-					 				} else {
-					 					$annots .= ' '.$this->_textstring($copt, $annot_obj_id);
-					 				}
-					 			}
-					 			$annots .= ']';
-					 		}
-					 		if (isset($pl['opt']['ti'])) {
-					 			$annots .= ' /TI '.intval($pl['opt']['ti']);
-					 		}
-					 		if (isset($pl['opt']['i']) AND (is_array($pl['opt']['i'])) AND !empty($pl['opt']['i'])) {
-					 			$annots .= ' /I [';
-					 			foreach($pl['opt']['i'] AS $copt) {
-					 				$annots .= intval($copt).' ';
-					 			}
-					 			$annots .= ']';
-					 		}
+								$annots .= ' /Opt [';
+								foreach($pl['opt']['opt'] AS $copt) {
+									if (is_array($copt)) {
+										$annots .= ' ['.$this->_textstring($copt[0], $annot_obj_id).' '.$this->_textstring($copt[1], $annot_obj_id).']';
+									} else {
+										$annots .= ' '.$this->_textstring($copt, $annot_obj_id);
+									}
+								}
+								$annots .= ']';
+							}
+							if (isset($pl['opt']['ti'])) {
+								$annots .= ' /TI '.intval($pl['opt']['ti']);
+							}
+							if (isset($pl['opt']['i']) AND (is_array($pl['opt']['i'])) AND !empty($pl['opt']['i'])) {
+								$annots .= ' /I [';
+								foreach($pl['opt']['i'] AS $copt) {
+									$annots .= intval($copt).' ';
+								}
+								$annots .= ']';
+							}
 							break;
 						}
 						case 'screen': {
@@ -11242,7 +11242,7 @@ class TCPDF {
 	/**
 	 * Converts array of UTF-8 characters to UTF16-BE string.<br>
 	 * Based on: http://www.faqs.org/rfcs/rfc2781.html
- 	 * <pre>
+	 * <pre>
 	 *   Encoding UTF-16:
 	 *
 	 *   Encoding of a single character from an ISO 10646 character value to
@@ -11305,7 +11305,7 @@ class TCPDF {
 	// ====================================================
 
 	/**
- 	 * Set header font.
+	 * Set header font.
 	 * @param array $font font
 	 * @access public
 	 * @since 1.1
@@ -11315,8 +11315,8 @@ class TCPDF {
 	}
 
 	/**
- 	 * Get header font.
- 	 * @return array()
+	 * Get header font.
+	 * @return array()
 	 * @access public
 	 * @since 4.0.012 (2008-07-24)
 	 */
@@ -11325,7 +11325,7 @@ class TCPDF {
 	}
 
 	/**
- 	 * Set footer font.
+	 * Set footer font.
 	 * @param array $font font
 	 * @access public
 	 * @since 1.1
@@ -11335,8 +11335,8 @@ class TCPDF {
 	}
 
 	/**
- 	 * Get Footer font.
- 	 * @return array()
+	 * Get Footer font.
+	 * @return array()
 	 * @access public
 	 * @since 4.0.012 (2008-07-24)
 	 */
@@ -11345,7 +11345,7 @@ class TCPDF {
 	}
 
 	/**
- 	 * Set language array.
+	 * Set language array.
 	 * @param array $language
 	 * @access public
 	 * @since 1.1
@@ -13546,7 +13546,7 @@ class TCPDF {
 		$chardata = Array();
 
 		// X1. Begin by setting the current embedding level to the paragraph embedding level. Set the directional override status to neutral. Process each character iteratively, applying rules X2 through X9. Only embedding levels from 0 to 61 are valid in this phase.
-		// 	In the resolution of levels in rules I1 and I2, the maximum embedding level of 62 can be reached.
+		// In the resolution of levels in rules I1 and I2, the maximum embedding level of 62 can be reached.
 		for ($i=0; $i < $numchars; ++$i) {
 			if ($ta[$i] == $this->unicode->uni_RLE) {
 				// X2. With each RLE, compute the least greater odd embedding level.
@@ -16437,11 +16437,12 @@ class TCPDF {
 	 * @param string $palign Allows to center or align the image on the current line. Possible values are:<ul><li>L : left align</li><li>C : center</li><li>R : right align</li><li>'' : empty string : left for LTR or right for RTL</li></ul>
 	 * @param mixed $border Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
 	 * @param boolean $fitonpage if true the image is resized to not exceed page dimensions.
+	 * @param boolean $fixoutvals if true remove values outside the bounding box.
 	 * @author Valentin Schmidt, Nicola Asuni
 	 * @since 3.1.000 (2008-06-09)
 	 * @access public
 	 */
-	public function ImageEps($file, $x='', $y='', $w=0, $h=0, $link='', $useBoundingBox=true, $align='', $palign='', $border=0, $fitonpage=false) {
+	public function ImageEps($file, $x='', $y='', $w=0, $h=0, $link='', $useBoundingBox=true, $align='', $palign='', $border=0, $fitonpage=false, $fixoutvals=false) {
 		if ($this->rasterize_vector_images AND ($w > 0) AND ($h > 0)) {
 			// convert EPS to raster image using GD or ImageMagick libraries
 			return $this->Image($file, $x, $y, $w, $h, 'EPS', $link, $align, true, 300, $palign, false, false, $border, false, false, $fitonpage);
@@ -16486,7 +16487,7 @@ class TCPDF {
 		if (count($regs) > 1) {
 			list($x1, $y1, $x2, $y2) = explode(' ', trim($regs[1]));
 		} else {
-			$this->Error('No BoundingBox found in EPS file: '.$file);
+			$this->Error('No BoundingBox found in EPS/AI file: '.$file);
 		}
 		$start = strpos($data, '%%EndSetup');
 		if ($start === false) {
@@ -16563,8 +16564,7 @@ class TCPDF {
 			$this->_out(sprintf('%.3F %.3F %.3F %.3F %.3F %.3F cm', $scale_x, 0, 0, $scale_y, $x1 * (1 - $scale_x), $y2 * (1 - $scale_y)));
 		}
 		// handle pc/unix/mac line endings
-		preg_match('/[\r\n]+/s', $data, $regs);
-		$lines = explode($regs[0], $data);
+		$lines = preg_split('/[\r\n]+/si', $data, -1, PREG_SPLIT_NO_EMPTY);
 		$u=0;
 		$cnt = count($lines);
 		for ($i=0; $i < $cnt; ++$i) {
@@ -16595,6 +16595,24 @@ class TCPDF {
 				$this->_out(''.$r.' '.$g.' '.$b.' '.($cmd=='Xa'?'rg':'RG')); //substr($line, 0, -2).'rg' -> in EPS (AI8): c m y k r g b rg!
 				continue;
 			}
+			$skip = false;
+			if ($fixoutvals) {
+				// check for values outside the bounding box
+				switch ($cmd) {
+					case 'm':
+					case 'l':
+					case 'L': {
+						// skip values outside bounding box
+						foreach ($chunks as $key => $val) {
+							if ((($key % 2) == 0) AND (($val < $x1) OR ($val > $x2))) {
+								$skip = true;
+							} elseif ((($key % 2) != 0) AND (($val < $y1) OR ($val > $y2))) {
+								$skip = true;
+							}
+						}
+					}
+				}
+			}
 			switch ($cmd) {
 				case 'm':
 				case 'l':
@@ -16613,6 +16631,9 @@ class TCPDF {
 				case 'M':
 				case 'd':
 				case 'n': {
+					if ($skip) {
+						break;
+					}
 					$this->_out($line);
 					break;
 				}
@@ -16649,6 +16670,9 @@ class TCPDF {
 				case 'V':
 				case 'L':
 				case 'C': {
+					if ($skip) {
+						break;
+					}
 					$line{$len-1} = strtolower($cmd);
 					$this->_out($line);
 					break;
@@ -16730,7 +16754,7 @@ class TCPDF {
 	}
 
 	/**
- 	 * Set document barcode.
+	 * Set document barcode.
 	 * @param string $bc barcode
 	 * @access public
 	 */
@@ -16739,7 +16763,7 @@ class TCPDF {
 	}
 
 	/**
- 	 * Get current barcode.
+	 * Get current barcode.
 	 * @return string
 	 * @access public
 	 * @since 4.0.012 (2008-07-24)
@@ -16749,9 +16773,9 @@ class TCPDF {
 	}
 
 	/**
- 	 * Print a Linear Barcode.
- 	 * @param string $code code to print
- 	 * @param string $type type of barcode (see barcodes.php for supported formats).
+	 * Print a Linear Barcode.
+	 * @param string $code code to print
+	 * @param string $type type of barcode (see barcodes.php for supported formats).
 	 * @param int $x x position in user units (empty string = current x position)
 	 * @param int $y y position in user units (empty string = current y position)
 	 * @param int $w width in user units (empty string = remaining page width)
@@ -17070,7 +17094,7 @@ class TCPDF {
 	}
 
 	/**
- 	 * This function is DEPRECATED, please use the new write1DBarcode() function.
+	 * This function is DEPRECATED, please use the new write1DBarcode() function.
 	 * @param int $x x position in user units
 	 * @param int $y y position in user units
 	 * @param int $w width in user units
@@ -17125,9 +17149,9 @@ class TCPDF {
 	}
 
 	/**
- 	 * Print 2D Barcode.
- 	 * @param string $code code to print
- 	 * @param string $type type of barcode (see 2dbarcodes.php for supported formats).
+	 * Print 2D Barcode.
+	 * @param string $code code to print
+	 * @param string $type type of barcode (see 2dbarcodes.php for supported formats).
 	 * @param int $x x position in user units
 	 * @param int $y y position in user units
 	 * @param int $w width in user units
@@ -17604,7 +17628,7 @@ class TCPDF {
 	}
 
 	/**
- 	 * Returns true if the CSS selector is valid for the selected HTML tag
+	 * Returns true if the CSS selector is valid for the selected HTML tag
 	 * @param array $dom array of HTML tags and properties
 	 * @param int $key key of the current HTML tag
 	 * @param string $selector CSS selector string
@@ -17764,7 +17788,7 @@ class TCPDF {
 	}
 
 	/**
- 	 * Returns the styles that apply for the selected HTML tag.
+	 * Returns the styles that apply for the selected HTML tag.
 	 * @param array $dom array of HTML tags and properties
 	 * @param int $key key of the current HTML tag
 	 * @param array $css array of CSS properties
@@ -17794,7 +17818,7 @@ class TCPDF {
 	}
 
 	/**
- 	 * Returns the border width from CSS property
+	 * Returns the border width from CSS property
 	 * @param string $width border width
 	 * @return int with in user units
 	 * @access protected
@@ -17814,7 +17838,7 @@ class TCPDF {
 	}
 
 	/**
- 	 * Returns the border dash style from CSS property
+	 * Returns the border dash style from CSS property
 	 * @param string $style border style to convert
 	 * @return int sash style (return -1 in case of none or hidden border)
 	 * @access protected
@@ -17850,7 +17874,7 @@ class TCPDF {
 	}
 
 	/**
- 	 * Returns the border style array from CSS border properties
+	 * Returns the border style array from CSS border properties
 	 * @param string $cssborder border properties
 	 * @return array containing border properties
 	 * @access protected
@@ -18042,7 +18066,7 @@ class TCPDF {
 	}
 
 	/**
- 	 * Returns the letter-spacing value from CSS value
+	 * Returns the letter-spacing value from CSS value
 	 * @param string $spacing letter-spacing value
 	 * @param float $parent font spacing (tracking/kerning) value of the parent element
 	 * @return float quantity to increases or decreases the space between characters in a text.
@@ -18073,7 +18097,7 @@ class TCPDF {
 	}
 
 	/**
- 	 * Returns the percentage of font stretching from CSS value
+	 * Returns the percentage of font stretching from CSS value
 	 * @param string $stretch stretch mode
 	 * @param float $parent stretch value of the parent element
 	 * @return float font stretching percentage
@@ -18144,7 +18168,7 @@ class TCPDF {
 	}
 
 	/**
- 	 * Returns the HTML DOM array.
+	 * Returns the HTML DOM array.
 	 * @param string $html html code
 	 * @return array
 	 * @access protected
@@ -23367,7 +23391,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @param int $width column width
 	 * @param int $y column starting Y position (leave empty for current Y position)
 	 * @access public
- 	 * @since 4.9.001 (2010-03-28)
+	 * @since 4.9.001 (2010-03-28)
 	 */
 	public function setEqualColumns($numcols=0, $width=0, $y='') {
 		$this->columns = array();
@@ -23400,7 +23424,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * Each column is represented by and array with the following keys: (w = width, s = space between columns, y = column top position).
 	 * @param array $columns
 	 * @access public
- 	 * @since 4.9.001 (2010-03-28)
+	 * @since 4.9.001 (2010-03-28)
 	 */
 	public function setColumnsArray($columns) {
 		$this->columns = $columns;
@@ -23413,7 +23437,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * Set position at a given column
 	 * @param int $col column number (from 0 to getNumberOfColumns()-1); empty string = current column.
 	 * @access public
- 	 * @since 4.9.001 (2010-03-28)
+	 * @since 4.9.001 (2010-03-28)
 	 */
 	public function selectColumn($col='') {
 		if (is_string($col)) {
@@ -23488,7 +23512,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * Return the current column number
 	 * @return int current column number
 	 * @access public
- 	 * @since 5.5.011 (2010-07-08)
+	 * @since 5.5.011 (2010-07-08)
 	 */
 	public function getColumn() {
 		return $this->current_column;
@@ -23498,7 +23522,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * Return the current number of columns.
 	 * @return int number of columns
 	 * @access public
- 	 * @since 5.8.018 (2010-08-25)
+	 * @since 5.8.018 (2010-08-25)
 	 */
 	public function getNumberOfColumns() {
 		return $this->num_columns;
@@ -23509,7 +23533,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @param array $pararray parameters array
 	 * @return sting containing serialized data
 	 * @access public
- 	 * @since 4.9.006 (2010-04-02)
+	 * @since 4.9.006 (2010-04-02)
 	 */
 	public function serializeTCPDFtagParameters($pararray) {
 		return urlencode(serialize($pararray));

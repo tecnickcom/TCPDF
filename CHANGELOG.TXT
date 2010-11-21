@@ -1,3 +1,7 @@
+5.9.022 (2010-11-21)
+	- Method ImageEPS includes support for EPS/AI Spot colors.
+	- Method ImageEPS includes a new parameter $fixoutvals to remove values outside the bounding box.
+
 5.9.021 (2010-11-20)
 	- Support for custom bullet points images was added (check the example n.6)
 	- Examples n. 6 and 61 were update (check the comments inside).
