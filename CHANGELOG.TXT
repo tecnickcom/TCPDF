@@ -1,3 +1,6 @@
+5.9.023 (2010-11-25)
+	- A potential bug on SVG transcoder was fixed.
+
 5.9.022 (2010-11-21)
 	- Method ImageEPS includes support for EPS/AI Spot colors.
 	- Method ImageEPS includes a new parameter $fixoutvals to remove values outside the bounding box.

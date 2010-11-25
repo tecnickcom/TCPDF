@@ -1,11 +1,11 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.022
+// Version     : 5.9.023
 // Begin       : 2002-08-03
-// Last Update : 2010-11-21
+// Last Update : 2010-11-25
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
-// License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
+// License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
 // Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
 //
@@ -14,15 +14,18 @@
 // TCPDF is free software: you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as
 // published by the Free Software Foundation, either version 3 of the
-// License, or (at your option) any later version.
+// License, or (at your option) any later version. Additionally, 
+// YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE 
+// GENERATED PDF DOCUMENTS.
 //
 // TCPDF is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // See the GNU Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public License
-// along with TCPDF.  If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the License
+// along with TCPDF. If not, see
+// <http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT>.
 //
 // See LICENSE.TXT file for more information.
 // -------------------------------------------------------------------
@@ -133,8 +136,8 @@
  * @author Nicola Asuni
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
- * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 5.9.022
+ * @license http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
+ * @version 5.9.023
  */
 
 /**
@@ -148,10 +151,10 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
 * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 * @name TCPDF
 * @package com.tecnick.tcpdf
-* @version 5.9.022
+* @version 5.9.023
 * @author Nicola Asuni - info@tecnick.com
 * @link http://www.tcpdf.org
-* @license http://www.gnu.org/copyleft/lesser.html LGPL
+* @license http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 */
 class TCPDF {
 
@@ -161,7 +164,7 @@ class TCPDF {
 	 * @var current TCPDF version
 	 * @access private
 	 */
-	private $tcpdf_version = '5.9.022';
+	private $tcpdf_version = '5.9.023';
 
 	// Protected properties
 
@@ -5200,7 +5203,6 @@ class TCPDF {
 
 	/**
 	 * Prints a text cell at the specified position.
-	 * The origin is on the left of the first charcter, on the baseline.
 	 * This method allows to place a string precisely on the page.
 	 * @param float $x Abscissa of the cell origin
 	 * @param float $y Ordinate of the cell origin
@@ -23421,7 +23423,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 
 	/**
 	 * Set columns array.
-	 * Each column is represented by and array with the following keys: (w = width, s = space between columns, y = column top position).
+	 * Each column is represented by an array of arrays with the following keys: (w = width, s = space between columns, y = column top position).
 	 * @param array $columns
 	 * @access public
 	 * @since 4.9.001 (2010-03-28)
@@ -25665,18 +25667,22 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				if ($invisible) {
 					break;
 				}
-				$d = trim($attribs['d']);
-				if ($clipping) {
-					$this->SVGTransform($tm);
-					$this->SVGPath($d, 'CNZ');
-				} else {
-					$this->StartTransform();
-					$this->SVGTransform($tm);
-					$obstyle = $this->setSVGStyles($svgstyle, $prev_svgstyle, 0, 0, 1, 1, 'SVGPath', array($d, 'CNZ'));
-					if (!empty($obstyle)) {
-						$this->SVGPath($d, $obstyle);
+				if (isset($attribs['d'])) {
+					$d = trim($attribs['d']);
+					if (!empty($d)) {
+						if ($clipping) {
+							$this->SVGTransform($tm);
+							$this->SVGPath($d, 'CNZ');
+						} else {
+							$this->StartTransform();
+							$this->SVGTransform($tm);
+							$obstyle = $this->setSVGStyles($svgstyle, $prev_svgstyle, 0, 0, 1, 1, 'SVGPath', array($d, 'CNZ'));
+							if (!empty($obstyle)) {
+								$this->SVGPath($d, $obstyle);
+							}
+							$this->StopTransform();
+						}
 					}
-					$this->StopTransform();
 				}
 				break;
 			}

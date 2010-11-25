@@ -3,7 +3,7 @@
 // File name   : spotcolors.php
 // Version     : 1.0.000
 // Begin       : 2010-11-11
-// Last Update : 2010-11-11
+// Last Update : 2010-11-25
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -47,6 +47,7 @@
  * Add here your spot colors ...
  */
 $spotcolor = array (
+	// these are just examples, add your own spot colors ...
 	'pantone116c' => array(0, 20, 100, 0, 'Pantone 116 C'),
 	'pantone288c' => array(100, 60, 10, 5, 'Pantone 288 C'),
 	'hks16k' => array(30, 100, 90, 10, 'HKS 16 K'),
