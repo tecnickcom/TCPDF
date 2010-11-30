@@ -1,3 +1,6 @@
+5.9.024 (2010-11-30)
+	- Bug item #3123612 "SVG not use gradientTransform in percentage mode" was fixed.
+
 5.9.023 (2010-11-25)
 	- A potential bug on SVG transcoder was fixed.
 

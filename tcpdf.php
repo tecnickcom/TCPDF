@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.023
+// Version     : 5.9.024
 // Begin       : 2002-08-03
-// Last Update : 2010-11-25
+// Last Update : 2010-11-30
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -137,7 +137,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
- * @version 5.9.023
+ * @version 5.9.024
  */
 
 /**
@@ -151,7 +151,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
 * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 * @name TCPDF
 * @package com.tecnick.tcpdf
-* @version 5.9.023
+* @version 5.9.024
 * @author Nicola Asuni - info@tecnick.com
 * @link http://www.tcpdf.org
 * @license http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
@@ -164,7 +164,7 @@ class TCPDF {
 	 * @var current TCPDF version
 	 * @access private
 	 */
-	private $tcpdf_version = '5.9.023';
+	private $tcpdf_version = '5.9.024';
 
 	// Protected properties
 
@@ -3422,7 +3422,6 @@ class TCPDF {
 	 * @see Cell(), MultiCell(), AcceptPageBreak()
 	 */
 	public function SetAutoPageBreak($auto, $margin=0) {
-		//Set auto page break mode and triggering margin
 		$this->AutoPageBreak = $auto;
 		$this->bMargin = $margin;
 		$this->PageBreakTrigger = $this->h - $margin;
@@ -3437,7 +3436,6 @@ class TCPDF {
 	 * @since 1.2
 	 */
 	public function SetDisplayMode($zoom, $layout='SinglePage', $mode='UseNone') {
-		//Set display mode in viewer
 		if (($zoom == 'fullpage') OR ($zoom == 'fullwidth') OR ($zoom == 'real') OR ($zoom == 'default') OR (!is_string($zoom))) {
 			$this->ZoomMode = $zoom;
 		} else {
@@ -3515,7 +3513,6 @@ class TCPDF {
 	 * @since 1.4
 	 */
 	public function SetCompression($compress) {
-		//Set page compression
 		if (function_exists('gzcompress')) {
 			$this->compress = $compress ? true : false;
 		} else {
@@ -3531,7 +3528,6 @@ class TCPDF {
 	 * @see SetAuthor(), SetCreator(), SetKeywords(), SetSubject()
 	 */
 	public function SetTitle($title) {
-		//Title of document
 		$this->title = $title;
 	}
 
@@ -3543,7 +3539,6 @@ class TCPDF {
 	 * @see SetAuthor(), SetCreator(), SetKeywords(), SetTitle()
 	 */
 	public function SetSubject($subject) {
-		//Subject of document
 		$this->subject = $subject;
 	}
 
@@ -3555,7 +3550,6 @@ class TCPDF {
 	 * @see SetCreator(), SetKeywords(), SetSubject(), SetTitle()
 	 */
 	public function SetAuthor($author) {
-		//Author of document
 		$this->author = $author;
 	}
 
@@ -3567,7 +3561,6 @@ class TCPDF {
 	 * @see SetAuthor(), SetCreator(), SetSubject(), SetTitle()
 	 */
 	public function SetKeywords($keywords) {
-		//Keywords of document
 		$this->keywords = $keywords;
 	}
 
@@ -3579,7 +3572,6 @@ class TCPDF {
 	 * @see SetAuthor(), SetKeywords(), SetSubject(), SetTitle()
 	 */
 	public function SetCreator($creator) {
-		//Creator of document
 		$this->creator = $creator;
 	}
 
@@ -3606,7 +3598,6 @@ class TCPDF {
 	 * @see AddPage(), Close()
 	 */
 	public function Open() {
-		//Begin document
 		$this->state = 1;
 	}
 
@@ -25594,11 +25585,11 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					$this->svggradients[$this->svggradientid]['gradientUnits'] = 'objectBoundingBox';
 				}
 				//$attribs['spreadMethod']
-				$x1 = (isset($attribs['x1'])?$attribs['x1']:0);
-				$y1 = (isset($attribs['y1'])?$attribs['y1']:0);
-				$x2 = (isset($attribs['x2'])?$attribs['x2']:1);
-				$y2 = (isset($attribs['y2'])?$attribs['y2']:0);
-				if (isset($attribs['x1']) AND (substr($attribs['x1'], -1) != '%')) {
+				$x1 = (isset($attribs['x1'])?$attribs['x1']:'0%');
+				$y1 = (isset($attribs['y1'])?$attribs['y1']:'0%');
+				$x2 = (isset($attribs['x2'])?$attribs['x2']:'100%');
+				$y2 = (isset($attribs['y2'])?$attribs['y2']:'0%');
+				if (substr($x1, -1) != '%') {
 					$this->svggradients[$this->svggradientid]['mode'] = 'measure';
 				} else {
 					$this->svggradients[$this->svggradientid]['mode'] = 'percentage';
