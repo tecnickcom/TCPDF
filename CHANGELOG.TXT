@@ -1,8 +1,12 @@
+5.9.027 (2010-12-01)
+	- Spot Colors are now better integrated with HTML mode.
+	- Method SetDocInfoUnicode() was added to turn on/off Unicode mode for document information dictionary (meta tags) - check the example n. 19.
+
 5.9.026 (2010-12-01)
 	- A problem with mixed text directions on HTML was fixed.
 
 5.9.025 (2010-12-01)
-	- The AddSpotColor() now autmatically fills the spotcolor array (defined on spotcolors.php file).
+	- The AddSpotColor() now automatically fills the spotcolor array (defined on spotcolors.php file).
 
 5.9.024 (2010-11-30)
 	- Bug item #3123612 "SVG not use gradientTransform in percentage mode" was fixed.

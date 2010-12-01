@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.026
+// Version     : 5.9.027
 // Begin       : 2002-08-03
 // Last Update : 2010-12-01
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
@@ -137,7 +137,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
- * @version 5.9.026
+ * @version 5.9.027
  */
 
 /**
@@ -151,7 +151,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
 * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 * @name TCPDF
 * @package com.tecnick.tcpdf
-* @version 5.9.026
+* @version 5.9.027
 * @author Nicola Asuni - info@tecnick.com
 * @link http://www.tcpdf.org
 * @license http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
@@ -164,7 +164,7 @@ class TCPDF {
 	 * @var current TCPDF version
 	 * @access private
 	 */
-	private $tcpdf_version = '5.9.026';
+	private $tcpdf_version = '5.9.027';
 
 	// Protected properties
 
@@ -477,6 +477,12 @@ class TCPDF {
 	 * @access protected
 	 */
 	protected $LayoutMode;
+
+	/**
+	 * @var if true set the document information dictionary in Unicode.
+	 * @access protected
+	 */
+	protected $docinfounicode = true;
 
 	/**
 	 * @var title
@@ -3521,6 +3527,17 @@ class TCPDF {
 	}
 
 	/**
+	 * Turn on/off Unicode mode for document information dictionary (meta tags).
+	 * This has effect only when unicode mode is set to false.
+	 * @param boolean $uni if true set the meta information in Unicode
+	 * @access public
+	 * @since 5.9.027 (2010-12-01)
+	 */
+	public function SetDocInfoUnicode($unicode=true) {
+		$this->docinfounicode = $unicode ? true : false;
+	}
+
+	/**
 	 * Defines the title of the document.
 	 * @param string $title The title.
 	 * @access public
@@ -4339,6 +4356,7 @@ class TCPDF {
 			$this->Error('Undefined spot color: '.$name);
 		}
 		$this->DrawColor = sprintf('/CS%d CS %.3F SCN', $this->spot_colors[$name]['i'], ($tint / 100));
+		$this->strokecolor = array('C' => $this->spot_colors[$name]['c'], 'M' => $this->spot_colors[$name]['m'], 'Y' => $this->spot_colors[$name]['y'], 'K' => $this->spot_colors[$name]['k'], 'name' => $name);
 		if ($this->page > 0) {
 			$this->_out($this->DrawColor);
 		}
@@ -4437,6 +4455,7 @@ class TCPDF {
 			$this->Error('Undefined spot color: '.$name);
 		}
 		$this->FillColor = sprintf('/CS%d cs %.3F scn', $this->spot_colors[$name]['i'], ($tint / 100));
+		$this->bgcolor = array('C' => $this->spot_colors[$name]['c'], 'M' => $this->spot_colors[$name]['m'], 'Y' => $this->spot_colors[$name]['y'], 'K' => $this->spot_colors[$name]['k'], 'name' => $name);
 		$this->ColorFlag = ($this->FillColor != $this->TextColor);
 		if ($this->page > 0) {
 			$this->_out($this->FillColor);
@@ -4527,6 +4546,7 @@ class TCPDF {
 			$this->Error('Undefined spot color: '.$name);
 		}
 		$this->TextColor = sprintf('/CS%d cs %.3F scn', $this->spot_colors[$name]['i'], ($tint / 100));
+		$this->fgcolor = array('C' => $this->spot_colors[$name]['c'], 'M' => $this->spot_colors[$name]['m'], 'Y' => $this->spot_colors[$name]['y'], 'K' => $this->spot_colors[$name]['k'], 'name' => $name);
 		$this->ColorFlag = ($this->FillColor != $this->TextColor);
 		if ($this->page > 0) {
 			$this->_out($this->TextColor);
@@ -10433,6 +10453,11 @@ class TCPDF {
 	protected function _putinfo() {
 		$oid = $this->_newobj();
 		$out = '<<';
+		// store current isunicode value
+		$prev_isunicode = $this->isunicode;
+		if ($this->docinfounicode) {
+			$this->isunicode = true;
+		}
 		if (!$this->empty_string($this->title)) {
 			// The document's title.
 			$out .= ' /Title '.$this->_textstring($this->title, $oid);
@@ -10453,6 +10478,8 @@ class TCPDF {
 			// If the document was converted to PDF from another format, the name of the conforming product that created the original document from which it was converted.
 			$out .= ' /Creator '.$this->_textstring($this->creator, $oid);
 		}
+		// restore previous isunicode value
+		$this->isunicode = $prev_isunicode;
 		// default producer
 		$out .= ' /Producer '.$this->_textstring("\x54\x43\x50\x44\x46\x20".$this->tcpdf_version."\x20\x28\x68\x74\x74\x70\x3a\x2f\x2f\x77\x77\x77\x2e\x74\x63\x70\x64\x66\x2e\x6f\x72\x67\x29", $oid);
 		// The date and time the document was created, in human-readable form
