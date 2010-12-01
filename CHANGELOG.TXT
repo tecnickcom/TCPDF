@@ -1,3 +1,6 @@
+5.9.026 (2010-12-01)
+	- A problem with mixed text directions on HTML was fixed.
+
 5.9.025 (2010-12-01)
 	- The AddSpotColor() now autmatically fills the spotcolor array (defined on spotcolors.php file).
 

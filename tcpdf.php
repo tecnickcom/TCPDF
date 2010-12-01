@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.025
+// Version     : 5.9.026
 // Begin       : 2002-08-03
 // Last Update : 2010-12-01
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
@@ -137,7 +137,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
- * @version 5.9.025
+ * @version 5.9.026
  */
 
 /**
@@ -151,7 +151,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
 * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 * @name TCPDF
 * @package com.tecnick.tcpdf
-* @version 5.9.025
+* @version 5.9.026
 * @author Nicola Asuni - info@tecnick.com
 * @link http://www.tcpdf.org
 * @license http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
@@ -164,7 +164,7 @@ class TCPDF {
 	 * @var current TCPDF version
 	 * @access private
 	 */
-	private $tcpdf_version = '5.9.025';
+	private $tcpdf_version = '5.9.026';
 
 	// Protected properties
 
@@ -18920,6 +18920,7 @@ class TCPDF {
 				$element = str_replace('$nbsp;', $this->unichr(160), $element);
 				$dom[$key]['value'] = stripslashes($this->unhtmlentities($element));
 				$dom[$key]['parent'] = end($level);
+				$dom[$key]['dir'] = $dom[$dom[$key]['parent']]['dir'];
 			}
 			++$elkey;
 			++$key;
@@ -20174,6 +20175,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						// check the next text blocks for continuity
 						$nkey = ($key + 1);
 						$write_block = true;
+						$same_textdir = true;
 						$tmp_fontname = $this->FontFamily;
 						$tmp_fontstyle = $this->FontStyle;
 						$tmp_fontsize = $this->FontSizePt;
@@ -20186,10 +20188,13 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 								$tmp_fontname = isset($dom[$nkey]['fontname']) ? $dom[$nkey]['fontname'] : $this->FontFamily;
 								$tmp_fontstyle = isset($dom[$nkey]['fontstyle']) ? $dom[$nkey]['fontstyle'] : $this->FontStyle;
 								$tmp_fontsize = isset($dom[$nkey]['fontsize']) ? $dom[$nkey]['fontsize'] : $this->FontSizePt;
+								$same_textdir = ($dom[$nkey]['dir'] == $dom[$key]['dir']);
 							} else {
 								$nextstr = preg_split('/'.$this->re_space['p'].'+/'.$this->re_space['m'], $dom[$nkey]['value']);
 								if (isset($nextstr[0])) {
-									$wadj += $this->GetStringWidth($nextstr[0], $tmp_fontname, $tmp_fontstyle, $tmp_fontsize);
+									if ($same_textdir) {
+										$wadj += $this->GetStringWidth($nextstr[0], $tmp_fontname, $tmp_fontstyle, $tmp_fontsize);
+									}
 									++$adjblks;
 								}
 								if (isset($nextstr[1])) {
@@ -20199,7 +20204,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 							++$nkey;
 						}
 						// check for reversed text direction
-						if (($wadj > 0) AND (($this->rtl AND ($this->tmprtl == 'L')) OR (!$this->rtl AND ($this->tmprtl == 'R')))) {
+						if (($wadj > 0) AND (($this->rtl AND ($this->tmprtl === 'L')) OR (!$this->rtl AND ($this->tmprtl === 'R')))) {
 							// LTR text on RTL direction or RTL text on LTR direction
 							$reverse_dir = true;
 							$this->rtl = !$this->rtl;
