@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.027
+// Version     : 5.9.028
 // Begin       : 2002-08-03
-// Last Update : 2010-12-01
+// Last Update : 2010-12-03
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -137,7 +137,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
- * @version 5.9.027
+ * @version 5.9.028
  */
 
 /**
@@ -151,7 +151,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
 * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 * @name TCPDF
 * @package com.tecnick.tcpdf
-* @version 5.9.027
+* @version 5.9.028
 * @author Nicola Asuni - info@tecnick.com
 * @link http://www.tcpdf.org
 * @license http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
@@ -164,7 +164,7 @@ class TCPDF {
 	 * @var current TCPDF version
 	 * @access private
 	 */
-	private $tcpdf_version = '5.9.027';
+	private $tcpdf_version = '5.9.028';
 
 	// Protected properties
 

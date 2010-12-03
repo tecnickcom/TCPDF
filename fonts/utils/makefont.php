@@ -2,12 +2,12 @@
 //============================================================+
 // File name   : makefont.php
 // Begin       : 2004-12-31
-// Last Update : 2010-08-08
-// Version     : 1.2.006
+// Last Update : 2010-12-03
+// Version     : 1.2.007
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
 // 	Copyright (C) 2008-2010  Nicola Asuni - Tecnick.com S.r.l.
-// 	
+//
 // This file is part of TCPDF software library.
 //
 // TCPDF is free software: you can redistribute it and/or modify it
@@ -50,7 +50,7 @@
 */
 
 /**
- * 
+ *
  * @param string $fontfile path to font file (TTF, OTF or PFB).
  * @param string $fmfile font metrics file (UFM or AFM).
  * @param boolean $embedded Set to false to not embed the font, true otherwise (default).
@@ -59,7 +59,13 @@
  */
 function MakeFont($fontfile, $fmfile, $embedded=true, $enc='cp1252', $patch=array()) {
 	//Generate a font definition file
-	set_magic_quotes_runtime(0);
+	if(!defined('PHP_VERSION_ID')) {
+		$version = PHP_VERSION;
+		define('PHP_VERSION_ID', (($version{0} * 10000) + ($version{2} * 100) + $version{4}));
+	}
+	if (PHP_VERSION_ID < 50300) {
+		@set_magic_quotes_runtime(0);
+	}
 	ini_set('auto_detect_line_endings', '1');
 	if (!file_exists($fontfile)) {
 		die('Error: file not found: '.$fontfile);
@@ -581,9 +587,11 @@ function CheckTTF($file) {
 	$e = ($fsType & 0x08) != 0;
 	fclose($f);
 	if($rl AND (!$pp) AND (!$e)) {
-		print "Warning: font license does not allow embedding\n";
+		print 'Warning: font license does not allow embedding.'."\n";
 	}
 }
+
+// -------------------------------------------------------------------
 
 $arg = $GLOBALS['argv'];
 if (count($arg) >= 3) {
@@ -607,9 +615,9 @@ if (count($arg) >= 3) {
 	$t = ob_get_clean();
 	print preg_replace('!<BR( /)?>!i', "\n", $t);
 } else {
-	print "Usage: makefont.php <ttf/otf/pfb file> <afm/ufm file> <encoding> <patch>\n";
+	print 'Usage: makefont.php <ttf/otf/pfb file> <afm/ufm file> <encoding> <patch>'."\n";
 }
 
 //============================================================+
-// END OF FILE                                                 
+// END OF FILE
 //============================================================+

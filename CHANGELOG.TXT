@@ -1,3 +1,6 @@
+5.9.028 (2010-12-03)
+	- Font utils makefont.php and makeallttffonts.php were updated.
+
 5.9.027 (2010-12-01)
 	- Spot Colors are now better integrated with HTML mode.
 	- Method SetDocInfoUnicode() was added to turn on/off Unicode mode for document information dictionary (meta tags) - check the example n. 19.
