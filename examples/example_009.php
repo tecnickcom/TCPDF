@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_009.php
 // Begin       : 2008-03-04
-// Last Update : 2010-11-15
+// Last Update : 2010-12-04
 //
 // Description : Example 009 for TCPDF class
 //               Test Image
@@ -67,7 +67,7 @@ $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 //set some language-dependent strings
 $pdf->setLanguageArray($l);
 
-// ---------------------------------------------------------
+// -------------------------------------------------------------------
 
 // add a page
 $pdf->AddPage();
@@ -75,20 +75,71 @@ $pdf->AddPage();
 // set JPEG quality
 $pdf->setJPEGQuality(75);
 
+// Image method signature:
 // Image($file, $x='', $y='', $w=0, $h=0, $type='', $link='', $align='', $resize=false, $dpi=300, $palign='', $ismask=false, $imgmask=false, $border=0, $fitbox=false, $hidden=false, $fitonpage=false)
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-// Image example
-$pdf->Image('../images/image_demo.jpg', 50, 50, 100, 150, 'JPG', 'http://www.tcpdf.org', '', true, 150, '', false, false, 1, false, false, false);
-
-
-// Example of Image from data stream
+// Example of Image from data stream ('PHP rules')
 $imgdata = base64_decode('iVBORw0KGgoAAAANSUhEUgAAABwAAAASCAMAAAB/2U7WAAAABlBMVEUAAAD///+l2Z/dAAAASUlEQVR4XqWQUQoAIAxC2/0vXZDrEX4IJTRkb7lobNUStXsB0jIXIAMSsQnWlsV+wULF4Avk9fLq2r8a5HSE35Q3eO2XP1A1wQkZSgETvDtKdQAAAABJRU5ErkJggg==');
 
-// The '@' character is used to indicate that follows image data stream and not image file name
+// The '@' character is used to indicate that follows an image data stream and not an image file name
 $pdf->Image('@'.$imgdata);
 
-// ---------------------------------------------------------
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// Image example with resizing
+$pdf->Image('../images/image_demo.jpg', 15, 140, 75, 113, 'JPG', 'http://www.tcpdf.org', '', true, 150, '', false, false, 1, false, false, false);
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// test fitbox with all alignment combinations
+
+$horizontal_alignments = array('L', 'C', 'R');
+$vertical_alignments = array('T', 'M', 'B');
+
+$x = 15;
+$y = 35;
+$w = 30;
+$h = 30;
+// test all combinations of alignments
+for ($i = 0; $i < 3; ++$i) {
+	$fitbox = $horizontal_alignments[$i].' ';
+	$x = 15;
+	for ($j = 0; $j < 3; ++$j) {
+		$fitbox{1} = $vertical_alignments[$j];
+		$pdf->Rect($x, $y, $w, $h, 'F', array(), array(128,255,128));
+		$pdf->Image('../images/image_demo.jpg', $x, $y, $w, $h, 'JPG', '', '', false, 300, '', false, false, 0, $fitbox, false, false);
+		$x += 32; // new column
+	}
+	$y += 32; // new row
+}
+
+$x = 115;
+$y = 35;
+$w = 25;
+$h = 50;
+for ($i = 0; $i < 3; ++$i) {
+	$fitbox = $horizontal_alignments[$i].' ';
+	$x = 115;
+	for ($j = 0; $j < 3; ++$j) {
+		$fitbox{1} = $vertical_alignments[$j];
+		$pdf->Rect($x, $y, $w, $h, 'F', array(), array(128,255,255));
+		$pdf->Image('../images/image_demo.jpg', $x, $y, $w, $h, 'JPG', '', '', false, 300, '', false, false, 0, $fitbox, false, false);
+		$x += 27; // new column
+	}
+	$y += 52; // new row
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// Stretching, position and alignment example
+
+$pdf->SetXY(110, 200);
+$pdf->Image('../images/image_demo.jpg', '', '', 40, 40, '', '', 'T', false, 300, '', false, false, 1, false, false, false);
+$pdf->Image('../images/image_demo.jpg', '', '', 40, 40, '', '', '', false, 300, '', false, false, 1, false, false, false);
+
+// -------------------------------------------------------------------
 
 //Close and output PDF document
 $pdf->Output('example_009.pdf', 'I');

@@ -1,3 +1,6 @@
+5.9.029 (2010-12-04)
+	- The $fitbox parameter on Image() method was extended to specify image alignment inside the box (check the example n. 9).
+
 5.9.028 (2010-12-03)
 	- Font utils makefont.php and makeallttffonts.php were updated.
 

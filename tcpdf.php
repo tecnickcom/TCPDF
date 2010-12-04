@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.028
+// Version     : 5.9.029
 // Begin       : 2002-08-03
-// Last Update : 2010-12-03
+// Last Update : 2010-12-04
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -137,7 +137,7 @@
  * @copyright 2002-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
- * @version 5.9.028
+ * @version 5.9.029
  */
 
 /**
@@ -151,7 +151,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
 * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
 * @name TCPDF
 * @package com.tecnick.tcpdf
-* @version 5.9.028
+* @version 5.9.029
 * @author Nicola Asuni - info@tecnick.com
 * @link http://www.tcpdf.org
 * @license http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
@@ -164,7 +164,7 @@ class TCPDF {
 	 * @var current TCPDF version
 	 * @access private
 	 */
-	private $tcpdf_version = '5.9.028';
+	private $tcpdf_version = '5.9.029';
 
 	// Protected properties
 
@@ -7119,7 +7119,7 @@ class TCPDF {
 	 * @param boolean $ismask true if this image is a mask, false otherwise
 	 * @param mixed $imgmask image object returned by this function or false
 	 * @param mixed $border Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
-	 * @param boolean $fitbox If true scale image dimensions proportionally to fit within the ($w, $h) box.
+	 * @param mixed $fitbox If not false scale image dimensions proportionally to fit within the ($w, $h) box. $fitbox can be true or a 2 characters string indicating the image alignment inside the box. The first character indicate the horizontal alignment (L = left, C = center, R = right) the second character indicate the vertical algnment (T = top, M = middle, B = bottom).
 	 * @param boolean $hidden if true do not display the image.
 	 * @param boolean $fitonpage if true the image is resized to not exceed page dimensions.
 	 * @return image information
@@ -7206,12 +7206,63 @@ class TCPDF {
 			$w = $h * $pixw / $pixh;
 		} elseif ($h <= 0) {
 			$h = $w * $pixh / $pixw;
-		} elseif ($fitbox AND ($w > 0) AND ($h > 0)) {
+		} elseif (($fitbox !== false) AND ($w > 0) AND ($h > 0)) {
+			if (strlen($fitbox) !== 2) {
+				// set default alignment
+				$fitbox = '--';
+			}
 			// scale image dimensions proportionally to fit within the ($w, $h) box
 			if ((($w * $pixh) / ($h * $pixw)) < 1) {
+				// store current height
+				$oldh = $h;
+				// calculate new height
 				$h = $w * $pixh / $pixw;
+				// height difference
+				$hdiff = ($oldh - $h);
+				// vertical alignment
+				switch (strtoupper($fitbox{1})) {
+					case 'T': {
+						break;
+					}
+					case 'M': {
+						$y += ($hdiff / 2);
+						break;
+					}
+					case 'B': {
+						$y += $hdiff;
+						break;
+					}
+				}
 			} else {
+				// store current width
+				$oldw = $w;
+				// calculate new width
 				$w = $h * $pixw / $pixh;
+				// width difference
+				$wdiff = ($oldw - $w);
+				// horizontal alignment
+				switch (strtoupper($fitbox{0})) {
+					case 'L': {
+						if ($this->rtl) {
+							$x -= $wdiff;
+						}
+						break;
+					}
+					case 'C': {
+						if ($this->rtl) {
+							$x -= ($wdiff / 2);
+						} else {
+							$x += ($wdiff / 2);
+						}
+						break;
+					}
+					case 'R': {
+						if (!$this->rtl) {
+							$x += $wdiff;
+						}
+						break;
+					}
+				}
 			}
 		}
 		// fit the image on available space
@@ -12735,8 +12786,8 @@ class TCPDF {
 
 	/**
 	 * Append a rectangle to the current path as a complete subpath, with lower-left corner (x, y) and dimensions widthand height in user space.
-	 * @param float $x Abscissa of upper-left corner (or upper-right corner for RTL language).
-	 * @param float $y Ordinate of upper-left corner (or upper-right corner for RTL language).
+	 * @param float $x Abscissa of upper-left corner.
+	 * @param float $y Ordinate of upper-left corner.
 	 * @param float $w Width.
 	 * @param float $h Height.
 	 * @param string $op options
@@ -12815,8 +12866,8 @@ class TCPDF {
 
 	/**
 	 * Draws a rectangle.
-	 * @param float $x Abscissa of upper-left corner (or upper-right corner for RTL language).
-	 * @param float $y Ordinate of upper-left corner (or upper-right corner for RTL language).
+	 * @param float $x Abscissa of upper-left corner.
+	 * @param float $y Ordinate of upper-left corner.
 	 * @param float $w Width.
 	 * @param float $h Height.
 	 * @param string $style Style of rendering. See the getPathPaintOperator() function for more information.
