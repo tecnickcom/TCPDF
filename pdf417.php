@@ -86,32 +86,31 @@ if (!defined('PDF417DEFS')) {
  * PDF417 (ISO/IEC 15438:2006) is a 2-dimensional stacked bar code created by Symbol Technologies in 1991.
  * @name PDF417
  * @package com.tecnick.tcpdf
- * @brief Class to create PDF417 barcode arrays for TCPDF class.
  * @author Nicola Asuni
  * @version 1.0.003
  */
 class PDF417 {
 
 	/**
-	 * @var barcode array to be returned which is readable by TCPDF
+	 * Barcode array to be returned which is readable by TCPDF.
 	 * @protected
 	 */
 	protected $barcode_array = array();
 
 	/**
-	 * @var start pattern
+	 * Start pattern.
 	 * @protected
 	 */
 	protected $start_pattern = '11111111010101000';
 
 	/**
-	 * @var start pattern
+	 * Stop pattern.
 	 * @protected
 	 */
 	protected $stop_pattern = '111111101000101001';
 
 	/**
-	 * @var Text Compaction Sub-Modes (values 0xFB - 0xFF are used for submode changers)
+	 * Array of text Compaction Sub-Modes (values 0xFB - 0xFF are used for submode changers).
 	 * @protected
 	 */
 	protected $textsubmodes = array(
@@ -122,7 +121,7 @@ class PDF417 {
 	);
 
 	/**
-	 * @var Switching codes for Text Compaction Sub-Modes
+	 * Array of switching codes for Text Compaction Sub-Modes.
 	 * @protected
 	 */
 	protected $textlatch = array(
@@ -133,7 +132,7 @@ class PDF417 {
 	);
 
 	/**
-	 * @var clusters of codewords (0, 3, 6)<br/>
+	 * Clusters of codewords (0, 3, 6)<br/>
 	 * Values are hex equivalents of binary representation of bars (1 = bar, 0 = space).<br/>
 	 * The codewords numbered from 900 to 928 have special meaning, some enable to switch between modes in order to optimise the code:<ul>
 	 * <li>900 : Switch to "Text" mode</li>
@@ -439,7 +438,7 @@ class PDF417 {
 	); // end of $clusters array
 
 	/**
-	 * @var Factors of the Reed-Solomon polynomial equations used for error correction; one sub array for each correction level (0-8)
+	 * Array of factors of the Reed-Solomon polynomial equations used for error correction; one sub array for each correction level (0-8).
 	 * @protected
 	 */
 	protected $rsfactors = array(
@@ -526,7 +525,7 @@ class PDF417 {
 	 * @param $code (string) code to represent using PDF417
 	 * @param $ecl (int) error correction level (0-8); default -1 = automatic correction level
 	 * @param $aspectratio (float) the width to height of the symbol (excluding quiet zones)
-	 * òparam array $macro information for macro block
+	 * @param $macro (array) information for macro block
 	 * @public
 	 */
 	public function __construct($code, $ecl=-1, $aspectratio=2, $macro=array()) {

@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.030
+// Version     : 5.9.031
 // Begin       : 2002-08-03
 // Last Update : 2010-12-16
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
@@ -133,7 +133,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.030
+ * @version 5.9.031
  */
 
 /**
@@ -148,7 +148,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
 * @name TCPDF
 * @package com.tecnick.tcpdf
 * @brief PHP class for generating PDF documents without requiring external extensions.
-* @version 5.9.030
+* @version 5.9.031
 * @author Nicola Asuni - info@tecnick.com
 */
 class TCPDF {
@@ -159,7 +159,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.030';
+	private $tcpdf_version = '5.9.031';
 
 	// Protected properties
 
