@@ -24,9 +24,6 @@
  * @package com.tecnick.tcpdf
  * @abstract TCPDF - Example: No-write page regions
  * @author Nicola Asuni
- * @copyright 2064-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
- * @link http://tcpdf.org
- * @license http://www.gnu.org/copyleft/lesser.html LGPL
  * @since 2010-10-14
  */
 

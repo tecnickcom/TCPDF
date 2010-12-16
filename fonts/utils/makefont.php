@@ -51,11 +51,11 @@
 
 /**
  *
- * @param string $fontfile path to font file (TTF, OTF or PFB).
- * @param string $fmfile font metrics file (UFM or AFM).
- * @param boolean $embedded Set to false to not embed the font, true otherwise (default).
- * @param string $enc Name of the encoding table to use. Omit this parameter for TrueType Unicode, OpenType Unicode and symbolic fonts like Symbol or ZapfDingBats.
- * @param array $patch Optional modification of the encoding
+ * @param $fontfile (string) path to font file (TTF, OTF or PFB).
+ * @param $fmfile (string) font metrics file (UFM or AFM).
+ * @param $embedded (boolean) Set to false to not embed the font, true otherwise (default).
+ * @param $enc (string) Name of the encoding table to use. Omit this parameter for TrueType Unicode, OpenType Unicode and symbolic fonts like Symbol or ZapfDingBats.
+ * @param $patch (array) Optional modification of the encoding
  */
 function MakeFont($fontfile, $fmfile, $embedded=true, $enc='cp1252', $patch=array()) {
 	//Generate a font definition file
@@ -214,7 +214,7 @@ function MakeFont($fontfile, $fmfile, $embedded=true, $enc='cp1252', $patch=arra
 
 /**
  * Read the specified encoding map.
- * @param string $enc map name (see /enc/ folder for valid names).
+ * @param $enc (string) map name (see /enc/ folder for valid names).
  */
 function ReadMap($enc) {
 	//Read a map file

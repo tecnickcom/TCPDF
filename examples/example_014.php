@@ -24,9 +24,6 @@
  * @package com.tecnick.tcpdf
  * @abstract TCPDF - Example: Javascript Form and user rights (only works on Adobe Acrobat)
  * @author Nicola Asuni
- * @copyright 2004-2009 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
- * @link http://tcpdf.org
- * @license http://www.gnu.org/copyleft/lesser.html LGPL
  * @since 2008-03-04
  */
 

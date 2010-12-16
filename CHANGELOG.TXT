@@ -1,3 +1,8 @@
+5.9.030 (2010-12-16)
+	- Several source code documentation errors were fixed.
+	- Source code style was changed for Doxygen.
+	- Source code documentation was moved online to http://www.tcpdf.org
+
 5.9.029 (2010-12-04)
 	- The $fitbox parameter on Image() method was extended to specify image alignment inside the box (check the example n. 9).
 

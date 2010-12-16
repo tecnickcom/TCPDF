@@ -24,9 +24,6 @@
  * @package com.tecnick.tcpdf
  * @abstract TCPDF - Example: Table Of Content using HTML templates.
  * @author Nicola Asuni
- * @copyright 2004-2010 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
- * @link http://tcpdf.org
- * @license http://www.gnu.org/copyleft/lesser.html LGPL
  * @since 2010-05-06
  */
 
@@ -40,7 +37,7 @@ class TOC_TCPDF extends TCPDF {
 
 	/**
  	 * Overwrite Header() method.
-	 * @access public
+	 * @public
 	 */
 	public function Header() {
 		if ($this->tocpage) {
@@ -54,7 +51,7 @@ class TOC_TCPDF extends TCPDF {
 
 	/**
  	 * Overwrite Footer() method.
-	 * @access public
+	 * @public
 	 */
 	public function Footer() {
 		if ($this->tocpage) {
