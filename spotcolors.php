@@ -32,6 +32,7 @@
 //============================================================+
 
 /**
+ * @file
  * Arrays of Spot Colors for TCPDF library
  * @author Nicola Asuni
  * @package com.tecnick.tcpdf

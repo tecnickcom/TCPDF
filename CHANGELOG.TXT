@@ -1,3 +1,6 @@
+5.9.033 (2010-12-18)
+	- Source code documetnation was improved.
+
 5.9.032 (2010-12-18)
 	- Default font stretching and spacing values are now inherited by HTML methods.
 

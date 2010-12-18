@@ -35,19 +35,20 @@
 // Saleh AlMatrafe
 
 /**
+ * @file
  * Unicode data class for TCPDF library.
  * @author Nicola Asuni
  * @package com.tecnick.tcpdf
  * @since 2.1.000 (2008-01-08)
-*/
+ */
 
 /**
-* This is a PHP class containing Unicde data for TCPDF library
-* @name TCPDF_UNICODE_DATA
-* @package com.tecnick.tcpdf
-* @version 1.0.007
-* @author Nicola Asuni - info@tecnick.com
-*/
+ * @class TCPDF_UNICODE_DATA
+ * This is a PHP class containing Unicde data for TCPDF library
+ * @package com.tecnick.tcpdf
+ * @version 1.0.007
+ * @author Nicola Asuni - info@tecnick.com
+ */
 class TCPDF_UNICODE_DATA {
 
 /**

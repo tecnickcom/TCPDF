@@ -64,6 +64,7 @@
 //============================================================+
 
 /**
+ * @file
  * Class to create QR-code arrays for TCPDF class.
  * QR Code symbol is a 2D barcode that can be scanned by handy terminals such as a mobile phone with CCD.
  * The capacity of QR Code is up to 7000 digits or 4000 characters, and has high robustness.
@@ -273,6 +274,7 @@ if (!function_exists('str_split')) {
 // #####################################################
 
 /**
+ * @class QRcode
  * Class to create QR-code arrays for TCPDF class.
  * QR Code symbol is a 2D barcode that can be scanned by handy terminals such as a mobile phone with CCD.
  * The capacity of QR Code is up to 7000 digits or 4000 characters, and has high robustness.
@@ -282,7 +284,6 @@ if (!function_exists('str_split')) {
  * This class is derived from "PHP QR Code encoder" by Dominik Dzienia (http://phpqrcode.sourceforge.net/) based on "libqrencode C library 3.1.1." by Kentaro Fukuchi (http://megaui.net/fukuchi/works/qrencode/index.en.html), contains Reed-Solomon code written by Phil Karn, KA9Q. QR Code is registered trademark of DENSO WAVE INCORPORATED (http://www.denso-wave.com/qrcode/index-e.html).
  * Please read comments on this class source file for full copyright and license information.
  *
- * @name QRcode
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
  * @version 1.0.009

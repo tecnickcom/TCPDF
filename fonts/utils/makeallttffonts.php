@@ -43,9 +43,6 @@
  * Process all TTF files on current directory to build TCPDF compatible font files.
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @copyright Copyright &copy; 2004-2009, Nicola Asuni - Tecnick.com S.r.l. - ITALY - www.tecnick.com - info@tecnick.com
- * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
- * @link www.tecnick.com
  * @since 2008-12-07
  */
 

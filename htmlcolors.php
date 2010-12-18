@@ -32,11 +32,12 @@
 //============================================================+
 
 /**
+ * @file
  * Array of WEB safe colors
  * @author Nicola Asuni
  * @package com.tecnick.tcpdf
  * @since 2.9.000 (2008-03-26)
-*/
+ */
 
 /**
  * Array of WEB safe colors

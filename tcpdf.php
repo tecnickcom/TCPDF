@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.032
+// Version     : 5.9.033
 // Begin       : 2002-08-03
 // Last Update : 2010-12-18
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
@@ -100,6 +100,7 @@
 //============================================================+
 
 /**
+ * @file
  * This is a PHP class for generating PDF documents without requiring external extensions.<br>
  * TCPDF project (http://www.tcpdf.org) was originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * <h3>TCPDF main features are:</h3>
@@ -133,24 +134,21 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.032
+ * @version 5.9.033
  */
 
-/**
- * main configuration file
- * (define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file)
- */
+// Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
 require_once(dirname(__FILE__).'/config/tcpdf_config.php');
 
 /**
-* PHP class for generating PDF documents without requiring external extensions.
-* TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
-* @name TCPDF
-* @package com.tecnick.tcpdf
-* @brief PHP class for generating PDF documents without requiring external extensions.
-* @version 5.9.032
-* @author Nicola Asuni - info@tecnick.com
-*/
+ * @class TCPDF
+ * PHP class for generating PDF documents without requiring external extensions.
+ * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
+ * @package com.tecnick.tcpdf
+ * @brief PHP class for generating PDF documents without requiring external extensions.
+ * @version 5.9.033
+ * @author Nicola Asuni - info@tecnick.com
+ */
 class TCPDF {
 
 	// private properties
@@ -159,7 +157,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.032';
+	private $tcpdf_version = '5.9.033';
 
 	// Protected properties
 
@@ -11993,6 +11991,7 @@ class TCPDF {
 
 	/**
 	 * Convert password for AES-256 encryption mode
+	 * @param $password (string) password
 	 * @return string password
 	 * @protected
 	 * @since 5.9.006 (2010-10-19)
@@ -15769,7 +15768,7 @@ class TCPDF {
 
 	/**
 	 * Set the PDF version (check PDF reference for valid values).
-	 * Default value is 1.t
+	 * @param $version (string) PDF document version.
 	 * @public
 	 * @since 3.1.000 (2008-06-09)
 	 */
