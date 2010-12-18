@@ -1,3 +1,6 @@
+5.9.032 (2010-12-18)
+	- Default font stretching and spacing values are now inherited by HTML methods.
+
 5.9.031 (2010-12-16)
 	- Source code documentation errors were fixed.
 

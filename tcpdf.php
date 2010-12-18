@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.031
+// Version     : 5.9.032
 // Begin       : 2002-08-03
-// Last Update : 2010-12-16
+// Last Update : 2010-12-18
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -133,7 +133,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.031
+ * @version 5.9.032
  */
 
 /**
@@ -148,7 +148,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
 * @name TCPDF
 * @package com.tecnick.tcpdf
 * @brief PHP class for generating PDF documents without requiring external extensions.
-* @version 5.9.031
+* @version 5.9.032
 * @author Nicola Asuni - info@tecnick.com
 */
 class TCPDF {
@@ -159,7 +159,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.031';
+	private $tcpdf_version = '5.9.032';
 
 	// Protected properties
 
@@ -6490,7 +6490,7 @@ class TCPDF {
 	 *  }
 	 *  // restore previous object
 	 *  $pdf = $pdf->rollbackTransaction();
-	 * 
+	 *
 	 * @param $w (float) Width of cells. If 0, they extend up to the right margin of the page.
 	 * @param $txt (string) String for calculating his height
 	 * @param $reseth (boolean) if true reset the last cell height (default false).
@@ -18382,8 +18382,8 @@ class TCPDF {
 		$dom[$key]['fontname'] = $this->FontFamily;
 		$dom[$key]['fontstyle'] = $this->FontStyle;
 		$dom[$key]['fontsize'] = $this->FontSizePt;
-		$dom[$key]['font-stretch'] = 100;
-		$dom[$key]['letter-spacing'] = 0;
+		$dom[$key]['font-stretch'] = $this->font_stretching;
+		$dom[$key]['letter-spacing'] = $this->font_spacing;
 		$dom[$key]['stroke'] = $this->textstrokewidth;
 		$dom[$key]['fill'] = (($this->textrendermode % 2) == 0);
 		$dom[$key]['clip'] = ($this->textrendermode > 3);
