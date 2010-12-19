@@ -41,6 +41,7 @@
 //============================================================+
 
 /**
+ * @file
  * Utility to generate font definition files fot TCPDF.
  * @author Nicola Asuni, Olivier Plathey, Steven Wittens
  * @package com.tecnick.tcpdf

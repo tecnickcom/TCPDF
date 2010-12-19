@@ -40,13 +40,11 @@
 //============================================================+
 
 /**
+ * @file
  * Process all TTF files on current directory to build TCPDF compatible font files.
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
  * @since 2008-12-07
- */
-
-/**
  */
 
 // read directory for files (only TTF files).

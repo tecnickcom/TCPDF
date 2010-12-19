@@ -1,3 +1,6 @@
+5.9.034 (2010-12-19)
+	- DejaVu and GNU Free fonts were updated.
+
 5.9.033 (2010-12-18)
 	- Source code documetnation was improved.
 
