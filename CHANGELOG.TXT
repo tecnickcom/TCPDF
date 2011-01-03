@@ -1,3 +1,7 @@
+5.9.035 (2011-01-03)
+	- A problem related to HTML table border alignment was fixed.
+	- Bug #2996366 "FastCGI and Header Problems" was fixed.
+
 5.9.034 (2010-12-19)
 	- DejaVu and GNU Free fonts were updated.
 

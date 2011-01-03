@@ -1,13 +1,13 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.034
+// Version     : 5.9.035
 // Begin       : 2002-08-03
-// Last Update : 2010-12-19
+// Last Update : 2011-01-03
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
-// Copyright (C) 2002-2010  Nicola Asuni - Tecnick.com S.r.l.
+// Copyright (C) 2002-2011  Nicola Asuni - Tecnick.com S.r.l.
 //
 // This file is part of TCPDF software library.
 //
@@ -134,7 +134,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.034
+ * @version 5.9.035
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -146,7 +146,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.034
+ * @version 5.9.035
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -157,7 +157,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.034';
+	private $tcpdf_version = '5.9.035';
 
 	// Protected properties
 
@@ -4208,6 +4208,11 @@ class TCPDF {
 			if (!isset($this->theadMargins['top'])) {
 				$this->theadMargins['top'] = $this->tMargin;
 			}
+			// store end of header position
+			if (!isset($this->columns[0]['th'])) {
+				$this->columns[0]['th'] = array();
+			}
+			$this->columns[0]['th']['\''.$this->page.'\''] = $this->y;
 			$this->tMargin = $this->y;
 			$this->pagedim[$this->page]['tm'] = $this->tMargin;
 			$this->lasth = 0;
@@ -8085,10 +8090,14 @@ class TCPDF {
 				header('Expires: Sat, 26 Jul 1997 05:00:00 GMT'); // Date in the past
 				header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
 				// force download dialog
-				header('Content-Type: application/force-download');
-				header('Content-Type: application/octet-stream', false);
-				header('Content-Type: application/download', false);
-				header('Content-Type: application/pdf', false);
+				if (strpos(php_sapi_name(), 'cgi') === false) {
+					header('Content-Type: application/force-download');
+					header('Content-Type: application/octet-stream', false);
+					header('Content-Type: application/download', false);
+					header('Content-Type: application/pdf', false);
+				} else {
+					header('Content-Type: application/pdf');
+				}
 				// use the Content-Disposition header to supply a recommended filename
 				header('Content-Disposition: attachment; filename="'.basename($name).'";');
 				header('Content-Transfer-Encoding: binary');
@@ -8135,10 +8144,14 @@ class TCPDF {
 					header('Expires: Sat, 26 Jul 1997 05:00:00 GMT'); // Date in the past
 					header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
 					// force download dialog
-					header('Content-Type: application/force-download');
-					header('Content-Type: application/octet-stream', false);
-					header('Content-Type: application/download', false);
-					header('Content-Type: application/pdf', false);
+					if (strpos(php_sapi_name(), 'cgi') === false) {
+						header('Content-Type: application/force-download');
+						header('Content-Type: application/octet-stream', false);
+						header('Content-Type: application/download', false);
+						header('Content-Type: application/pdf', false);
+					} else {
+						header('Content-Type: application/pdf');
+					}
 					// use the Content-Disposition header to supply a recommended filename
 					header('Content-Disposition: attachment; filename="'.basename($name).'";');
 					header('Content-Transfer-Encoding: binary');
