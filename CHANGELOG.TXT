@@ -1,3 +1,6 @@
+5.9.036 (2011-01-07)
+	- A bug related to HTML tables on header was fixed.
+
 5.9.035 (2011-01-03)
 	- A problem related to HTML table border alignment was fixed.
 	- Bug #2996366 "FastCGI and Header Problems" was fixed.
