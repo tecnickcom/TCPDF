@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.036
+// Version     : 5.9.037
 // Begin       : 2002-08-03
-// Last Update : 2011-01-07
+// Last Update : 2011-01-09
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -134,7 +134,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.036
+ * @version 5.9.037
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -146,7 +146,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.036
+ * @version 5.9.037
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -157,7 +157,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.036';
+	private $tcpdf_version = '5.9.037';
 
 	// Protected properties
 
@@ -20232,6 +20232,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					$this->x += $this->textindent;
 				}
 				if (!isset($dom[$key]['trimmed_space']) OR !$dom[$key]['trimmed_space']) {
+					$strlinelen = $this->GetStringWidth($dom[$key]['value']);
 					if (!empty($this->HREF) AND (isset($this->HREF['url']))) {
 						// HTML <a> Link
 						$hrefcolor = '';
@@ -20246,43 +20247,50 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					} else {
 						$wadj = 0; // space to leave for block continuity
 						$adjblks = 0; // number of blocks
-						// check the next text blocks for continuity
-						$nkey = ($key + 1);
-						$write_block = true;
-						$same_textdir = true;
-						$tmp_fontname = $this->FontFamily;
-						$tmp_fontstyle = $this->FontStyle;
-						$tmp_fontsize = $this->FontSizePt;
-						while ($write_block AND isset($dom[$nkey])) {
-							if ($dom[$nkey]['tag']) {
-								if ($dom[$nkey]['block']) {
-									// end of block
-									$write_block = false;
-								}
-								$tmp_fontname = isset($dom[$nkey]['fontname']) ? $dom[$nkey]['fontname'] : $this->FontFamily;
-								$tmp_fontstyle = isset($dom[$nkey]['fontstyle']) ? $dom[$nkey]['fontstyle'] : $this->FontStyle;
-								$tmp_fontsize = isset($dom[$nkey]['fontsize']) ? $dom[$nkey]['fontsize'] : $this->FontSizePt;
-								$same_textdir = ($dom[$nkey]['dir'] == $dom[$key]['dir']);
-							} else {
-								$nextstr = preg_split('/'.$this->re_space['p'].'+/'.$this->re_space['m'], $dom[$nkey]['value']);
-								if (isset($nextstr[0])) {
-									if ($same_textdir) {
-										$wadj += $this->GetStringWidth($nextstr[0], $tmp_fontname, $tmp_fontstyle, $tmp_fontsize);
+						if ($this->rtl) {
+							$cwa = $this->x - $this->lMargin;
+						} else {
+							$cwa = $this->w - $this->rMargin - $this->x;
+						}
+						if ($strlinelen < $cwa) {
+							// check the next text blocks for continuity
+							$nkey = ($key + 1);
+							$write_block = true;
+							$same_textdir = true;
+							$tmp_fontname = $this->FontFamily;
+							$tmp_fontstyle = $this->FontStyle;
+							$tmp_fontsize = $this->FontSizePt;
+							while ($write_block AND isset($dom[$nkey])) {
+								if ($dom[$nkey]['tag']) {
+									if ($dom[$nkey]['block']) {
+										// end of block
+										$write_block = false;
 									}
-									++$adjblks;
+									$tmp_fontname = isset($dom[$nkey]['fontname']) ? $dom[$nkey]['fontname'] : $this->FontFamily;
+									$tmp_fontstyle = isset($dom[$nkey]['fontstyle']) ? $dom[$nkey]['fontstyle'] : $this->FontStyle;
+									$tmp_fontsize = isset($dom[$nkey]['fontsize']) ? $dom[$nkey]['fontsize'] : $this->FontSizePt;
+									$same_textdir = ($dom[$nkey]['dir'] == $dom[$key]['dir']);
+								} else {
+									$nextstr = preg_split('/'.$this->re_space['p'].'+/'.$this->re_space['m'], $dom[$nkey]['value']);
+									if (isset($nextstr[0])) {
+										if ($same_textdir) {
+											$wadj += $this->GetStringWidth($nextstr[0], $tmp_fontname, $tmp_fontstyle, $tmp_fontsize);
+										}
+										++$adjblks;
+									}
+									if (isset($nextstr[1])) {
+										$write_block = false;
+									}
 								}
-								if (isset($nextstr[1])) {
-									$write_block = false;
-								}
+								++$nkey;
 							}
-							++$nkey;
 						}
 						// check for reversed text direction
 						if (($wadj > 0) AND (($this->rtl AND ($this->tmprtl === 'L')) OR (!$this->rtl AND ($this->tmprtl === 'R')))) {
 							// LTR text on RTL direction or RTL text on LTR direction
 							$reverse_dir = true;
 							$this->rtl = !$this->rtl;
-							$revshift = ($this->GetStringWidth($dom[$key]['value']) + $wadj) + 0.000001; // add little quantity for rounding problems
+							$revshift = ($strlinelen + $wadj + 0.000001); // add little quantity for rounding problems
 							if ($this->rtl) {
 								$this->x += $revshift;
 							} else {

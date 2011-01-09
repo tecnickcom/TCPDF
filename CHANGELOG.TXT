@@ -1,3 +1,6 @@
+5.9.037 (2011-01-09)
+	- An alignment problem fot HTML texts was fixed.
+
 5.9.036 (2011-01-07)
 	- A bug related to HTML tables on header was fixed.
 
