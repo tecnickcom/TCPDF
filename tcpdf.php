@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.037
+// Version     : 5.9.038
 // Begin       : 2002-08-03
-// Last Update : 2011-01-09
+// Last Update : 2011-01-11
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -134,7 +134,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.037
+ * @version 5.9.038
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -146,7 +146,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.037
+ * @version 5.9.038
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -157,7 +157,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.037';
+	private $tcpdf_version = '5.9.038';
 
 	// Protected properties
 
@@ -21771,6 +21771,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$border_start = $this->getBorderMode($border, $position='start');
 		$border_end = $this->getBorderMode($border, $position='end');
 		$border_middle = $this->getBorderMode($border, $position='middle');
+		// temporary disable page regions
+		$temp_page_regions = $this->page_regions;
+		$this->page_regions = array();
 		// design borders around HTML cells.
 		for ($page = $startpage; $page <= $endpage; ++$page) { // for each page
 			$ccode = '';
@@ -21879,6 +21882,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				}
 			}
 		} // end for each page
+		// restore page regions
+		$this->page_regions = $temp_page_regions;
 		if (isset($old_bgcolor)) {
 			// restore background color
 			$this->SetFillColorArray($old_bgcolor);
@@ -24413,14 +24418,22 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		if (empty($h)) {
 			$h = ($this->FontSize * $this->cell_height_ratio) + $this->cell_padding['T'] + $this->cell_padding['B'];
 		}
-		if ($this->rtl) {
-			$this->lMargin = $this->original_lMargin;
-		} else {
-			$this->rMargin = $this->original_rMargin;
-		}
-		if ($this->AutoPageBreak AND !$this->InFooter AND (($y + $h) > $this->PageBreakTrigger)) {
+		if ($this->AutoPageBreak AND (!$this->InFooter) AND (($y + $h) > $this->PageBreakTrigger)) {
 			// the content will be printed on a new page
 			return;
+		}
+		if ($this->num_columns > 1) {
+			if ($this->rtl) {
+				$this->lMargin = $this->columns[$this->current_column]['x'] - $this->columns[$this->current_column]['w'];
+			} else {
+				$this->rMargin = $this->w - $this->columns[$this->current_column]['x'] - $this->columns[$this->current_column]['w'];
+			}
+		} else {
+			if ($this->rtl) {
+				$this->lMargin = $this->original_lMargin;
+			} else {
+				$this->rMargin = $this->original_rMargin;
+			}
 		}
 		// adjust coordinates and page margins
 		foreach ($this->page_regions as $regid => $regdata) {
@@ -24443,6 +24456,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 							if ($x < $new_margin) {
 								// adjust x position
 								$x = $new_margin;
+								if ($new_margin > ($this->w - $this->rMargin)) {
+									// adjust y position
+									$y = $regdata['yb'] - $h;
+								}
 							}
 						}
 					} elseif ($regdata['side'] == 'R') { // right side
@@ -24455,6 +24472,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 							if ($x > $new_margin) {
 								// adjust x position
 								$x = $new_margin;
+								if ($new_margin > $this->lMargin) {
+									// adjust y position
+									$y = $regdata['yb'] - $h;
+								}
 							}
 						}
 					}
