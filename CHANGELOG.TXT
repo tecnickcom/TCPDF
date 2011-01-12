@@ -1,3 +1,6 @@
+5.9.040 (2011-01-12)
+	- A bug related to empty pages after table was fixed.
+
 5.9.039 (2011-01-12)
 	- Bug item #3155759 "openssl_random_pseudo_bytes() slow under Windows" was fixed.
 
