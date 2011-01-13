@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.040
+// Version     : 5.9.041
 // Begin       : 2002-08-03
-// Last Update : 2011-01-12
+// Last Update : 2011-01-13
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -134,7 +134,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.040
+ * @version 5.9.041
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -146,7 +146,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.040
+ * @version 5.9.041
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -157,7 +157,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.040';
+	private $tcpdf_version = '5.9.041';
 
 	// Protected properties
 
@@ -13024,7 +13024,7 @@ class TCPDF {
 		if ($line_style) {
 			$this->SetLineStyle($line_style);
 		}
-		$this->_outellipticalarc($x0, $y0, $rx, $ry, $angle, $astart, $afinish, false, $nc);
+		$this->_outellipticalarc($x0, $y0, $rx, $ry, $angle, $astart, $afinish, false, $nc, true, true, false);
 		$this->_out($op);
 	}
 
@@ -13040,14 +13040,15 @@ class TCPDF {
 	 * @param $angf: (float) Angle finish of draw line. Default value: 360.
 	 * @param $pie (boolean) if true do not mark the border point (used to draw pie sectors).
 	 * @param $nc (integer) Number of curves used to draw a 90 degrees portion of ellipse.
-	 * @param $startpoint (boolean) if true output a starting point
-	 * @param $ccw (boolean) if true draws in counter-clockwise
+	 * @param $startpoint (boolean) if true output a starting point.
+	 * @param $ccw (boolean) if true draws in counter-clockwise.
+	 * @param $svg (boolean) if true the angles are in svg mode (already calculated).
 	 * @return array bounding box coordinates (x min, y min, x max, y max)
 	 * @author Nicola Asuni
 	 * @protected
 	 * @since 4.9.019 (2010-04-26)
 	 */
-	protected function _outellipticalarc($xc, $yc, $rx, $ry, $xang=0, $angs=0, $angf=360, $pie=false, $nc=2, $startpoint=true, $ccw=true) {
+	protected function _outellipticalarc($xc, $yc, $rx, $ry, $xang=0, $angs=0, $angf=360, $pie=false, $nc=2, $startpoint=true, $ccw=true, $svg=false) {
 		$k = $this->k;
 		if ($nc < 2) {
 			$nc = 2;
@@ -13063,8 +13064,13 @@ class TCPDF {
 		$xang = deg2rad((float) $xang);
 		$angs = deg2rad((float) $angs);
 		$angf = deg2rad((float) $angf);
-		$as = atan2((sin($angs) / $ry), (cos($angs) / $rx));
-		$af = atan2((sin($angf) / $ry), (cos($angf) / $rx));
+		if ($svg) {
+			$as = $angs;
+			$af = $angf;
+		} else {
+			$as = atan2((sin($angs) / $ry), (cos($angs) / $rx));
+			$af = atan2((sin($angf) / $ry), (cos($angf) / $rx));
+		}
 		if ($as < 0) {
 			$as += (2 * M_PI);
 		}
@@ -13086,8 +13092,8 @@ class TCPDF {
 		$nc *= (2 * abs($total_angle) / M_PI);
 		$nc = round($nc) + 1;
 		// angle of each arc
-		$arcang = $total_angle / $nc;
-		// center point in PDF coordiantes
+		$arcang = ($total_angle / $nc);
+		// center point in PDF coordinates
 		$x0 = $xc;
 		$y0 = ($this->h - $yc);
 		// starting angle
@@ -13114,8 +13120,9 @@ class TCPDF {
 		for ($i = 1; $i <= $nc; ++$i) {
 			// starting angle
 			$ang = $as + ($i * $arcang);
-			$cos_xang = cos($xang);
-			$sin_xang = sin($xang);
+			if ($i == $nc) {
+				$ang = $af;
+			}
 			$cos_ang = cos($ang);
 			$sin_ang = sin($ang);
 			// second arc point
@@ -18653,8 +18660,12 @@ class TCPDF {
 							}
 						}
 						// font style
-						if (isset($dom[$key]['style']['font-weight']) AND (strtolower($dom[$key]['style']['font-weight']{0}) == 'b')) {
-							$dom[$key]['fontstyle'] .= 'B';
+						if (isset($dom[$key]['style']['font-weight'])) {
+							if (strtolower($dom[$key]['style']['font-weight']{0}) == 'n') {
+								$dom[$key]['fontstyle'] = '';
+							} elseif (strtolower($dom[$key]['style']['font-weight']{0}) == 'b') {
+								$dom[$key]['fontstyle'] .= 'B';
+							}
 						}
 						if (isset($dom[$key]['style']['font-style']) AND (strtolower($dom[$key]['style']['font-style']{0}) == 'i')) {
 							$dom[$key]['fontstyle'] .= 'I';
@@ -25492,10 +25503,14 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 							$fs = $rawparams[($ck - 2)]; // sweep-flag
 							$x = $params[($ck - 1)] + $xoffset;
 							$y = $params[$ck] + $yoffset;
+							if (($x0 == $x) AND ($y0 == $y)) {
+								// endpoints are identical
+								break;
+							}
 							$cos_ang = cos($angle);
 							$sin_ang = sin($angle);
-							$a = ($x0 - $x) / 2;
-							$b = ($y0 - $y) / 2;
+							$a = (($x0 - $x) / 2);
+							$b = (($y0 - $y) / 2);
 							$xa = ($a * $cos_ang) - ($b * $sin_ang);
 							$ya = ($a * $sin_ang) + ($b * $cos_ang);
 							$rx2 = $rx * $rx;
@@ -25515,7 +25530,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 							} else {
 								$root = sqrt($numerator / (($rx2 * $ya2) + ($ry2 * $xa2)));
 							}
-							if ($fa == $fs) {
+							if ($fa == $fs){
 								$root *= -1;
 							}
 							$cax = $root * (($rx * $ya) / $ry);
@@ -25546,10 +25561,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 								$angf += 360;
 							}
 							$pie = false;
-							if (($key==0) AND (isset($paths[($key + 1)][1])) AND (trim($paths[($key + 1)][1]) == 'z')) {
+							if (($key == 0) AND (isset($paths[($key + 1)][1])) AND (trim($paths[($key + 1)][1]) == 'z')) {
 								$pie = true;
 							}
-							list($axmin, $aymin, $axmax, $aymax) = $this->_outellipticalarc($cx, $cy, $rx, $ry, $ang, $angs, $angf, $pie, 2, false, ($fs == 0));
+							list($axmin, $aymin, $axmax, $aymax) = $this->_outellipticalarc($cx, $cy, $rx, $ry, $ang, $angs, $angf, $pie, 2, false, ($fs == 0), true);
 							$xmin = min($xmin, $x, $axmin);
 							$ymin = min($ymin, $y, $aymin);
 							$xmax = max($xmax, $x, $axmax);
@@ -25576,10 +25591,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 
 	/**
 	 * Returns the angle in radiants between two vectors
-	 * @param $x1 (int) X coordiante of first vector point
-	 * @param $y1 (int) Y coordiante of first vector point
-	 * @param $x2 (int) X coordiante of second vector point
-	 * @param $y2 (int) Y coordiante of second vector point
+	 * @param $x1 (int) X coordinate of first vector point
+	 * @param $y1 (int) Y coordinate of first vector point
+	 * @param $x2 (int) X coordinate of second vector point
+	 * @param $y2 (int) Y coordinate of second vector point
 	 * @author Nicola Asuni
 	 * @since 5.0.000 (2010-05-04)
 	 * @protected

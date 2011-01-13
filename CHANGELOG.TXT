@@ -1,3 +1,7 @@
+5.9.041 (2011-01-132)
+	- A problem with SVG elliptical arc path was fixed (ref. bug #3156574).
+	- A problem related to font weight on HTML table headers was fixed.
+
 5.9.040 (2011-01-12)
 	- A bug related to empty pages after table was fixed.
 
