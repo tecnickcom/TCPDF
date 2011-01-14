@@ -1,4 +1,7 @@
-5.9.041 (2011-01-132)
+5.9.042 (2011-01-14)
+	- Some problems of the PHP4 version were fixed.
+
+5.9.041 (2011-01-13)
 	- A problem with SVG elliptical arc path was fixed (ref. bug #3156574).
 	- A problem related to font weight on HTML table headers was fixed.
 
