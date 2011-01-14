@@ -1,3 +1,8 @@
+5.9.043 (2011-01-14)
+	- Bug #3158178 "PHP Notice" was fixed.
+	- Bug #3158193 "Endless loop in writeHTML" was fixed.
+	- Bug #3157764 "SVG Pie chart incorrectly rendered2".
+
 5.9.042 (2011-01-14)
 	- Some problems of the PHP4 version were fixed.
 
