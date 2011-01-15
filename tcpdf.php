@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.043
+// Version     : 5.9.044
 // Begin       : 2002-08-03
-// Last Update : 2011-01-14
+// Last Update : 2011-01-15
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -134,7 +134,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.043
+ * @version 5.9.044
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -146,7 +146,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.043
+ * @version 5.9.044
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -157,7 +157,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.043';
+	private $tcpdf_version = '5.9.044';
 
 	// Protected properties
 
@@ -18379,6 +18379,7 @@ class TCPDF {
 		$html = preg_replace('/<\/(td|th)>/', '<marker style="font-size:0"/></\\1>', $html);
 		$html = preg_replace('/<\/table>([\s]*)<marker style="font-size:0"\/>/', '</table>', $html);
 		$html = preg_replace('/'.$this->re_space['p'].'+<img/'.$this->re_space['m'], chr(32).'<img', $html);
+		$html = preg_replace('/<img([^\>]*)>[\s]+([^\<])/xi', '<img\\1>&nbsp;\\2', $html);
 		$html = preg_replace('/<img([^\>]*)>/xi', '<img\\1><span><marker style="font-size:0"/></span>', $html);
 		$html = preg_replace('/<xre/', '<pre', $html); // restore pre tag
 		$html = preg_replace('/<textarea([^\>]*)>([^\<]*)<\/textarea>/xi', '<textarea\\1 value="\\2" />', $html);
@@ -18389,6 +18390,8 @@ class TCPDF {
 		$html = preg_replace('/'.$this->re_space['p'].'+/'.$this->re_space['m'], chr(32), $html); // replace multiple spaces with a single space
 		// trim string
 		$html = $this->stringTrim($html);
+		// fix first image tag alignment
+		$html = preg_replace('/^<img/', '<span style="font-size:0"><br /></span> <img', $html, 1);
 		// pattern for generic tag
 		$tagpattern = '/(<[^>]+>)/';
 		// explodes the string
@@ -19286,18 +19289,19 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				if ((!$this->newline) AND ($dom[$key]['value'] == 'img') AND (isset($dom[$key]['height'])) AND ($dom[$key]['height'] > 0)) {
 					// get image height
 					$imgh = $this->getHTMLUnitToUnits($dom[$key]['height'], $this->lasth, 'px');
-					// check for automatic line break
 					$autolinebreak = false;
 					if (isset($dom[$key]['width']) AND ($dom[$key]['width'] > 0)) {
 						$imgw = $this->getHTMLUnitToUnits($dom[$key]['width'], 1, 'px', false);
-						if (($imgw <= ($this->w - $this->lMargin - $this->rMargin - $this->cell_padding['L'] - $this->cell_padding['R'])) 
-							AND (($this->rtl AND (($this->x - $imgw) < ($this->lMargin + $this->cell_padding['L'])))
-							OR (!$this->rtl AND (($this->x + $imgw) > ($this->w - $this->rMargin - $this->cell_padding['R']))))) {
+						if (($imgw <= ($this->w - $this->lMargin - $this->rMargin - $this->cell_padding['L'] - $this->cell_padding['R']))
+							AND ((($this->rtl) AND (($this->x - $imgw) < ($this->lMargin + $this->cell_padding['L'])))
+							OR ((!$this->rtl) AND (($this->x + $imgw) > ($this->w - $this->rMargin - $this->cell_padding['R']))))) {
 							// add automatic line break
 							$autolinebreak = true;
 							$this->Ln('', $cell);
-							// go back to evaluate this line break
-							--$key;
+							if ((!$dom[($key-1)]['tag']) AND ($dom[($key-1)]['value'] == ' ')) {
+								// go back to evaluate this line break
+								--$key;
+							}
 						}
 					}
 					if (!$autolinebreak) {
@@ -20705,14 +20709,6 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					}
 					$prevy = $this->y;
 					$xpos = $this->x;
-					// eliminate marker spaces
-					if (isset($dom[($key - 1)])) {
-						if (($dom[($key - 1)]['value'] == ' ') OR (isset($dom[($key - 1)]['trimmed_space']))) {
-							$xpos -= $this->GetStringWidth(chr(32));
-						} elseif ($this->rtl AND $dom[($key - 1)]['value'] == '  ') {
-							$xpos += (2 * $this->GetStringWidth(chr(32)));
-						}
-					}
 					$imglink = '';
 					if (isset($this->HREF['url']) AND !$this->empty_string($this->HREF['url'])) {
 						$imglink = $this->HREF['url'];

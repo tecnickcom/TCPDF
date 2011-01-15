@@ -1,3 +1,7 @@
+5.9.044 (2011-01-15)
+	- Bug #3158422 "writeHTMLCell Loop" was fixed.
+	- Some HTML image alignment problems were fixed.
+
 5.9.043 (2011-01-14)
 	- Bug #3158178 "PHP Notice" was fixed.
 	- Bug #3158193 "Endless loop in writeHTML" was fixed.
