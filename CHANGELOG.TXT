@@ -1,3 +1,6 @@
+5.9.045 (2011-01-17)
+	- HTML list support were improved.
+
 5.9.044 (2011-01-15)
 	- Bug #3158422 "writeHTMLCell Loop" was fixed.
 	- Some HTML image alignment problems were fixed.

@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.044
+// Version     : 5.9.045
 // Begin       : 2002-08-03
-// Last Update : 2011-01-15
+// Last Update : 2011-01-17
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -134,7 +134,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.044
+ * @version 5.9.045
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -146,7 +146,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.044
+ * @version 5.9.045
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -157,7 +157,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.044';
+	private $tcpdf_version = '5.9.045';
 
 	// Protected properties
 
@@ -19145,7 +19145,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		if ($this->customlistindent >= 0) {
 			$this->listindent = $this->customlistindent;
 		} else {
-			$this->listindent = $this->GetStringWidth('0000');
+			$this->listindent = $this->GetStringWidth('000000');
 		}
 		$this->listindentlevel = 0;
 		// save previous states
@@ -20812,14 +20812,18 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				}
 				++$this->listindentlevel;
 				if ($this->listnum == 1) {
-					$this->addHTMLVertSpace($hbz, $hb, $cell, $firsttag);
+					if ($key > 1) {
+						$this->addHTMLVertSpace($hbz, $hb, $cell, $firsttag);
+					}
 				} else {
 					$this->addHTMLVertSpace(0, 0, $cell, $firsttag);
 				}
 				break;
 			}
 			case 'li': {
-				$this->addHTMLVertSpace($hbz, 0, $cell, $firsttag);
+				if ($key > 2) {
+					$this->addHTMLVertSpace($hbz, 0, $cell, $firsttag);
+				}
 				if ($this->listordered[$this->listnum]) {
 					// ordered item
 					if (isset($parent['attribute']['type']) AND !$this->empty_string($parent['attribute']['type'])) {
