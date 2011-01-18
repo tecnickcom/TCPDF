@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.045
+// Version     : 5.9.046
 // Begin       : 2002-08-03
-// Last Update : 2011-01-17
+// Last Update : 2011-01-18
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -134,7 +134,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.045
+ * @version 5.9.046
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -146,7 +146,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.045
+ * @version 5.9.046
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -157,7 +157,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.045';
+	private $tcpdf_version = '5.9.046';
 
 	// Protected properties
 
@@ -1580,6 +1580,13 @@ class TCPDF {
 	protected $spotcolor = array();
 
 	/**
+	 * Boolean value true when PDF layers are used.
+	 * @protected
+	 * @since 5.9.046 (2011-01-18)
+	 */
+	protected $pdflayers = false;
+
+	/**
 	 * Directory used for the last SVG image.
 	 * @protected
 	 * @since 5.0.000 (2010-05-05)
@@ -1812,6 +1819,7 @@ class TCPDF {
 		$this->FillColor = '0 g';
 		$this->TextColor = '0 g';
 		$this->ColorFlag = false;
+		$this->pdflayers = false;
 		// encryption values
 		$this->encrypted = false;
 		$this->last_enc_key = '';
@@ -10435,7 +10443,9 @@ class TCPDF {
 		$out .= $this->_getxobjectdict();
 		$out .= ' >>';
 		// visibility
-		$out .= ' /Properties <</OC1 '.$this->n_ocg_print.' 0 R /OC2 '.$this->n_ocg_view.' 0 R>>';
+		if ($this->pdflayers) {
+			$out .= ' /Properties <</OC1 '.$this->n_ocg_print.' 0 R /OC2 '.$this->n_ocg_view.' 0 R>>';
+		}
 		// transparency
 		$out .= ' /ExtGState <<';
 		foreach ($this->extgstates as $k => $extgstate) {
@@ -10583,10 +10593,12 @@ class TCPDF {
 			$out .= ' /PageMode /UseOutlines';
 		}
 		$out .= ' '.$this->_putviewerpreferences();
-		$p = $this->n_ocg_print.' 0 R';
-		$v = $this->n_ocg_view.' 0 R';
-		$as = '<< /Event /Print /OCGs ['.$p.' '.$v.'] /Category [/Print] >> << /Event /View /OCGs ['.$p.' '.$v.'] /Category [/View] >>';
-		$out .= ' /OCProperties << /OCGs ['.$p.' '.$v.'] /D << /ON ['.$p.'] /OFF ['.$v.'] /AS ['.$as.'] >> >>';
+		if ($this->pdflayers) {
+			$p = $this->n_ocg_print.' 0 R';
+			$v = $this->n_ocg_view.' 0 R';
+			$as = '<< /Event /Print /OCGs ['.$p.' '.$v.'] /Category [/Print] >> << /Event /View /OCGs ['.$p.' '.$v.'] /Category [/View] >>';
+			$out .= ' /OCProperties << /OCGs ['.$p.' '.$v.'] /D << /ON ['.$p.'] /OFF ['.$v.'] /AS ['.$as.'] >> >>';
+		}
 		// AcroForm
 		if (!empty($this->form_obj_id) OR ($this->sign AND isset($this->signature_data['cert_type']))) {
 			$out .= ' /AcroForm <<';
@@ -15645,10 +15657,12 @@ class TCPDF {
 	 * @since 3.0.000 (2008-03-27)
 	 */
 	protected function _putocg() {
-		$this->n_ocg_print = $this->_newobj();
-		$this->_out('<< /Type /OCG /Name '.$this->_textstring('print', $this->n_ocg_print).' /Usage << /Print <</PrintState /ON>> /View <</ViewState /OFF>> >> >>'."\n".'endobj');
-		$this->n_ocg_view = $this->_newobj();
-		$this->_out('<< /Type /OCG /Name '.$this->_textstring('view', $this->n_ocg_view).' /Usage << /Print <</PrintState /OFF>> /View <</ViewState /ON>> >> >>'."\n".'endobj');
+		if ($this->pdflayers) {
+			$this->n_ocg_print = $this->_newobj();
+			$this->_out('<< /Type /OCG /Name '.$this->_textstring('print', $this->n_ocg_print).' /Usage << /Print <</PrintState /ON>> /View <</ViewState /OFF>> >> >>'."\n".'endobj');
+			$this->n_ocg_view = $this->_newobj();
+			$this->_out('<< /Type /OCG /Name '.$this->_textstring('view', $this->n_ocg_view).' /Usage << /Print <</PrintState /OFF>> /View <</ViewState /ON>> >> >>'."\n".'endobj');
+		}
 	}
 
 	/**
@@ -15669,15 +15683,16 @@ class TCPDF {
 			case 'print': {
 				$this->_out('/OC /OC1 BDC');
 				$this->openMarkedContent = true;
+				$this->pdflayers = true;
 				break;
 			}
 			case 'screen': {
 				$this->_out('/OC /OC2 BDC');
 				$this->openMarkedContent = true;
+				$this->pdflayers = true;
 				break;
 			}
 			case 'all': {
-				$this->_out('');
 				break;
 			}
 			default: {
