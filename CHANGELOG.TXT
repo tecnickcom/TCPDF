@@ -1,3 +1,6 @@
+5.9.047 (2011-01-28)
+	- Bug #3167115 "PDF error in <table> (example 48)" was fixed (was introduced in 5.8.046).
+
 5.9.046 (2011-01-18)
 	- PDF view/print layers are now automatically turned off if not used (see setVisibility() method).
 
