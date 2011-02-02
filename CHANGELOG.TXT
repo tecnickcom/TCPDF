@@ -1,3 +1,6 @@
+5.9.048 (2011-02-02)
+	- No changes. Just released to override previous release that was not uploaded correctly.
+
 5.9.047 (2011-01-28)
 	- Bug #3167115 "PDF error in <table> (example 48)" was fixed (was introduced in 5.8.046).
 
