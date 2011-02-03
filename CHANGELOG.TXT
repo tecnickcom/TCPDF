@@ -1,3 +1,6 @@
+5.9.049 (2011-02-03)
+	- Bug #3170777 "TCPDF creates a new page after a single line in writeHTML" was fixed.
+
 5.9.048 (2011-02-02)
 	- No changes. Just released to override previous release that was not uploaded correctly.
 
