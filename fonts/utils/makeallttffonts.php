@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : makeallttffonts.php
 // Begin       : 2008-12-07
-// Last Update : 2010-12-03
+// Last Update : 2011-02-04
 //
 // Description : Process all TTF files on current directory to
 //               build TCPDF compatible font files.
@@ -40,26 +40,36 @@
 //============================================================+
 
 /**
- * @file
  * Process all TTF files on current directory to build TCPDF compatible font files.
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
+ * @copyright Copyright &copy; 2004-2009, Nicola Asuni - Tecnick.com S.r.l. - ITALY - www.tecnick.com - info@tecnick.com
+ * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
+ * @link www.tecnick.com
  * @since 2008-12-07
  */
 
-// read directory for files (only TTF files).
+// read directory for files (only TTF and OTF files).
 $handle = opendir('.');
 while ($file = readdir($handle)) {
 	$path_parts = pathinfo($file);
-	if (isset($path_parts['extension']) AND (strtoupper($path_parts['extension']) === 'TTF')) {
-		if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-			// windows
-			exec('ttf2ufm.exe -a -F '.$path_parts['basename']);
-		} else {
-			// linux
-			exec('./ttf2ufm -a -F '.$path_parts['basename']);
+	if (isset($path_parts['extension'])) {
+		$fontfile = $path_parts['basename'];
+		$filename = $path_parts['filename'];
+		$extension = strtolower($path_parts['extension']);
+		if (($extension === 'ttf') OR ($extension === 'otf')) {
+			if (!file_exists($filename.'.ufm')) {
+				if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+					// windows
+					passthru('ttf2ufm.exe -a -F '.$fontfile);
+				} else {
+					// linux
+					passthru('./ttf2ufm -a -F '.$fontfile);
+				}
+			}
+			$cmd = 'php -q makefont.php '.$fontfile.' '.$filename.'.ufm'; // unicode file
+			passthru($cmd);
 		}
-		exec('php -q makefont.php '.$path_parts['basename'].' '.$path_parts['filename'].'.ufm');
 	}
 }
 closedir($handle);
