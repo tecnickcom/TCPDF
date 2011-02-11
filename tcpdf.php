@@ -9217,7 +9217,6 @@ class TCPDF {
 	 * Returns a subset of the TrueType font data without the unused glyphs.
 	 * @param $font (string) TrueType font data.
 	 * @param $subsetchars (array) Array of used characters (the glyphs to keep).
-	 * @param $cmap (boolean) If true add a CMAP table on font description.
 	 * @return string a subset of TrueType font data without the unused glyphs
 	 * @author Nicola Asuni
 	 * @protected
