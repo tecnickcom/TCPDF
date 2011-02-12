@@ -1,3 +1,6 @@
+5.9.051 (2011-02-12)
+	- "Commas at beginning of new lines" problem was fixed.
+
 5.9.050 (2011-02-11)
 	- Bug #3177606 "SVG Bar chart error" was fixed.
 
