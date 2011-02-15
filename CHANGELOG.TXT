@@ -1,3 +1,6 @@
+5.9.052 (2011-02-15)
+	- A bug related to HTML automatic newlines was fixed.
+
 5.9.051 (2011-02-12)
 	- "Commas at beginning of new lines" problem was fixed.
 
