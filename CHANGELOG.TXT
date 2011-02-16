@@ -1,3 +1,6 @@
+5.9.054 (2011-02-16)
+	- A bug related to HTML table page break was fixed.
+
 5.9.053 (2011-02-16)
 	- Support for HTMl attribute display="none" was added.
 
