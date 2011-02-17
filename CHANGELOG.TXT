@@ -1,3 +1,6 @@
+5.9.055 (2011-02-17)
+	- Another bug related to HTML table page break was fixed.
+
 5.9.054 (2011-02-16)
 	- A bug related to HTML table page break was fixed.
 

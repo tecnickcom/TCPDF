@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.054
+// Version     : 5.9.055
 // Begin       : 2002-08-03
-// Last Update : 2011-02-16
+// Last Update : 2011-02-17
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -134,7 +134,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.054
+ * @version 5.9.055
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -146,7 +146,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.054
+ * @version 5.9.055
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -157,7 +157,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.054';
+	private $tcpdf_version = '5.9.055';
 
 	// Protected properties
 
@@ -21600,9 +21600,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						// reset main table header
 						$this->thead = '';
 						$this->theadMargins = array();
-						if (isset($this->theadMargins['top'])) {
-							$this->pagedim[$this->page]['tm'] = $this->tMargin;
-						}
+						$this->pagedim[$this->page]['tm'] = $this->tMargin;
 					}
 				}
 				$parent = $table_el;
