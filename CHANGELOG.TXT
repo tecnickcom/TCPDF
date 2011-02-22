@@ -1,3 +1,7 @@
+5.9.056 (2011-02-22)
+	- A bug on fixHTMLCode() method was fixed.
+	- Automatic line break for HTML was fixed.
+
 5.9.055 (2011-02-17)
 	- Another bug related to HTML table page break was fixed.
 

@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.055
+// Version     : 5.9.056
 // Begin       : 2002-08-03
-// Last Update : 2011-02-17
+// Last Update : 2011-02-22
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -134,7 +134,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.055
+ * @version 5.9.056
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -146,7 +146,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.055
+ * @version 5.9.056
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -157,7 +157,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.055';
+	private $tcpdf_version = '5.9.056';
 
 	// Protected properties
 
@@ -6589,6 +6589,8 @@ class TCPDF {
 		$shy_replacement_width = $this->GetCharWidth($shy_replacement);
 		// max Y
 		$maxy = $this->y + $maxh - $h - $this->cell_padding['T'] - $this->cell_padding['B'];
+		// page width
+		$pw = $w = $this->w - $this->lMargin - $this->rMargin;
 		// calculate remaining line width ($w)
 		if ($this->rtl) {
 			$w = $this->x - $this->lMargin;
@@ -6767,56 +6769,95 @@ class TCPDF {
 						} else {
 							$endspace = 0;
 						}
-						if ($shy) {
-							// add hypen (minus symbol) at the end of the line
-							$shy_width = $tmp_shy_replacement_width;
-							if ($this->rtl) {
-								$shy_char_left = $tmp_shy_replacement_char;
-								$shy_char_right = '';
-							} else {
-								$shy_char_left = '';
-								$shy_char_right = $tmp_shy_replacement_char;
+						// check the lenght of the next string
+						$strrest = $this->UniArrSubString($uchars, ($sep + $endspace));
+						$nextstr = preg_split('/'.$this->re_space['p'].'/'.$this->re_space['m'], $this->stringTrim($strrest));
+						if (isset($nextstr[0]) AND ($this->GetStringWidth($nextstr[0]) > $pw)) {
+							// truncate the word because do not fit on a full page width
+							$tmpstr = $this->UniArrSubString($uchars, $j, $i);
+							if ($firstline) {
+								$startx = $this->x;
+								$tmparr = array_slice($chars, $j, ($i - $j));
+								if ($rtlmode) {
+									$tmparr = $this->utf8Bidi($tmparr, $tmpstr, $this->tmprtl);
+								}
+								$linew = $this->GetArrStringWidth($tmparr);
+								unset($tmparr);
+								if ($this->rtl) {
+									$this->endlinex = $startx - $linew;
+								} else {
+									$this->endlinex = $startx + $linew;
+								}
+								$w = $linew;
+								$tmpcellpadding = $this->cell_padding;
+								if ($maxh == 0) {
+									$this->SetCellPadding(0);
+								}
 							}
+							if ($firstblock AND $this->isRTLTextDir()) {
+								$tmpstr = $this->stringRightTrim($tmpstr);
+							}
+							$this->Cell($w, $h, $tmpstr, 0, 1, $align, $fill, $link, $stretch);
+							unset($tmpstr);
+							if ($firstline) {
+								$this->cell_padding = $tmpcellpadding;
+								return ($this->UniArrSubString($uchars, $i));
+							}
+							$j = $i;
+							--$i;
 						} else {
-							$shy_width = 0;
-							$shy_char_left = '';
-							$shy_char_right = '';
-						}
-						$tmpstr = $this->UniArrSubString($uchars, $j, ($sep + $endspace));
-						if ($firstline) {
-							$startx = $this->x;
-							$tmparr = array_slice($chars, $j, (($sep + $endspace) - $j));
-							if ($rtlmode) {
-								$tmparr = $this->utf8Bidi($tmparr, $tmpstr, $this->tmprtl);
-							}
-							$linew = $this->GetArrStringWidth($tmparr);
-							unset($tmparr);
-							if ($this->rtl) {
-								$this->endlinex = $startx - $linew - $shy_width;
+							// word wrapping
+							if ($shy) {
+								// add hypen (minus symbol) at the end of the line
+								$shy_width = $tmp_shy_replacement_width;
+								if ($this->rtl) {
+									$shy_char_left = $tmp_shy_replacement_char;
+									$shy_char_right = '';
+								} else {
+									$shy_char_left = '';
+									$shy_char_right = $tmp_shy_replacement_char;
+								}
 							} else {
-								$this->endlinex = $startx + $linew + $shy_width;
+								$shy_width = 0;
+								$shy_char_left = '';
+								$shy_char_right = '';
 							}
-							$w = $linew;
-							$tmpcellpadding = $this->cell_padding;
-							if ($maxh == 0) {
-								$this->SetCellPadding(0);
+							$tmpstr = $this->UniArrSubString($uchars, $j, ($sep + $endspace));
+							if ($firstline) {
+								$startx = $this->x;
+								$tmparr = array_slice($chars, $j, (($sep + $endspace) - $j));
+								if ($rtlmode) {
+									$tmparr = $this->utf8Bidi($tmparr, $tmpstr, $this->tmprtl);
+								}
+								$linew = $this->GetArrStringWidth($tmparr);
+								unset($tmparr);
+								if ($this->rtl) {
+									$this->endlinex = $startx - $linew - $shy_width;
+								} else {
+									$this->endlinex = $startx + $linew + $shy_width;
+								}
+								$w = $linew;
+								$tmpcellpadding = $this->cell_padding;
+								if ($maxh == 0) {
+									$this->SetCellPadding(0);
+								}
 							}
+							// print the line
+							if ($firstblock AND $this->isRTLTextDir()) {
+								$tmpstr = $this->stringRightTrim($tmpstr);
+							}
+							$this->Cell($w, $h, $shy_char_left.$tmpstr.$shy_char_right, 0, 1, $align, $fill, $link, $stretch);
+							unset($tmpstr);
+							if ($firstline) {
+								// return the remaining text
+								$this->cell_padding = $tmpcellpadding;
+								return ($this->UniArrSubString($uchars, ($sep + $endspace)));
+							}
+							$i = $sep;
+							$sep = -1;
+							$shy = false;
+							$j = ($i+1);
 						}
-						// print the line
-						if ($firstblock AND $this->isRTLTextDir()) {
-							$tmpstr = $this->stringRightTrim($tmpstr);
-						}
-						$this->Cell($w, $h, $shy_char_left.$tmpstr.$shy_char_right, 0, 1, $align, $fill, $link, $stretch);
-						unset($tmpstr);
-						if ($firstline) {
-							// return the remaining text
-							$this->cell_padding = $tmpcellpadding;
-							return ($this->UniArrSubString($uchars, ($sep + $endspace)));
-						}
-						$i = $sep;
-						$sep = -1;
-						$shy = false;
-						$j = ($i+1);
 					}
 					// account for margin changes
 					if ((($this->y + $this->lasth) > $this->PageBreakTrigger) AND (!$this->InFooter)) {
@@ -17619,7 +17660,11 @@ class TCPDF {
 		$css = str_replace('/*<![CDATA[*/', '', $css);
 		$css = str_replace('/*]]>*/', '', $css);
 		preg_match('/<style>(.*)<\/style>/ims', $css, $matches);
-		$css = strtolower($matches[1]);
+		if (isset($matches[1])) {
+			$css = strtolower($matches[1]);
+		} else {
+			$css = '';
+		}
 		// include default css
 		$css = '<style>'.$default_css.$css.'</style>';
 		// get the body part
@@ -19038,7 +19083,7 @@ class TCPDF {
 				// text
 				$dom[$key]['tag'] = false;
 				$dom[$key]['block'] = false;
-				$element = str_replace('$nbsp;', $this->unichr(160), $element);
+				$element = str_replace('&nbsp;', $this->unichr(160), $element);
 				$dom[$key]['value'] = stripslashes($this->unhtmlentities($element));
 				$dom[$key]['parent'] = end($level);
 				$dom[$key]['dir'] = $dom[$dom[$key]['parent']]['dir'];
@@ -20353,9 +20398,11 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 							}
 						}
 						if (($wadj > 0) AND (($strlinelen + $wadj) >= $cwa)) {
+							$wadj = 0;
 							$nextstr = preg_split('/'.$this->re_space['p'].'/'.$this->re_space['m'], $dom[$key]['value']);
 							$numblks = count($nextstr);
 							if ($numblks > 1) {
+								// try to split on blank spaces
 								$wadj = ($cwa - $strlinelen + $this->GetStringWidth($nextstr[($numblks - 1)]));
 							}
 						}
