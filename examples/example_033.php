@@ -69,6 +69,9 @@ $pdf->setLanguageArray($l);
 // add a page
 $pdf->AddPage();
 
+// set default font subsetting mode
+$pdf->setFontSubsetting(false);
+
 $pdf->SetFont('helvetica', 'B', 20);
 
 $pdf->Write(0, 'Font Types', '', 0, 'C', 1, 0, false, false, 0);

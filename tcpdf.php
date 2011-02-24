@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.056
+// Version     : 5.9.057
 // Begin       : 2002-08-03
-// Last Update : 2011-02-22
+// Last Update : 2011-02-24
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -134,7 +134,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.056
+ * @version 5.9.057
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -146,7 +146,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.056
+ * @version 5.9.057
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -157,7 +157,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.056';
+	private $tcpdf_version = '5.9.057';
 
 	// Protected properties
 
@@ -7183,7 +7183,7 @@ class TCPDF {
 		// check if we are passing an image as file or string
 		if ($file{0} === '@') { // image from string
 			$imgdata = substr($file, 1);
-			$file = tempnam(K_PATH_CACHE, 'img_');
+			$file = K_PATH_CACHE.'img_'.md5($imgdata);
 			$fp = fopen($file, 'w');
 			fwrite($fp, $imgdata);
 			fclose($fp);
@@ -7214,9 +7214,9 @@ class TCPDF {
 					curl_setopt($cs, CURLOPT_TIMEOUT, 30);
 					$imgdata = curl_exec($cs);
 					curl_close($cs);
-					if($imgdata !== FALSE) {
+					if ($imgdata !== FALSE) {
 						// copy image to cache
-						$file = tempnam(K_PATH_CACHE, 'img_');
+						$file = K_PATH_CACHE.'img_'.md5($imgdata);
 						$fp = fopen($file, 'w');
 						fwrite($fp, $imgdata);
 						fclose($fp);
@@ -7800,9 +7800,9 @@ class TCPDF {
 	 */
 	protected function ImagePngAlpha($file, $x, $y, $wpx, $hpx, $w, $h, $type, $link, $align, $resize, $dpi, $palign) {
 		// create temp image file (without alpha channel)
-		$tempfile_plain = tempnam(K_PATH_CACHE, 'mskp_');
+		$tempfile_plain = K_PATH_CACHE.'mskp_'.md5($file);
 		// create temp alpha file
-		$tempfile_alpha = tempnam(K_PATH_CACHE, 'mska_');
+		$tempfile_alpha = K_PATH_CACHE.'mska_'.md5($file);
 		if (extension_loaded('imagick')) { // ImageMagick
 			// ImageMagick library
 			$img = new Imagick();
@@ -21412,7 +21412,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					$table_el = $dom[($dom[$key]['parent'])];
 				}
 				// for each row
-				unset($xmax);
+				if (count($table_el['trids']) > 0) {
+					unset($xmax);
+				}
 				foreach ($table_el['trids'] as $j => $trkey) {
 					$parent = $dom[$trkey];
 					if (!isset($xmax)) {

@@ -1,3 +1,6 @@
+5.9.057 (2011-02-24)
+	- A problem with image caching system was fixed (thanks to Korneliusz Jarzębski for reporting this problem).
+
 5.9.056 (2011-02-22)
 	- A bug on fixHTMLCode() method was fixed.
 	- Automatic line break for HTML was fixed.
