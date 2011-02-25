@@ -1,3 +1,6 @@
+5.9.058 (2011-02-25)
+	- Image() method was improved to cache images with transparency layers (thanks to Korneliusz Jarzębski for reporting this problem).
+
 5.9.057 (2011-02-24)
 	- A problem with image caching system was fixed (thanks to Korneliusz Jarzębski for reporting this problem).
 

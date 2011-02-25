@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.057
+// Version     : 5.9.058
 // Begin       : 2002-08-03
-// Last Update : 2011-02-24
+// Last Update : 2011-02-25
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -134,7 +134,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.057
+ * @version 5.9.058
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -146,7 +146,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.057
+ * @version 5.9.058
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -157,7 +157,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.057';
+	private $tcpdf_version = '5.9.058';
 
 	// Protected properties
 
@@ -7237,7 +7237,14 @@ class TCPDF {
 			}
 		}
 		if ($imsize === FALSE) {
-			$this->Error('[Image] Unable to get image: '.$file);
+			if (substr($file, 0, -34) == K_PATH_CACHE.'msk') { // mask file
+				// get measures from specified data
+				$pw = $this->getHTMLUnitToUnits($w, 0, $this->pdfunit, true) * $this->imgscale * $this->k;
+				$ph = $this->getHTMLUnitToUnits($h, 0, $this->pdfunit, true) * $this->imgscale * $this->k;
+				$imsize = array($pw, $ph);
+			} else {
+				$this->Error('[Image] Unable to get image: '.$file);
+			}
 		}
 		// get original image width and height in pixels
 		list($pixw, $pixh) = $imsize;
@@ -7328,10 +7335,32 @@ class TCPDF {
 			$newimage = false;
 			// get existing image data
 			$info = $this->getImageBuffer($file);
-			// check if the newer image is larger
-			$oldsize = ($info['w'] * $info['h']);
-			if ((($oldsize < $newsize) AND ($resize)) OR (($oldsize < $pixsize) AND (!$resize))) {
-				$newimage = true;
+			if (substr($file, 0, -34) != K_PATH_CACHE.'msk') {
+				// check if the newer image is larger
+				$oldsize = ($info['w'] * $info['h']);
+				if ((($oldsize < $newsize) AND ($resize)) OR (($oldsize < $pixsize) AND (!$resize))) {
+					$newimage = true;
+				}
+			}
+		} elseif (substr($file, 0, -34) != K_PATH_CACHE.'msk') {
+			// check for cached images with alpha channel
+			$filehash = md5($file);
+			$tempfile_plain = K_PATH_CACHE.'mskp_'.$filehash;
+			$tempfile_alpha = K_PATH_CACHE.'mska_'.$filehash;
+			if (in_array($tempfile_plain, $this->imagekeys)) {
+				// get existing image data
+				$info = $this->getImageBuffer($tempfile_plain);
+				// check if the newer image is larger
+				$oldsize = ($info['w'] * $info['h']);
+				if ((($oldsize < $newsize) AND ($resize)) OR (($oldsize < $pixsize) AND (!$resize))) {
+					$newimage = true;
+				} else {
+					$newimage = false;
+					// embed mask image
+					$imgmask = $this->Image($tempfile_alpha, $x, $y, $w, $h, 'PNG', '', '', $resize, $dpi, '', true, false);
+					// embed image, masked with previously embedded mask
+					return $this->Image($tempfile_plain, $x, $y, $w, $h, $type, $link, $align, $resize, $dpi, $palign, false, $imgmask);
+				}
 			}
 		}
 		if ($newimage) {
@@ -7353,7 +7382,7 @@ class TCPDF {
 				// TCPDF image functions
 				$info = $this->$mtd($file);
 				if ($info == 'pngalpha') {
-					return $this->ImagePngAlpha($file, $x, $y, $pixw, $pixh, $w, $h, 'PNG', $link, $align, $resize, $dpi, $palign);
+					return $this->ImagePngAlpha($file, $x, $y, $pixw, $pixh, $w, $h, 'PNG', $link, $align, $resize, $dpi, $palign, $filehash);
 				}
 			}
 			if (!$info) {
@@ -7793,16 +7822,20 @@ class TCPDF {
 	 * @param $resize (boolean) If true resize (reduce) the image to fit $w and $h (requires GD library).
 	 * @param $dpi (int) dot-per-inch resolution used on resize
 	 * @param $palign (string) Allows to center or align the image on the current line. Possible values are:<ul><li>L : left align</li><li>C : center</li><li>R : right align</li><li>'' : empty string : left for LTR or right for RTL</li></ul>
+	 * @param $filehash (string) File hash used to build unique file names.
 	 * @author Nicola Asuni
 	 * @protected
 	 * @since 4.3.007 (2008-12-04)
 	 * @see Image()
 	 */
-	protected function ImagePngAlpha($file, $x, $y, $wpx, $hpx, $w, $h, $type, $link, $align, $resize, $dpi, $palign) {
+	protected function ImagePngAlpha($file, $x, $y, $wpx, $hpx, $w, $h, $type, $link, $align, $resize, $dpi, $palign, $filehash='') {
+		if (empty($filehash)) {
+			$filehash = md5($file);
+		}
 		// create temp image file (without alpha channel)
-		$tempfile_plain = K_PATH_CACHE.'mskp_'.md5($file);
+		$tempfile_plain = K_PATH_CACHE.'mskp_'.$filehash;
 		// create temp alpha file
-		$tempfile_alpha = K_PATH_CACHE.'mska_'.md5($file);
+		$tempfile_alpha = K_PATH_CACHE.'mska_'.$filehash;
 		if (extension_loaded('imagick')) { // ImageMagick
 			// ImageMagick library
 			$img = new Imagick();
