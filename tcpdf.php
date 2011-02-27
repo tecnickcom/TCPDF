@@ -4011,7 +4011,7 @@ class TCPDF {
 	public function Header() {
 		if ($this->header_xobjid < 0) {
 			// start a new XObject Template
-			$this->header_xobjid = $this->startTemplate($this->w, $this->tMargin - $this->header_margin);
+			$this->header_xobjid = $this->startTemplate($this->w, $this->tMargin);
 			$headerfont = $this->getHeaderFont();
 			$headerdata = $this->getHeaderData();
 			$this->y = $this->header_margin;
@@ -4051,8 +4051,8 @@ class TCPDF {
 			$this->SetX($header_x);
 			$this->MultiCell($cw, $cell_height, $headerdata['string'], 0, '', 0, 1, '', '', true, 0, false);
 			// print an ending header line
-			$this->SetLineStyle(array('width' => 0.85 / $this->getScaleFactor(), 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)));
-			$this->SetY((2.835 / $this->getScaleFactor()) + max($imgy, $this->GetY()));
+			$this->SetLineStyle(array('width' => 0.85 / $this->k, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)));
+			$this->SetY((2.835 / $this->k) + max($imgy, $this->y));
 			if ($this->rtl) {
 				$this->SetX($this->original_rMargin);
 			} else {
