@@ -1,3 +1,6 @@
+5.9.059 (2011-02-27)
+	- Default Header() method was improved to reduce document size.
+
 5.9.058 (2011-02-25)
 	- Image() method was improved to cache images with transparency layers (thanks to Korneliusz Jarzębski for reporting this problem).
 
