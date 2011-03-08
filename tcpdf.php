@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.059
+// Version     : 5.9.060
 // Begin       : 2002-08-03
-// Last Update : 2011-02-27
+// Last Update : 2011-03-08
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -134,7 +134,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.059
+ * @version 5.9.060
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -146,7 +146,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.059
+ * @version 5.9.060
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -157,7 +157,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.059';
+	private $tcpdf_version = '5.9.060';
 
 	// Protected properties
 
@@ -23324,6 +23324,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				$page = 1;
 			}
 		}
+		$this->SetFont($numbersfont, $fontstyle, $fontsize);
+		$numwidth = $this->GetStringWidth('00000');
 		foreach ($this->outlines as $key => $outline) {
 			if ($this->rtl) {
 				$aligntext = 'R';
@@ -23338,7 +23340,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				$this->SetFont($fontfamily, $fontstyle, $fontsize - $outline['l']);
 			}
 			// check for page break
-			$this->checkPageBreak(($this->FontSize * $this->cell_height_ratio));
+			$this->checkPageBreak(2*($this->FontSize * $this->cell_height_ratio));
 			// set margins and X position
 			if (($this->page == $current_page) AND ($this->current_column == $current_column)) {
 				$this->lMargin = $lmargin;
@@ -23359,16 +23361,21 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			$this->SetX($x_start);
 			$indent = ($spacer * $outline['l']);
 			if ($this->rtl) {
-				$this->rMargin += $indent;
 				$this->x -= $indent;
+				$this->rMargin = $this->w - $this->x;
 			} else {
-				$this->lMargin += $indent;
 				$this->x += $indent;
+				$this->lMargin = $this->x;
 			}
 			$link = $this->AddLink();
 			$this->SetLink($link, $outline['y'], $outline['p']);
 			// write the text
-			$this->Write(0, $outline['t'], $link, 0, $aligntext, false, 0, false, false, 0);
+			$this->Write(0, $outline['t'], $link, false, $aligntext, false, 0, false, false, 0, $numwidth, '');
+			if ($this->rtl) {
+				$tw = $this->x - $this->lMargin;
+			} else {
+				$tw = $this->w - $this->rMargin - $this->x;
+			}
 			$this->SetFont($numbersfont, $fontstyle, $fontsize);
 			if ($this->empty_string($page)) {
 				$pagenum = $outline['p'];
@@ -23378,12 +23385,6 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				if ($this->isUnicodeFont()) {
 					$pagenum = '{'.$pagenum.'}';
 				}
-			}
-			$numwidth = $this->GetStringWidth($pagenum);
-			if ($this->rtl) {
-				$tw = $this->x - $this->lMargin;
-			} else {
-				$tw = $this->w - $this->rMargin - $this->x;
 			}
 			$fw = $tw - $numwidth - $this->GetStringWidth(chr(32));
 			$numfills = floor($fw / $this->GetStringWidth($filler));

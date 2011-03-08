@@ -1,3 +1,6 @@
+5.9.060 (2011-03-08)
+	- addTOC() method was fixed for text alignment problems.
+
 5.9.059 (2011-02-27)
 	- Default Header() method was improved to reduce document size.
 
@@ -18,7 +21,7 @@
 	- A bug related to HTML table page break was fixed.
 
 5.9.053 (2011-02-16)
-	- Support for HTMl attribute display="none" was added.
+	- Support for HTML attribute display="none" was added.
 
 5.9.052 (2011-02-15)
 	- A bug related to HTML automatic newlines was fixed.
