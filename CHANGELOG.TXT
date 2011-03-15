@@ -1,3 +1,7 @@
+5.9.061 (2011-03-15)
+	- Bug item #3213488 "wrong function call in function Write" was fixed.
+	- Bug item #3203007 "list element with black background" was fixed.
+
 5.9.060 (2011-03-08)
 	- addTOC() method was fixed for text alignment problems.
 
