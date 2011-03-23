@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.061
+// Version     : 5.9.062
 // Begin       : 2002-08-03
-// Last Update : 2011-03-15
+// Last Update : 2011-03-23
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -134,7 +134,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.061
+ * @version 5.9.062
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -146,7 +146,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.061
+ * @version 5.9.062
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -157,7 +157,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.061';
+	private $tcpdf_version = '5.9.062';
 
 	// Protected properties
 
@@ -4049,7 +4049,7 @@ class TCPDF {
 			// header string
 			$this->SetFont($headerfont[0], $headerfont[1], $headerfont[2]);
 			$this->SetX($header_x);
-			$this->MultiCell($cw, $cell_height, $headerdata['string'], 0, '', 0, 1, '', '', true, 0, false);
+			$this->MultiCell($cw, $cell_height, $headerdata['string'], 0, '', 0, 1, '', '', true, 0, false, true, 0, 'T', false);
 			// print an ending header line
 			$this->SetLineStyle(array('width' => 0.85 / $this->k, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)));
 			$this->SetY((2.835 / $this->k) + max($imgy, $this->y));
@@ -5435,6 +5435,8 @@ class TCPDF {
 	 * @see Cell()
 	 */
 	protected function getCellCode($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=false, $link='', $stretch=0, $ignore_min_height=false, $calign='T', $valign='M') {
+		// replace 'NO-BREAK SPACE' (U+00A0) character with a simple space
+		$txt = str_replace($this->unichr(160), ' ', $txt);
 		$prev_cell_margin = $this->cell_margin;
 		$prev_cell_padding = $this->cell_padding;
 		$txt = $this->removeSHY($txt);
@@ -14582,11 +14584,13 @@ class TCPDF {
 					$opt['bs'] = array('w'=>$linewidth, 's'=>'U');
 					break;
 				}
-				default:
 				case 'border.s':
 				case 'solid': {
 					$opt['border'] = array(0, 0, $linewidth);
 					$opt['bs'] = array('w'=>$linewidth, 's'=>'S');
+					break;
+				}
+				default: {
 					break;
 				}
 			}
@@ -19145,7 +19149,7 @@ class TCPDF {
 				// text
 				$dom[$key]['tag'] = false;
 				$dom[$key]['block'] = false;
-				$element = str_replace('&nbsp;', $this->unichr(160), $element);
+				//$element = str_replace('&nbsp;', $this->unichr(160), $element);
 				$dom[$key]['value'] = stripslashes($this->unhtmlentities($element));
 				$dom[$key]['parent'] = end($level);
 				$dom[$key]['dir'] = $dom[$dom[$key]['parent']]['dir'];
@@ -24620,9 +24624,11 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		if (empty($h)) {
 			$h = ($this->FontSize * $this->cell_height_ratio) + $this->cell_padding['T'] + $this->cell_padding['B'];
 		}
-		if ($this->AutoPageBreak AND (!$this->InFooter) AND (($y + $h) > $this->PageBreakTrigger)) {
+		// check for page break
+		if ($this->checkPageBreak($h, $y)) {
 			// the content will be printed on a new page
-			return;
+			$x = $this->x;
+			$y = $this->y;
 		}
 		if ($this->num_columns > 1) {
 			if ($this->rtl) {

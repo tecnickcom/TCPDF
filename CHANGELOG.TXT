@@ -1,3 +1,8 @@
+5.9.062 (2011-03-23)
+	- Bug item #3232650 "Using Write if there are pageRegions active creates error" was fixed.
+	- Bug item #3221891 "text input borders" was fixed.
+	- Bug item #3228958 "Adobe Reader 9.4.2 crash" was fixed.
+
 5.9.061 (2011-03-15)
 	- Bug item #3213488 "wrong function call in function Write" was fixed.
 	- Bug item #3203007 "list element with black background" was fixed.
