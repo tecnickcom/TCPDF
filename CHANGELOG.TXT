@@ -1,3 +1,6 @@
+5.9.063 (2011-04-01)
+	- Bug item #3267235 "WriteHTML() and image that doesn't fit on the page" was fixed.
+
 5.9.062 (2011-03-23)
 	- Bug item #3232650 "Using Write if there are pageRegions active creates error" was fixed.
 	- Bug item #3221891 "text input borders" was fixed.
