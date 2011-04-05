@@ -1,3 +1,6 @@
+5.9.064 (2011-04-05)
+	- A bug related to character entities on HTML cells was fixed.
+
 5.9.063 (2011-04-01)
 	- Bug item #3267235 "WriteHTML() and image that doesn't fit on the page" was fixed.
 
