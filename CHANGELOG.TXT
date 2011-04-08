@@ -1,3 +1,6 @@
+5.9.065 (2011-04-08)
+	- Bug item #3280512 "Text encoding iso-8859-2 crashes" was fixed.
+
 5.9.064 (2011-04-05)
 	- A bug related to character entities on HTML cells was fixed.
 
