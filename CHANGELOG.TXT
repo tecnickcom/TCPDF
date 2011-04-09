@@ -1,3 +1,7 @@
+5.9.066 (2011-04-09)
+	- A bug related to digital signature + encryption was fixed.
+	- A bug related to encryption + xobject templates was fixed.
+
 5.9.065 (2011-04-08)
 	- Bug item #3280512 "Text encoding iso-8859-2 crashes" was fixed.
 
