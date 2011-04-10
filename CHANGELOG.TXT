@@ -1,3 +1,6 @@
+5.9.067 (2011-04-10)
+	- Performances were drastically improved (PDF documents are now created more quickly).
+
 5.9.066 (2011-04-09)
 	- A bug related to digital signature + encryption was fixed.
 	- A bug related to encryption + xobject templates was fixed.
