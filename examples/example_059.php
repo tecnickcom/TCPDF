@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_059.php
 // Begin       : 2010-05-06
-// Last Update : 2010-09-13
+// Last Update : 2011-04-15
 //
 // Description : Example 059 for TCPDF class
 //               Table Of Content using HTML templates.
@@ -110,30 +110,31 @@ $pdf->SetFont('helvetica', '', 10);
 $pdf->AddPage();
 
 // set a bookmark for the current position
-$pdf->Bookmark('Chapter 1', 0, 0);
+$pdf->Bookmark('Chapter 1', 0, 0, '', 'B', array(0,64,128));
 
 // print a line using Cell()
 $pdf->Cell(0, 10, 'Chapter 1', 0, 1, 'L');
 
 $pdf->AddPage();
-$pdf->Bookmark('Paragraph 1.1', 1, 0);
+$pdf->Bookmark('Paragraph 1.1', 1, 0, '', '', array(128,0,0));
 $pdf->Cell(0, 10, 'Paragraph 1.1', 0, 1, 'L');
 
 $pdf->AddPage();
-$pdf->Bookmark('Paragraph 1.2', 1, 0);
+$pdf->Bookmark('Paragraph 1.2', 1, 0, '', '', array(128,0,0));
 $pdf->Cell(0, 10, 'Paragraph 1.2', 0, 1, 'L');
 
 $pdf->AddPage();
-$pdf->Bookmark('Sub-Paragraph 1.2.1', 2, 0);
+$pdf->Bookmark('Sub-Paragraph 1.2.1', 2, 0, '', 'I', array(0,128,0));
 $pdf->Cell(0, 10, 'Sub-Paragraph 1.2.1', 0, 1, 'L');
 
 $pdf->AddPage();
-$pdf->Bookmark('Paragraph 1.3', 1, 0);
+$pdf->Bookmark('Paragraph 1.3', 1, 0, '', '', array(128,0,0));
 $pdf->Cell(0, 10, 'Paragraph 1.3', 0, 1, 'L');
 
-for ($i = 2; $i < 12; ++$i) {
+// add some pages and bookmarks
+for ($i = 2; $i < 12; $i++) {
 	$pdf->AddPage();
-	$pdf->Bookmark('Chapter '.$i, 0, 0);
+	$pdf->Bookmark('Chapter '.$i, 0, 0, '', 'B', array(0,64,128));
 	$pdf->Cell(0, 10, 'Chapter '.$i, 0, 1, 'L');
 }
 
@@ -172,7 +173,7 @@ $bookmark_templates[2] = '<table border="0" cellpadding="0" cellspacing="0"><tr>
 
 // add table of content at page 1
 // (check the example n. 45 for a text-only TOC
-$pdf->addHTMLTOC($page=1, $toc_name='INDEX', $bookmark_templates, $correct_align=true);
+$pdf->addHTMLTOC(1, 'INDEX', $bookmark_templates, true, 'B', array(128,0,0));
 
 // end of TOC page
 $pdf->endTOCPage();

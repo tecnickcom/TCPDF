@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_015.php
 // Begin       : 2008-03-04
-// Last Update : 2010-08-08
+// Last Update : 2011-04-15
 //
 // Description : Example 015 for TCPDF class
 //               Bookmarks (Table of Content)
@@ -66,7 +66,7 @@ $pdf->setLanguageArray($l);
 
 // ---------------------------------------------------------
 
-// Bookmark($txt, $level=0, $y=-1, $page='')
+// Bookmark($txt, $level=0, $y=-1, $page='', $style='', $color=array(0,0,0))
 
 // set font
 $pdf->SetFont('times', 'B', 20);
@@ -75,7 +75,7 @@ $pdf->SetFont('times', 'B', 20);
 $pdf->AddPage();
 
 // set a bookmark for the current position
-$pdf->Bookmark('Chapter 1', 0, 0);
+$pdf->Bookmark('Chapter 1', 0, 0, '', 'B', array(0,64,128));
 
 // print a line using Cell()
 $pdf->Cell(0, 10, 'Chapter 1', 0, 1, 'L');
@@ -88,27 +88,27 @@ $pdf->SetFont('times', 'B', 20);
 // add other pages and bookmarks
 
 $pdf->AddPage();
-$pdf->Bookmark('Paragraph 1.1', 1, 0);
+$pdf->Bookmark('Paragraph 1.1', 1, 0, '', '', array(0,0,0));
 $pdf->Cell(0, 10, 'Paragraph 1.1', 0, 1, 'L');
 
 $pdf->AddPage();
-$pdf->Bookmark('Paragraph 1.2', 1, 0);
+$pdf->Bookmark('Paragraph 1.2', 1, 0, '', '', array(0,0,0));
 $pdf->Cell(0, 10, 'Paragraph 1.2', 0, 1, 'L');
 
 $pdf->AddPage();
-$pdf->Bookmark('Sub-Paragraph 1.2.1', 2, 0);
+$pdf->Bookmark('Sub-Paragraph 1.2.1', 2, 0, '', 'I', array(0,0,0));
 $pdf->Cell(0, 10, 'Sub-Paragraph 1.2.1', 0, 1, 'L');
 
 $pdf->AddPage();
-$pdf->Bookmark('Paragraph 1.3', 1, 0);
+$pdf->Bookmark('Paragraph 1.3', 1, 0, '', '', array(0,0,0));
 $pdf->Cell(0, 10, 'Paragraph 1.3', 0, 1, 'L');
 
 $pdf->AddPage();
-$pdf->Bookmark('Chapter 2', 0, 0);
+$pdf->Bookmark('Chapter 2', 0, 0, '', 'BI', array(128,0,0));
 $pdf->Cell(0, 10, 'Chapter 2', 0, 1, 'L');
 
 $pdf->AddPage();
-$pdf->Bookmark('Chapter 3', 0, 0);
+$pdf->Bookmark('Chapter 3', 0, 0, '', 'B', array(0,64,128));
 $pdf->Cell(0, 10, 'Chapter 3', 0, 1, 'L');
 
 // ---------------------------------------------------------
@@ -117,5 +117,5 @@ $pdf->Cell(0, 10, 'Chapter 3', 0, 1, 'L');
 $pdf->Output('example_015.pdf', 'I');
 
 //============================================================+
-// END OF FILE                                                
+// END OF FILE
 //============================================================+
