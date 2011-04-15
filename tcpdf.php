@@ -4891,8 +4891,22 @@ class TCPDF {
 			}
 		}
 		++$this->numfonts;
+		if ($type == 'core') {
+			$name = $this->CoreFonts[$fontkey];
+			$subset = false;
+		} elseif (($type == 'TrueType') OR ($type == 'Type1')) {
+			$subset = false;
+		} elseif ($type == 'TrueTypeUnicode') {
+			$enc = 'Identity-H';
+		} elseif ($type != 'cidfont0') {
+			$this->Error('Unknow font type: '.$type.'');
+		}
+		// set name if unset
+		if (!isset($name) OR empty($name)) {
+			$name = $fontkey;
+		}
 		// create artificial font style variations if missing (only works with non-embedded fonts)
-		if ($missing_style) {
+		if (($type != 'core') AND $missing_style) {
 			// style variations
 			$styles = array('' => '', 'B' => ',Bold', 'I' => ',Italic', 'BI' => ',BoldItalic');
 			$name .= $styles[$bistyle];
@@ -4917,16 +4931,6 @@ class TCPDF {
 					$desc['Flags'] = 128;
 				}
 			}
-		}
-		if ($type == 'core') {
-			$name = $this->CoreFonts[$fontkey];
-			$subset = false;
-		} elseif (($type == 'TrueType') OR ($type == 'Type1')) {
-			$subset = false;
-		} elseif ($type == 'TrueTypeUnicode') {
-			$enc = 'Identity-H';
-		} elseif ($type != 'cidfont0') {
-			$this->Error('Unknow font type: '.$type.'');
 		}
 		// initialize subsetchars to contain default ASCII values (0-255)
 		$subsetchars = array_fill(0, 256, true);
