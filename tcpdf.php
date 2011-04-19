@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.070
+// Version     : 5.9.071
 // Begin       : 2002-08-03
 // Last Update : 2011-04-19
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
@@ -134,7 +134,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.070
+ * @version 5.9.071
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -146,7 +146,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.070
+ * @version 5.9.071
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -157,7 +157,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.070';
+	private $tcpdf_version = '5.9.071';
 
 	// Protected properties
 
@@ -18087,12 +18087,10 @@ class TCPDF {
 	 */
 	protected function getCSSdataArray($dom, $key, $css) {
 		$cssarray = array(); // style to be returned
-		// get list of parent CSS selectors
-		$parent_selectors = array();
-		if (isset($dom[($dom[$key]['parent'])]['cssdata'])) {
-			foreach ($dom[($dom[$key]['parent'])]['cssdata'] as $k => $v) {
-				$parent_selectors[] = $v['k'];
-			}
+		// get parent CSS selectors
+		$selectors = array();
+		if (isset($dom[($dom[$key]['parent'])]['csssel'])) {
+			$selectors = $dom[($dom[$key]['parent'])]['csssel'];
 		}
 		// get all styles that apply
 		foreach($css as $selector => $style) {
@@ -18103,9 +18101,10 @@ class TCPDF {
 			$selector = substr($selector, $pos);
 			// check if this selector apply to current tag
 			if ($this->isValidCSSSelectorForTag($dom, $key, $selector)) {
-				if (!in_array($selector, $parent_selectors)) {
+				if (!in_array($selector, $selectors)) {
 					// add style if not already added on parent selector
 					$cssarray[] = array('k' => $selector, 's' => $specificity, 'c' => $style);
+					$selectors[] = $selector;
 				}
 			}
 		}
@@ -18114,14 +18113,14 @@ class TCPDF {
 			$cssarray[] = array('k' => '', 's' => '1000', 'c' => $dom[$key]['attribute']['style']);
 		}
 		// order the css array to account for specificity
-		$ordered = array();
+		$cssordered = array();
 		foreach ($cssarray as $key => $val) {
 			$skey = sprintf('%04d', $key);
-			$ordered[$val['s'].'_'.$skey] = $val;
+			$cssordered[$val['s'].'_'.$skey] = $val;
 		}
 		// sort selectors alphabetically to account for specificity
-		ksort($ordered, SORT_STRING);
-		return $ordered;
+		ksort($cssordered, SORT_STRING);
+		return array($selectors, $cssordered);
 	}
 
 	/**
@@ -18811,7 +18810,7 @@ class TCPDF {
 					}
 					if (!empty($css)) {
 						// merge CSS style to current style
-						$dom[$key]['cssdata'] = $this->getCSSdataArray($dom, $key, $css);
+						list($dom[$key]['csssel'], $dom[$key]['cssdata']) = $this->getCSSdataArray($dom, $key, $css);
 						$dom[$key]['attribute']['style'] = $this->getTagStyleFromCSSarray($dom[$key]['cssdata']);
 					}
 					// split style attributes
