@@ -1,3 +1,6 @@
+5.9.069 (2011-04-19)
+	- Bug #3288763 "HTML-Table: non-breaking table rows: Bug" was fixed.
+
 5.9.068 (2011-04-15)
 	- Bookmark, addTOC and addHTMLTOC methods were improved to include font style and color (Examples 15, 49 and 59 were updated).
 	- Default $_SERVER['DOCUMENT_ROOT'] value on tcpdf_config.php file was changed.
