@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.069
+// Version     : 5.9.070
 // Begin       : 2002-08-03
 // Last Update : 2011-04-19
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
@@ -134,7 +134,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.069
+ * @version 5.9.070
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -146,7 +146,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.069
+ * @version 5.9.070
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -157,7 +157,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.069';
+	private $tcpdf_version = '5.9.070';
 
 	// Protected properties
 
@@ -17904,7 +17904,7 @@ class TCPDF {
 			$b = intval(preg_match_all('/[\#]/', $selector, $matches)); // number of ID attributes
 			$c = intval(preg_match_all('/[\[\.]/', $selector, $matches)); // number of other attributes
 			$c += intval(preg_match_all('/[\:]link|visited|hover|active|focus|target|lang|enabled|disabled|checked|indeterminate|root|nth|first|last|only|empty|contains|not/i', $selector, $matches)); // number of pseudo-classes
-			$d = intval(preg_match_all('/[\>\+\~\s]{1}[a-zA-Z0-9\*]+/', ' '.$selector, $matches)); // number of element names
+			$d = intval(preg_match_all('/[\>\+\~\s]{1}[a-zA-Z0-9]+/', ' '.$selector, $matches)); // number of element names
 			$d += intval(preg_match_all('/[\:][\:]/', $selector, $matches)); // number of pseudo-elements
 			$specificity = $a.$b.$c.$d;
 			// add specificity to the beginning of the selector
@@ -18077,29 +18077,78 @@ class TCPDF {
 	}
 
 	/**
-	 * Returns the styles that apply for the selected HTML tag.
+	 * Returns the styles array that apply for the selected HTML tag.
 	 * @param $dom (array) array of HTML tags and properties
 	 * @param $key (int) key of the current HTML tag
 	 * @param $css (array) array of CSS properties
-	 * @return string containing CSS properties
+	 * @return array containing CSS properties
 	 * @protected
 	 * @since 5.1.000 (2010-05-25)
 	 */
-	protected function getTagStyleFromCSS($dom, $key, $css) {
-		$tagstyle = ''; // style to be returned
+	protected function getCSSdataArray($dom, $key, $css) {
+		$cssarray = array(); // style to be returned
+		// get list of parent CSS selectors
+		$parent_selectors = array();
+		if (isset($dom[($dom[$key]['parent'])]['cssdata'])) {
+			foreach ($dom[($dom[$key]['parent'])]['cssdata'] as $k => $v) {
+				$parent_selectors[] = $v['k'];
+			}
+		}
 		// get all styles that apply
 		foreach($css as $selector => $style) {
+			$pos = strpos($selector, ' ');
+			// get specificity
+			$specificity = substr($selector, 0, $pos);
 			// remove specificity
-			$selector = substr($selector, strpos($selector, ' '));
+			$selector = substr($selector, $pos);
 			// check if this selector apply to current tag
 			if ($this->isValidCSSSelectorForTag($dom, $key, $selector)) {
-				// apply style
-				$tagstyle .= ';'.$style;
+				if (!in_array($selector, $parent_selectors)) {
+					// add style if not already added on parent selector
+					$cssarray[] = array('k' => $selector, 's' => $specificity, 'c' => $style);
+				}
 			}
 		}
 		if (isset($dom[$key]['attribute']['style'])) {
 			// attach inline style (latest properties have high priority)
-			$tagstyle .= ';'.$dom[$key]['attribute']['style'];
+			$cssarray[] = array('k' => '', 's' => '1000', 'c' => $dom[$key]['attribute']['style']);
+		}
+		// order the css array to account for specificity
+		$ordered = array();
+		foreach ($cssarray as $key => $val) {
+			$skey = sprintf('%04d', $key);
+			$ordered[$val['s'].'_'.$skey] = $val;
+		}
+		// sort selectors alphabetically to account for specificity
+		ksort($ordered, SORT_STRING);
+		return $ordered;
+	}
+
+	/**
+	 * Compact CSS data array into single string.
+	 * @param $css (array) array of CSS properties
+	 * @return string containing merged CSS properties
+	 * @protected
+	 * @since 5.9.070 (2011-04-19)
+	 */
+	protected function getTagStyleFromCSSarray($css) {
+		$tagstyle = ''; // value to be returned
+		foreach ($css as $style) {
+			// split single css commands
+			$csscmds = explode(';', $style['c']);
+			foreach ($csscmds as $cmd) {
+				if (!empty($cmd)) {
+					$pos = strpos($cmd, ':');
+					if ($pos !== false) {
+						$cmd = substr($cmd, 0, ($pos + 1));
+						if (strpos($tagstyle, $cmd) !== false) {
+							// remove duplicate commands (last commands have high priority)
+							$tagstyle = preg_replace('/'.$cmd.'[^;]+/i', '', $tagstyle);
+						}
+					}
+				}
+			}
+			$tagstyle .= ';'.$style['c'];
 		}
 		// remove multiple semicolons
 		$tagstyle = preg_replace('/[;]+/', ';', $tagstyle);
@@ -18761,8 +18810,9 @@ class TCPDF {
 						$dom[$key]['attribute'][strtolower($name)] = $attr_array[2][$id];
 					}
 					if (!empty($css)) {
-						// merge eternal CSS style to current style
-						$dom[$key]['attribute']['style'] = $this->getTagStyleFromCSS($dom, $key, $css);
+						// merge CSS style to current style
+						$dom[$key]['cssdata'] = $this->getCSSdataArray($dom, $key, $css);
+						$dom[$key]['attribute']['style'] = $this->getTagStyleFromCSSarray($dom[$key]['cssdata']);
 					}
 					// split style attributes
 					if (isset($dom[$key]['attribute']['style']) AND !empty($dom[$key]['attribute']['style'])) {
