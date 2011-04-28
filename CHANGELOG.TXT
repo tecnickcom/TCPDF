@@ -1,3 +1,6 @@
+5.9.074 (2011-04-28)
+	- Bug item #3294306 "CSS classes not work in <thead> table section" was fixed.
+
 5.9.073 (2011-04-27)
 	- A bug related to character entities on HTML cells was fixed.
 
