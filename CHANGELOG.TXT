@@ -1,3 +1,6 @@
+5.9.075 (2011-05-02)
+	- Table header alignment when using WriteHTMLCell() or MultiCell() was fixed.
+
 5.9.074 (2011-04-28)
 	- Bug item #3294306 "CSS classes not work in <thead> table section" was fixed.
 
