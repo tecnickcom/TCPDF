@@ -1,3 +1,6 @@
+5.9.076 (2011-05-06)
+	- Bug item #3298264 "codebar 93 error" was fixed.
+
 5.9.075 (2011-05-02)
 	- Table header alignment when using WriteHTMLCell() or MultiCell() was fixed.
 
