@@ -1,3 +1,7 @@
+5.9.077 (2011-05-07)
+	- Bug item #3298591 "error code93" was fixed.
+	- SetLineStyle() function was improved.
+
 5.9.076 (2011-05-06)
 	- Bug item #3298264 "codebar 93 error" was fixed.
 
