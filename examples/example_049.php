@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_049.php
 // Begin       : 2009-04-03
-// Last Update : 2010-08-08
+// Last Update : 2011-05-12
 //
 // Description : Example 049 for TCPDF class
 //               WriteHTML with TCPDF callback functions
@@ -96,7 +96,7 @@ You can disable this tag by setting to false the <b>K_TCPDF_CALLS_IN_HTML</b> co
 $params = $pdf->serializeTCPDFtagParameters(array('CODE 39', 'C39', '', '', 80, 30, 0.4, array('position'=>'S', 'border'=>true, 'padding'=>4, 'fgcolor'=>array(0,0,0), 'bgcolor'=>array(255,255,255), 'text'=>true, 'font'=>'helvetica', 'fontsize'=>8, 'stretchtext'=>4), 'N'));
 $html .= '<tcpdf method="write1DBarcode" params="'.$params.'" />';
 
-$params = $pdf->serializeTCPDFtagParameters(array('CODE 128C+', 'C128C', '', '', 80, 30, 0.4, array('position'=>'S', 'border'=>true, 'padding'=>4, 'fgcolor'=>array(0,0,0), 'bgcolor'=>array(255,255,255), 'text'=>true, 'font'=>'helvetica', 'fontsize'=>8, 'stretchtext'=>4), 'N'));
+$params = $pdf->serializeTCPDFtagParameters(array('CODE 128', 'C128', '', '', 80, 30, 0.4, array('position'=>'S', 'border'=>true, 'padding'=>4, 'fgcolor'=>array(0,0,0), 'bgcolor'=>array(255,255,255), 'text'=>true, 'font'=>'helvetica', 'fontsize'=>8, 'stretchtext'=>4), 'N'));
 $html .= '<tcpdf method="write1DBarcode" params="'.$params.'" />';
 
 $html .= '<tcpdf method="AddPage" /><h2>Graphic Functions</h2>';
