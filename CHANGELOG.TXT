@@ -1,3 +1,9 @@
+5.9.078 (2011-05-12)
+	- Bug item #3300878 "wrong rendering for html bullet list in some case" was fixed.
+	- Bug item #3301017 "Emphasized vs. font-weight" was fixed.
+	- Barcode Code 128 was improved to include AUTO mode (automatically switch between A, B and C modes).
+	- Example n. 27 was updated.
+
 5.9.077 (2011-05-07)
 	- Bug item #3298591 "error code93" was fixed.
 	- SetLineStyle() function was improved.

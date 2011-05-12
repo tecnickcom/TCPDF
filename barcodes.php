@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : barcodes.php
-// Version     : 1.0.014
+// Version     : 1.0.015
 // Begin       : 2008-06-09
-// Last Update : 2011-05-07
+// Last Update : 2011-05-12
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -37,14 +37,14 @@
  * PHP class to creates array representations for common 1D barcodes to be used with TCPDF.
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 1.0.014
+ * @version 1.0.015
  */
 
 /**
  * @class TCPDFBarcode
  * PHP class to creates array representations for common 1D barcodes to be used with TCPDF (http://www.tcpdf.org).<br>
  * @package com.tecnick.tcpdf
- * @version 1.0.014
+ * @version 1.0.015
  * @author Nicola Asuni
  */
 class TCPDFBarcode {
@@ -67,7 +67,7 @@ class TCPDFBarcode {
 	 * <li>$arrcode['bcode'][$k]['h'] bar height in units.</li>
 	 * <li>$arrcode['bcode'][$k]['p'] bar top position (0 = top, 1 = middle)</li></ul>
 	 * @param $code (string) code to print
- 	 * @param $type (string) type of barcode: <ul><li>C39 : CODE 39 - ANSI MH10.8M-1983 - USD-3 - 3 of 9.</li><li>C39+ : CODE 39 with checksum</li><li>C39E : CODE 39 EXTENDED</li><li>C39E+ : CODE 39 EXTENDED + CHECKSUM</li><li>C93 : CODE 93 - USS-93</li><li>S25 : Standard 2 of 5</li><li>S25+ : Standard 2 of 5 + CHECKSUM</li><li>I25 : Interleaved 2 of 5</li><li>I25+ : Interleaved 2 of 5 + CHECKSUM</li><li>C128A : CODE 128 A</li><li>C128B : CODE 128 B</li><li>C128C : CODE 128 C</li><li>EAN2 : 2-Digits UPC-Based Extention</li><li>EAN5 : 5-Digits UPC-Based Extention</li><li>EAN8 : EAN 8</li><li>EAN13 : EAN 13</li><li>UPCA : UPC-A</li><li>UPCE : UPC-E</li><li>MSI : MSI (Variation of Plessey code)</li><li>MSI+ : MSI + CHECKSUM (modulo 11)</li><li>POSTNET : POSTNET</li><li>PLANET : PLANET</li><li>RMS4CC : RMS4CC (Royal Mail 4-state Customer Code) - CBC (Customer Bar Code)</li><li>KIX : KIX (Klant index - Customer index)</li><li>IMB: Intelligent Mail Barcode - Onecode - USPS-B-3200</li><li>CODABAR : CODABAR</li><li>CODE11 : CODE 11</li><li>PHARMA : PHARMACODE</li><li>PHARMA2T : PHARMACODE TWO-TRACKS</li></ul>
+ 	 * @param $type (string) type of barcode: <ul><li>C39 : CODE 39 - ANSI MH10.8M-1983 - USD-3 - 3 of 9.</li><li>C39+ : CODE 39 with checksum</li><li>C39E : CODE 39 EXTENDED</li><li>C39E+ : CODE 39 EXTENDED + CHECKSUM</li><li>C93 : CODE 93 - USS-93</li><li>S25 : Standard 2 of 5</li><li>S25+ : Standard 2 of 5 + CHECKSUM</li><li>I25 : Interleaved 2 of 5</li><li>I25+ : Interleaved 2 of 5 + CHECKSUM</li><li>C128 : CODE 128</li><li>C128A : CODE 128 A</li><li>C128B : CODE 128 B</li><li>C128C : CODE 128 C</li><li>EAN2 : 2-Digits UPC-Based Extention</li><li>EAN5 : 5-Digits UPC-Based Extention</li><li>EAN8 : EAN 8</li><li>EAN13 : EAN 13</li><li>UPCA : UPC-A</li><li>UPCE : UPC-E</li><li>MSI : MSI (Variation of Plessey code)</li><li>MSI+ : MSI + CHECKSUM (modulo 11)</li><li>POSTNET : POSTNET</li><li>PLANET : PLANET</li><li>RMS4CC : RMS4CC (Royal Mail 4-state Customer Code) - CBC (Customer Bar Code)</li><li>KIX : KIX (Klant index - Customer index)</li><li>IMB: Intelligent Mail Barcode - Onecode - USPS-B-3200</li><li>CODABAR : CODABAR</li><li>CODE11 : CODE 11</li><li>PHARMA : PHARMACODE</li><li>PHARMA2T : PHARMACODE TWO-TRACKS</li></ul>
 	 */
 	public function __construct($code, $type) {
 		$this->setBarcode($code, $type);
@@ -84,7 +84,7 @@ class TCPDFBarcode {
 	/**
 	 * Set the barcode.
 	 * @param $code (string) code to print
- 	 * @param $type (string) type of barcode: <ul><li>C39 : CODE 39 - ANSI MH10.8M-1983 - USD-3 - 3 of 9.</li><li>C39+ : CODE 39 with checksum</li><li>C39E : CODE 39 EXTENDED</li><li>C39E+ : CODE 39 EXTENDED + CHECKSUM</li><li>C93 : CODE 93 - USS-93</li><li>S25 : Standard 2 of 5</li><li>S25+ : Standard 2 of 5 + CHECKSUM</li><li>I25 : Interleaved 2 of 5</li><li>I25+ : Interleaved 2 of 5 + CHECKSUM</li><li>C128A : CODE 128 A</li><li>C128B : CODE 128 B</li><li>C128C : CODE 128 C</li><li>EAN2 : 2-Digits UPC-Based Extention</li><li>EAN5 : 5-Digits UPC-Based Extention</li><li>EAN8 : EAN 8</li><li>EAN13 : EAN 13</li><li>UPCA : UPC-A</li><li>UPCE : UPC-E</li><li>MSI : MSI (Variation of Plessey code)</li><li>MSI+ : MSI + CHECKSUM (modulo 11)</li><li>POSTNET : POSTNET</li><li>PLANET : PLANET</li><li>RMS4CC : RMS4CC (Royal Mail 4-state Customer Code) - CBC (Customer Bar Code)</li><li>KIX : KIX (Klant index - Customer index)</li><li>IMB: Intelligent Mail Barcode - Onecode - USPS-B-3200</li><li>CODABAR : CODABAR</li><li>CODE11 : CODE 11</li><li>PHARMA : PHARMACODE</li><li>PHARMA2T : PHARMACODE TWO-TRACKS</li></ul>
+ 	 * @param $type (string) type of barcode: <ul><li>C39 : CODE 39 - ANSI MH10.8M-1983 - USD-3 - 3 of 9.</li><li>C39+ : CODE 39 with checksum</li><li>C39E : CODE 39 EXTENDED</li><li>C39E+ : CODE 39 EXTENDED + CHECKSUM</li><li>C93 : CODE 93 - USS-93</li><li>S25 : Standard 2 of 5</li><li>S25+ : Standard 2 of 5 + CHECKSUM</li><li>I25 : Interleaved 2 of 5</li><li>I25+ : Interleaved 2 of 5 + CHECKSUM</li><li>C128 : CODE 128</li><li>C128A : CODE 128 A</li><li>C128B : CODE 128 B</li><li>C128C : CODE 128 C</li><li>EAN2 : 2-Digits UPC-Based Extention</li><li>EAN5 : 5-Digits UPC-Based Extention</li><li>EAN8 : EAN 8</li><li>EAN13 : EAN 13</li><li>UPCA : UPC-A</li><li>UPCE : UPC-E</li><li>MSI : MSI (Variation of Plessey code)</li><li>MSI+ : MSI + CHECKSUM (modulo 11)</li><li>POSTNET : POSTNET</li><li>PLANET : PLANET</li><li>RMS4CC : RMS4CC (Royal Mail 4-state Customer Code) - CBC (Customer Bar Code)</li><li>KIX : KIX (Klant index - Customer index)</li><li>IMB: Intelligent Mail Barcode - Onecode - USPS-B-3200</li><li>CODABAR : CODABAR</li><li>CODE11 : CODE 11</li><li>PHARMA : PHARMACODE</li><li>PHARMA2T : PHARMACODE TWO-TRACKS</li></ul>
  	 * @return array
 	 */
 	public function setBarcode($code, $type) {
@@ -123,6 +123,10 @@ class TCPDFBarcode {
 			}
 			case 'I25+': { // Interleaved 2 of 5 + CHECKSUM
 				$arrcode = $this->barcode_i25($code, true);
+				break;
+			}
+			case 'C128': { // CODE 128
+				$arrcode = $this->barcode_c128($code, '');
 				break;
 			}
 			case 'C128A': { // CODE 128 A
@@ -268,7 +272,6 @@ class TCPDFBarcode {
 		$chr['+'] = '121112121';
 		$chr['%'] = '111212121';
 		$chr['*'] = '121121211';
-
 		$code = strtoupper($code);
 		if ($extended) {
 			// extended mode
@@ -283,7 +286,6 @@ class TCPDFBarcode {
 		}
 		// add start and stop codes
 		$code = '*'.$code.'*';
-
 		$bararray = array('code' => $code, 'maxw' => 0, 'maxh' => 1, 'bcode' => array());
 		$k = 0;
 		$clen = strlen($code);
@@ -785,11 +787,11 @@ class TCPDFBarcode {
 	 * C128 barcodes.
 	 * Very capable code, excellent density, high reliability; in very wide use world-wide
 	 * @param $code (string) code to represent.
-	 * @param $type (string) barcode type: A, B or C
+	 * @param $type (string) barcode type: A, B, C or empty for automatic switch (AUTO mode)
 	 * @return array barcode representation.
 	 * @protected
 	 */
-	protected function barcode_c128($code, $type='B') {
+	protected function barcode_c128($code, $type='') {
 		$chr = array(
 			'212222', /* 00 */
 			'222122', /* 01 */
@@ -895,71 +897,210 @@ class TCPDFBarcode {
 			'311141', /* 101 */
 			'411131', /* 102 */
 			'211412', /* 103 START A */
-			'211214', /* 104 START B  */
-			'211232', /* 105 START C  */
+			'211214', /* 104 START B */
+			'211232', /* 105 START C */
 			'233111', /* STOP */
 			'200000'  /* END */
 		);
-		$keys = '';
+		// ASCII characters for code A (ASCII 00 - 95)
+		$keys_a = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_';
+		$keys_a .= chr(0).chr(1).chr(2).chr(3).chr(4).chr(5).chr(6).chr(7).chr(8).chr(9);
+		$keys_a .= chr(10).chr(11).chr(12).chr(13).chr(14).chr(15).chr(16).chr(17).chr(18).chr(19);
+		$keys_a .= chr(20).chr(21).chr(22).chr(23).chr(24).chr(25).chr(26).chr(27).chr(28).chr(29);
+		$keys_a .= chr(30).chr(31);
+		// ASCII characters for code B (ASCII 32 - 127)
+		$keys_b = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~'.chr(127);
+		// special codes
+		$fnc_a = array(241 => 102, 242 => 97, 243 => 96, 244 => 101);
+		$fnc_b = array(241 => 102, 242 => 97, 243 => 96, 244 => 100);
+		// array of symbols
+		$code_data = array();
+		// lenght of the code
+		$len = strlen($code);
 		switch(strtoupper($type)) {
-			case 'A': {
+			case 'A': { // MODE A
 				$startid = 103;
-				$keys = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_';
-				for ($i = 0; $i < 32; ++$i) {
-					$keys .= chr($i);
+				for ($i = 0; $i < $len; ++$i) {
+					$char = $code{$i};
+					$char_id = ord($char);
+					if (($char_id >= 241) AND ($char_id <= 244)) {
+						$code_data[] = $fnc_a[$char_id];
+					} elseif (($char_id >= 0) AND ($char_id <= 95)) {
+						$code_data[] = strpos($keys_a, $char);
+					} else {
+						return false;
+					}
 				}
 				break;
 			}
-			case 'B': {
+			case 'B': { // MODE B
 				$startid = 104;
-				$keys = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~'.chr(127);
+				for ($i = 0; $i < $len; ++$i) {
+					$char = $code{$i};
+					$char_id = ord($char);
+					if (($char_id >= 241) AND ($char_id <= 244)) {
+						$code_data[] = $fnc_b[$char_id];
+					} elseif (($char_id >= 32) AND ($char_id <= 127)) {
+						$code_data[] = strpos($keys_b, $char);
+					} else {
+						return false;
+					}
+				}
 				break;
 			}
-			case 'C': {
+			case 'C': { // MODE C
 				$startid = 105;
-				$keys = '';
-				if ((strlen($code) % 2) != 0) {
-					// The length of barcode value must be even ($code). You must pad the number with zeros
+				if (ord($code{0}) == 241) {
+					$code_data[] = 102;
+					$code = substr($code, 1);
+					--$len;
+				}
+				if (($len % 2) != 0) {
+					// the length must be even
 					return false;
 				}
-				for ($i = 0; $i <= 99; ++$i) {
-					$keys .= chr($i);
+				for ($i = 0; $i < $len; $i+=2) {
+					$chrnum = $code{$i}.$code{$i+1};
+					if (preg_match('/([0-9]{2})/', $chrnum) > 0) {
+						$code_data[] = intval($chrnum);
+					} else {
+						return false;
+					}
 				}
-				$new_code = '';
-				$hclen = (strlen($code) / 2);
-				for ($i = 0; $i < $hclen; ++$i) {
-					$new_code .= chr(intval($code{(2 * $i)}.$code{(2 * $i + 1)}));
-				}
-				$code = $new_code;
 				break;
 			}
-			default: {
-				return false;
+			default: { // MODE AUTO
+				// split code into sequences
+				$sequence = array();
+				// get numeric sequences (if any)
+				$numseq = array();
+				preg_match_all('/([0-9]{4,})/', $code, $numseq, PREG_OFFSET_CAPTURE);
+				if (isset($numseq[1]) AND !empty($numseq[1])) {
+					$end_offset = 0;
+					foreach ($numseq[1] as $val) {
+						$offset = $val[1];
+						if ($offset > $end_offset) {
+							// non numeric sequence
+							$sequence = array_merge($sequence, $this->get128ABsequence(substr($code, $end_offset, ($offset - $end_offset))));
+						}
+						// numeric sequence
+						$slen = strlen($val[0]);
+						if (($slen % 2) != 0) {
+							// the length must be even
+							--$slen;
+						}
+						$sequence[] = array('C', substr($code, $offset, $slen), $slen);
+						$end_offset = $offset + $slen;
+					}
+					if ($end_offset < $len) {
+						$sequence = array_merge($sequence, $this->get128ABsequence(substr($code, $end_offset)));
+					}
+				} else {
+					// text code (non C mode)
+					$sequence = array_merge($sequence, $this->get128ABsequence($code));
+				}
+				// process the sequence
+				foreach ($sequence as $key => $seq) {
+					switch($seq[0]) {
+						case 'A': {
+							if ($key == 0) {
+								$startid = 103;
+							} elseif ($sequence[($key - 1)][0] != 'A') {
+								if (($seq[2] == 1) AND ($key > 0) AND ($sequence[($key - 1)][0] == 'B') AND (!isset($sequence[($key - 1)][3]))) {
+									// single character shift
+									$code_data[] = 98;
+									// mark shift
+									$sequence[$key][3] = true;
+								} elseif (!isset($sequence[($key - 1)][3])) {
+									$code_data[] = 101;
+								}
+							}
+							for ($i = 0; $i < $seq[2]; ++$i) {
+								$char = $seq[1]{$i};
+								$char_id = ord($char);
+								if (($char_id >= 241) AND ($char_id <= 244)) {
+									$code_data[] = $fnc_a[$char_id];
+								} else {
+									$code_data[] = strpos($keys_a, $char);
+								}
+							}
+							break;
+						}
+						case 'B': {
+							if ($key == 0) {
+								$tmpchr = ord($seq[1]{0});
+								if (($seq[2] == 1) AND ($tmpchr >= 241) AND ($tmpchr <= 244) AND isset($sequence[($key + 1)]) AND ($sequence[($key + 1)][0] != 'B')) {
+									switch ($sequence[($key + 1)][0]) {
+										case 'A': {
+											$startid = 103;
+											$sequence[$key][0] = 'A';
+											$code_data[] = $fnc_a[$tmpchr];
+											break;
+										}
+										case 'C': {
+											$startid = 105;
+											$sequence[$key][0] = 'C';
+											$code_data[] = $fnc_a[$tmpchr];
+											break;
+										}
+									}
+									break;
+								} else {
+									$startid = 104;
+								}
+							} elseif ($sequence[($key - 1)][0] != 'B') {
+								if (($seq[2] == 1) AND ($key > 0) AND ($sequence[($key - 1)][0] == 'A') AND (!isset($sequence[($key - 1)][3]))) {
+									// single character shift
+									$code_data[] = 98;
+									// mark shift
+									$sequence[$key][3] = true;
+								} elseif (!isset($sequence[($key - 1)][3])) {
+									$code_data[] = 100;
+								}
+							}
+							for ($i = 0; $i < $seq[2]; ++$i) {
+								$char = $seq[1]{$i};
+								$char_id = ord($char);
+								if (($char_id >= 241) AND ($char_id <= 244)) {
+									$code_data[] = $fnc_b[$char_id];
+								} else {
+									$code_data[] = strpos($keys_b, $char);
+								}
+							}
+							break;
+						}
+						case 'C': {
+							if ($key == 0) {
+								$startid = 105;
+							} elseif ($sequence[($key - 1)][0] != 'C') {
+								$code_data[] = 99;
+							}
+							for ($i = 0; $i < $seq[2]; $i+=2) {
+								$chrnum = $seq[1]{$i}.$seq[1]{$i+1};
+								$code_data[] = intval($chrnum);
+							}
+							break;
+						}
+					}
+				}
 			}
 		}
 		// calculate check character
 		$sum = $startid;
-		$clen = strlen($code);
-		for ($i = 0; $i < $clen; ++$i) {
-			$sum +=  (strpos($keys, $code{$i}) * ($i+1));
+		foreach ($code_data as $key => $val) {
+			$sum += ($val * ($key + 1));
 		}
-		$check = ($sum % 103);
-		// add start, check and stop codes
-		$code = chr($startid).$code.chr($check).chr(106).chr(107);
+		// add check character
+		$code_data[] = ($sum % 103);
+		// add stop sequence
+		$code_data[] = 106;
+		$code_data[] = 107;
+		// add start code at the beginning
+		array_unshift($code_data, $startid);
+		// build barcode array
 		$bararray = array('code' => $code, 'maxw' => 0, 'maxh' => 1, 'bcode' => array());
-		$k = 0;
-		$len = strlen($code);
-		for ($i = 0; $i < $len; ++$i) {
-			$ck = strpos($keys, $code{$i});
-			if (($i == 0) OR ($i > ($len-4))) {
-				$char_num = ord($code{$i});
-				$seq = $chr[$char_num];
-			} elseif(($ck >= 0) AND isset($chr[$ck])) {
-					$seq = $chr[$ck];
-			} else {
-				// invalid character
-				return false;
-			}
+		foreach ($code_data as $val) {
+			$seq = $chr[$val];
 			for ($j = 0; $j < 6; ++$j) {
 				if (($j % 2) == 0) {
 					$t = true; // bar
@@ -967,12 +1108,46 @@ class TCPDFBarcode {
 					$t = false; // space
 				}
 				$w = $seq{$j};
-				$bararray['bcode'][$k] = array('t' => $t, 'w' => $w, 'h' => 1, 'p' => 0);
+				$bararray['bcode'][] = array('t' => $t, 'w' => $w, 'h' => 1, 'p' => 0);
 				$bararray['maxw'] += $w;
-				++$k;
 			}
 		}
 		return $bararray;
+	}
+
+	/**
+	 * Split text code in A/B sequence for 128 code
+	 * @param $code (string) code to split.
+	 * @return array sequence
+	 * @protected
+	 */
+	protected function get128ABsequence($code) {
+		$len = strlen($code);
+		$sequence = array();
+		// get A sequences (if any)
+		$numseq = array();
+		preg_match_all('/([\0-\31])/', $code, $numseq, PREG_OFFSET_CAPTURE);
+		if (isset($numseq[1]) AND !empty($numseq[1])) {
+			$end_offset = 0;
+			foreach ($numseq[1] as $val) {
+				$offset = $val[1];
+				if ($offset > $end_offset) {
+					// B sequence
+					$sequence[] = array('B', substr($code, $end_offset, ($offset - $end_offset)), ($offset - $end_offset));
+				}
+				// A sequence
+				$slen = strlen($val[0]);
+				$sequence[] = array('A', substr($code, $offset, $slen), $slen);
+				$end_offset = $offset + $slen;
+			}
+			if ($end_offset < $len) {
+				$sequence[] = array('B', substr($code, $end_offset), ($len - $end_offset));
+			}
+		} else {
+			// only B sequence
+			$sequence[] = array('B', $code, $len);
+		}
+		return $sequence;
 	}
 
 	/**
