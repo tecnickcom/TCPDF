@@ -1,3 +1,7 @@
+5.9.080 (2011-05-17)
+	- A problem related to file path calculation for images was fixed.
+	- A problem related to unsupressed getimagesize() error was fixed.
+
 5.9.079 (2011-05-16)
 	- Footer() method was changed to use C128 barcode as default (instead of the previous C128B).
 
