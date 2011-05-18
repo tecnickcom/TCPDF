@@ -1,3 +1,7 @@
+5.9.081 (2011-05-18)
+	- Method resetHeaderTemplate() was added to reset the xobject template used by Header() method.
+	- Method setHeaderTemplateAutoreset() was added to automatically reset the xobject template used by Header() method at each page.
+
 5.9.080 (2011-05-17)
 	- A problem related to file path calculation for images was fixed.
 	- A problem related to unsupressed getimagesize() error was fixed.
