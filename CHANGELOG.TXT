@@ -1,3 +1,6 @@
+5.9.082 (2011-05-22)
+	- Bug item #3305592 "Setting fill color <> text color breaks text clipping" was fixed.
+
 5.9.081 (2011-05-18)
 	- Method resetHeaderTemplate() was added to reset the xobject template used by Header() method.
 	- Method setHeaderTemplateAutoreset() was added to automatically reset the xobject template used by Header() method at each page.
