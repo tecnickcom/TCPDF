@@ -1,3 +1,6 @@
+5.9.083 (2011-05-24)
+	- Bug item #3308387 "line height & SetCellHeightRatio" was fixed.
+
 5.9.082 (2011-05-22)
 	- Bug item #3305592 "Setting fill color <> text color breaks text clipping" was fixed.
 
