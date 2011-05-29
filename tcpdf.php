@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.083
+// Version     : 5.9.084
 // Begin       : 2002-08-03
-// Last Update : 2011-05-27
+// Last Update : 2011-05-29
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -134,7 +134,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.083
+ * @version 5.9.084
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -146,7 +146,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.083
+ * @version 5.9.084
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -157,7 +157,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.083';
+	private $tcpdf_version = '5.9.084';
 
 	// Protected properties
 
@@ -9601,8 +9601,6 @@ class TCPDF {
 				}
 			}
 		}
-		// sort glyphs by key
-		ksort($subsetglyphs);
 		// add composite glyps to $subsetglyphs and remove missing glyphs
 		foreach ($subsetglyphs as $key => $val) {
 			if (isset($indexToLoc[$key])) {
@@ -9616,7 +9614,11 @@ class TCPDF {
 						$offset += 2;
 						$glyphIndex = $this->_getUSHORT($font, $offset);
 						$offset += 2;
-						if (!isset($subsetglyphs[$glyphIndex]) AND isset($indexToLoc[$glyphIndex])) {
+						if (!isset($subsetglyphs[($glyphIndex - 1)])) {
+							// add missing glyphs
+							$subsetglyphs[($glyphIndex - 1)] = true;
+						}
+						if (!isset($subsetglyphs[$glyphIndex])) {
 							// add missing glyphs
 							$subsetglyphs[$glyphIndex] = true;
 						}
@@ -9639,6 +9641,8 @@ class TCPDF {
 				unset($subsetglyphs[$key]);
 			}
 		}
+		// sort glyphs by key
+		ksort($subsetglyphs);
 		// build new glyf table with only used glyphs
 		$glyf = '';
 		$glyfSize = 0;

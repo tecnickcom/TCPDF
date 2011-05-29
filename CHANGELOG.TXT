@@ -1,3 +1,8 @@
+5.9.084 (2011-05-29)
+	- Font files were updated.
+	- The file fonts/utils/makeallttffonts.php was updated.
+	- Bug item# 3308774 "Problems with font subsetting" was fixed.
+
 5.9.083 (2011-05-24)
 	- Bug item #3308387 "line height & SetCellHeightRatio" was fixed.
 
