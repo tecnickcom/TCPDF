@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : barcodes.php
-// Version     : 1.0.015
+// Version     : 1.0.016
 // Begin       : 2008-06-09
-// Last Update : 2011-05-12
+// Last Update : 2011-05-31
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -37,14 +37,14 @@
  * PHP class to creates array representations for common 1D barcodes to be used with TCPDF.
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 1.0.015
+ * @version 1.0.016
  */
 
 /**
  * @class TCPDFBarcode
  * PHP class to creates array representations for common 1D barcodes to be used with TCPDF (http://www.tcpdf.org).<br>
  * @package com.tecnick.tcpdf
- * @version 1.0.015
+ * @version 1.0.016
  * @author Nicola Asuni
  */
 class TCPDFBarcode {
@@ -59,8 +59,8 @@ class TCPDFBarcode {
 	 * This is the class constructor.
 	 * Return an array representations for common 1D barcodes:<ul>
 	 * <li>$arrcode['code'] code to be printed on text label</li>
-	 * <li>$arrcode['maxh'] max bar height</li>
-	 * <li>$arrcode['maxw'] max bar width</li>
+	 * <li>$arrcode['maxh'] max barcode height</li>
+	 * <li>$arrcode['maxw'] max barcode width</li>
 	 * <li>$arrcode['bcode'][$k] single bar or space in $k position</li>
 	 * <li>$arrcode['bcode'][$k]['t'] bar type: true = bar, false = space.</li>
 	 * <li>$arrcode['bcode'][$k]['w'] bar width in units.</li>
@@ -68,6 +68,7 @@ class TCPDFBarcode {
 	 * <li>$arrcode['bcode'][$k]['p'] bar top position (0 = top, 1 = middle)</li></ul>
 	 * @param $code (string) code to print
  	 * @param $type (string) type of barcode: <ul><li>C39 : CODE 39 - ANSI MH10.8M-1983 - USD-3 - 3 of 9.</li><li>C39+ : CODE 39 with checksum</li><li>C39E : CODE 39 EXTENDED</li><li>C39E+ : CODE 39 EXTENDED + CHECKSUM</li><li>C93 : CODE 93 - USS-93</li><li>S25 : Standard 2 of 5</li><li>S25+ : Standard 2 of 5 + CHECKSUM</li><li>I25 : Interleaved 2 of 5</li><li>I25+ : Interleaved 2 of 5 + CHECKSUM</li><li>C128 : CODE 128</li><li>C128A : CODE 128 A</li><li>C128B : CODE 128 B</li><li>C128C : CODE 128 C</li><li>EAN2 : 2-Digits UPC-Based Extention</li><li>EAN5 : 5-Digits UPC-Based Extention</li><li>EAN8 : EAN 8</li><li>EAN13 : EAN 13</li><li>UPCA : UPC-A</li><li>UPCE : UPC-E</li><li>MSI : MSI (Variation of Plessey code)</li><li>MSI+ : MSI + CHECKSUM (modulo 11)</li><li>POSTNET : POSTNET</li><li>PLANET : PLANET</li><li>RMS4CC : RMS4CC (Royal Mail 4-state Customer Code) - CBC (Customer Bar Code)</li><li>KIX : KIX (Klant index - Customer index)</li><li>IMB: Intelligent Mail Barcode - Onecode - USPS-B-3200</li><li>CODABAR : CODABAR</li><li>CODE11 : CODE 11</li><li>PHARMA : PHARMACODE</li><li>PHARMA2T : PHARMACODE TWO-TRACKS</li></ul>
+ 	 * @public
 	 */
 	public function __construct($code, $type) {
 		$this->setBarcode($code, $type);
@@ -76,16 +77,71 @@ class TCPDFBarcode {
 	/**
 	 * Return an array representations of barcode.
  	 * @return array
+ 	 * @public
 	 */
 	public function getBarcodeArray() {
 		return $this->barcode_array;
 	}
 
 	/**
+	 * Send barcode as SVG image object to the standard output.
+	 * @param $w (int) Minimum width of a single bar in user units.
+	 * @param $h (int) Height of barcode in user units.
+	 * @param $color (string) Foreground color (in SVG format) for bar elements (background is transparent).
+ 	 * @public
+	 */
+	public function getBarcodeSVG($w=2, $h=30, $color='black') {
+		// send XML headers
+		$code = $this->getBarcodeSVGcode($w, $h, $color);
+		header('Content-Type: application/svg+xml');
+		header('Cache-Control: public, must-revalidate, max-age=0'); // HTTP/1.1
+		header('Pragma: public');
+		header('Expires: Sat, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+		header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
+		//header('Content-Length: '.strlen($code));
+		header('Content-Disposition: inline; filename="'.md5($code).'.svg";');
+		echo $code;
+	}
+
+	/**
+	 * Return a SVG string representation of barcode.
+	 * @param $w (int) Minimum width of a single bar in user units.
+	 * @param $h (int) Height of barcode in user units.
+	 * @param $color (string) Foreground color (in SVG format) for bar elements (background is transparent).
+ 	 * @return string SVG code.
+ 	 * @public
+	 */
+	public function getBarcodeSVGcode($w=2, $h=30, $color='black') {
+		// replace table for special characters
+		$repstr = array("\0" => '', '&' => '&amp;', '<' => '&lt;', '>' => '&gt;');
+		$svg = '<'.'?'.'xml version="1.0" standalone="no"'.'?'.'>'."\n";
+		$svg .= '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">'."\n";
+		$svg .= '<svg width="'.round(($this->barcode_array['maxw'] * $w), 3).'" height="'.$h.'" version="1.1" xmlns="http://www.w3.org/2000/svg">'."\n";
+		$svg .= "\t".'<desc>'.strtr($this->barcode_array['code'], $repstr).'</desc>'."\n";
+		$svg .= "\t".'<g id="bars" fill="'.$color.'" stroke="none">'."\n";
+		// print bars
+		$x = 0;
+		foreach ($this->barcode_array['bcode'] as $k => $v) {
+			$bw = round(($v['w'] * $w), 3);
+			$bh = round(($v['h'] * $h / $this->barcode_array['maxh']), 3);
+			if ($v['t']) {
+				$y = round(($v['p'] * $h / $this->barcode_array['maxh']), 3);
+				// draw a vertical bar
+				$svg .= "\t\t".'<rect x="'.$x.'" y="'.$y.'" width="'.$bw.'" height="'.$bh.'" />'."\n";
+			}
+			$x += $bw;
+		}
+		$svg .= "\t".'</g>'."\n";
+		$svg .= '</svg>'."\n";
+		return $svg;
+	}
+
+	/**
 	 * Set the barcode.
 	 * @param $code (string) code to print
  	 * @param $type (string) type of barcode: <ul><li>C39 : CODE 39 - ANSI MH10.8M-1983 - USD-3 - 3 of 9.</li><li>C39+ : CODE 39 with checksum</li><li>C39E : CODE 39 EXTENDED</li><li>C39E+ : CODE 39 EXTENDED + CHECKSUM</li><li>C93 : CODE 93 - USS-93</li><li>S25 : Standard 2 of 5</li><li>S25+ : Standard 2 of 5 + CHECKSUM</li><li>I25 : Interleaved 2 of 5</li><li>I25+ : Interleaved 2 of 5 + CHECKSUM</li><li>C128 : CODE 128</li><li>C128A : CODE 128 A</li><li>C128B : CODE 128 B</li><li>C128C : CODE 128 C</li><li>EAN2 : 2-Digits UPC-Based Extention</li><li>EAN5 : 5-Digits UPC-Based Extention</li><li>EAN8 : EAN 8</li><li>EAN13 : EAN 13</li><li>UPCA : UPC-A</li><li>UPCE : UPC-E</li><li>MSI : MSI (Variation of Plessey code)</li><li>MSI+ : MSI + CHECKSUM (modulo 11)</li><li>POSTNET : POSTNET</li><li>PLANET : PLANET</li><li>RMS4CC : RMS4CC (Royal Mail 4-state Customer Code) - CBC (Customer Bar Code)</li><li>KIX : KIX (Klant index - Customer index)</li><li>IMB: Intelligent Mail Barcode - Onecode - USPS-B-3200</li><li>CODABAR : CODABAR</li><li>CODE11 : CODE 11</li><li>PHARMA : PHARMACODE</li><li>PHARMA2T : PHARMACODE TWO-TRACKS</li></ul>
- 	 * @return array
+ 	 * @return array barcode array
+ 	 * @public
 	 */
 	public function setBarcode($code, $type) {
 		switch (strtoupper($type)) {

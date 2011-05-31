@@ -1,3 +1,7 @@
+5.9.085 (2011-05-31)
+	- TCPDFBarcode class (barcodes.php) now includes getBarcodeSVG() and getBarcodeSVGcode() methods to get SVG image representation of the barcode.
+	- TCPDF2DBarcode class (2dbarcodes.php) now includes getBarcodeSVG() and getBarcodeSVGcode() methods to get SVG image representation of the barcode.
+
 5.9.084 (2011-05-29)
 	- Font files were updated.
 	- The file fonts/utils/makeallttffonts.php was updated.
