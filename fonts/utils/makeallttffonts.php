@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : makeallttffonts.php
 // Begin       : 2008-12-07
-// Last Update : 2011-05-28
+// Last Update : 2011-05-31
 //
 // Description : Process all TTF files on current directory to
 //               build TCPDF compatible font files.
@@ -106,10 +106,10 @@ while ($file = readdir($handle)) {
 			if (!file_exists($filename.'.ufm')) {
 				if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
 					// windows
-					passthru('ttf2ufm.exe -a -F -O bhuostwV '.$fontfile);
+					passthru('ttf2ufm.exe -a -F -O bhuosTwV '.$fontfile);
 				} else {
 					// linux
-					passthru('./ttf2ufm -a -F -O bhuostwV '.$fontfile);
+					passthru('./ttf2ufm -a -F -O bhuosTwV '.$fontfile);
 				}
 			}
 			$cmd = 'php -q makefont.php '.$fontfile.' '.$filename.'.ufm'; // unicode file

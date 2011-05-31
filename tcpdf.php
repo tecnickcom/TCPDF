@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.085
+// Version     : 5.9.086
 // Begin       : 2002-08-03
 // Last Update : 2011-05-31
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
@@ -134,7 +134,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.085
+ * @version 5.9.086
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -146,7 +146,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.085
+ * @version 5.9.086
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -157,7 +157,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.085';
+	private $tcpdf_version = '5.9.086';
 
 	// Protected properties
 
@@ -8143,6 +8143,39 @@ class TCPDF {
 	}
 
 	/**
+	 * Ouput input data and compress it if possible.
+	 * @param $data (string) Data to output.
+	 * @param $lenght (int) Data lenght in bytes.
+	 * @protected
+	 * @since 5.9.086
+	 */
+	protected function sendOutputData($data, $lenght) {
+		// set no-encoding by default
+		$enc = false;
+		// check for encoding support
+		if (isset($_SERVER['HTTP_ACCEPT_ENCODING'])) {
+			if (strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'x-gzip') !== false ) {
+				$enc = 'x-gzip';
+			} elseif (strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false ) {
+				$enc = 'gzip';
+			}
+		}
+		if ($enc === false) {
+			// no compression
+			header('Content-Length: '.$lenght);
+			echo $data;
+		} else {
+			if (function_exists('gzencode')) {
+				// send data compressed
+				$data = gzencode($data, 9, FORCE_GZIP);
+				header('Content-Encoding: '.$enc);
+				header('Content-Length: '.strlen($data));
+			}
+			echo $data;
+		}
+	}
+
+	/**
 	 * Send the document to a given destination: string, local file or browser.
 	 * In the last case, the plug-in may be used (if present) or a download ("Save as" dialog box) may be forced.<br />
 	 * The method first calls Close() if necessary to terminate the document.
@@ -8236,7 +8269,7 @@ class TCPDF {
 					$this->Error('Some data has already been output, can\'t send PDF file');
 				}
 				if (php_sapi_name() != 'cli') {
-					//We send to a browser
+					// send output to a browser
 					header('Content-Type: application/pdf');
 					if (headers_sent()) {
 						$this->Error('Some data has already been output to browser, can\'t send PDF file');
@@ -8245,14 +8278,15 @@ class TCPDF {
 					header('Pragma: public');
 					header('Expires: Sat, 26 Jul 1997 05:00:00 GMT'); // Date in the past
 					header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
-					header('Content-Length: '.$this->bufferlen);
 					header('Content-Disposition: inline; filename="'.basename($name).'";');
+					$this->sendOutputData($this->getBuffer(), $this->bufferlen);
+				} else {
+					echo $this->getBuffer();
 				}
-				echo $this->getBuffer();
 				break;
 			}
 			case 'D': {
-				// Download PDF as file
+				// download PDF as file
 				if (ob_get_contents()) {
 					$this->Error('Some data has already been output, can\'t send PDF file');
 				}
@@ -8276,14 +8310,13 @@ class TCPDF {
 				// use the Content-Disposition header to supply a recommended filename
 				header('Content-Disposition: attachment; filename="'.basename($name).'";');
 				header('Content-Transfer-Encoding: binary');
-				header('Content-Length: '.$this->bufferlen);
-				echo $this->getBuffer();
+				$this->sendOutputData($this->getBuffer(), $this->bufferlen);
 				break;
 			}
 			case 'F':
 			case 'FI':
 			case 'FD': {
-				// Save PDF to a local file
+				// save PDF to a local file
 				if ($this->diskcache) {
 					copy($this->buffer, $name);
 				} else {
@@ -8301,10 +8334,8 @@ class TCPDF {
 					header('Pragma: public');
 					header('Expires: Sat, 26 Jul 1997 05:00:00 GMT'); // Date in the past
 					header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
-					header('Content-Length: '.filesize($name));
 					header('Content-Disposition: inline; filename="'.basename($name).'";');
-					// send document to the browser
-					echo file_get_contents($name);
+					$this->sendOutputData(file_get_contents($name), filesize($name));
 				} elseif ($dest == 'FD') {
 					// send headers to browser
 					if (ob_get_contents()) {
@@ -8330,14 +8361,12 @@ class TCPDF {
 					// use the Content-Disposition header to supply a recommended filename
 					header('Content-Disposition: attachment; filename="'.basename($name).'";');
 					header('Content-Transfer-Encoding: binary');
-					header('Content-Length: '.filesize($name));
-					// send document to the browser
-					echo file_get_contents($name);
+					$this->sendOutputData(file_get_contents($name), filesize($name));
 				}
 				break;
 			}
 			case 'E': {
-				// Return PDF as base64 mime multi-part email attachment (RFC 2045)
+				// return PDF as base64 mime multi-part email attachment (RFC 2045)
 				$retval = 'Content-Type: application/pdf;'."\r\n";
 				$retval .= ' name="'.$name.'"'."\r\n";
 				$retval .= 'Content-Transfer-Encoding: base64'."\r\n";
@@ -8347,7 +8376,7 @@ class TCPDF {
 				return $retval;
 			}
 			case 'S': {
-				// Returns PDF as a string
+				// returns PDF as a string
 				return $this->getBuffer();
 			}
 			default: {
