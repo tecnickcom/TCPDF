@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.086
+// Version     : 5.9.087
 // Begin       : 2002-08-03
-// Last Update : 2011-05-31
+// Last Update : 2011-06-01
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -134,7 +134,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.086
+ * @version 5.9.087
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -146,7 +146,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.086
+ * @version 5.9.087
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -157,7 +157,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.086';
+	private $tcpdf_version = '5.9.087';
 
 	// Protected properties
 
@@ -8154,25 +8154,30 @@ class TCPDF {
 		$enc = false;
 		// check for encoding support
 		if (isset($_SERVER['HTTP_ACCEPT_ENCODING'])) {
-			if (strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'x-gzip') !== false ) {
+			if (strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'x-gzip') !== false) {
 				$enc = 'x-gzip';
-			} elseif (strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false ) {
+			} elseif (strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false) {
 				$enc = 'gzip';
+			} elseif (strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'deflate') !== false) {
+				$enc = 'deflate';
+			} else {
+				// unsupported encoding
+				$enc = '-1';
 			}
 		}
 		if ($enc === false) {
 			// no compression
 			header('Content-Length: '.$lenght);
-			echo $data;
-		} else {
-			if (function_exists('gzencode')) {
-				// send data compressed
+		} elseif (($enc != '-1') AND function_exists('gzencode')) {
+			if ($enc{0} == 'd') {
+				$data = gzdeflate($data, 9);
+			} else {
 				$data = gzencode($data, 9, FORCE_GZIP);
-				header('Content-Encoding: '.$enc);
-				header('Content-Length: '.strlen($data));
 			}
-			echo $data;
+			header('Content-Encoding: '.$enc);
+			header('Content-Length: '.strlen($data));
 		}
+		echo $data;
 	}
 
 	/**

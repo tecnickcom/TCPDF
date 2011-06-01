@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : barcodes.php
-// Version     : 1.0.016
+// Version     : 1.0.017
 // Begin       : 2008-06-09
-// Last Update : 2011-05-31
+// Last Update : 2011-06-01
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -37,14 +37,14 @@
  * PHP class to creates array representations for common 1D barcodes to be used with TCPDF.
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 1.0.016
+ * @version 1.0.017
  */
 
 /**
  * @class TCPDFBarcode
  * PHP class to creates array representations for common 1D barcodes to be used with TCPDF (http://www.tcpdf.org).<br>
  * @package com.tecnick.tcpdf
- * @version 1.0.016
+ * @version 1.0.017
  * @author Nicola Asuni
  */
 class TCPDFBarcode {
@@ -98,8 +98,8 @@ class TCPDFBarcode {
 		header('Pragma: public');
 		header('Expires: Sat, 26 Jul 1997 05:00:00 GMT'); // Date in the past
 		header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
-		//header('Content-Length: '.strlen($code));
 		header('Content-Disposition: inline; filename="'.md5($code).'.svg";');
+		//header('Content-Length: '.strlen($code));
 		echo $code;
 	}
 

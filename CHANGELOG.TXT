@@ -1,3 +1,7 @@
+5.9.087 (2011-06-01)
+	- Method sendOutputData() was improved to include deflate encoding.
+	- Barcode classes on PHP 4 version were fixed.
+
 5.9.086 (2011-05-31)
 	- Font files were updated (the ones on the previous release were broken).
 	- The script fonts/utils/makeallttffonts.php was updated and fixed.
