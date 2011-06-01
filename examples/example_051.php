@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_051.php
 // Begin       : 2009-04-16
-// Last Update : 2010-08-08
+// Last Update : 2011-06-01
 //
 // Description : Example 051 for TCPDF class
 //               Full page background
@@ -35,15 +35,19 @@ require_once('../tcpdf.php');
 class MYPDF extends TCPDF {
 	//Page header
 	public function Header() {
-		// full background image
-		// store current auto-page-break status
+		// get the current page break margin
 		$bMargin = $this->getBreakMargin();
+		// get current auto-page-break mode
 		$auto_page_break = $this->AutoPageBreak;
+		// disable auto-page-break
 		$this->SetAutoPageBreak(false, 0);
+		// set bacground image
 		$img_file = K_PATH_IMAGES.'image_demo.jpg';
 		$this->Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
 		// restore auto-page-break status
 		$this->SetAutoPageBreak($auto_page_break, $bMargin);
+		// set the starting point for the page content
+		$this->setPageMark();
 	}
 }
 
@@ -101,11 +105,41 @@ $pdf->AddPage();
 $html = '<span style="background-color:yellow;color:blue;">&nbsp;PAGE 2&nbsp;</span>';
 $pdf->writeHTML($html, true, false, true, false, '');
 
+// --- example with background set on page ---
+
+// remove default header
+$pdf->setPrintHeader(false);
+
+// add a page
+$pdf->AddPage();
+
+
+// -- set new background ---
+
+// get the current page break margin
+$bMargin = $pdf->getBreakMargin();
+// get current auto-page-break mode
+$auto_page_break = $pdf->getAutoPageBreak();
+// disable auto-page-break
+$pdf->SetAutoPageBreak(false, 0);
+// set bacground image
+$img_file = K_PATH_IMAGES.'image_demo.jpg';
+$pdf->Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
+// restore auto-page-break status
+$pdf->SetAutoPageBreak($auto_page_break, $bMargin);
+// set the starting point for the page content
+$pdf->setPageMark();
+
+
+// Print a text
+$html = '<span style="color:white;text-align:center;font-weight:bold;font-size:80pt;">PAGE 3</span>';
+$pdf->writeHTML($html, true, false, true, false, '');
+
 // ---------------------------------------------------------
 
 //Close and output PDF document
 $pdf->Output('example_051.pdf', 'I');
 
 //============================================================+
-// END OF FILE                                                
+// END OF FILE
 //============================================================+

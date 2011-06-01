@@ -1,3 +1,7 @@
+5.9.088 (2011-06-01)
+	- Method getAutoPageBreak() was added (see example n. 51).
+	- Example n. 51 (full page background) was updated.
+
 5.9.087 (2011-06-01)
 	- Method sendOutputData() was improved to include deflate encoding.
 	- Barcode classes on PHP 4 version were fixed.
