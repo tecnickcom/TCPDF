@@ -1,3 +1,6 @@
+5.9.090 (2011-06-14)
+	- Methods AliasNbPages() and AliasNumPage() were re-added as deprecated for backward compatibility.
+
 5.9.089 (2011-06-13)
 	- Example n. 8 was updated.
 	- Method sendOutputData() was changed to remove default compression (it was incompatible with some server settings).
