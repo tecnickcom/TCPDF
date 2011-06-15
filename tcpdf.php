@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.091
+// Version     : 5.9.092
 // Begin       : 2002-08-03
 // Last Update : 2011-06-15
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
@@ -134,7 +134,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.091
+ * @version 5.9.092
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -146,7 +146,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.091
+ * @version 5.9.092
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -157,7 +157,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.091';
+	private $tcpdf_version = '5.9.092';
 
 	// Protected properties
 
@@ -517,25 +517,31 @@ class TCPDF {
 	 * String alias for total number of pages.
 	 * @protected
 	 */
-	protected $alias_tot_pages = '{nb}';
+	protected $alias_tot_pages = '{:ptp:}';
 
 	/**
 	 * String alias for page number.
 	 * @protected
 	 */
-	protected $alias_num_page = '{pnb}';
+	protected $alias_num_page = '{:pnp:}';
 
 	/**
 	 * String alias for total number of pages in a single group.
 	 * @protected
 	 */
-	protected $alias_group_tot_pages = '{gnb}';
+	protected $alias_group_tot_pages = '{:ptg:}';
 
 	/**
 	 * String alias for group page number.
 	 * @protected
 	 */
-	protected $alias_group_num_page = '{gpnb}';
+	protected $alias_group_num_page = '{:png:}';
+
+	/**
+	 * String alias for right shift compensation used to correctly align page numbers on the right.
+	 * @protected
+	 */
+	protected $alias_right_shift = '{:rsc:}';
 
 	/**
 	 * The right-bottom (or left-bottom for RTL) corner X coordinate of last inserted image.
@@ -4172,7 +4178,7 @@ class TCPDF {
 			$this->Cell(0, 0, $pagenumtxt, 'T', 0, 'L');
 		} else {
 			$this->SetX($this->original_lMargin);
-			$this->Cell(0, 0, $pagenumtxt, 'T', 0, 'R');
+			$this->Cell(0, 0, $this->alias_right_shift.$pagenumtxt, 'T', 0, 'R');
 		}
 	}
 
@@ -8485,43 +8491,98 @@ class TCPDF {
 	}
 
 	/**
-	 * Output pages.
+	 * Return an array containing internal page aliases.
+	 * @return array of page number aliases
+	 * @protected
+	 */
+	protected function getInternalPageNumberAliases() {
+		$basic_alias = array($this->alias_tot_pages, $this->alias_num_page, $this->alias_group_tot_pages, $this->alias_group_num_page, $this->alias_right_shift);
+		$pnalias = array();
+		foreach($basic_alias as $k => $a) {
+			// build array of Unicode + ASCII variants (the order is important)
+			$pnalias[$k] = array('u' => array(), 'a' => array());
+			$pnalias[$k]['u'][] = '{'.$a.'}';
+			if ($this->isunicode) {
+				$pnalias[$k]['u'][] = $this->_escape($this->UTF8ToLatin1('{'.$a.'}'));
+				$pnalias[$k]['u'][] = $this->_escape($this->utf8StrRev('{'.$a.'}', false, $this->tmprtl));
+				$pnalias[$k]['a'][] = $this->_escape($this->UTF8ToLatin1($a));
+				$pnalias[$k]['a'][] = $this->_escape($this->utf8StrRev($a, false, $this->tmprtl));
+			}
+			$pnalias[$k]['a'][] = $a;
+		}
+		return $pnalias;
+	}
+
+	/**
+	 * Output pages (and replace page number aliases).
 	 * @protected
 	 */
 	protected function _putpages() {
 		$filter = ($this->compress) ? '/Filter /FlateDecode ' : '';
-		$nb = $this->numpages;
-		$nbs = $this->formatPageNumber($nb);
-		$nbu = $this->UTF8ToUTF16BE($nbs, false);
+		// get internal aliases for page numbers
+		$pnalias = $this->getInternalPageNumberAliases();
+		$num_pages = $this->numpages;
+		$ptpa = $this->formatPageNumber($num_pages);
+		$ptpu = $this->UTF8ToUTF16BE($ptpa, false);
 		$pagegroupnum = 0;
 		$groupnum = 0;
-		for ($n = 1; $n <= $nb; ++$n) {
+		for ($n = 1; $n <= $num_pages; ++$n) {
+			// get current page
 			$temppage = $this->getPageBuffer($n);
+			$pagelen = strlen($temppage);
+			// set replacements for total pages number
+			$pnpa = $this->formatPageNumber($n);
+			$pnpu = $this->UTF8ToUTF16BE($pnpa, false);
 			if (!empty($this->pagegroups)) {
 				if (isset($this->newpagegroup[$n])) {
 					$pagegroupnum = 0;
 					++$groupnum;
+					$ptga = $this->formatPageNumber($this->pagegroups[$groupnum]);
+					$ptgu = $this->UTF8ToUTF16BE($ptga, false);
 				}
 				++$pagegroupnum;
-				// replace total page group numbers
-				$vs = $this->formatPageNumber($this->pagegroups[$groupnum]);
-				$vu = $this->UTF8ToUTF16BE($vs, false);
-				$temppage = str_replace('{'.$this->alias_group_tot_pages.'}', $vu, $temppage);
-				$temppage = str_replace($this->alias_group_tot_pages, $vs, $temppage);
-				// replace page group numbers
-				$pvs = $this->formatPageNumber($pagegroupnum);
-				$pvu = $this->UTF8ToUTF16BE($pvs, false);
-				$temppage = str_replace('{'.$this->alias_group_num_page.'}', $pvu, $temppage);
-				$temppage = str_replace($this->alias_group_num_page, $pvs, $temppage);
+				$pnga = $this->formatPageNumber($pagegroupnum);
+				$pngu = $this->UTF8ToUTF16BE($pnga, false);
+				// replace total page group number
+				foreach ($pnalias[2]['u'] as $a) {
+					$temppage = str_replace($a, $ptgu, $temppage);
+				}
+				foreach ($pnalias[2]['a'] as $a) {
+					$temppage = str_replace($a, $ptga, $temppage);
+				}
+				// replace page group number
+				foreach ($pnalias[3]['u'] as $a) {
+					$temppage = str_replace($a, $pngu, $temppage);
+				}
+				foreach ($pnalias[3]['a'] as $a) {
+					$temppage = str_replace($a, $pnga, $temppage);
+				}
 			}
-			// replace total pages number
-			$temppage = str_replace('{'.$this->alias_tot_pages.'}', $nbu, $temppage);
-			$temppage = str_replace($this->alias_tot_pages, $nbs, $temppage);
+			// replace total page number
+			foreach ($pnalias[0]['u'] as $a) {
+				$temppage = str_replace($a, $ptpu, $temppage);
+			}
+			foreach ($pnalias[0]['a'] as $a) {
+				$temppage = str_replace($a, $ptpa, $temppage);
+			}
 			// replace page number
-			$pnbs = $this->formatPageNumber($n);
-			$pnbu = $this->UTF8ToUTF16BE($pnbs, false); // replacement for unicode font
-			$temppage = str_replace('{'.$this->alias_num_page.'}', $pnbu, $temppage);
-			$temppage = str_replace($this->alias_num_page, $pnbs, $temppage);
+			foreach ($pnalias[1]['u'] as $a) {
+				$temppage = str_replace($a, $pnpu, $temppage);
+			}
+			foreach ($pnalias[1]['a'] as $a) {
+				$temppage = str_replace($a, $pnpa, $temppage);
+			}
+			// adjust right alignment of page numbers
+			$pagelendiff = max(0,(7 + $pagelen - strlen($temppage)));
+			$shifta = str_repeat(' ', $pagelendiff);
+			$shiftu = $this->UTF8ToUTF16BE($shifta, false);
+			// replace right shift alias
+			foreach ($pnalias[4]['u'] as $a) {
+				$temppage = str_replace($a, $shiftu, $temppage);
+			}
+			foreach ($pnalias[4]['a'] as $a) {
+				$temppage = str_replace($a, $shifta, $temppage);
+			}
 			// replace EPS marker
 			$temppage = str_replace($this->epsmarker, '', $temppage);
 			//Page
@@ -8620,7 +8681,7 @@ class TCPDF {
 		foreach($this->page_obj_id as $page_obj) {
 			$out .= ' '.$page_obj.' 0 R';
 		}
-		$out .= ' ] /Count '.$nb.' >>';
+		$out .= ' ] /Count '.$num_pages.' >>';
 		$out .= "\n".'endobj';
 		$this->_out($out);
 	}

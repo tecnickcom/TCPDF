@@ -1,6 +1,7 @@
-5.9.091 (2011-06-15)
-	- Method _putpages() was improved for faster page numbering.
+5.9.092 (2011-06-15)
+	- Method _putpages() was improved.
 	- Bug item #3316678 "Memory overflow when use Rotate and SetAutoPageBreak" was fixed.
+	- Right alignment of page numbers was improved.
 
 5.9.090 (2011-06-14)
 	- Methods AliasNbPages() and AliasNumPage() were re-added as deprecated for backward compatibility.
