@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.090
+// Version     : 5.9.091
 // Begin       : 2002-08-03
-// Last Update : 2011-06-14
+// Last Update : 2011-06-15
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -134,7 +134,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.090
+ * @version 5.9.091
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -146,7 +146,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.090
+ * @version 5.9.091
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -157,7 +157,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.090';
+	private $tcpdf_version = '5.9.091';
 
 	// Protected properties
 
@@ -454,7 +454,13 @@ class TCPDF {
 	protected $PageBreakTrigger;
 
 	/**
-	 * Flag set when processing footer.
+	 * Flag set when processing page header.
+	 * @protected
+	 */
+	protected $InHeader = false;
+
+	/**
+	 * Flag set when processing page footer.
 	 * @protected
 	 */
 	protected $InFooter = false;
@@ -3833,14 +3839,12 @@ class TCPDF {
 		if (($this->page == 0) OR ($this->numpages > $this->page) OR (!$this->pageopen[$this->page])) {
 			return;
 		}
-		$this->InFooter = true;
 		// print page footer
 		$this->setFooter();
 		// close page
 		$this->_endpage();
 		// mark page as closed
 		$this->pageopen[$this->page] = false;
-		$this->InFooter = false;
 		if ($tocpage) {
 			$this->tocpage = false;
 		}
@@ -4178,35 +4182,38 @@ class TCPDF {
 	 * @since 4.0.012 (2008-07-24)
 	 */
 	protected function setHeader() {
-		if ($this->print_header) {
-			$this->setGraphicVars($this->default_graphic_vars);
-			$temp_thead = $this->thead;
-			$temp_theadMargins = $this->theadMargins;
-			$lasth = $this->lasth;
-			$this->_out('q');
-			$this->rMargin = $this->original_rMargin;
-			$this->lMargin = $this->original_lMargin;
-			$this->SetCellPadding(0);
-			//set current position
-			if ($this->rtl) {
-				$this->SetXY($this->original_rMargin, $this->header_margin);
-			} else {
-				$this->SetXY($this->original_lMargin, $this->header_margin);
-			}
-			$this->SetFont($this->header_font[0], $this->header_font[1], $this->header_font[2]);
-			$this->Header();
-			//restore position
-			if ($this->rtl) {
-				$this->SetXY($this->original_rMargin, $this->tMargin);
-			} else {
-				$this->SetXY($this->original_lMargin, $this->tMargin);
-			}
-			$this->_out('Q');
-			$this->lasth = $lasth;
-			$this->thead = $temp_thead;
-			$this->theadMargins = $temp_theadMargins;
-			$this->newline = false;
+		if (!$this->print_header) {
+			return;
 		}
+		$this->InHeader = true;
+		$this->setGraphicVars($this->default_graphic_vars);
+		$temp_thead = $this->thead;
+		$temp_theadMargins = $this->theadMargins;
+		$lasth = $this->lasth;
+		$this->_out('q');
+		$this->rMargin = $this->original_rMargin;
+		$this->lMargin = $this->original_lMargin;
+		$this->SetCellPadding(0);
+		//set current position
+		if ($this->rtl) {
+			$this->SetXY($this->original_rMargin, $this->header_margin);
+		} else {
+			$this->SetXY($this->original_lMargin, $this->header_margin);
+		}
+		$this->SetFont($this->header_font[0], $this->header_font[1], $this->header_font[2]);
+		$this->Header();
+		//restore position
+		if ($this->rtl) {
+			$this->SetXY($this->original_rMargin, $this->tMargin);
+		} else {
+			$this->SetXY($this->original_lMargin, $this->tMargin);
+		}
+		$this->_out('Q');
+		$this->lasth = $lasth;
+		$this->thead = $temp_thead;
+		$this->theadMargins = $temp_theadMargins;
+		$this->newline = false;
+		$this->InHeader = false;
 	}
 
 	/**
@@ -4216,6 +4223,7 @@ class TCPDF {
 	 */
 	protected function setFooter() {
 		//Page footer
+		$this->InFooter = true;
 		// save current graphic settings
 		$gvars = $this->getGraphicVars();
 		// mark this point
@@ -4258,6 +4266,17 @@ class TCPDF {
 		$this->num_columns = $gvars['num_columns'];
 		// calculate footer length
 		$this->footerlen[$this->page] = $this->pagelen[$this->page] - $this->footerpos[$this->page] + 1;
+		$this->InFooter = false;
+	}
+
+	/**
+	 * Check if we are on the page body (excluding page header and footer).
+	 * @return true if we are not in page header nor in page footer, false otherwise.
+	 * @protected
+	 * @since 5.9.091 (2011-06-15)
+	 */
+	protected function inPageBody() {
+		return (($this->InHeader === false) AND ($this->InFooter === false));
 	}
 
 	/**
@@ -4322,7 +4341,7 @@ class TCPDF {
 	 * @return int page number
 	 * @public
 	 * @since 1.0
-	 * @see alias_tot_pages(), getAliasNbPages()
+	 * @see getAliasNbPages()
 	 */
 	public function PageNo() {
 		return $this->page;
@@ -5398,7 +5417,7 @@ class TCPDF {
 			$y = $this->y;
 		}
 		$current_page = $this->page;
-		if ((($y + $h) > $this->PageBreakTrigger) AND (!$this->InFooter) AND ($this->AcceptPageBreak())) {
+		if ((($y + $h) > $this->PageBreakTrigger) AND ($this->inPageBody()) AND ($this->AcceptPageBreak())) {
 			if ($addpage) {
 				//Automatic page break
 				$x = $this->x;
@@ -6139,7 +6158,7 @@ class TCPDF {
 			$y = $this->GetY();
 		}
 		$resth = 0;
-		if ((!$this->InFooter) AND (($y + $h + $mc_margin['T'] + $mc_margin['B']) > $this->PageBreakTrigger)) {
+		if (($this->inPageBody()) AND (($y + $h + $mc_margin['T'] + $mc_margin['B']) > $this->PageBreakTrigger)) {
 			// spit cell in more pages/columns
 			$newh = $this->PageBreakTrigger - $y;
 			$resth = $h - $newh; // cell to be printed on the next page/column
@@ -6781,7 +6800,7 @@ class TCPDF {
 				$sep = -1;
 				$shy = false;
 				// account for margin changes
-				if ((($this->y + $this->lasth) > $this->PageBreakTrigger) AND (!$this->InFooter)) {
+				if ((($this->y + $this->lasth) > $this->PageBreakTrigger) AND ($this->inPageBody())) {
 					$this->AcceptPageBreak();
 					if ($this->rtl) {
 						$this->x -= $margin['R'];
@@ -6968,7 +6987,7 @@ class TCPDF {
 						}
 					}
 					// account for margin changes
-					if ((($this->y + $this->lasth) > $this->PageBreakTrigger) AND (!$this->InFooter)) {
+					if ((($this->y + $this->lasth) > $this->PageBreakTrigger) AND ($this->inPageBody())) {
 						$this->AcceptPageBreak();
 						if ($this->rtl) {
 							$this->x -= $margin['R'];
@@ -8470,32 +8489,12 @@ class TCPDF {
 	 * @protected
 	 */
 	protected function _putpages() {
+		$filter = ($this->compress) ? '/Filter /FlateDecode ' : '';
 		$nb = $this->numpages;
-		if (!empty($this->alias_tot_pages)) {
-			$nbs = $this->formatPageNumber($nb);
-			$nbu = $this->UTF8ToUTF16BE($nbs, false); // replacement for unicode font
-			$alias_a = $this->_escape($this->alias_tot_pages);
-			$alias_au = $this->_escape('{'.$this->alias_tot_pages.'}');
-			if ($this->isunicode) {
-				$alias_b = $this->_escape($this->UTF8ToLatin1($this->alias_tot_pages));
-				$alias_bu = $this->_escape($this->UTF8ToLatin1('{'.$this->alias_tot_pages.'}'));
-				$alias_c = $this->_escape($this->utf8StrRev($this->alias_tot_pages, false, $this->tmprtl));
-				$alias_cu = $this->_escape($this->utf8StrRev('{'.$this->alias_tot_pages.'}', false, $this->tmprtl));
-			}
-		}
-		if (!empty($this->alias_num_page)) {
-			$alias_pa = $this->_escape($this->alias_num_page);
-			$alias_pau = $this->_escape('{'.$this->alias_num_page.'}');
-			if ($this->isunicode) {
-				$alias_pb = $this->_escape($this->UTF8ToLatin1($this->alias_num_page));
-				$alias_pbu = $this->_escape($this->UTF8ToLatin1('{'.$this->alias_num_page.'}'));
-				$alias_pc = $this->_escape($this->utf8StrRev($this->alias_num_page, false, $this->tmprtl));
-				$alias_pcu = $this->_escape($this->utf8StrRev('{'.$this->alias_num_page.'}', false, $this->tmprtl));
-			}
-		}
+		$nbs = $this->formatPageNumber($nb);
+		$nbu = $this->UTF8ToUTF16BE($nbs, false);
 		$pagegroupnum = 0;
 		$groupnum = 0;
-		$filter = ($this->compress) ? '/Filter /FlateDecode ' : '';
 		for ($n = 1; $n <= $nb; ++$n) {
 			$temppage = $this->getPageBuffer($n);
 			if (!empty($this->pagegroups)) {
@@ -8504,73 +8503,26 @@ class TCPDF {
 					++$groupnum;
 				}
 				++$pagegroupnum;
-				$ka = $this->alias_group_tot_pages;
-				$kb = '{'.$ka.'}';
-				$kpa = $this->alias_group_num_page;
-				$kpb = '{'.$kpa.'}';
-				// replace total pages group numbers
+				// replace total page group numbers
 				$vs = $this->formatPageNumber($this->pagegroups[$groupnum]);
 				$vu = $this->UTF8ToUTF16BE($vs, false);
-				$alias_ga = $this->_escape($ka);
-				$alias_gau = $this->_escape($kb);
-				if ($this->isunicode) {
-					$alias_gb = $this->_escape($this->UTF8ToLatin1($ka));
-					$alias_gbu = $this->_escape($this->UTF8ToLatin1($kb));
-					$alias_gc = $this->_escape($this->utf8StrRev($ka, false, $this->tmprtl));
-					$alias_gcu = $this->_escape($this->utf8StrRev($kb, false, $this->tmprtl));
-				}
-				$temppage = str_replace($alias_gau, $vu, $temppage);
-				if ($this->isunicode) {
-					$temppage = str_replace($alias_gbu, $vu, $temppage);
-					$temppage = str_replace($alias_gcu, $vu, $temppage);
-					$temppage = str_replace($alias_gb, $vs, $temppage);
-					$temppage = str_replace($alias_gc, $vs, $temppage);
-				}
-				$temppage = str_replace($alias_ga, $vs, $temppage);
+				$temppage = str_replace('{'.$this->alias_group_tot_pages.'}', $vu, $temppage);
+				$temppage = str_replace($this->alias_group_tot_pages, $vs, $temppage);
 				// replace page group numbers
 				$pvs = $this->formatPageNumber($pagegroupnum);
 				$pvu = $this->UTF8ToUTF16BE($pvs, false);
-				$alias_pga = $this->_escape($kpa);
-				$alias_pgau = $this->_escape($kpb);
-				if ($this->isunicode) {
-					$alias_pgb = $this->_escape($this->UTF8ToLatin1($kpa));
-					$alias_pgbu = $this->_escape($this->UTF8ToLatin1($kpb));
-					$alias_pgc = $this->_escape($this->utf8StrRev($kpa, false, $this->tmprtl));
-					$alias_pgcu = $this->_escape($this->utf8StrRev($kpb, false, $this->tmprtl));
-				}
-				$temppage = str_replace($alias_pgau, $pvu, $temppage);
-				if ($this->isunicode) {
-					$temppage = str_replace($alias_pgbu, $pvu, $temppage);
-					$temppage = str_replace($alias_pgcu, $pvu, $temppage);
-					$temppage = str_replace($alias_pgb, $pvs, $temppage);
-					$temppage = str_replace($alias_pgc, $pvs, $temppage);
-				}
-				$temppage = str_replace($alias_pga, $pvs, $temppage);
+				$temppage = str_replace('{'.$this->alias_group_num_page.'}', $pvu, $temppage);
+				$temppage = str_replace($this->alias_group_num_page, $pvs, $temppage);
 			}
-			if (!empty($this->alias_tot_pages)) {
-				// replace total pages number
-				$temppage = str_replace($alias_au, $nbu, $temppage);
-				if ($this->isunicode) {
-					$temppage = str_replace($alias_bu, $nbu, $temppage);
-					$temppage = str_replace($alias_cu, $nbu, $temppage);
-					$temppage = str_replace($alias_b, $nbs, $temppage);
-					$temppage = str_replace($alias_c, $nbs, $temppage);
-				}
-				$temppage = str_replace($alias_a, $nbs, $temppage);
-			}
-			if (!empty($this->alias_num_page)) {
-				// replace page number
-				$pnbs = $this->formatPageNumber($n);
-				$pnbu = $this->UTF8ToUTF16BE($pnbs, false); // replacement for unicode font
-				$temppage = str_replace($alias_pau, $pnbu, $temppage);
-				if ($this->isunicode) {
-					$temppage = str_replace($alias_pbu, $pnbu, $temppage);
-					$temppage = str_replace($alias_pcu, $pnbu, $temppage);
-					$temppage = str_replace($alias_pb, $pnbs, $temppage);
-					$temppage = str_replace($alias_pc, $pnbs, $temppage);
-				}
-				$temppage = str_replace($alias_pa, $pnbs, $temppage);
-			}
+			// replace total pages number
+			$temppage = str_replace('{'.$this->alias_tot_pages.'}', $nbu, $temppage);
+			$temppage = str_replace($this->alias_tot_pages, $nbs, $temppage);
+			// replace page number
+			$pnbs = $this->formatPageNumber($n);
+			$pnbu = $this->UTF8ToUTF16BE($pnbs, false); // replacement for unicode font
+			$temppage = str_replace('{'.$this->alias_num_page.'}', $pnbu, $temppage);
+			$temppage = str_replace($this->alias_num_page, $pnbs, $temppage);
+			// replace EPS marker
 			$temppage = str_replace($this->epsmarker, '', $temppage);
 			//Page
 			$this->page_obj_id[$n] = $this->_newobj();
@@ -19716,7 +19668,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						}
 					}
 					if (!$autolinebreak) {
-						if (!$this->InFooter) {
+						if ($this->inPageBody()) {
 							$pre_y = $this->y;
 							// check for page break
 							if ((!$this->checkPageBreak($imgh)) AND ($this->y < $pre_y)) {
