@@ -1,3 +1,6 @@
+5.9.093 (2011-06-16)
+	- Method setStartingPageNumber() was added to set starting page number (for automatic page numbering).
+
 5.9.092 (2011-06-15)
 	- Method _putpages() was improved.
 	- Bug item #3316678 "Memory overflow when use Rotate and SetAutoPageBreak" was fixed.
