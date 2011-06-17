@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.093
+// Version     : 5.9.094
 // Begin       : 2002-08-03
-// Last Update : 2011-06-16
+// Last Update : 2011-06-17
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -134,7 +134,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.093
+ * @version 5.9.094
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -146,7 +146,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.093
+ * @version 5.9.094
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -157,7 +157,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.093';
+	private $tcpdf_version = '5.9.094';
 
 	// Protected properties
 
@@ -8532,6 +8532,8 @@ class TCPDF {
 		$ptpu = $this->UTF8ToUTF16BE($ptpa, false);
 		$pagegroupnum = 0;
 		$groupnum = 0;
+		$ptgu = 1;
+		$ptga = 1;
 		for ($n = 1; $n <= $num_pages; ++$n) {
 			// get current page
 			$temppage = $this->getPageBuffer($n);
@@ -8539,8 +8541,6 @@ class TCPDF {
 			// set replacements for total pages number
 			$pnpa = $this->formatPageNumber(($this->starting_page_number + $n - 1));
 			$pnpu = $this->UTF8ToUTF16BE($pnpa, false);
-			$ptgu = 1;
-			$ptga = 1;
 			if (!empty($this->pagegroups)) {
 				if (isset($this->newpagegroup[$n])) {
 					$pagegroupnum = 0;
