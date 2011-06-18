@@ -1,3 +1,7 @@
+5.9.095 (2011-06-18)
+	- Numbers alignment for Table-Of-Content methods was improved and fixed.
+	- Font subsetting was fixed to include all parts of composite fonts.
+
 5.9.094 (2011-06-17)
 	- Bug item #3317898 "Page Group numbering broken in 5.9.093" was fixed. 
 
