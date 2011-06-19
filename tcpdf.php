@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.095
+// Version     : 5.9.096
 // Begin       : 2002-08-03
-// Last Update : 2011-06-18
+// Last Update : 2011-06-19
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -134,7 +134,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.095
+ * @version 5.9.096
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -146,7 +146,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.095
+ * @version 5.9.096
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -157,7 +157,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.095';
+	private $tcpdf_version = '5.9.096';
 
 	// Protected properties
 
@@ -9516,15 +9516,15 @@ class TCPDF {
 		$offset = $table['loca']['offset'];
 		if ($short_offset) {
 			// short version
-			$n = $table['loca']['length'] / 2; // numGlyphs + 1
-			for ($i = 0; $i < $n; ++$i) {
+			$tot_num_glyphs = ($table['loca']['length'] / 2); // numGlyphs + 1
+			for ($i = 0; $i < $tot_num_glyphs; ++$i) {
 				$indexToLoc[$i] = $this->_getUSHORT($font, $offset) * 2;
 				$offset += 2;
 			}
 		} else {
 			// long version
-			$n = $table['loca']['length'] / 4; // numGlyphs + 1
-			for ($i = 0; $i < $n; ++$i) {
+			$tot_num_glyphs = ($table['loca']['length'] / 4); // numGlyphs + 1
+			for ($i = 0; $i < $tot_num_glyphs; ++$i) {
 				$indexToLoc[$i] = $this->_getULONG($font, $offset);
 				$offset += 4;
 			}
@@ -9556,8 +9556,8 @@ class TCPDF {
 			switch ($format) {
 				case 0: { // Format 0: Byte encoding table
 					$offset += 4; // skip length and version/language
-					for ($k = 0; $k < 256; ++$k) {
-						if (isset($subsetchars[$k])) {
+					for ($c = 0; $c < 256; ++$c) {
+						if (isset($subsetchars[$c])) {
 							$g = $this->_getBYTE($font, $offset);
 							$subsetglyphs[$g] = true;
 						}
@@ -9601,7 +9601,8 @@ class TCPDF {
 						$k = $subHeaderKeys[$i];
 						if ($k == 0) {
 							// one byte code
-							if (isset($subsetchars[$i])) {
+							$c = $i;
+							if (isset($subsetchars[$c])) {
 								$g = $glyphIndexArray[0];
 								$subsetglyphs[$g] = true;
 							}
@@ -9782,7 +9783,7 @@ class TCPDF {
 			$new_sga = array();
 			foreach ($sga as $key => $val) {
 				if (isset($indexToLoc[$key])) {
-					$offset = $table['glyf']['offset'] + $indexToLoc[$key];
+					$offset = ($table['glyf']['offset'] + $indexToLoc[$key]);
 					$numberOfContours = $this->_getSHORT($font, $offset);
 					$offset += 2;
 					if ($numberOfContours < 0) { // composite glyph
@@ -9792,10 +9793,6 @@ class TCPDF {
 							$offset += 2;
 							$glyphIndex = $this->_getUSHORT($font, $offset);
 							$offset += 2;
-							if (!isset($subsetglyphs[($glyphIndex - 1)])) {
-								// add missing glyphs
-								$new_sga[($glyphIndex - 1)] = true;
-							}
 							if (!isset($subsetglyphs[$glyphIndex])) {
 								// add missing glyphs
 								$new_sga[$glyphIndex] = true;
@@ -9815,42 +9812,32 @@ class TCPDF {
 							}
 						} while ($flags & 32);
 					}
-				} else {
-					unset($subsetglyphs[$key]);
 				}
 			}
 			$subsetglyphs += $new_sga;
 		}
 		// sort glyphs by key (and remove duplicates)
 		ksort($subsetglyphs);
-		// build new glyf table with only used glyphs
+		// build new glyf and loca tables
 		$glyf = '';
-		$glyfSize = 0;
-		// create new empty indexToLoc table
-		$newIndexToLoc = array_fill(0, count($indexToLoc), 0);
-		$goffset = 0;
-		foreach ($subsetglyphs as $glyphID => $val) {
-			if (isset($indexToLoc[$glyphID]) AND isset($indexToLoc[($glyphID + 1)])) {
-				$start = $indexToLoc[$glyphID];
-				$length = ($indexToLoc[($glyphID + 1)] - $start);
-				$glyf .= substr($font, ($table['glyf']['offset'] + $start), $length);
-				$newIndexToLoc[$glyphID] = $goffset;
-				$goffset += $length;
-			}
-		}
-		// build new loca table
 		$loca = '';
-		if ($short_offset) {
-			foreach ($newIndexToLoc as $glyphID => $offset) {
-				$loca .= pack('n', ($offset / 2));
+		$offset = 0;
+		$glyf_offset = $table['glyf']['offset'];
+		for ($i = 0; $i < $tot_num_glyphs; ++$i) {
+			if (isset($subsetglyphs[$i])) {
+				$length = ($indexToLoc[($i + 1)] - $indexToLoc[$i]);
+				$glyf .= substr($font, ($glyf_offset + $indexToLoc[$i]), $length);
+			} else {
+				$length = 0;
 			}
-		} else {
-			foreach ($newIndexToLoc as $glyphID => $offset) {
+			if ($short_offset) {
+				$loca .= pack('n', ($offset / 2));
+			} else {
 				$loca .= pack('N', $offset);
 			}
+			$offset += $length;
 		}
 		// array of table names to preserve (loca and glyf tables will be added later)
-		// additional maps includes: 'cmap', 'name', 'OS/2', 'post';
 		// the cmap table is not needed and shall not be present, since the mapping from character codes to glyph descriptions is provided separately
 		$table_names = array ('head', 'hhea', 'hmtx', 'maxp', 'cvt ', 'fpgm', 'prep'); // minimum required table names
 		// get the tables to preserve
@@ -10084,11 +10071,11 @@ class TCPDF {
 				if ((!$compressed) AND (isset($info['length2']))) {
 					$header = (ord($font{0}) == 128);
 					if ($header) {
-						//Strip first binary header
+						// strip first binary header
 						$font = substr($font, 6);
 					}
 					if ($header AND (ord($font{$info['length1']}) == 128)) {
-						//Strip second binary header
+						// strip second binary header
 						$font = substr($font, 0, $info['length1']).substr($font, ($info['length1'] + 6));
 					}
 				} elseif ($info['subset'] AND ((!$compressed) OR ($compressed AND function_exists('gzcompress')))) {
@@ -10102,7 +10089,10 @@ class TCPDF {
 						$fontinfo = $this->getFontBuffer($fontkey);
 						$subsetchars += $fontinfo['subsetchars'];
 					}
+					// rebuild a font subset
 					$font = $this->_getTrueTypeFontSubset($font, $subsetchars);
+					// calculate new font lenght
+					$info['length1'] = strlen($font);
 					if ($compressed) {
 						// recompress font
 						$font = gzcompress($font);
@@ -11799,7 +11789,7 @@ class TCPDF {
 				$outstr .= chr($char & 0xFF);
 			} else {
 				$char -= 0x10000;
-				$w1 = 0xD800 | ($char >> 0x10);
+				$w1 = 0xD800 | ($char >> 0x0a);
 				$w2 = 0xDC00 | ($char & 0x3FF);
 				$outstr .= chr($w1 >> 0x08);
 				$outstr .= chr($w1 & 0xFF);

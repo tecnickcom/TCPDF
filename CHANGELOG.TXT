@@ -1,3 +1,6 @@
+5.9.096 (2011-06-19)
+	- Bug item #3322234 "Surrogate pairs codes in arrUTF8ToUTF16BE" was fixed.
+
 5.9.095 (2011-06-18)
 	- Numbers alignment for Table-Of-Content methods was improved and fixed.
 	- Font subsetting was fixed to include all parts of composite fonts.
