@@ -6,6 +6,7 @@
 //
 // Description : Example 015 for TCPDF class
 //               Bookmarks (Table of Content)
+//               and Named Destinations.
 //
 // Author: Nicola Asuni
 //
@@ -81,7 +82,8 @@ $pdf->Bookmark('Chapter 1', 0, 0, '', 'B', array(0,64,128));
 $pdf->Cell(0, 10, 'Chapter 1', 0, 1, 'L');
 
 $pdf->SetFont('times', 'I', 14);
-$pdf->Write(0, 'You can set PDF Bookmarks using the Bookmark() method.');
+$pdf->Write(0, 'You can set PDF Bookmarks using the Bookmark() method.
+You can set PDF Named Destinations using the setDestination() method.');
 
 $pdf->SetFont('times', 'B', 20);
 
@@ -104,12 +106,24 @@ $pdf->Bookmark('Paragraph 1.3', 1, 0, '', '', array(0,0,0));
 $pdf->Cell(0, 10, 'Paragraph 1.3', 0, 1, 'L');
 
 $pdf->AddPage();
+// add a named destination so you can open this document at this page using the link: "example_015.pdf#chapter2"
+$pdf->setDestination('chapter2', 0, '');
 $pdf->Bookmark('Chapter 2', 0, 0, '', 'BI', array(128,0,0));
 $pdf->Cell(0, 10, 'Chapter 2', 0, 1, 'L');
+$pdf->SetFont('times', 'I', 14);
+$pdf->Write(0, 'Once saved, you can open this document at this page using the link: "example_015.pdf#chapter2".');
 
 $pdf->AddPage();
+$pdf->setDestination('chapter3', 0, '');
+$pdf->SetFont('times', 'B', 20);
 $pdf->Bookmark('Chapter 3', 0, 0, '', 'B', array(0,64,128));
 $pdf->Cell(0, 10, 'Chapter 3', 0, 1, 'L');
+
+$pdf->AddPage();
+$pdf->setDestination('chapter4', 0, '');
+$pdf->SetFont('times', 'B', 20);
+$pdf->Bookmark('Chapter 4', 0, 0, '', 'B', array(0,64,128));
+$pdf->Cell(0, 10, 'Chapter 4', 0, 1, 'L');
 
 // ---------------------------------------------------------
 

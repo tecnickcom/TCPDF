@@ -1,3 +1,7 @@
+5.9.097 (2011-06-23)
+	- The method setHtmlVSpace() now can be used also for tags: div, li, br, dt and dd.
+	- The Named Destination feature was added (check the example n. 15) - thanks to Christian Deligant.
+
 5.9.096 (2011-06-19)
 	- Bug item #3322234 "Surrogate pairs codes in arrUTF8ToUTF16BE" was fixed.
 
