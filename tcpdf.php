@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.097
+// Version     : 5.9.098
 // Begin       : 2002-08-03
 // Last Update : 2011-06-23
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
@@ -134,7 +134,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.097
+ * @version 5.9.098
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -146,7 +146,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.097
+ * @version 5.9.098
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -157,7 +157,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.097';
+	private $tcpdf_version = '5.9.098';
 
 	// Protected properties
 
@@ -1634,6 +1634,13 @@ class TCPDF {
 	 * @since 5.9.097 (2011-06-23)
 	 */
 	protected $dests = array();
+
+	/**
+	 * Object ID for Named Destinations
+	 * @protected
+	 * @since 5.9.097 (2011-06-23)
+	 */
+	protected $n_dests;
 
 	/**
 	 * Directory used for the last SVG image.
@@ -10913,6 +10920,7 @@ class TCPDF {
 		$this->_putspotcolors();
 		$this->_putshaders();
 		$this->_putresourcedict();
+		$this->_putdests();
 		$this->_putbookmarks();
 		$this->_putEmbeddedFiles();
 		$this->_putannotsobjs();
@@ -10988,11 +10996,7 @@ class TCPDF {
 		}
 		$out .= ' >>';
 		if (!empty($this->dests)) {
-			$out .= ' /Dests <<';
-			foreach($this->dests as $name => $o) {
-				$out .= ' /'.$name.' '.sprintf('[%u 0 R /XYZ 0 %.2F null]', $this->page_obj_id[($o['p'])], ($this->pagedim[$o['p']]['h'] - ($o['y'] * $this->k)));
-			}
-			$out .= ' >>';
+			$out .= ' /Dests '.$this->n_dests.' 0 R';
 		}
 		$out .= $this->_putviewerpreferences();
 		if (isset($this->LayoutMode) AND (!$this->empty_string($this->LayoutMode))) {
@@ -14650,6 +14654,26 @@ class TCPDF {
 	 */
 	public function getDestination() {
 		return $this->dests;
+	}
+
+	/**
+	 * Create a javascript PDF string.
+	 * @protected
+	 * @author Johannes Güntert, Nicola Asuni
+	 * @since 5.9.098 (2011-06-23)
+	 */
+	protected function _putdests() {
+		if (empty($this->dests)) {
+			return;
+		}
+		$this->n_dests = $this->_newobj();
+		$out = ' <<';
+		foreach($this->dests as $name => $o) {
+			$out .= ' /'.$name.' '.sprintf('[%u 0 R /XYZ 0 %.2F null]', $this->page_obj_id[($o['p'])], ($this->pagedim[$o['p']]['h'] - ($o['y'] * $this->k)));
+		}
+		$out .= ' >>';
+		$out .= "\n".'endobj';
+		$this->_out($out);
 	}
 
 	/**

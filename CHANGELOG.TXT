@@ -1,3 +1,6 @@
+5.9.098 (2011-06-23)
+	- The Named Destination feature was fixed.
+
 5.9.097 (2011-06-23)
 	- The method setHtmlVSpace() now can be used also for tags: div, li, br, dt and dd.
 	- The Named Destination feature was added (check the example n. 15) - thanks to Christian Deligant.
