@@ -1,3 +1,6 @@
+5.9.099 (2011-06-27)
+	- Bug item #3335045 "Font freesans seems somehow corrupted in footer" was fixed.
+
 5.9.098 (2011-06-23)
 	- The Named Destination feature was fixed.
 
