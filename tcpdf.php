@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.099
+// Version     : 5.9.100
 // Begin       : 2002-08-03
-// Last Update : 2011-06-27
+// Last Update : 2011-06-29
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -134,7 +134,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.099
+ * @version 5.9.100
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -146,7 +146,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.099
+ * @version 5.9.100
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -157,7 +157,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.099';
+	private $tcpdf_version = '5.9.100';
 
 	// Protected properties
 
@@ -26135,6 +26135,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$ymax = 0;
 		$relcoord = false;
 		$minlen = (0.01 / $this->k); // minimum acceptable lenght (3 point)
+		$firstcmd = true; // used to print first point
 		// draw curve pieces
 		foreach ($paths as $key => $val) {
 			// get curve type
@@ -26172,9 +26173,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 							$x = $cp + $xoffset;
 						} else {
 							$y = $cp + $yoffset;
-							if ((abs($x0 - $x) >= $minlen) OR (abs($y0 - $y) >= $minlen)) {
+							if ($firstcmd OR (abs($x0 - $x) >= $minlen) OR (abs($y0 - $y) >= $minlen)) {
 								if ($ck == 1) {
 									$this->_outPoint($x, $y);
+									$firstcmd = false;
 								} else {
 									$this->_outLine($x, $y);
 								}
@@ -26445,6 +26447,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					break;
 				}
 			}
+			$firstcmd = false;
 		} // end foreach
 		if (!empty($op)) {
 			$this->_out($op);
