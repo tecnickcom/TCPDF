@@ -1,3 +1,8 @@
+5.9.101 (2011-07-07)
+	- Support for JPEG and PNG ICC Color Profiles was added.
+	- Method addEmptySignatureAppearance() was added to add empty signature fields (see example n. 52).
+	- Bug item #3354332 "Strange line spacing with reduced font-size in writeHTML" was fixed.
+
 5.9.100 (2011-06-29)
 	- An SVG bug has been fixed.
 
@@ -19,7 +24,7 @@
 	- Font subsetting was fixed to include all parts of composite fonts.
 
 5.9.094 (2011-06-17)
-	- Bug item #3317898 "Page Group numbering broken in 5.9.093" was fixed. 
+	- Bug item #3317898 "Page Group numbering broken in 5.9.093" was fixed.
 
 5.9.093 (2011-06-16)
 	- Method setStartingPageNumber() was added to set starting page number (for automatic page numbering).
