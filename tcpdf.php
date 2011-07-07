@@ -8645,6 +8645,7 @@ class TCPDF {
 	 * Replace right shift page number aliases with spaces to correct right alignment.
 	 * This works perfectly only when using monospaced fonts.
 	 * @param $page (string) Page content.
+	 * @param $aliases (array) Array of page aliases.
 	 * @param $diff (int) initial difference to add.
 	 * @return replaced page content.
 	 * @protected
