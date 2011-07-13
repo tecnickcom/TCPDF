@@ -1,3 +1,7 @@
+5.9.102 (2011-07-13)
+	- Methods startLayer() and endLayer() were added to support arbitrary PDF layers.
+	- Some improvements/fixes for images were added (thanks to Brendan Abbott).
+
 5.9.101 (2011-07-07)
 	- Support for JPEG and PNG ICC Color Profiles was added.
 	- Method addEmptySignatureAppearance() was added to add empty signature fields (see example n. 52).

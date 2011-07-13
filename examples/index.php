@@ -41,7 +41,7 @@ echo '<'.'?'.'xml version="1.0" encoding="UTF-8"'.'?'.'>';
 <li>writeHTML alignment: [<a href="example_021.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>CMYK colors: [<a href="example_022.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Page Groups: [<a href="example_023.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
-<li>Object Visibility: [<a href="example_024.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
+<li>Object Visibility and Layers: [<a href="example_024.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Object Transparency: [<a href="example_025.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Text Rendering Modes and Text Clipping: [<a href="example_026.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Barcodes: [<a href="example_027.php" title="PDF [new window]" target="_blank">PDF</a>]</li>

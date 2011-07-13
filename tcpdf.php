@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.101
+// Version     : 5.9.102
 // Begin       : 2002-08-03
-// Last Update : 2011-07-07
+// Last Update : 2011-07-13
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -65,6 +65,7 @@
 //  * move and delete pages;
 //  * page compression (requires php-zlib extension);
 //  * XOBject Templates;
+//  * Layers and object visibility.
 //
 // -----------------------------------------------------------
 // THANKS TO:
@@ -130,11 +131,12 @@
  * <li>move and delete pages;</li>
  * <li>page compression (requires php-zlib extension);</li>
  * <li>XOBject Templates;</li>
+ * <li>Layers and object visibility;</li>
  * </ul>
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.101
+ * @version 5.9.102
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -146,7 +148,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.101
+ * @version 5.9.102
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -157,7 +159,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.101';
+	private $tcpdf_version = '5.9.102';
 
 	// Protected properties
 
@@ -914,27 +916,6 @@ class TCPDF {
 	protected $currpagegroup = 0;
 
 	/**
-	 * Restrict the rendering of some elements to screen or printout.
-	 * @protected
-	 * @since 3.0.000 (2008-03-27)
-	 */
-	protected $visibility = 'all';
-
-	/**
-	 * Print visibility.
-	 * @protected
-	 * @since 3.0.000 (2008-03-27)
-	 */
-	protected $n_ocg_print;
-
-	/**
-	 * View visibility.
-	 * @protected
-	 * @since 3.0.000 (2008-03-27)
-	 */
-	protected $n_ocg_view;
-
-	/**
 	 * Array of transparency objects and parameters.
 	 * @protected
 	 * @since 3.0.000 (2008-03-27)
@@ -1629,11 +1610,11 @@ class TCPDF {
 	protected $spotcolor = array();
 
 	/**
-	 * Boolean value true when PDF layers are used.
+	 * Array of PDF layers data.
 	 * @protected
-	 * @since 5.9.046 (2011-01-18)
+	 * @since 5.9.102 (2011-07-13)
 	 */
-	protected $pdflayers = false;
+	protected $pdflayers = array();
 
 	/**
 	 * A dictionary of names and corresponding destinations (Dests key on document Catalog).
@@ -1882,7 +1863,7 @@ class TCPDF {
 		$this->FillColor = '0 g';
 		$this->TextColor = '0 g';
 		$this->ColorFlag = false;
-		$this->pdflayers = false;
+		$this->pdflayers = array();
 		// encryption values
 		$this->encrypted = false;
 		$this->last_enc_key = '';
@@ -3704,6 +3685,7 @@ class TCPDF {
 		if ($this->page == 0) {
 			$this->AddPage();
 		}
+		$this->endLayer();
 		// save current graphic settings
 		$gvars = $this->getGraphicVars();
 		$this->setEqualColumns();
@@ -7387,6 +7369,7 @@ class TCPDF {
 					curl_setopt($cs, CURLOPT_BINARYTRANSFER, true);
 					curl_setopt($cs, CURLOPT_FAILONERROR, true);
 					curl_setopt($cs, CURLOPT_RETURNTRANSFER, true);
+					curl_setopt($cs, CURLOPT_FOLLOWLOCATION, true);
 					curl_setopt($cs, CURLOPT_CONNECTTIMEOUT, 5);
 					curl_setopt($cs, CURLOPT_TIMEOUT, 30);
 					$imgdata = curl_exec($cs);
@@ -11002,9 +10985,13 @@ class TCPDF {
 		$out .= ' /XObject <<';
 		$out .= $this->_getxobjectdict();
 		$out .= ' >>';
-		// visibility
-		if ($this->pdflayers) {
-			$out .= ' /Properties <</OC1 '.$this->n_ocg_print.' 0 R /OC2 '.$this->n_ocg_view.' 0 R>>';
+		// layers
+		if (!empty($this->pdflayers)) {
+			$out .= ' /Properties <<';
+			foreach ($this->pdflayers as $layer) {
+				$out .= ' /'.$layer['layer'].' '.$layer['objid'].' 0 R';
+			}
+			$out .= ' >>';
 		}
 		// transparency
 		$out .= ' /ExtGState <<';
@@ -11169,11 +11156,26 @@ class TCPDF {
 		//$out .= ' /SpiderInfo <<>>';
 		//$out .= ' /OutputIntents []';
 		//$out .= ' /PieceInfo <<>>';
-		if ($this->pdflayers) {
-			$p = $this->n_ocg_print.' 0 R';
-			$v = $this->n_ocg_view.' 0 R';
-			$as = '<< /Event /Print /OCGs ['.$p.' '.$v.'] /Category [/Print] >> << /Event /View /OCGs ['.$p.' '.$v.'] /Category [/View] >>';
-			$out .= ' /OCProperties << /OCGs ['.$p.' '.$v.'] /D << /ON ['.$p.'] /OFF ['.$v.'] /AS ['.$as.'] >> >>';
+		if (!empty($this->pdflayers)) {
+			$lyrobjs = '';
+			$lyrobjs_print = '';
+			$lyrobjs_view = '';
+			foreach ($this->pdflayers as $layer) {
+				$lyrobjs .= ' '.$layer['objid'].' 0 R';
+				if ($layer['print']) {
+					$lyrobjs_print .= ' '.$layer['objid'].' 0 R';
+				}
+				if ($layer['view']) {
+					$lyrobjs_view .= ' '.$layer['objid'].' 0 R';
+				}
+			}
+			$out .= ' /OCProperties << /OCGs ['.$lyrobjs.']';
+			$out .= ' /D << /ON ['.$lyrobjs_print.']';
+			$out .= ' /OFF ['.$lyrobjs_view.']';
+			$out .= ' /AS [';
+			$out .= '<< /Event /Print /OCGs ['.$lyrobjs.'] /Category [/Print] >> << /Event /View /OCGs ['.$lyrobjs.'] /Category [/View] >>';
+			$out .= ' ]';
+			$out .= ' >> >>';
 		}
 		// AcroForm
 		if (!empty($this->form_obj_id) OR ($this->sign AND isset($this->signature_data['cert_type']))) {
@@ -16438,16 +16440,57 @@ class TCPDF {
 	}
 
 	/**
-	 * Put visibility settings.
+	 * Put pdf layers.
 	 * @protected
 	 * @since 3.0.000 (2008-03-27)
 	 */
 	protected function _putocg() {
-		if ($this->pdflayers) {
-			$this->n_ocg_print = $this->_newobj();
-			$this->_out('<< /Type /OCG /Name '.$this->_textstring('print', $this->n_ocg_print).' /Usage << /Print <</PrintState /ON>> /View <</ViewState /OFF>> >> >>'."\n".'endobj');
-			$this->n_ocg_view = $this->_newobj();
-			$this->_out('<< /Type /OCG /Name '.$this->_textstring('view', $this->n_ocg_view).' /Usage << /Print <</PrintState /OFF>> /View <</ViewState /ON>> >> >>'."\n".'endobj');
+		if (empty($this->pdflayers)) {
+			return;
+		}
+		foreach ($this->pdflayers as $key => $layer) {
+			 $this->pdflayers[$key]['objid'] = $this->_newobj();
+			 $out = '<< /Type /OCG';
+			 $out .= ' /Name '.$this->_textstring($layer['name'], $this->pdflayers[$key]['objid']);
+			 $out .= ' /Usage <<';
+			 $out .= ' /Print <</PrintState /'.($layer['print']?'ON':'OFF').'>>';
+			 $out .= ' /View <</ViewState /'.($layer['view']?'ON':'OFF').'>>';
+			 $out .= ' >> >>';
+			 $out .= "\n".'endobj';
+			 $this->_out($out);
+		}
+	}
+
+	/**
+	 * Start a new pdf layer.
+	 * @param $name (string) Layer name (only a-z letters and numbers). Leave empty for automatic name.
+	 * @param $print (boolean) Set to true to print this layer.
+	 * @param $view (boolean) Set to true to view this layer.
+	 * @public
+	 * @since 5.9.102 (2011-07-13)
+	 */
+	public function startLayer($name='', $print=true, $view=true) {
+		$layer = sprintf('LYR%03d', (count($this->pdflayers) + 1));
+		if (empty($name)) {
+			$name = $layer;
+		} else {
+			$name = preg_replace('/[^a-zA-Z0-9_]/', '', $name);
+		}
+		$this->pdflayers[] = array('layer' => $layer, 'name' => $name, 'print' => $print, 'view' => $view);
+		$this->openMarkedContent = true;
+		$this->_out('/OC /'.$layer.' BDC');
+	}
+
+	/**
+	 * End the current PDF layer.
+	 * @public
+	 * @since 5.9.102 (2011-07-13)
+	 */
+	public function endLayer() {
+		if ($this->openMarkedContent) {
+			// close existing open marked-content layer
+			$this->_out('EMC');
+			$this->openMarkedContent = false;
 		}
 	}
 
@@ -16455,27 +16498,20 @@ class TCPDF {
 	 * Set the visibility of the successive elements.
 	 * This can be useful, for instance, to put a background
 	 * image or color that will show on screen but won't print.
-	 * @param $v (string) visibility mode. Legal values are: all, print, screen.
+	 * @param $v (string) visibility mode. Legal values are: all, print, screen or view.
 	 * @public
 	 * @since 3.0.000 (2008-03-27)
 	 */
 	public function setVisibility($v) {
-		if ($this->openMarkedContent) {
-			// close existing open marked-content
-			$this->_out('EMC');
-			$this->openMarkedContent = false;
-		}
+		$this->endLayer();
 		switch($v) {
 			case 'print': {
-				$this->_out('/OC /OC1 BDC');
-				$this->openMarkedContent = true;
-				$this->pdflayers = true;
+				$this->startLayer('Print', true, false);
 				break;
 			}
+			case 'view':
 			case 'screen': {
-				$this->_out('/OC /OC2 BDC');
-				$this->openMarkedContent = true;
-				$this->pdflayers = true;
+				$this->startLayer('View', false, true);
 				break;
 			}
 			case 'all': {
@@ -16487,7 +16523,6 @@ class TCPDF {
 				break;
 			}
 		}
-		$this->visibility = $v;
 	}
 
 	/**
@@ -21566,6 +21601,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			}
 			case 'img': {
 				if (isset($tag['attribute']['src'])) {
+					// check for images without protocol
+					if (preg_match('%^/{2}%', $tag['attribute']['src'])) {
+						$tag['attribute']['src'] = 'http:'.$tag['attribute']['src'];
+					}
 					// replace relative path with real server path
 					if (($tag['attribute']['src'][0] == '/') AND !empty($_SERVER['DOCUMENT_ROOT']) AND ($_SERVER['DOCUMENT_ROOT'] != '/')) {
 						$findroot = strpos($tag['attribute']['src'], $_SERVER['DOCUMENT_ROOT']);
@@ -21577,7 +21616,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 							}
 						}
 					}
-					$tag['attribute']['src'] = urldecode($tag['attribute']['src']);
+					$tag['attribute']['src'] = htmlspecialchars_decode(urldecode($tag['attribute']['src']));
 					$type = $this->getImageFileType($tag['attribute']['src']);
 					$testscrtype = @parse_url($tag['attribute']['src']);
 					if (!isset($testscrtype['query']) OR empty($testscrtype['query'])) {

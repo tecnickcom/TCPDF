@@ -8,8 +8,8 @@ http://sourceforge.net/donate/index.php?group_id=128076
 ------------------------------------------------------------
 
 Name: TCPDF
-Version: 5.9.101
-Release date: 2011-07-07
+Version: 5.9.102
+Release date: 2011-07-13
 Author:	Nicola Asuni
 
 Copyright (c) 2002-2011:
@@ -53,6 +53,7 @@ Main Features:
     * move and delete pages;
     * page compression (requires php-zlib extension);
     * XOBject Templates;
+	* Layers and object visibility.
 
 Installation (full instructions on http:  www.tcpdf.org):
 	1. copy the folder on your Web server
