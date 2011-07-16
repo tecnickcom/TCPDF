@@ -1,3 +1,7 @@
+5.9.103 (2011-07-16)
+	- Alignment of XHTML lines was improved.
+	- Spell of the "length" word was fixed.
+
 5.9.102 (2011-07-13)
 	- Methods startLayer() and endLayer() were added to support arbitrary PDF layers.
 	- Some improvements/fixes for images were added (thanks to Brendan Abbott).

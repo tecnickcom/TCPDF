@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.102
+// Version     : 5.9.103
 // Begin       : 2002-08-03
-// Last Update : 2011-07-13
+// Last Update : 2011-07-16
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -136,7 +136,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.102
+ * @version 5.9.103
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -148,7 +148,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.102
+ * @version 5.9.103
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -159,7 +159,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.102';
+	private $tcpdf_version = '5.9.103';
 
 	// Protected properties
 
@@ -6912,7 +6912,7 @@ class TCPDF {
 						} else {
 							$endspace = 0;
 						}
-						// check the lenght of the next string
+						// check the length of the next string
 						$strrest = $this->UniArrSubString($uchars, ($sep + $endspace));
 						$nextstr = preg_split('/'.$this->re_space['p'].'/'.$this->re_space['m'], $this->stringTrim($strrest));
 						if (isset($nextstr[0]) AND ($this->GetStringWidth($nextstr[0]) > $pw)) {
@@ -7874,7 +7874,7 @@ class TCPDF {
 		$icc = array();
 		$offset = 0;
 		while (($pos = strpos($data, "ICC_PROFILE\0", $offset)) !== false) {
-			// get ICC sequence lenght
+			// get ICC sequence length
 			$length = ($this->_getUSHORT($data, ($pos - 2)) - 16);
 			// marker sequence number
 			$msn = max(1, ord($data{($pos + 12)}));
@@ -8286,14 +8286,14 @@ class TCPDF {
 	/**
 	 * Ouput input data and compress it if possible.
 	 * @param $data (string) Data to output.
-	 * @param $lenght (int) Data lenght in bytes.
+	 * @param $length (int) Data length in bytes.
 	 * @protected
 	 * @since 5.9.086
 	 */
-	protected function sendOutputData($data, $lenght) {
+	protected function sendOutputData($data, $length) {
 		if (!isset($_SERVER['HTTP_ACCEPT_ENCODING']) OR empty($_SERVER['HTTP_ACCEPT_ENCODING'])) {
 			// the content length may vary if the server is using compression
-			header('Content-Length: '.$lenght);
+			header('Content-Length: '.$length);
 		}
 		echo $data;
 	}
@@ -10038,7 +10038,7 @@ class TCPDF {
 	/**
 	 * Returs the checksum of a TTF table.
 	 * @param $table (string) table to check
-	 * @param $length (int) lenght of table in bytes
+	 * @param $length (int) length of table in bytes
 	 * @return int checksum
 	 * @author Nicola Asuni
 	 * @protected
@@ -10213,7 +10213,7 @@ class TCPDF {
 					}
 					// rebuild a font subset
 					$font = $this->_getTrueTypeFontSubset($font, $subsetchars);
-					// calculate new font lenght
+					// calculate new font length
 					$info['length1'] = strlen($font);
 					if ($compressed) {
 						// recompress font
@@ -11535,7 +11535,7 @@ class TCPDF {
 	 * Line through for rectangular text area.
 	 * @param $x (int) X coordinate
 	 * @param $y (int) Y coordinate
-	 * @param $w (int) line lenght (width)
+	 * @param $w (int) line length (width)
 	 * @protected
 	 * @since 4.9.008 (2009-09-29)
 	 */
@@ -12724,8 +12724,8 @@ class TCPDF {
 				if (!$f) {
 					$this->Error('Unable to create temporary key file: '.$tempkeyfile);
 				}
-				$envelope_lenght = strlen($envelope);
-				fwrite($f, $envelope, $envelope_lenght);
+				$envelope_length = strlen($envelope);
+				fwrite($f, $envelope, $envelope_length);
 				fclose($f);
 				$tempencfile = tempnam(K_PATH_CACHE, 'tmpenc_');
 				if (!openssl_pkcs7_encrypt($tempkeyfile, $tempencfile, $pubkey['c'], array(), PKCS7_DETACHED | PKCS7_BINARY)) {
@@ -12733,7 +12733,7 @@ class TCPDF {
 				}
 				unlink($tempkeyfile);
 				// read encryption signature
-				$signature = file_get_contents($tempencfile, false, null, $envelope_lenght);
+				$signature = file_get_contents($tempencfile, false, null, $envelope_length);
 				unlink($tempencfile);
 				// extract signature
 				$signature = substr($signature, strpos($signature, 'Content-Disposition'));
@@ -12907,13 +12907,13 @@ class TCPDF {
 	 */
 	protected function convertHexStringToString($bs) {
 		$string = ''; // string to be returned
-		$bslenght = strlen($bs);
-		if (($bslenght % 2) != 0) {
+		$bslength = strlen($bs);
+		if (($bslength % 2) != 0) {
 			// padding
 			$bs .= '0';
-			++$bslenght;
+			++$bslength;
 		}
-		for ($i = 0; $i < $bslenght; $i += 2) {
+		for ($i = 0; $i < $bslength; $i += 2) {
 			$string .= chr(hexdec($bs{$i}.$bs{($i + 1)}));
 		}
 		return $string;
@@ -16474,7 +16474,7 @@ class TCPDF {
 		if (empty($name)) {
 			$name = $layer;
 		} else {
-			$name = preg_replace('/[^a-zA-Z0-9_]/', '', $name);
+			$name = preg_replace('/[^a-zA-Z0-9_\-]/', '', $name);
 		}
 		$this->pdflayers[] = array('layer' => $layer, 'name' => $name, 'print' => $print, 'view' => $view);
 		$this->openMarkedContent = true;
@@ -20252,7 +20252,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 							$tstart = substr($pagebuff, 0, $this->cntmrk[$this->page]);
 							$tend = substr($pagebuff, $this->cntmrk[$this->page]);
 							// add line start to current page
-							$yshift = $minstartliney - $this->y;
+							$yshift = ($minstartliney - $this->y);
 							if ($fontaligned) {
 								$yshift += ($curfontsize / $this->k);
 							}
@@ -20318,7 +20318,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 								$tstart = substr($pagebuff, 0, $this->cntmrk[$this->page]);
 								$tend = substr($pagebuff, $this->cntmrk[$this->page]);
 								// add line start to current page
-								$yshift = $minstartliney - $this->y;
+								$yshift = ($minstartliney - $this->y);
 								$try = sprintf('1 0 0 1 0 %.3F cm', ($yshift * $this->k));
 								$this->setPageBuffer($this->page, $tstart."\nq\n".$try."\n".$linebeg."\nQ\n".$tend);
 								// shift the annotations and links
@@ -20350,8 +20350,15 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 									$this->y += (((($curfontsize * $this->cell_height_ratio) - ($fontsize * $dom[$key]['line-height'])) / $this->k) + $curfontascent - $fontascent - $curfontdescent + $fontdescent) / 2;
 								}
 								if (($dom[$key]['value'] != 'sup') AND ($dom[$key]['value'] != 'sub')) {
-									$minstartliney = min($this->y, $minstartliney);
-									$maxbottomliney = max(($this->y + (($fontsize * $this->cell_height_ratio) / $this->k)), $maxbottomliney);
+									$current_line_align_data = array($key, $minstartliney, $maxbottomliney);
+									if (isset($line_align_data) AND (($line_align_data[0] == ($key - 1)) OR (($line_align_data[0] == ($key - 2)) AND (isset($dom[($key - 1)])) AND (preg_match('/^([\s]+)$/', $dom[($key - 1)]['value']) > 0)))) {
+										$minstartliney = min($this->y, $line_align_data[1]);
+										$maxbottomliney = max(($this->y + (($fontsize * $this->cell_height_ratio) / $this->k)), $line_align_data[2]);
+									} else {
+										$minstartliney = min($this->y, $minstartliney);
+										$maxbottomliney = max(($this->y + (($fontsize * $this->cell_height_ratio) / $this->k)), $maxbottomliney);
+									}
+									$line_align_data = $current_line_align_data;
 								}
 							}
 							$this->cell_height_ratio = $dom[$key]['line-height'];
@@ -20408,7 +20415,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				$fontaligned = false;
 				// we are at the beginning of a new line
 				if (isset($startlinex)) {
-					$yshift = $minstartliney - $startliney;
+					$yshift = ($minstartliney - $startliney);
 					if (($yshift > 0) OR ($this->page > $startlinepage)) {
 						$yshift = 0;
 					}
@@ -21312,7 +21319,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		} // end for each $key
 		// align the last line
 		if (isset($startlinex)) {
-			$yshift = $minstartliney - $startliney;
+			$yshift = ($minstartliney - $startliney);
 			if (($yshift > 0) OR ($this->page > $startlinepage)) {
 				$yshift = 0;
 			}
@@ -21447,6 +21454,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					}
 				}
 				$this->y -= $yshift;
+				$yshift = 0;
 			}
 		}
 		// restore previous values
@@ -24762,8 +24770,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @param $dictionary (array) Array of words to be returned without applying the hyphenation algoritm.
 	 * @param $leftmin (int) Minimum number of character to leave on the left of the word without applying the hyphens.
 	 * @param $rightmin (int) Minimum number of character to leave on the right of the word without applying the hyphens.
-	 * @param $charmin (int) Minimum word lenght to apply the hyphenation algoritm.
-	 * @param $charmax (int) Maximum lenght of broken piece of word.
+	 * @param $charmin (int) Minimum word length to apply the hyphenation algoritm.
+	 * @param $charmax (int) Maximum length of broken piece of word.
 	 * @return array text with soft hyphens
 	 * @author Nicola Asuni
 	 * @since 4.9.012 (2010-04-12)
@@ -24871,8 +24879,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @param $dictionary (array) Array of words to be returned without applying the hyphenation algoritm.
 	 * @param $leftmin (int) Minimum number of character to leave on the left of the word without applying the hyphens.
 	 * @param $rightmin (int) Minimum number of character to leave on the right of the word without applying the hyphens.
-	 * @param $charmin (int) Minimum word lenght to apply the hyphenation algoritm.
-	 * @param $charmax (int) Maximum lenght of broken piece of word.
+	 * @param $charmin (int) Minimum word length to apply the hyphenation algoritm.
+	 * @param $charmax (int) Maximum length of broken piece of word.
 	 * @return array text with soft hyphens
 	 * @author Nicola Asuni
 	 * @since 4.9.012 (2010-04-12)
@@ -26033,7 +26041,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 */
 	protected function setSVGStyles($svgstyle, $prevsvgstyle, $x=0, $y=0, $w=1, $h=1, $clip_function='', $clip_params=array()) {
 		$objstyle = '';
-		$minlen = (0.01 / $this->k); // minimum acceptable lenght (3 point)
+		$minlen = (0.01 / $this->k); // minimum acceptable length (3 point)
 		if (!isset($svgstyle['opacity'])) {
 			return $objstyle;
 		}
@@ -26332,7 +26340,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$ymin = 2147483647;
 		$ymax = 0;
 		$relcoord = false;
-		$minlen = (0.01 / $this->k); // minimum acceptable lenght (3 point)
+		$minlen = (0.01 / $this->k); // minimum acceptable length (3 point)
 		$firstcmd = true; // used to print first point
 		// draw curve pieces
 		foreach ($paths as $key => $val) {
