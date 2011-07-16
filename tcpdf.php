@@ -30,8 +30,8 @@
 // See LICENSE.TXT file for more information.
 // -------------------------------------------------------------------
 //
-// Description : This is a PHP class for generating PDF documents without
-//               requiring external extensions.
+// Description :
+//   This is a PHP class for generating PDF documents without requiring external extensions.
 //
 // NOTE:
 //   This class was originally derived in 2002 from the Public
