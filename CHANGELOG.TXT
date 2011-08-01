@@ -1,3 +1,6 @@
+5.9.104 (2011-08-01)
+	- Bug item #3383698 "imagemagick, resize and dpi" was fixed.
+
 5.9.103 (2011-07-16)
 	- Alignment of XHTML lines was improved.
 	- Spell of the "length" word was fixed.
