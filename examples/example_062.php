@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_062.php
 // Begin       : 2010-08-25
-// Last Update : 2010-08-25
+// Last Update : 2011-08-04
 //
 // Description : Example 062 for TCPDF class
 //               XObject Template
@@ -75,18 +75,18 @@ $pdf->AddPage();
 $pdf->Write(0, 'XObject Templates', '', 0, 'C', 1, 0, false, false, 0);
 
 /*
- * An XObject Template is a PDF block that is a self-contained 
- * description of any sequence of graphics objects (including path 
+ * An XObject Template is a PDF block that is a self-contained
+ * description of any sequence of graphics objects (including path
  * objects, text objects, and sampled images).
- * An XObject Template may be painted multiple times, either on 
+ * An XObject Template may be painted multiple times, either on
  * several pages or at several locations on the same page and produces
- * the same results each time, subject only to the graphics state at 
+ * the same results each time, subject only to the graphics state at
  * the time it is invoked.
  */
 
-// start a new XObject Template
-$template_id = $pdf->startTemplate(60, 60);
 
+// start a new XObject Template and set transparency group option
+$template_id = $pdf->startTemplate(60, 60, true);
 
 // create Template content
 // ...................................................................
@@ -112,18 +112,22 @@ $pdf->SetTextColor(255, 0, 0);
 $pdf->Cell(60, 60, 'Template', 0, 0, 'C', false, '', 0, false, 'T', 'M');
 // ...................................................................
 
-
 // end the current Template
 $pdf->endTemplate();
 
-// print the selected Template various times
 
+// print the selected Template various times using various transparencies
+
+$pdf->SetAlpha(0.4);
 $pdf->printTemplate($template_id, 15, 50, 20, 20, '', '', false);
 
+$pdf->SetAlpha(0.6);
 $pdf->printTemplate($template_id, 27, 62, 40, 40, '', '', false);
 
+$pdf->SetAlpha(0.8);
 $pdf->printTemplate($template_id, 55, 85, 60, 60, '', '', false);
 
+$pdf->SetAlpha(1);
 $pdf->printTemplate($template_id, 95, 125, 80, 80, '', '', false);
 
 // ---------------------------------------------------------
@@ -132,5 +136,5 @@ $pdf->printTemplate($template_id, 95, 125, 80, 80, '', '', false);
 $pdf->Output('example_062.pdf', 'I');
 
 //============================================================+
-// END OF FILE                                                
+// END OF FILE
 //============================================================+

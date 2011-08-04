@@ -1,3 +1,6 @@
+5.9.106 (2011-08-04)
+	- This version includes transparency groups: check the new parameter on printTemplate() method and example 62.
+
 5.9.105 (2011-08-04)
 	- Bug item #3386153 "Check Box not ticked when set to true" was fixed.
 
