@@ -15877,7 +15877,7 @@ class TCPDF {
 		$opt['t'] = $name;
 		$opt['opt'] = array($onvalue);
 		if ($checked) {
-			$opt['v'] = array('/0');
+			$opt['v'] = array('/Yes');
 			$opt['as'] = 'Yes';
 		} else {
 			$opt['v'] = array('/Off');

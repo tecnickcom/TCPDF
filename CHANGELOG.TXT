@@ -1,3 +1,6 @@
+5.9.105 (2011-08-04)
+	- Bug item #3386153 "Check Box not ticked when set to true" was fixed.
+
 5.9.104 (2011-08-01)
 	- Bug item #3383698 "imagemagick, resize and dpi" was fixed.
 
