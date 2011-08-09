@@ -1,3 +1,6 @@
+5.9.108 (2011-08-09)
+	- A bug on PHP4 version was fixed.
+
 5.9.107 (2011-08-08)
 	- THis version includes a minor bugfix.
 
