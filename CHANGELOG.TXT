@@ -1,3 +1,6 @@
+5.9.110 (2011-08-17)
+	- Barcode CODE 39 was fixed.
+
 5.9.109 (2011-08-12)
 	- Method getNumLines() was fixed.
 	- A bug related to page break in multi-column mode was fixed.

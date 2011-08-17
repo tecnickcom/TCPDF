@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : barcodes.php
-// Version     : 1.0.017
+// Version     : 1.0.018
 // Begin       : 2008-06-09
-// Last Update : 2011-06-01
+// Last Update : 2011-08-17
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -37,14 +37,14 @@
  * PHP class to creates array representations for common 1D barcodes to be used with TCPDF.
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 1.0.017
+ * @version 1.0.018
  */
 
 /**
  * @class TCPDFBarcode
  * PHP class to creates array representations for common 1D barcodes to be used with TCPDF (http://www.tcpdf.org).<br>
  * @package com.tecnick.tcpdf
- * @version 1.0.017
+ * @version 1.0.018
  * @author Nicola Asuni
  */
 class TCPDFBarcode {
@@ -284,50 +284,50 @@ class TCPDFBarcode {
 	 * @protected
 	 */
 	protected function barcode_code39($code, $extended=false, $checksum=false) {
-		$chr['0'] = '111221211';
-		$chr['1'] = '211211112';
-		$chr['2'] = '112211112';
-		$chr['3'] = '212211111';
-		$chr['4'] = '111221112';
-		$chr['5'] = '211221111';
-		$chr['6'] = '112221111';
-		$chr['7'] = '111211212';
-		$chr['8'] = '211211211';
-		$chr['9'] = '112211211';
-		$chr['A'] = '211112112';
-		$chr['B'] = '112112112';
-		$chr['C'] = '212112111';
-		$chr['D'] = '111122112';
-		$chr['E'] = '211122111';
-		$chr['F'] = '112122111';
-		$chr['G'] = '111112212';
-		$chr['H'] = '211112211';
-		$chr['I'] = '112112211';
-		$chr['J'] = '111122211';
-		$chr['K'] = '211111122';
-		$chr['L'] = '112111122';
-		$chr['M'] = '212111121';
-		$chr['N'] = '111121122';
-		$chr['O'] = '211121121';
-		$chr['P'] = '112121121';
-		$chr['Q'] = '111111222';
-		$chr['R'] = '211111221';
-		$chr['S'] = '112111221';
-		$chr['T'] = '111121221';
-		$chr['U'] = '221111112';
-		$chr['V'] = '122111112';
-		$chr['W'] = '222111111';
-		$chr['X'] = '121121112';
-		$chr['Y'] = '221121111';
-		$chr['Z'] = '122121111';
-		$chr['-'] = '121111212';
-		$chr['.'] = '221111211';
-		$chr[' '] = '122111211';
-		$chr['$'] = '121212111';
-		$chr['/'] = '121211121';
-		$chr['+'] = '121112121';
-		$chr['%'] = '111212121';
-		$chr['*'] = '121121211';
+		$chr['0'] = '111331311';
+		$chr['1'] = '311311113';
+		$chr['2'] = '113311113';
+		$chr['3'] = '313311111';
+		$chr['4'] = '111331113';
+		$chr['5'] = '311331111';
+		$chr['6'] = '113331111';
+		$chr['7'] = '111311313';
+		$chr['8'] = '311311311';
+		$chr['9'] = '113311311';
+		$chr['A'] = '311113113';
+		$chr['B'] = '113113113';
+		$chr['C'] = '313113111';
+		$chr['D'] = '111133113';
+		$chr['E'] = '311133111';
+		$chr['F'] = '113133111';
+		$chr['G'] = '111113313';
+		$chr['H'] = '311113311';
+		$chr['I'] = '113113311';
+		$chr['J'] = '111133311';
+		$chr['K'] = '311111133';
+		$chr['L'] = '113111133';
+		$chr['M'] = '313111131';
+		$chr['N'] = '111131133';
+		$chr['O'] = '311131131';
+		$chr['P'] = '113131131';
+		$chr['Q'] = '111111333';
+		$chr['R'] = '311111331';
+		$chr['S'] = '113111331';
+		$chr['T'] = '111131331';
+		$chr['U'] = '331111113';
+		$chr['V'] = '133111113';
+		$chr['W'] = '333111111';
+		$chr['X'] = '131131113';
+		$chr['Y'] = '331131111';
+		$chr['Z'] = '133131111';
+		$chr['-'] = '131111313';
+		$chr['.'] = '331111311';
+		$chr[' '] = '133111311';
+		$chr['$'] = '131313111';
+		$chr['/'] = '131311131';
+		$chr['+'] = '131113131';
+		$chr['%'] = '111313131';
+		$chr['*'] = '131131311';
 		$code = strtoupper($code);
 		if ($extended) {
 			// extended mode
@@ -362,8 +362,9 @@ class TCPDFBarcode {
 				$bararray['maxw'] += $w;
 				++$k;
 			}
-			$bararray['bcode'][$k] = array('t' => false, 'w' => 1, 'h' => 1, 'p' => 0);
-			$bararray['maxw'] += 1;
+			// intercharacter gap
+			$bararray['bcode'][$k] = array('t' => false, 'w' => 3, 'h' => 1, 'p' => 0);
+			$bararray['maxw'] += 3;
 			++$k;
 		}
 		return $bararray;
