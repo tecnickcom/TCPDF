@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : barcodes.php
-// Version     : 1.0.018
+// Version     : 1.0.019
 // Begin       : 2008-06-09
 // Last Update : 2011-08-17
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
@@ -37,14 +37,14 @@
  * PHP class to creates array representations for common 1D barcodes to be used with TCPDF.
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 1.0.018
+ * @version 1.0.019
  */
 
 /**
  * @class TCPDFBarcode
  * PHP class to creates array representations for common 1D barcodes to be used with TCPDF (http://www.tcpdf.org).<br>
  * @package com.tecnick.tcpdf
- * @version 1.0.018
+ * @version 1.0.019
  * @author Nicola Asuni
  */
 class TCPDFBarcode {
@@ -363,8 +363,8 @@ class TCPDFBarcode {
 				++$k;
 			}
 			// intercharacter gap
-			$bararray['bcode'][$k] = array('t' => false, 'w' => 3, 'h' => 1, 'p' => 0);
-			$bararray['maxw'] += 3;
+			$bararray['bcode'][$k] = array('t' => false, 'w' => 1, 'h' => 1, 'p' => 0);
+			$bararray['maxw'] += 1;
 			++$k;
 		}
 		return $bararray;
