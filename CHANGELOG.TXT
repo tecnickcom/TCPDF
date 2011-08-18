@@ -1,3 +1,7 @@
+5.9.112 (2011-08-18)
+	- A newline character was added after the 'trailer' keyword for compatibility with some parsers.
+	- Support for layers was improved.
+
 5.9.111 (2011-08-17)
 	- Barcode CODE 39 default gap was restored at 1.
 
@@ -12,7 +16,7 @@
 	- A bug on PHP4 version was fixed.
 
 5.9.107 (2011-08-08)
-	- THis version includes a minor bugfix.
+	- This version includes a minor bugfix.
 
 5.9.106 (2011-08-04)
 	- This version includes transparency groups: check the new parameter on startTemplate() method and example 62.
