@@ -1,3 +1,6 @@
+5.9.113 (2011-08-24)
+	- This release include two new experimental files for parsing an existing PDF document (the integration with TCPDF is under development).
+
 5.9.112 (2011-08-18)
 	- A newline character was added after the 'trailer' keyword for compatibility with some parsers.
 	- Support for layers was improved.
