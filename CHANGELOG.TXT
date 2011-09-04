@@ -1,3 +1,6 @@
+5.9.114 (2011-09-04)
+	- A bug related to column position was fixed.
+
 5.9.113 (2011-08-24)
 	- This release include two new experimental files for parsing an existing PDF document (the integration with TCPDF is under development).
 

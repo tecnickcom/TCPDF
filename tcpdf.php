@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.113
+// Version     : 5.9.114
 // Begin       : 2002-08-03
-// Last Update : 2011-08-18
+// Last Update : 2011-09-04
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -136,7 +136,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.113
+ * @version 5.9.114
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -148,7 +148,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.113
+ * @version 5.9.114
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -159,7 +159,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.113';
+	private $tcpdf_version = '5.9.114';
 
 	// Protected properties
 
@@ -24662,7 +24662,11 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			$xshift = $this->colxshift;
 			// set X position of the current column by case
 			$listindent = ($this->listindentlevel * $this->listindent);
-			$colpos = ($col * ($this->columns[$col]['w'] + $this->columns[$col]['s']));
+			// calculate column X position
+			$colpos = 0;
+			for ($i=0; $i < $col; ++$i) {
+				$colpos += ($this->columns[$i]['w'] + $this->columns[$i]['s']);
+			}
 			if ($this->rtl) {
 				$x = $this->w - $this->original_rMargin - $colpos;
 				$this->rMargin = ($this->w - $x + $listindent);
