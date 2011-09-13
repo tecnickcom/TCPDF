@@ -1,3 +1,9 @@
+5.9.115 (2011-09-13)
+	- Datamatrix barcode support was added (a new datamatrix.php file was added) - check example n. 50.
+	- getBarcodeHTML() method was added on TCPDFBarcode and TCPDF2DBarcode classes to return an HTML representation of the barcode.
+	- cURL options on Image() method were improved.
+	- A bug on write2DBarcode() was fixed.
+
 5.9.114 (2011-09-04)
 	- A bug related to column position was fixed.
 

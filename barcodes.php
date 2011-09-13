@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : barcodes.php
-// Version     : 1.0.019
+// Version     : 1.0.020
 // Begin       : 2008-06-09
-// Last Update : 2011-08-17
+// Last Update : 2011-09-13
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -37,14 +37,14 @@
  * PHP class to creates array representations for common 1D barcodes to be used with TCPDF.
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 1.0.019
+ * @version 1.0.020
  */
 
 /**
  * @class TCPDFBarcode
  * PHP class to creates array representations for common 1D barcodes to be used with TCPDF (http://www.tcpdf.org).<br>
  * @package com.tecnick.tcpdf
- * @version 1.0.019
+ * @version 1.0.020
  * @author Nicola Asuni
  */
 class TCPDFBarcode {
@@ -134,6 +134,33 @@ class TCPDFBarcode {
 		$svg .= "\t".'</g>'."\n";
 		$svg .= '</svg>'."\n";
 		return $svg;
+	}
+
+	/**
+	 * Return an HTML representation of barcode.
+	 * @param $w (int) Width of a single bar element in pixels.
+	 * @param $h (int) Height of a single bar element in pixels.
+	 * @param $color (string) Foreground color for bar elements (background is transparent).
+ 	 * @return string HTML code.
+ 	 * @public
+	 */
+	public function getBarcodeHTML($w=2, $h=30, $color='black') {
+		// replace table for special characters
+		$html = '<div style="font-size:0;position:relative;">'."\n";
+		// print bars
+		$x = 0;
+		foreach ($this->barcode_array['bcode'] as $k => $v) {
+			$bw = round(($v['w'] * $w), 3);
+			$bh = round(($v['h'] * $h / $this->barcode_array['maxh']), 3);
+			if ($v['t']) {
+				$y = round(($v['p'] * $h / $this->barcode_array['maxh']), 3);
+				// draw a vertical bar
+				$html .= '<div style="background-color:'.$color.';width:'.$bw.'px;height:'.$bh.'px;position:absolute;left:'.$x.'px;top:'.$y.'px;">&nbsp;</div>'."\n";
+			}
+			$x += $bw;
+		}
+		$html .= '</div>'."\n";
+		return $html;
 	}
 
 	/**

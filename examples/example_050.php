@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_050.php
 // Begin       : 2009-04-09
-// Last Update : 2010-08-08
+// Last Update : 2010-09-13
 //
 // Description : Example 050 for TCPDF class
 //               2D Barcodes
@@ -88,14 +88,13 @@ $style = array(
 );
 
 // write RAW 2D Barcode
-$pdf->SetXY(30, 30);
-$code = '111011101110111,010010001000010,010011001110010,010010000010010,010011101110010';
-$pdf->write2DBarcode($code, 'RAW', '', '', 30, 20, $style, 'N');
 
-$pdf->SetXY(100, 30);
+$code = '111011101110111,010010001000010,010011001110010,010010000010010,010011101110010';
+$pdf->write2DBarcode($code, 'RAW', 80, 30, 30, 20, $style, 'N');
+
 // write RAW2 2D Barcode
 $code = '[111011101110111][010010001000010][010011001110010][010010000010010][010011101110010]';
-$pdf->write2DBarcode($code, 'RAW2', '', '', 30, 20, $style, 'N');
+$pdf->write2DBarcode($code, 'RAW2', 80, 60, 30, 20, $style, 'N');
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -111,43 +110,38 @@ $style = array(
 );
 
 // QRCODE,L : QR-CODE Low error correction
-$pdf->SetXY(30, 60);
-$pdf->write2DBarcode('www.tcpdf.org', 'QRCODE,L', '', '', 50, 50, $style, 'N');
-$pdf->Text(30, 55, 'QRCODE L');
+$pdf->write2DBarcode('www.tcpdf.org', 'QRCODE,L', 20, 30, 50, 50, $style, 'N');
+$pdf->Text(20, 25, 'QRCODE L');
 
 // QRCODE,M : QR-CODE Medium error correction
-$pdf->SetXY(100, 60);
-$pdf->write2DBarcode('www.tcpdf.org', 'QRCODE,M', '', '', 50, 50, $style, 'N');
-$pdf->Text(100, 55, 'QRCODE M');
+$pdf->write2DBarcode('www.tcpdf.org', 'QRCODE,M', 20, 90, 50, 50, $style, 'N');
+$pdf->Text(20, 85, 'QRCODE M');
 
 // QRCODE,Q : QR-CODE Better error correction
-$pdf->SetXY(30, 120);
-$pdf->write2DBarcode('www.tcpdf.org', 'QRCODE,Q', '', '', 50, 50, $style, 'N');
-$pdf->Text(30, 115, 'QRCODE Q');
-
+$pdf->write2DBarcode('www.tcpdf.org', 'QRCODE,Q', 20, 150, 50, 50, $style, 'N');
+$pdf->Text(20, 145, 'QRCODE Q');
 
 // QRCODE,H : QR-CODE Best error correction
-$pdf->SetXY(100, 120);
-$pdf->write2DBarcode('www.tcpdf.org', 'QRCODE,H', '', '', 50, 50, $style, 'N');
-$pdf->Text(100, 115, 'QRCODE H');
+$pdf->write2DBarcode('www.tcpdf.org', 'QRCODE,H', 20, 210, 50, 50, $style, 'N');
+$pdf->Text(20, 205, 'QRCODE H');
 
 // -------------------------------------------------------------------
 // PDF417 (ISO/IEC 15438:2006)
 
 /*
 
- The $type parameter can be simple 'PDF417' or 'PDF417' followed by a 
+ The $type parameter can be simple 'PDF417' or 'PDF417' followed by a
  number of comma-separated options:
- 
+
  'PDF417,a,e,t,s,f,o0,o1,o2,o3,o4,o5,o6'
- 
+
  Possible options are:
- 
+
  	a  = aspect ratio (width/height);
  	e  = error correction level (0-8);
- 	
+
  	Macro Control Block options:
- 	
+
  	t  = total number of macro segments;
  	s  = macro segment index (0-99998);
  	f  = file ID;
@@ -158,17 +152,23 @@ $pdf->Text(100, 115, 'QRCODE H');
  	o4 = Addressee (text);
  	o5 = File Size (numeric);
  	o6 = Checksum (numeric).
- 
+
  Parameters t, s and f are required for a Macro Control Block, all other parametrs are optional.
  To use a comma character ',' on text options, replace it with the character 255: "\xff".
 
 */
 
-$pdf->SetXY(30, 180);
-$pdf->write2DBarcode('www.tcpdf.org', 'PDF417', '', '', 0, 30, $style, 'N');
-$pdf->Text(30, 175, 'PDF417 (ISO/IEC 15438:2006)');
+$pdf->write2DBarcode('www.tcpdf.org', 'PDF417', 80, 90, 0, 30, $style, 'N');
+$pdf->Text(80, 85, 'PDF417 (ISO/IEC 15438:2006)');
 
 // -------------------------------------------------------------------
+// DATAMATRIX (ISO/IEC 16022:2006)
+
+$pdf->write2DBarcode('http://www.tcpdf.org', 'DATAMATRIX', 80, 150, 50, 50, $style, 'N');
+$pdf->Text(80, 145, 'DATAMATRIX (ISO/IEC 16022:2006)');
+
+// -------------------------------------------------------------------
+
 // new style
 $style = array(
 	'border' => 2,
@@ -178,9 +178,8 @@ $style = array(
 );
 
 // QRCODE,H : QR-CODE Best error correction
-$pdf->SetXY(30, 220);
-$pdf->write2DBarcode('www.tcpdf.org', 'QRCODE,H', '', '', 50, 50, $style, 'N');
-$pdf->Text(30, 215, 'QRCODE H - COLORED');
+$pdf->write2DBarcode('www.tcpdf.org', 'QRCODE,H', 80, 210, 50, 50, $style, 'N');
+$pdf->Text(80, 205, 'QRCODE H - COLORED');
 
 // new style
 $style = array(
@@ -191,9 +190,8 @@ $style = array(
 );
 
 // QRCODE,H : QR-CODE Best error correction
-$pdf->SetXY(100, 220);
-$pdf->write2DBarcode('www.tcpdf.org', 'QRCODE,H', '', '', 50, 50, $style, 'N');
-$pdf->Text(100, 215, 'QRCODE H - NO PADDING');
+$pdf->write2DBarcode('www.tcpdf.org', 'QRCODE,H', 140, 210, 50, 50, $style, 'N');
+$pdf->Text(140, 205, 'QRCODE H - NO PADDING');
 
 // ---------------------------------------------------------
 
