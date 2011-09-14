@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : datamatrix.php
-// Version     : 1.0.000
+// Version     : 1.0.001
 // Begin       : 2010-06-07
-// Last Update : 2011-09-13
+// Last Update : 2011-09-14
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -41,7 +41,7 @@
  * @package com.tecnick.tcpdf
  * @abstract Class to create datamatrix barcode arrays for TCPDF class.
  * @author Nicola Asuni
- * @version 1.0.000
+ * @version 1.0.001
  */
 
 // custom definitions
@@ -110,7 +110,7 @@ define('ENC_ASCII_NUM', 7);
  * @copyright 2010-2011 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @link http://www.tcpdf.org
  * @license http://www.gnu.org/copyleft/lesser.html LGPL
- * @version 1.0.000
+ * @version 1.0.001
  */
 class Datamatrix {
 
@@ -234,7 +234,7 @@ class Datamatrix {
 	/**
 	 * This is the class constructor.
 	 * Creates a datamatrix object
-	 * @param $code (string) code to represent using datamatrix
+	 * @param $code (string) Code to represent using Datamatrix.
 	 * (access public)
 	 */
 	public function __construct($code) {
@@ -265,7 +265,7 @@ class Datamatrix {
 				// switch to ASCII encoding
 				$cw[] = 124;
 				++$nd;
-			} elseif ($this->last_enc != ENC_ASCII) {
+			} elseif (($this->last_enc != ENC_ASCII) AND ($this->last_enc != ENC_BASE256)) {
 				// switch to ASCII encoding
 				$cw[] = 254;
 				++$nd;
@@ -713,7 +713,7 @@ class Datamatrix {
 		while ($pos < $data_lenght) {
 			switch ($enc) {
 				case ENC_ASCII: { // STEP B. While in ASCII encodation
-					if (($pos < ($data_lenght - 1)) AND ($this->isCharMode(ord($data{($pos)}), ENC_ASCII_NUM) AND $this->isCharMode(ord($data{($pos + 1)}), ENC_ASCII_NUM))) {
+					if (($data_lenght > 1) AND ($pos < ($data_lenght - 1)) AND ($this->isCharMode(ord($data{($pos)}), ENC_ASCII_NUM) AND $this->isCharMode(ord($data{($pos + 1)}), ENC_ASCII_NUM))) {
 						// 1. If the next data sequence is at least 2 consecutive digits, encode the next two digits as a double digit in ASCII mode.
 						$cw[] = (intval(substr($data, $pos, 2)) + 130);
 						++$cw_num;
@@ -861,6 +861,7 @@ class Datamatrix {
 								// set unlatch character
 								$temp_cw[] = 0x1f;
 								++$field_lenght;
+								$enc = ENC_ASCII;
 								// fill empty characters
 								for ($i = $field_lenght; $i < 4; ++$i) {
 									$temp_cw[] = 0;
@@ -877,13 +878,21 @@ class Datamatrix {
 						}
 						// 1. If the EDIFACT encoding is at the point of starting a new triple symbol character and if the look-ahead test (starting at step J) indicates another mode, switch to that mode.
 						if ($field_lenght == 0) {
-							$newenc = $this->lookAheadTest($data, $pos, $enc);
-							if ($newenc != $enc) {
-								// 1. If the look-ahead test (starting at step J) indicates another mode, switch to that mode.
-								$enc = $newenc;
-								$cw[] = $this->getSwitchEncodingCodeword($enc);
-								++$cw_num;
+							// get remaining number of data symbols
+							$cwr = ($this->getMaxDataCodewords($cw_num + 2) - $cw_num);
+							if ($cwr < 3) {
+								// return to ascii without unlatch
+								$enc = ENC_ASCII;
 								break; // exit from EDIFACT mode
+							} else {
+								$newenc = $this->lookAheadTest($data, $pos, $enc);
+								if ($newenc != $enc) {
+									// 1. If the look-ahead test (starting at step J) indicates another mode, switch to that mode.
+									$enc = $newenc;
+									$cw[] = $this->getSwitchEncodingCodeword($enc);
+									++$cw_num;
+									break; // exit from EDIFACT mode
+								}
 							}
 						}
 					}
