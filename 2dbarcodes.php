@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : 2dbarcodes.php
-// Version     : 1.0.011
+// Version     : 1.0.012
 // Begin       : 2009-04-07
-// Last Update : 2011-09-13
+// Last Update : 2011-09-15
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -37,14 +37,14 @@
  * PHP class to creates array representations for 2D barcodes to be used with TCPDF.
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 1.0.011
+ * @version 1.0.012
  */
 
 /**
  * @class TCPDF2DBarcode
  * PHP class to creates array representations for 2D barcodes to be used with TCPDF (http://www.tcpdf.org).
  * @package com.tecnick.tcpdf
- * @version 1.0.011
+ * @version 1.0.012
  * @author Nicola Asuni
  */
 class TCPDF2DBarcode {
@@ -85,7 +85,7 @@ class TCPDF2DBarcode {
  	 * @public
 	 */
 	public function getBarcodeSVG($w=3, $h=3, $color='black') {
-		// send XML headers
+		// send headers
 		$code = $this->getBarcodeSVGcode($w, $h, $color);
 		header('Content-Type: application/svg+xml');
 		header('Cache-Control: public, must-revalidate, max-age=0'); // HTTP/1.1
@@ -114,11 +114,10 @@ class TCPDF2DBarcode {
 		$svg .= "\t".'<desc>'.strtr($this->barcode_array['code'], $repstr).'</desc>'."\n";
 		$svg .= "\t".'<g id="elements" fill="'.$color.'" stroke="none">'."\n";
 		// print barcode elements
-		$xstart = 0;
 		$y = 0;
 		// for each row
 		for ($r = 0; $r < $this->barcode_array['num_rows']; ++$r) {
-			$x = $xstart;
+			$x = 0;
 			// for each column
 			for ($c = 0; $c < $this->barcode_array['num_cols']; ++$c) {
 				if ($this->barcode_array['bcode'][$r][$c] == 1) {
@@ -146,11 +145,10 @@ class TCPDF2DBarcode {
 		// replace table for special characters
 		$html = '<div style="font-size:0;position:relative;">'."\n";
 		// print barcode elements
-		$xstart = 0;
 		$y = 0;
 		// for each row
 		for ($r = 0; $r < $this->barcode_array['num_rows']; ++$r) {
-			$x = $xstart;
+			$x = 0;
 			// for each column
 			for ($c = 0; $c < $this->barcode_array['num_cols']; ++$c) {
 				if ($this->barcode_array['bcode'][$r][$c] == 1) {
@@ -163,6 +161,70 @@ class TCPDF2DBarcode {
 		}
 		$html .= '</div>'."\n";
 		return $html;
+	}
+
+	/**
+	 * Return a PNG image representation of barcode (requires GD or Imagick library).
+	 * @param $w (int) Width of a single rectangle element in pixels.
+	 * @param $h (int) Height of a single rectangle element in pixels.
+	 * @param $color (array) RGB (0-255) foreground color for bar elements (background is transparent).
+ 	 * @return image or false in case of error.
+ 	 * @public
+	 */
+	public function getBarcodePNG($w=3, $h=3, $color=array(0,0,0)) {
+		// calculate image size
+		$width = ($this->barcode_array['num_cols'] * $w);
+		$height = ($this->barcode_array['num_rows'] * $h);
+		if (function_exists('imagecreate')) {
+			// GD library
+			$imagick = false;
+			$png = imagecreate($width, $height);
+			$bgcol = imagecolorallocate($png, 255, 255, 255);
+			imagecolortransparent($png, $bgcol);
+			$fgcol = imagecolorallocate($png, $color[0], $color[1], $color[2]);
+		} elseif (extension_loaded('imagick')) {
+			$imagick = true;
+			$bgcol = new imagickpixel('rgb(255,255,255');
+			$fgcol = new imagickpixel('rgb('.$color[0].','.$color[1].','.$color[2].')');
+			$png = new Imagick();
+			$png->newImage($width, $height, 'none', 'png');
+			$bar = new imagickdraw();
+			$bar->setfillcolor($fgcol);
+		} else {
+			return false;
+		}
+		// print barcode elements
+		$y = 0;
+		// for each row
+		for ($r = 0; $r < $this->barcode_array['num_rows']; ++$r) {
+			$x = 0;
+			// for each column
+			for ($c = 0; $c < $this->barcode_array['num_cols']; ++$c) {
+				if ($this->barcode_array['bcode'][$r][$c] == 1) {
+					// draw a single barcode cell
+					if ($imagick) {
+						$bar->rectangle($x, $y, ($x + $w), ($y + $h));
+					} else {
+						imagefilledrectangle($png, $x, $y, ($x + $w), ($y + $h), $fgcol);
+					}
+				}
+				$x += $w;
+			}
+			$y += $h;
+		}
+		// send headers
+		header('Content-Type: image/png');
+		header('Cache-Control: public, must-revalidate, max-age=0'); // HTTP/1.1
+		header('Pragma: public');
+		header('Expires: Sat, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+		header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
+		if ($imagick) {
+			$png->drawimage($bar);
+			echo $png;
+		} else {
+			imagepng($png);
+			imagedestroy($png);
+		}
 	}
 
 	/**

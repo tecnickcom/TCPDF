@@ -1,3 +1,6 @@
+5.9.117 (2011-09-17)
+	- TCPDFBarcode and TCPDF2DBarcode were extended to include a method for exporting barcodes as PNG images.
+
 5.9.116 (2011-09-14)
 	- Datamatrix class was improved and documentation was fixed.
 
