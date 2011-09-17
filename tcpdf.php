@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.117
+// Version     : 5.9.118
 // Begin       : 2002-08-03
-// Last Update : 2011-09-15
+// Last Update : 2011-09-17
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -136,7 +136,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.117
+ * @version 5.9.118
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -148,7 +148,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.117
+ * @version 5.9.118
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -159,7 +159,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.117';
+	private $tcpdf_version = '5.9.118';
 
 	// Protected properties
 
@@ -3879,6 +3879,31 @@ class TCPDF {
 	public function startPage($orientation='', $format='', $tocpage=false) {
 		if ($tocpage) {
 			$this->tocpage = true;
+		}
+		// move page numbers of documents to be attached
+		if ($this->tocpage) {
+			// move reference to unexistent pages (used for page attachments)
+			// adjust outlines
+			$tmpoutlines = $this->outlines;
+			foreach ($tmpoutlines as $key => $outline) {
+				if ($outline['p'] > $this->numpages) {
+					$this->outlines[$key]['p'] = ($outline['p'] + 1);
+				}
+			}
+			// adjust dests
+			$tmpdests = $this->dests;
+			foreach ($tmpdests as $key => $dest) {
+				if ($dest['p'] > $this->numpages) {
+					$this->dests[$key]['p'] = ($dest['p'] + 1);
+				}
+			}
+			// adjust links
+			$tmplinks = $this->links;
+			foreach ($tmplinks as $key => $link) {
+				if ($link[0] > $this->numpages) {
+					$this->links[$key][0] = ($link[0] + 1);
+				}
+			}
 		}
 		if ($this->numpages > $this->page) {
 			// this page has been already added
@@ -9155,7 +9180,9 @@ class TCPDF {
 							} else {
 								// internal link
 								$l = $this->links[$pl['txt']];
-								$annots .= sprintf(' /Dest [%u 0 R /XYZ 0 %.2F null]', $this->page_obj_id[($l[0])], ($this->pagedim[$l[0]]['h'] - ($l[1] * $this->k)));
+								if (isset($this->page_obj_id[($l[0])])) {
+									$annots .= sprintf(' /Dest [%u 0 R /XYZ 0 %.2F null]', $this->page_obj_id[($l[0])], ($this->pagedim[$l[0]]['h'] - ($l[1] * $this->k)));
+								}
 							}
 							$hmodes = array('N', 'I', 'O', 'P');
 							if (isset($pl['opt']['h']) AND in_array($pl['opt']['h'], $hmodes)) {
@@ -14974,56 +15001,56 @@ class TCPDF {
 		//Outline items
 		$n = $this->n + 1;
 		$nltags = '/<br[\s]?\/>|<\/(blockquote|dd|dl|div|dt|h1|h2|h3|h4|h5|h6|hr|li|ol|p|pre|ul|tcpdf|table|tr|td)>/si';
-		foreach ($this->outlines as $i => $o) {
-			if (isset($this->page_obj_id[($o['p'])])) {
-				$oid = $this->_newobj();
-				// covert HTML title to string
-				$title = preg_replace($nltags, "\n", $o['t']);
-				$title = preg_replace("/[\r]+/si", '', $title);
-				$title = preg_replace("/[\n]+/si", "\n", $title);
-				$title = strip_tags($title);
-				$title = $this->stringTrim($title);
-				$out = '<</Title '.$this->_textstring($title, $oid);
-				$out .= ' /Parent '.($n + $o['parent']).' 0 R';
-				if (isset($o['prev'])) {
-					$out .= ' /Prev '.($n + $o['prev']).' 0 R';
-				}
-				if (isset($o['next'])) {
-					$out .= ' /Next '.($n + $o['next']).' 0 R';
-				}
-				if (isset($o['first'])) {
-					$out .= ' /First '.($n + $o['first']).' 0 R';
-				}
-				if (isset($o['last'])) {
-					$out .= ' /Last '.($n + $o['last']).' 0 R';
-				}
-				$out .= ' '.sprintf('/Dest [%u 0 R /XYZ 0 %.2F null]', $this->page_obj_id[($o['p'])], ($this->pagedim[$o['p']]['h'] - ($o['y'] * $this->k)));
-				// set font style
-				$style = 0;
-				if (!empty($o['s'])) {
-					// bold
-					if (strpos($o['s'], 'B') !== false) {
-						$style |= 2;
-					}
-					// oblique
-					if (strpos($o['s'], 'I') !== false) {
-						$style |= 1;
-					}
-				}
-				$out .= sprintf(' /F %d', $style);
-				// set bookmark color
-				if (isset($o['c']) AND is_array($o['c']) AND (count($o['c']) == 3)) {
-					$color = array_values($o['c']);
-					$out .= sprintf(' /C [%.3F %.3F %.3F]', ($color[0] / 255), ($color[1] / 255), ($color[2] / 255));
-				} else {
-					// black
-					$out .= ' /C [0.0 0.0 0.0]';
-				}
-				$out .= ' /Count 0'; // normally closed item
-				$out .= ' >>';
-				$out .= "\n".'endobj';
-				$this->_out($out);
+		foreach ($this->outlines as $i => $o) {	
+			$oid = $this->_newobj();
+			// covert HTML title to string
+			$title = preg_replace($nltags, "\n", $o['t']);
+			$title = preg_replace("/[\r]+/si", '', $title);
+			$title = preg_replace("/[\n]+/si", "\n", $title);
+			$title = strip_tags($title);
+			$title = $this->stringTrim($title);
+			$out = '<</Title '.$this->_textstring($title, $oid);
+			$out .= ' /Parent '.($n + $o['parent']).' 0 R';
+			if (isset($o['prev'])) {
+				$out .= ' /Prev '.($n + $o['prev']).' 0 R';
 			}
+			if (isset($o['next'])) {
+				$out .= ' /Next '.($n + $o['next']).' 0 R';
+			}
+			if (isset($o['first'])) {
+				$out .= ' /First '.($n + $o['first']).' 0 R';
+			}
+			if (isset($o['last'])) {
+				$out .= ' /Last '.($n + $o['last']).' 0 R';
+			}
+			if (isset($this->page_obj_id[($o['p'])])) {
+				$out .= ' '.sprintf('/Dest [%u 0 R /XYZ 0 %.2F null]', $this->page_obj_id[($o['p'])], ($this->pagedim[$o['p']]['h'] - ($o['y'] * $this->k)));
+			}
+			// set font style
+			$style = 0;
+			if (!empty($o['s'])) {
+				// bold
+				if (strpos($o['s'], 'B') !== false) {
+					$style |= 2;
+				}
+				// oblique
+				if (strpos($o['s'], 'I') !== false) {
+					$style |= 1;
+				}
+			}
+			$out .= sprintf(' /F %d', $style);
+			// set bookmark color
+			if (isset($o['c']) AND is_array($o['c']) AND (count($o['c']) == 3)) {
+				$color = array_values($o['c']);
+				$out .= sprintf(' /C [%.3F %.3F %.3F]', ($color[0] / 255), ($color[1] / 255), ($color[2] / 255));
+			} else {
+				// black
+				$out .= ' /C [0.0 0.0 0.0]';
+			}
+			$out .= ' /Count 0'; // normally closed item
+			$out .= ' >>';
+			$out .= "\n".'endobj';
+			$this->_out($out);
 		}
 		//Outline root
 		$this->OutlineRoot = $this->_newobj();
@@ -23905,7 +23932,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$tmpoutlines = $this->outlines;
 		foreach ($tmpoutlines as $key => $outline) {
 			if (($outline['p'] >= $topage) AND ($outline['p'] < $frompage)) {
-				$this->outlines[$key]['p'] = $outline['p'] + 1;
+				$this->outlines[$key]['p'] = ($outline['p'] + 1);
 			} elseif ($outline['p'] == $frompage) {
 				$this->outlines[$key]['p'] = $topage;
 			}
@@ -23914,7 +23941,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$tmpdests = $this->dests;
 		foreach ($tmpdests as $key => $dest) {
 			if (($dest['p'] >= $topage) AND ($dest['p'] < $frompage)) {
-				$this->dests[$key]['p'] = $dest['p'] + 1;
+				$this->dests[$key]['p'] = ($dest['p'] + 1);
 			} elseif ($dest['p'] == $frompage) {
 				$this->dests[$key]['p'] = $topage;
 			}
@@ -23923,7 +23950,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$tmplinks = $this->links;
 		foreach ($tmplinks as $key => $link) {
 			if (($link[0] >= $topage) AND ($link[0] < $frompage)) {
-				$this->links[$key][0] = $link[0] + 1;
+				$this->links[$key][0] = ($link[0] + 1);
 			} elseif ($link[0] == $frompage) {
 				$this->links[$key][0] = $topage;
 			}
@@ -24185,6 +24212,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 
 	/**
 	 * Output a Table of Content Index (TOC).
+	 * This method must be called after all Bookmarks were set.
 	 * Before calling this method you have to open the page using the addTOCPage() method.
 	 * After calling this method you have to call endTOCPage() to close the TOC page.
 	 * You can override this method to achieve different styles.
@@ -24227,6 +24255,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		}
 		$this->SetFont($numbersfont, $fontstyle, $fontsize);
 		$numwidth = $this->GetStringWidth('00000');
+		$maxpage = 0; //used for pages on attached documents
 		foreach ($this->outlines as $key => $outline) {
 			if ($this->rtl) {
 				$aligntext = 'R';
@@ -24291,6 +24320,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				if ($this->isUnicodeFont()) {
 					$pagenum = '{'.$pagenum.'}';
 				}
+				$maxpage = max($maxpage, $outline['p']);
 			}
 			$fw = ($tw - $this->GetStringWidth($pagenum.$filler));
 			$numfills = floor($fw / $this->GetStringWidth($filler));
@@ -24308,18 +24338,19 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			$this->Cell($tw, 0, $pagenum, 0, 1, $alignnum, 0, $link, 0);
 		}
 		$page_last = $this->getPage();
+		$maxpage = max($maxpage, $page_last);
 		$numpages = $page_last - $page_first + 1;
 		if (!$this->empty_string($page)) {
 			for ($p = $page_first; $p <= $page_last; ++$p) {
 				// get page data
 				$temppage = $this->getPageBuffer($p);
-				for ($n = 1; $n <= $this->numpages; ++$n) {
+				for ($n = 1; $n <= $maxpage; ++$n) {
 					// update page numbers
 					$a = '{#'.$n.'}';
 					// get page number aliases
 					$pnalias = $this->getInternalPageNumberAliases($a);
 					// calculate replacement number
-					if ($n >= $page) {
+					if (($n >= $page) AND ($n <= $this->numpages)) {
 						$np = $n + $numpages;
 					} else {
 						$np = $n;
@@ -24359,6 +24390,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 
 	/**
 	 * Output a Table Of Content Index (TOC) using HTML templates.
+	 * This method must be called after all Bookmarks were set.
 	 * Before calling this method you have to open the page using the addTOCPage() method.
 	 * After calling this method you have to call endTOCPage() to close the TOC page.
 	 * @param $page (int) page number where this TOC should be inserted (leave empty for current page).
@@ -24392,6 +24424,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			}
 		}
 		$this->SetFont($current_font);
+		$maxpage = 0; //used for pages on attached documents
 		foreach ($this->outlines as $key => $outline) {
 			// get HTML template
 			$row = $templates[$outline['l']];
@@ -24403,6 +24436,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				if ($templates['F'.$outline['l']]) {
 					$pagenum = '{'.$pagenum.'}';
 				}
+				$maxpage = max($maxpage, $outline['p']);
 			}
 			// replace templates with current values
 			$row = str_replace('#TOC_DESCRIPTION#', $outline['t'], $row);
@@ -24417,12 +24451,13 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$this->htmlLinkFontStyle = $prev_htmlLinkFontStyle;
 		// move TOC page and replace numbers
 		$page_last = $this->getPage();
+		$maxpage = max($maxpage, $page_last);
 		$numpages = $page_last - $page_first + 1;
 		if (!$this->empty_string($page)) {
 			for ($p = $page_first; $p <= $page_last; ++$p) {
 				// get page data
 				$temppage = $this->getPageBuffer($p);
-				for ($n = 1; $n <= $this->numpages; ++$n) {
+				for ($n = 1; $n <= $maxpage; ++$n) {
 					// update page numbers
 					$a = '{#'.$n.'}';
 					// get page number aliases

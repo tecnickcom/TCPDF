@@ -1,5 +1,8 @@
-5.9.117 (2011-09-17)
-	- TCPDFBarcode and TCPDF2DBarcode were extended to include a method for exporting barcodes as PNG images.
+5.9.118 (2011-09-17)
+	- THis version includes some changes that allows you to add a bookmark for a page that do not exist.
+
+5.9.117 (2011-09-15)
+	- TCPDFBarcode and TCPDF2DBarcode classes were extended to include a method for exporting barcodes as PNG images.
 
 5.9.116 (2011-09-14)
 	- Datamatrix class was improved and documentation was fixed.
