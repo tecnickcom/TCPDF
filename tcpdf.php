@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.118
+// Version     : 5.9.119
 // Begin       : 2002-08-03
-// Last Update : 2011-09-17
+// Last Update : 2011-09-19
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -136,7 +136,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.118
+ * @version 5.9.119
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -148,7 +148,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.118
+ * @version 5.9.119
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -159,7 +159,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.118';
+	private $tcpdf_version = '5.9.119';
 
 	// Protected properties
 
@@ -14955,6 +14955,23 @@ class TCPDF {
 	}
 
 	/**
+	 * Sort bookmarks for page and key.
+	 * @protected
+	 * @since 5.9.119 (2011-09-19)
+	 */
+	protected function sortBookmarks() {
+		// get sorting columns
+		$outline_p = array();
+		$outline_y = array();
+		foreach ($this->outlines as $key => $row) {
+			$outline_p[$key] = $row['p'];
+			$outline_k[$key] = $key;
+		}
+		// sort outlines by page and original position
+		array_multisort($outline_p, SORT_NUMERIC, SORT_ASC, $outline_k, SORT_NUMERIC, SORT_ASC, $this->outlines);
+	}
+
+	/**
 	 * Create a bookmark PDF string.
 	 * @protected
 	 * @author Olivier Plathey, Nicola Asuni
@@ -14965,15 +14982,8 @@ class TCPDF {
 		if ($nb == 0) {
 			return;
 		}
-		// get sorting columns
-		$outline_p = array();
-		$outline_y = array();
-		foreach ($this->outlines as $key => $row) {
-			$outline_p[$key] = $row['p'];
-			$outline_k[$key] = $key;
-		}
-		// sort outlines by page and original position
-		array_multisort($outline_p, SORT_NUMERIC, SORT_ASC, $outline_k, SORT_NUMERIC, SORT_ASC, $this->outlines);
+		// sort bookmarks
+		$this->sortBookmarks();
 		$lru = array();
 		$level = 0;
 		foreach ($this->outlines as $i => $o) {
@@ -15001,7 +15011,7 @@ class TCPDF {
 		//Outline items
 		$n = $this->n + 1;
 		$nltags = '/<br[\s]?\/>|<\/(blockquote|dd|dl|div|dt|h1|h2|h3|h4|h5|h6|hr|li|ol|p|pre|ul|tcpdf|table|tr|td)>/si';
-		foreach ($this->outlines as $i => $o) {	
+		foreach ($this->outlines as $i => $o) {
 			$oid = $this->_newobj();
 			// covert HTML title to string
 			$title = preg_replace($nltags, "\n", $o['t']);
@@ -24257,6 +24267,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$numwidth = $this->GetStringWidth('00000');
 		$maxpage = 0; //used for pages on attached documents
 		foreach ($this->outlines as $key => $outline) {
+			// check for extra pages (used for attachments)
+			if (($this->page > $page_first) AND ($outline['p'] >= $this->numpages)) {
+				$outline['p'] += ($this->page - $page_first);
+			}
 			if ($this->rtl) {
 				$aligntext = 'R';
 				$alignnum = 'L';

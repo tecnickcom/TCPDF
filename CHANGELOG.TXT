@@ -1,5 +1,8 @@
+5.9.119 (2011-09-19)
+	- This version includes a fix for extra page numbering on TOC.
+
 5.9.118 (2011-09-17)
-	- THis version includes some changes that allows you to add a bookmark for a page that do not exist.
+	- This version includes some changes that allows you to add a bookmark for a page that do not exist.
 
 5.9.117 (2011-09-15)
 	- TCPDFBarcode and TCPDF2DBarcode classes were extended to include a method for exporting barcodes as PNG images.
