@@ -44,7 +44,7 @@ echo '<'.'?'.'xml version="1.0" encoding="UTF-8"'.'?'.'>';
 <li>Object Visibility and Layers: [<a href="example_024.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Object Transparency: [<a href="example_025.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Text Rendering Modes and Text Clipping: [<a href="example_026.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
-<li>Barcodes: [<a href="example_027.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
+<li>1D Barcodes: [<a href="example_027.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Multiple page formats: [<a href="example_028.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Set PDF viewer display preferences: [<a href="example_029.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Colour gradients: [<a href="example_030.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
@@ -67,7 +67,7 @@ echo '<'.'?'.'xml version="1.0" encoding="UTF-8"'.'?'.'>';
 <li>Transactions and UNDO: [<a href="example_047.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Table header and rowspan: [<a href="example_048.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>TCPDF methods in HTML: [<a href="example_049.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
-<li>2D Barcode (QR-Code AND PDF417): [<a href="example_050.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
+<li>2D Barcode (QR-Code, Datamatrix ECC200 and PDF417): [<a href="example_050.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Full page background: [<a href="example_051.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Digital Signature Certification: [<a href="example_052.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Javascript functions: [<a href="example_053.php" title="PDF [new window]" target="_blank">PDF</a>]</li>

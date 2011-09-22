@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_027.php
 // Begin       : 2008-03-04
-// Last Update : 2011-05-12
+// Last Update : 2011-09-22
 //
 // Description : Example 027 for TCPDF class
 //               1D Barcodes
@@ -70,10 +70,19 @@ $pdf->setLanguageArray($l);
 $pdf->setBarcode(date('Y-m-d H:i:s'));
 
 // set font
-$pdf->SetFont('helvetica', '', 10);
+$pdf->SetFont('helvetica', '', 11);
 
 // add a page
 $pdf->AddPage();
+
+// print a message
+$txt = "You can also export 1D barcodes in other formats (PNG, SVG, HTML). Check the source code documentation of TCPDFBarcode class for further information.";
+$pdf->MultiCell(70, 50, $txt, 0, 'J', false, 1, 125, 30, true, 0, false, true, 0, 'T', false);
+$pdf->SetY(30);
+
+// -----------------------------------------------------------------------------
+
+$pdf->SetFont('helvetica', '', 10);
 
 // define barcode style
 $style = array(

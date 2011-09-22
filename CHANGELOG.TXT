@@ -1,3 +1,6 @@
+5.9.120 (2011-09-22)
+	- This version includes a fix for _getTrueTypeFontSubset() method.
+
 5.9.119 (2011-09-19)
 	- This version includes a fix for extra page numbering on TOC.
 
@@ -11,7 +14,7 @@
 	- Datamatrix class was improved and documentation was fixed.
 
 5.9.115 (2011-09-13)
-	- Datamatrix barcode support was added (a new datamatrix.php file was added) - check example n. 50.
+	- Datamatrix ECC200 barcode support was added (a new datamatrix.php file was added) - check example n. 50.
 	- getBarcodeHTML() method was added on TCPDFBarcode and TCPDF2DBarcode classes to return an HTML representation of the barcode.
 	- cURL options on Image() method were improved.
 	- A bug on write2DBarcode() was fixed.

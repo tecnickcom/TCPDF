@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_050.php
 // Begin       : 2009-04-09
-// Last Update : 2010-09-13
+// Last Update : 2011-09-22
 //
 // Description : Example 050 for TCPDF class
 //               2D Barcodes
@@ -69,10 +69,17 @@ $pdf->setLanguageArray($l);
 // NOTE: 2D barcode algorithms must be implemented on 2dbarcode.php class file.
 
 // set font
-$pdf->SetFont('helvetica', '', 10);
+$pdf->SetFont('helvetica', '', 11);
 
 // add a page
 $pdf->AddPage();
+
+// print a message
+$txt = "You can also export 2D barcodes in other formats (PNG, SVG, HTML). Check the source code documentation of TCPDF2DBarcode class for further information.";
+$pdf->MultiCell(70, 50, $txt, 0, 'J', false, 1, 125, 30, true, 0, false, true, 0, 'T', false);
+
+
+$pdf->SetFont('helvetica', '', 10);
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
