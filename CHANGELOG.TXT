@@ -1,3 +1,9 @@
+5.9.121 (2011-09-28)
+	- This version includes support for PDF/A-1b format (the class constructor signature was changed - see example n. 65).
+	- Method setSRGBmode() was added to force sRGB_IEC61966-2.1 black scaled ICC color profile for the whole document (file sRGB.icc was added).
+	- 14 new fonts were added to allow embedding core fonts (for PDF/A compliance).
+	- Font utils were fixed.
+
 5.9.120 (2011-09-22)
 	- This version includes a fix for _getTrueTypeFontSubset() method.
 

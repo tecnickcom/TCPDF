@@ -2,11 +2,11 @@
 //============================================================+
 // File name   : makefont.php
 // Begin       : 2004-12-31
-// Last Update : 2010-12-03
-// Version     : 1.2.007
+// Last Update : 2011-09-27
+// Version     : 1.2.008
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 // 	----------------------------------------------------------------------------
-// 	Copyright (C) 2008-2010  Nicola Asuni - Tecnick.com S.r.l.
+// 	Copyright (C) 2008-2011  Nicola Asuni - Tecnick.com S.r.l.
 //
 // This file is part of TCPDF software library.
 //
@@ -41,14 +41,16 @@
 //============================================================+
 
 /**
- * @file
  * Utility to generate font definition files fot TCPDF.
  * @author Nicola Asuni, Olivier Plathey, Steven Wittens
+ * @copyright 2004-2011 Nicola Asuni - Tecnick.com S.r.l (www.tecnick.com) Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
  * @package com.tecnick.tcpdf
+ * @link http://www.tcpdf.org
+ * @license http://www.gnu.org/copyleft/lesser.html LGPL
 */
 
 /**
- * Convert a Font for TCPDF
+ *
  * @param $fontfile (string) path to font file (TTF, OTF or PFB).
  * @param $fmfile (string) font metrics file (UFM or AFM).
  * @param $embedded (boolean) Set to false to not embed the font, true otherwise (default).
@@ -421,23 +423,23 @@ function ReadAFM($file,&$map) {
 	if (!isset($fm['FontName'])) {
 		die('FontName not found');
 	}
-	if (!empty($map)) {
-		if (!isset($widths['.notdef'])) {
-			$widths['.notdef'] = 600;
-		}
-		if (!isset($widths['Delta']) AND isset($widths['increment'])) {
-			$widths['Delta'] = $widths['increment'];
-		}
-		//Order widths according to map
-		for ($i = 0; $i <= 255; $i++) {
-			if (!isset($widths[$map[$i]])) {
-				print "Warning: character ".$map[$i]." is missing\n";
-				$widths[$i] = $widths['.notdef'];
-			} else {
-				$widths[$i] = $widths[$map[$i]];
-			}
+	if (!isset($widths['.notdef'])) {
+		$widths['.notdef'] = 600;
+	}
+	if (!isset($widths['Delta']) AND isset($widths['increment'])) {
+		$widths['Delta'] = $widths['increment'];
+	}
+	//Order widths according to map
+	for ($i = 0; $i <= 255; $i++) {
+		if ((!empty($map)) AND isset($map[$i]) AND isset($widths[$map[$i]])) {
+			$widths[$i] = $widths[$map[$i]];
+		} elseif (isset($widths[$i])) {
+			$widths[$i] = $widths[$i];
+		} else {
+			$widths[$i] = $widths['.notdef'];
 		}
 	}
+	ksort($widths);
 	$fm['Widths'] = $widths;
 	return $fm;
 }

@@ -1,4 +1,5 @@
 TCPDF Fonts
+================================================================================
 
 TCPDF supports TrueTypeUnicode (UTF-8 Unicode), OpenTypeUnicode, TrueType, OpenType, Type1, CID-0 and Core (standard) fonts.
 
@@ -30,14 +31,17 @@ The PDF Core (standard) fonts are:
 
 Setting up a font for usage with TCPDF requires the following steps:
 
-   1. Convert all font filenames to lowercase, remove all spaces and special characters and rename them using the following schema:
+   1. Convert all font filenames to lowercase and rename using the following schema:
+          
           * [basic-font-name-in-lowercase].ttf for regular font
           * [basic-font-name-in-lowercase]b.ttf for bold variation
           * [basic-font-name-in-lowercase]i.ttf for oblique variation
           * [basic-font-name-in-lowercase]bi.ttf for bold oblique variation
 
    2. Generate the font's metrics file.
-          * For Type1 font files this first step is not necessary because the AFM file is usually shipped with the font. In case you have only a metric file in PFM format, use the pfm2afm utility (fonts/utils/pfm2afm) to get the AFM file. If you own a Type1 font in ASCII format (.pfa), you can convert it to binary format with Type 1 utilities.
+          
+          * For Type1 font files this first step is not necessary because the AFM file is usually shipped with the font. In case you have only a metric file in PFM format, use the pfm2afm utility (fonts/utils/pfm2afm) to get the AFM file. If you own a Type1 font in ASCII format (.pfa), you can convert it to binary format (.pfb) with Type 1 utilities.
+          
           * For TrueTypeUnicode or TrueType font files, use the the provided ttf2ufm utility (fonts/utils/ttf2ufm):
 
             $ ttf2ufm -a -F myfont.ttf
@@ -47,6 +51,7 @@ Setting up a font for usage with TCPDF requires the following steps:
             $ ttf2ufm -a -F myfont.otf
 
    3. Run makefont.php script.
+
           * For TrueTypeUnicode:
 
             $ php -q makefont.php myfont.ttf myfont.ufm
@@ -72,8 +77,11 @@ Setting up a font for usage with TCPDF requires the following steps:
       MakeFont(string $fontfile, string $fmfile [, boolean $embedded [, $enc="cp1252" [, $patch=array()]]])
 
           * $fontfile : Path to the .ttf or .pfb file.
+          
           * $fmfile : Path to the .afm file for Type1 and TrueType or .ufm for TrueTypeUnicode.
+          
           * $embedded : Set to false to not embed the font, true otherwise (default).
+          
           * $enc : Name of the encoding table to use. Default value: cp1252. Omit this parameter for TrueType Unicode, OpenType Unicode and symbolic fonts like Symbol or ZapfDingBats. The encoding defines the association between a code (from 0 to 255) and a character. The first 128 are fixed and correspond to ASCII. The encodings are stored in .map files. Those available are:
                 o cp1250 (Central Europe)
                 o cp1251 (Cyrillic)
@@ -96,16 +104,25 @@ Setting up a font for usage with TCPDF requires the following steps:
                 o koi8-r (Russian)
                 o koi8-u (Ukrainian)
             Of course, the font must contain the characters corresponding to the chosen encoding. The encodings which begin with cp are those used by Windows; Linux systems usually use ISO.
+          
           * $patch : Optional modification of the encoding. Empty by default. This parameter gives the possibility to alter the encoding. Sometimes you may want to add some characters. For instance, ISO-8859-1 does not contain the euro symbol. To add it at position 164, pass array(164=>'Euro').
 
    4. Edit and copy resulting files by case:
+   
           * For embedded fonts: copy the resulting .php, .z and .ctg.z (if available) files to the TCPDF fonts directory.
+          
           * For not-embedding the font, edit the .php file and comment the $file entry.
+          
           * For CID-0 fonts (not embeddeed) you have to edit the .php file:
-                o change the font type to: $type='cidfont0';
-                o set the default font width by adding the line: $dw=1000;
-                o remove the $enc, $file and $ctg variables definitions
-                o add one of the following blocks of text at the end of the file (depends by the language you are using - see the arialunicid0.php file for a working example):
+                
+                - change the font type to: $type='cidfont0';
+                
+                - set the default font width by adding the line: $dw=1000;
+                
+                - remove the $enc, $file and $ctg variables definitions
+                
+                - add one of the following blocks of text at the end of the file (depends by the language you are using - see the arialunicid0.php file for a working example):
+                      
                       + // Chinese Simplified
                         $enc='UniCNS-UTF16-H';
                         $cidinfo=array('Registry'=>'Adobe', 'Ordering'=>'CNS1','Supplement'=>0);
@@ -126,5 +143,35 @@ Setting up a font for usage with TCPDF requires the following steps:
                         $cidinfo=array('Registry'=>'Adobe', 'Ordering'=>'Japan1','Supplement'=>5);
                         include(dirname(__FILE__).'/uni2cid_aj16.php');
 
-                o copy the .php file to the TCPDF fonts directory.
+                - copy the .php file to the TCPDF fonts directory.
+   
+   5. Rename php font files variations using the following schema:
+   
+          * [basic-font-name-in-lowercase].php for regular font
+          * [basic-font-name-in-lowercase]b.php for bold variation
+          * [basic-font-name-in-lowercase]i.php for oblique variation
+          * [basic-font-name-in-lowercase]bi.php for bold oblique variation
 
+================================================================================
+
+Procedure to extract Windows Latin (ANSI) characters from Unicode font:
+
+	* Open the font using FontForge (http://fontforge.sourceforge.net/).
+
+	* From the menu select: Encooding > Reencode > Windows Latin ("ANSI").
+
+	* Select first 255 characters
+
+	* Invert selection with: Edit > Select > Invert selection [CTRL+ESC].
+
+	* Remove glyps with: Encoding > Detach & Remove Glyphs...
+
+	* Remove unused slots with: Encoding > Remove Unused Slots
+
+	* Change font name with: Element > Font Info...
+
+	* Export the file with: File > Generate fonts ... > PS Type 1 (Binary).
+
+	* Copy the .pfb and .afm files on TCPDF font utils folder and launch the script makeallpfbafm.php
+
+================================================================================

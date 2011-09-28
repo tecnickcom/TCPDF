@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.120
+// Version     : 5.9.121
 // Begin       : 2002-08-03
-// Last Update : 2011-09-22
+// Last Update : 2011-09-28
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -66,6 +66,7 @@
 //  * page compression (requires php-zlib extension);
 //  * XOBject Templates;
 //  * Layers and object visibility.
+//	* PDF/A-1b support.
 //
 // -----------------------------------------------------------
 // THANKS TO:
@@ -132,11 +133,12 @@
  * <li>page compression (requires php-zlib extension);</li>
  * <li>XOBject Templates;</li>
  * <li>Layers and object visibility;</li>
+ * <li>PDF/A-1b support.</li>
  * </ul>
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.120
+ * @version 5.9.121
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -148,7 +150,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.120
+ * @version 5.9.121
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -159,7 +161,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.120';
+	private $tcpdf_version = '5.9.121';
 
 	// Protected properties
 
@@ -1792,6 +1794,27 @@ class TCPDF {
 		'transfmatrix' => array(1, 0, 0, 1, 0, 0)
 		));
 
+	/**
+	 * If true force sRGB color profile for all document.
+	 * @protected
+	 * @since 5.9.121 (2011-09-28)
+	 */
+	protected $force_srgb = false;
+
+	/**
+	 * If true set the document to PDF/A mode.
+	 * @protected
+	 * @since 5.9.121 (2011-09-27)
+	 */
+	protected $pdfa_mode = false;
+
+	/**
+	 * Document creation date
+	 * @protected
+	 * @since 5.9.121 (2011-09-28)
+	 */
+	protected $doc_date;
+
 	//------------------------------------------------------------
 	// METHODS
 	//------------------------------------------------------------
@@ -1803,12 +1826,13 @@ class TCPDF {
 	 * @param $unit (string) User measure unit. Possible values are:<ul><li>pt: point</li><li>mm: millimeter (default)</li><li>cm: centimeter</li><li>in: inch</li></ul><br />A point equals 1/72 of inch, that is to say about 0.35 mm (an inch being 2.54 cm). This is a very common unit in typography; font sizes are expressed in that unit.
 	 * @param $format (mixed) The format used for pages. It can be either: one of the string values specified at getPageSizeFromFormat() or an array of parameters specified at setPageFormat().
 	 * @param $unicode (boolean) TRUE means that the input text is unicode (default = true)
-	 * @param $diskcache (boolean) if TRUE reduce the RAM memory usage by caching temporary data on filesystem (slower).
-	 * @param $encoding (string) charset encoding; default is UTF-8
+	 * @param $encoding (string) Charset encoding; default is UTF-8.
+	 * @param $diskcache (boolean) If TRUE reduce the RAM memory usage by caching temporary data on filesystem (slower).
+	 * @param $pdfa (boolean) If TRUE set the document to PDF/A mode.
 	 * @public
 	 * @see getPageSizeFromFormat(), setPageFormat()
 	 */
-	public function __construct($orientation='P', $unit='mm', $format='A4', $unicode=true, $encoding='UTF-8', $diskcache=false) {
+	public function __construct($orientation='P', $unit='mm', $format='A4', $unicode=true, $encoding='UTF-8', $diskcache=false, $pdfa=false) {
 		/* Set internal character encoding to ASCII */
 		if (function_exists('mb_internal_encoding') AND mb_internal_encoding()) {
 			$this->internal_encoding = mb_internal_encoding();
@@ -1829,6 +1853,9 @@ class TCPDF {
 		$this->font_obj_ids = array();
 		$this->page_obj_id = array();
 		$this->form_obj_id = array();
+		// set pdf/a mode
+		$this->pdfa_mode = $pdfa;
+		$this->force_srgb = false;
 		// set disk caching
 		$this->diskcache = $diskcache ? true : false;
 		// set language direction
@@ -1907,9 +1934,9 @@ class TCPDF {
 		// full width display mode
 		$this->SetDisplayMode('fullwidth');
 		// compression
-		$this->SetCompression(true);
+		$this->SetCompression();
 		// set default PDF version number
-		$this->PDFVersion = '1.7';
+		$this->setPDFVersion();
 		$this->encoding = $encoding;
 		$this->HREF = array();
 		$this->getFontsList();
@@ -1949,6 +1976,8 @@ class TCPDF {
 		$this->default_form_prop = array('lineWidth'=>1, 'borderStyle'=>'solid', 'fillColor'=>array(255, 255, 255), 'strokeColor'=>array(128, 128, 128));
 		// set file ID for trailer
 		$this->file_id = md5($this->getRandomSeed('TCPDF'.$orientation.$unit.$format.$encoding));
+		// set document date
+		$this->doc_date = substr_replace(date('YmdHisO'), '\'', (0 - 2), 0).'\'';
 		// get default graphic vars
 		$this->default_graphic_vars = $this->getGraphicVars();
 		$this->header_xobj_autoreset = false;
@@ -3470,7 +3499,7 @@ class TCPDF {
 	 * @see Cell(), MultiCell(), AcceptPageBreak()
 	 */
 	public function SetAutoPageBreak($auto, $margin=0) {
-		$this->AutoPageBreak = $auto;
+		$this->AutoPageBreak = $auto ? true : false;
 		$this->bMargin = $margin;
 		$this->PageBreakTrigger = $this->h - $margin;
 	}
@@ -3570,12 +3599,22 @@ class TCPDF {
 	 * @public
 	 * @since 1.4
 	 */
-	public function SetCompression($compress) {
-		if (function_exists('gzcompress')) {
+	public function SetCompression($compress=true) {
+		if ((!$this->pdfa_mode) AND function_exists('gzcompress')) {
 			$this->compress = $compress ? true : false;
 		} else {
 			$this->compress = false;
 		}
+	}
+
+	/**
+	 * Set flag to force sRGB_IEC61966-2.1 black scaled ICC color profile for the whole document.
+	 * @param $mode (boolean) If true force sRGB output intent.
+	 * @public
+	 * @since 5.9.121 (2011-09-28)
+	 */
+	public function setSRGBmode($mode=false) {
+		$this->force_srgb = $mode ? true : false;
 	}
 
 	/**
@@ -4047,7 +4086,7 @@ class TCPDF {
 	 * @public
 	 */
 	public function setPrintHeader($val=true) {
-		$this->print_header = $val;
+		$this->print_header = $val ? true : false;
 	}
 
 	/**
@@ -4056,7 +4095,7 @@ class TCPDF {
 	 * @public
 	 */
 	public function setPrintFooter($val=true) {
-		$this->print_footer = $val;
+		$this->print_footer = $val ? true : false;
 	}
 
 	/**
@@ -4091,7 +4130,7 @@ class TCPDF {
 	 * @public
 	 */
 	public function setHeaderTemplateAutoreset($val=true) {
-		$this->header_xobj_autoreset = $val;
+		$this->header_xobj_autoreset = $val ? true : false;
 	}
 
 	/**
@@ -4856,6 +4895,9 @@ class TCPDF {
 		if ($subset === 'default') {
 			$subset = $this->font_subsetting;
 		}
+		if ($this->pdfa_mode) {
+			$subset = false;
+		}
 		if ($this->empty_string($family)) {
 			if (!$this->empty_string($this->FontFamily)) {
 				$family = $this->FontFamily;
@@ -4879,6 +4921,10 @@ class TCPDF {
 		}
 		if (($family == 'symbol') OR ($family == 'zapfdingbats')) {
 			$style = '';
+		}
+		if ($this->pdfa_mode AND (isset($this->CoreFonts[$family]))) {
+			// all fonts must be embedded
+			$family = 'pdfa'.$family;
 		}
 		$tempstyle = strtoupper($style);
 		$style = '';
@@ -5016,7 +5062,11 @@ class TCPDF {
 			$subset = false;
 		} elseif ($type == 'TrueTypeUnicode') {
 			$enc = 'Identity-H';
-		} elseif ($type != 'cidfont0') {
+		} elseif ($type == 'cidfont0') {
+			if ($this->pdf_mode) {
+				$this->Error('All fonts must be embedded in PDF/A mode!');
+			}
+		} else {
 			$this->Error('Unknow font type: '.$type.'');
 		}
 		// set name if unset
@@ -5343,9 +5393,11 @@ class TCPDF {
 		}
 		++$this->n;
 		$this->PageAnnots[$page][] = array('n' => $this->n, 'x' => $x, 'y' => $y, 'w' => $w, 'h' => $h, 'txt' => $text, 'opt' => $opt, 'numspaces' => $spaces);
-		if ((($opt['Subtype'] == 'FileAttachment') OR ($opt['Subtype'] == 'Sound')) AND (!$this->empty_string($opt['FS'])) AND file_exists($opt['FS']) AND (!isset($this->embeddedfiles[basename($opt['FS'])]))) {
-			++$this->n;
-			$this->embeddedfiles[basename($opt['FS'])] = array('n' => $this->n, 'file' => $opt['FS']);
+		if (!$this->pdfa_mode) {
+			if ((($opt['Subtype'] == 'FileAttachment') OR ($opt['Subtype'] == 'Sound')) AND (!$this->empty_string($opt['FS'])) AND file_exists($opt['FS']) AND (!isset($this->embeddedfiles[basename($opt['FS'])]))) {
+				++$this->n;
+				$this->embeddedfiles[basename($opt['FS'])] = array('n' => $this->n, 'file' => $opt['FS']);
+			}
 		}
 		// Add widgets annotation's icons
 		if (isset($opt['mk']['i']) AND file_exists($opt['mk']['i'])) {
@@ -5366,6 +5418,10 @@ class TCPDF {
 	 * @see Annotation()
 	 */
 	protected function _putEmbeddedFiles() {
+		if ($this->pdfa_mode) {
+			// embedded files are not allowed in PDF/A mode
+			return;
+		}
 		reset($this->embeddedfiles);
 		foreach ($this->embeddedfiles as $filename => $filedata) {
 			$data = file_get_contents($filedata['file']);
@@ -6637,7 +6693,7 @@ class TCPDF {
 	}
 
 	/**
-	 * This method return the estimated needed height for print a simple text string in Multicell() method.
+	 * This method return the estimated height needed for printing a simple text string using the Multicell() method.
 	 * Generally, if you want to know the exact height for a block of content you can use the following alternative technique:
 	 * @pre
 	 *  // store current object
@@ -8929,6 +8985,7 @@ class TCPDF {
 						$annots .= ' /Type /Annot';
 						$annots .= ' /Subtype /Widget';
 						$annots .= ' /Rect [0 0 0 0]';
+						$annots .= ' /F 4'; // default print for PDF/A
 						$annots .= ' /T '.$this->_datastring($pl['txt'], $radio_button_obj_id);
 						$annots .= ' /FT /Btn';
 						$annots .= ' /Ff 49152';
@@ -8972,48 +9029,48 @@ class TCPDF {
 					$annots .= ' /NM '.$this->_datastring(sprintf('%04u-%04u', $n, $key), $annot_obj_id);
 					$annots .= ' /M '.$this->_datestring($annot_obj_id);
 					if (isset($pl['opt']['f'])) {
-						$val = 0;
+						$fval = 0;
 						if (is_array($pl['opt']['f'])) {
 							foreach ($pl['opt']['f'] as $f) {
 								switch (strtolower($f)) {
 									case 'invisible': {
-										$val += 1 << 0;
+										$fval += 1 << 0;
 										break;
 									}
 									case 'hidden': {
-										$val += 1 << 1;
+										$fval += 1 << 1;
 										break;
 									}
 									case 'print': {
-										$val += 1 << 2;
+										$fval += 1 << 2;
 										break;
 									}
 									case 'nozoom': {
-										$val += 1 << 3;
+										$fval += 1 << 3;
 										break;
 									}
 									case 'norotate': {
-										$val += 1 << 4;
+										$fval += 1 << 4;
 										break;
 									}
 									case 'noview': {
-										$val += 1 << 5;
+										$fval += 1 << 5;
 										break;
 									}
 									case 'readonly': {
-										$val += 1 << 6;
+										$fval += 1 << 6;
 										break;
 									}
 									case 'locked': {
-										$val += 1 << 8;
+										$fval += 1 << 8;
 										break;
 									}
 									case 'togglenoview': {
-										$val += 1 << 9;
+										$fval += 1 << 9;
 										break;
 									}
 									case 'lockedcontents': {
-										$val += 1 << 10;
+										$fval += 1 << 10;
 										break;
 									}
 									default: {
@@ -9022,10 +9079,16 @@ class TCPDF {
 								}
 							}
 						} else {
-							$val = intval($pl['opt']['f']);
+							$fval = intval($pl['opt']['f']);
 						}
-						$annots .= ' /F '.intval($val);
+					} else {
+						$fval = 4;
 					}
+					if ($this->pdfa_mode) {
+						// force print flag for PDF/A mode
+						$fval |= 4;
+					}
+					$annots .= ' /F '.intval($fval);
 					if (isset($pl['opt']['as']) AND is_string($pl['opt']['as'])) {
 						$annots .= ' /AS /'.$pl['opt']['as'];
 					}
@@ -9270,6 +9333,10 @@ class TCPDF {
 							break;
 						}
 						case 'fileattachment': {
+							if ($this->pdfa_mode) {
+								// embedded files are not allowed in PDF/A mode
+								break;
+							}
 							if (!isset($pl['opt']['fs'])) {
 								break;
 							}
@@ -10818,7 +10885,7 @@ class TCPDF {
 		foreach ($this->imagekeys as $file) {
 			$info = $this->getImageBuffer($file);
 			// set object for alternate images array
-			if (!empty($info['altimgs'])) {
+			if ((!$this->pdfa_mode) AND isset($info['altimgs']) AND !empty($info['altimgs'])) {
 				$altoid = $this->_newobj();
 				$out = '[';
 				foreach ($info['altimgs'] as $altimage) {
@@ -11042,32 +11109,34 @@ class TCPDF {
 			}
 			$out .= ' >>';
 		}
-		// transparency
-		$out .= ' /ExtGState <<';
-		foreach ($this->extgstates as $k => $extgstate) {
-			if (isset($extgstate['name'])) {
-				$out .= ' /'.$extgstate['name'];
-			} else {
-				$out .= ' /GS'.$k;
-			}
-			$out .= ' '.$extgstate['n'].' 0 R';
-		}
-		$out .= ' >>';
-		// gradient patterns
-		if (isset($this->gradients) AND (count($this->gradients) > 0)) {
-			$out .= ' /Pattern <<';
-			foreach ($this->gradients as $id => $grad) {
-				$out .= ' /p'.$id.' '.$grad['pattern'].' 0 R';
+		if (!$this->pdfa_mode) {
+			// transparency
+			$out .= ' /ExtGState <<';
+			foreach ($this->extgstates as $k => $extgstate) {
+				if (isset($extgstate['name'])) {
+					$out .= ' /'.$extgstate['name'];
+				} else {
+					$out .= ' /GS'.$k;
+				}
+				$out .= ' '.$extgstate['n'].' 0 R';
 			}
 			$out .= ' >>';
-		}
-		// gradient shadings
-		if (isset($this->gradients) AND (count($this->gradients) > 0)) {
-			$out .= ' /Shading <<';
-			foreach ($this->gradients as $id => $grad) {
-				$out .= ' /Sh'.$id.' '.$grad['id'].' 0 R';
+			// gradient patterns
+			if (isset($this->gradients) AND (count($this->gradients) > 0)) {
+				$out .= ' /Pattern <<';
+				foreach ($this->gradients as $id => $grad) {
+					$out .= ' /p'.$id.' '.$grad['pattern'].' 0 R';
+				}
+				$out .= ' >>';
 			}
-			$out .= ' >>';
+			// gradient shadings
+			if (isset($this->gradients) AND (count($this->gradients) > 0)) {
+				$out .= ' /Shading <<';
+				foreach ($this->gradients as $id => $grad) {
+					$out .= ' /Sh'.$id.' '.$grad['id'].' 0 R';
+				}
+				$out .= ' >>';
+			}
 		}
 		// spot colors
 		if (isset($this->spot_colors) AND (count($this->spot_colors) > 0)) {
@@ -11154,11 +11223,168 @@ class TCPDF {
 	}
 
 	/**
+	 * Put XMP data object and return ID.
+	 * @return (int) The object ID.
+	 * @since 5.9.121 (2011-09-28)
+	 * @protected
+	 */
+	protected function _putXMP() {
+		$oid = $this->_newobj();
+		// store current isunicode value
+		$prev_isunicode = $this->isunicode;
+		$this->isunicode = true;
+		$prev_encrypted = $this->encrypted;
+		$this->encrypted = false;
+		// set XMP data
+		$xmp = '<?xpacket begin="'.$this->unichr(0xfeff).'" id="W5M0MpCehiHzreSzNTczkc9d"?>'."\n";
+		$xmp .= '<x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Adobe XMP Core 4.2.1-c043 52.372728, 2009/01/18-15:08:04">'."\n";
+		$xmp .= "\t".'<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">'."\n";
+		$xmp .= "\t\t".'<rdf:Description rdf:about="" xmlns:dc="http://purl.org/dc/elements/1.1/">'."\n";
+		$xmp .= "\t\t\t".'<dc:format>application/pdf</dc:format>'."\n";
+		$xmp .= "\t\t\t".'<dc:title>'."\n";
+		$xmp .= "\t\t\t\t".'<rdf:Alt>'."\n";
+		$xmp .= "\t\t\t\t\t".'<rdf:li xml:lang="x-default">'.$this->_escapeXML($this->title).'</rdf:li>'."\n";
+		$xmp .= "\t\t\t\t".'</rdf:Alt>'."\n";
+		$xmp .= "\t\t\t".'</dc:title>'."\n";
+		$xmp .= "\t\t\t".'<dc:creator>'."\n";
+		$xmp .= "\t\t\t\t".'<rdf:Seq>'."\n";
+		$xmp .= "\t\t\t\t\t".'<rdf:li>'.$this->_escapeXML($this->author).'</rdf:li>'."\n";
+		$xmp .= "\t\t\t\t".'</rdf:Seq>'."\n";
+		$xmp .= "\t\t\t".'</dc:creator>'."\n";
+		$xmp .= "\t\t\t".'<dc:description>'."\n";
+		$xmp .= "\t\t\t\t".'<rdf:Alt>'."\n";
+		$xmp .= "\t\t\t\t\t".'<rdf:li xml:lang="x-default">'.$this->_escapeXML($this->subject).'</rdf:li>'."\n";
+		$xmp .= "\t\t\t\t".'</rdf:Alt>'."\n";
+		$xmp .= "\t\t\t".'</dc:description>'."\n";
+		$xmp .= "\t\t\t".'<dc:subject>'."\n";
+		$xmp .= "\t\t\t\t".'<rdf:Bag>'."\n";
+		$xmp .= "\t\t\t\t\t".'<rdf:li>'.$this->_escapeXML($this->keywords).'</rdf:li>'."\n";
+		$xmp .= "\t\t\t\t".'</rdf:Bag>'."\n";
+		$xmp .= "\t\t\t".'</dc:subject>'."\n";
+		$xmp .= "\t\t".'</rdf:Description>'."\n";
+		// convert date format
+		$docdate = substr($this->doc_date, 0, 4).'-'.substr($this->doc_date, 4, 2).'-'.substr($this->doc_date, 6, 2);
+		$docdate .= 'T'.substr($this->doc_date, 8, 2).':'.substr($this->doc_date, 10, 2).':'.substr($this->doc_date, 12, 2);
+		$docdate .= '+'.substr($this->doc_date, 15, 2).':'.substr($this->doc_date, 18, 2);
+		$docdate = $this->_escapeXML($docdate);
+		$xmp .= "\t\t".'<rdf:Description rdf:about="" xmlns:xmp="http://ns.adobe.com/xap/1.0/">'."\n";
+		$xmp .= "\t\t\t".'<xmp:CreateDate>'.$docdate.'</xmp:CreateDate>'."\n";
+		$xmp .= "\t\t\t".'<xmp:CreatorTool>TCPDF</xmp:CreatorTool>'."\n";
+		$xmp .= "\t\t\t".'<xmp:ModifyDate>'.$docdate.'</xmp:ModifyDate>'."\n";
+		$xmp .= "\t\t\t".'<xmp:MetadataDate>'.$docdate.'</xmp:MetadataDate>'."\n";
+		$xmp .= "\t\t".'</rdf:Description>'."\n";
+		$xmp .= "\t\t".'<rdf:Description rdf:about="" xmlns:pdf="http://ns.adobe.com/pdf/1.3/">'."\n";
+		$xmp .= "\t\t\t".'<pdf:Keywords>'.$this->_escapeXML($this->keywords).' TCPDF</pdf:Keywords>'."\n";
+		$xmp .= "\t\t\t".'<pdf:Producer>'.$this->_escapeXML("\x54\x43\x50\x44\x46\x20".$this->tcpdf_version."\x20\x28\x68\x74\x74\x70\x3a\x2f\x2f\x77\x77\x77\x2e\x74\x63\x70\x64\x66\x2e\x6f\x72\x67\x29").'</pdf:Producer>'."\n";
+		$xmp .= "\t\t\t".'<pdf:Trapped>False</pdf:Trapped>'."\n";
+		$xmp .= "\t\t".'</rdf:Description>'."\n";
+		$xmp .= "\t\t".'<rdf:Description rdf:about="" xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/">'."\n";
+		$uuid = 'uuid:'.substr($this->file_id, 0, 8).'-'.substr($this->file_id, 8, 4).'-'.substr($this->file_id, 12, 4).'-'.substr($this->file_id, 16, 4).'-'.substr($this->file_id, 20, 12);
+		$xmp .= "\t\t\t".'<xmpMM:DocumentID>'.$uuid.'</xmpMM:DocumentID>'."\n";
+		$xmp .= "\t\t\t".'<xmpMM:InstanceID>'.$uuid.'</xmpMM:InstanceID>'."\n";
+		$xmp .= "\t\t".'</rdf:Description>'."\n";
+		if ($this->pdfa_mode) {
+			$xmp .= "\t\t".'<rdf:Description rdf:about="" xmlns:pdfaid="http://www.aiim.org/pdfa/ns/id/">'."\n";
+			$xmp .= "\t\t\t".'<pdfaid:part>1</pdfaid:part>'."\n";
+			$xmp .= "\t\t\t".'<pdfaid:conformance>B</pdfaid:conformance>'."\n";
+			$xmp .= "\t\t".'</rdf:Description>'."\n";
+		}
+		// XMP extension schemas
+		$xmp .= "\t\t".'<rdf:Description rdf:about="" xmlns:pdfaExtension="http://www.aiim.org/pdfa/ns/extension/" xmlns:pdfaSchema="http://www.aiim.org/pdfa/ns/schema#" xmlns:pdfaProperty="http://www.aiim.org/pdfa/ns/property#">'."\n";
+		$xmp .= "\t\t\t".'<pdfaExtension:schemas>'."\n";
+		$xmp .= "\t\t\t\t".'<rdf:Bag>'."\n";
+		$xmp .= "\t\t\t\t\t".'<rdf:li rdf:parseType="Resource">'."\n";
+		$xmp .= "\t\t\t\t\t\t".'<pdfaSchema:namespaceURI>http://ns.adobe.com/pdf/1.3/</pdfaSchema:namespaceURI>'."\n";
+		$xmp .= "\t\t\t\t\t\t".'<pdfaSchema:prefix>pdf</pdfaSchema:prefix>'."\n";
+		$xmp .= "\t\t\t\t\t\t".'<pdfaSchema:schema>Adobe PDF Schema</pdfaSchema:schema>'."\n";
+		$xmp .= "\t\t\t\t\t\t".'<pdfaSchema:property>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t".'<rdf:Seq>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t\t".'<rdf:li rdf:parseType="Resource">'."\n";
+		$xmp .= "\t\t\t\t\t\t\t\t\t".'<pdfaProperty:category>internal</pdfaProperty:category>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t\t\t".'<pdfaProperty:description>A name object indicating whether the document has been modified to include trapping information</pdfaProperty:description>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t\t\t".'<pdfaProperty:name>Trapped</pdfaProperty:name>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t\t\t".'<pdfaProperty:valueType>Text</pdfaProperty:valueType>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t\t".'</rdf:li>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t".'</rdf:Seq>'."\n";
+		$xmp .= "\t\t\t\t\t\t".'</pdfaSchema:property>'."\n";
+		$xmp .= "\t\t\t\t\t".'</rdf:li>'."\n";
+		$xmp .= "\t\t\t\t\t".'<rdf:li rdf:parseType="Resource">'."\n";
+		$xmp .= "\t\t\t\t\t\t".'<pdfaSchema:namespaceURI>http://ns.adobe.com/xap/1.0/mm/</pdfaSchema:namespaceURI>'."\n";
+		$xmp .= "\t\t\t\t\t\t".'<pdfaSchema:prefix>xmpMM</pdfaSchema:prefix>'."\n";
+		$xmp .= "\t\t\t\t\t\t".'<pdfaSchema:schema>XMP Media Management Schema</pdfaSchema:schema>'."\n";
+		$xmp .= "\t\t\t\t\t\t".'<pdfaSchema:property>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t".'<rdf:Seq>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t\t".'<rdf:li rdf:parseType="Resource">'."\n";
+		$xmp .= "\t\t\t\t\t\t\t\t\t".'<pdfaProperty:category>internal</pdfaProperty:category>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t\t\t".'<pdfaProperty:description>UUID based identifier for specific incarnation of a document</pdfaProperty:description>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t\t\t".'<pdfaProperty:name>InstanceID</pdfaProperty:name>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t\t\t".'<pdfaProperty:valueType>URI</pdfaProperty:valueType>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t\t".'</rdf:li>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t".'</rdf:Seq>'."\n";
+		$xmp .= "\t\t\t\t\t\t".'</pdfaSchema:property>'."\n";
+		$xmp .= "\t\t\t\t\t".'</rdf:li>'."\n";
+		$xmp .= "\t\t\t\t\t".'<rdf:li rdf:parseType="Resource">'."\n";
+		$xmp .= "\t\t\t\t\t\t".'<pdfaSchema:namespaceURI>http://www.aiim.org/pdfa/ns/id/</pdfaSchema:namespaceURI>'."\n";
+		$xmp .= "\t\t\t\t\t\t".'<pdfaSchema:prefix>pdfaid</pdfaSchema:prefix>'."\n";
+		$xmp .= "\t\t\t\t\t\t".'<pdfaSchema:schema>PDF/A ID Schema</pdfaSchema:schema>'."\n";
+		$xmp .= "\t\t\t\t\t\t".'<pdfaSchema:property>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t".'<rdf:Seq>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t\t".'<rdf:li rdf:parseType="Resource">'."\n";
+		$xmp .= "\t\t\t\t\t\t\t\t\t".'<pdfaProperty:category>internal</pdfaProperty:category>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t\t\t".'<pdfaProperty:description>Part of PDF/A standard</pdfaProperty:description>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t\t\t".'<pdfaProperty:name>part</pdfaProperty:name>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t\t\t".'<pdfaProperty:valueType>Integer</pdfaProperty:valueType>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t\t".'</rdf:li>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t\t".'<rdf:li rdf:parseType="Resource">'."\n";
+		$xmp .= "\t\t\t\t\t\t\t\t\t".'<pdfaProperty:category>internal</pdfaProperty:category>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t\t\t".'<pdfaProperty:description>Amendment of PDF/A standard</pdfaProperty:description>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t\t\t".'<pdfaProperty:name>amd</pdfaProperty:name>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t\t\t".'<pdfaProperty:valueType>Text</pdfaProperty:valueType>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t\t".'</rdf:li>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t\t".'<rdf:li rdf:parseType="Resource">'."\n";
+		$xmp .= "\t\t\t\t\t\t\t\t\t".'<pdfaProperty:category>internal</pdfaProperty:category>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t\t\t".'<pdfaProperty:description>Conformance level of PDF/A standard</pdfaProperty:description>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t\t\t".'<pdfaProperty:name>conformance</pdfaProperty:name>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t\t\t".'<pdfaProperty:valueType>Text</pdfaProperty:valueType>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t\t".'</rdf:li>'."\n";
+		$xmp .= "\t\t\t\t\t\t\t".'</rdf:Seq>'."\n";
+		$xmp .= "\t\t\t\t\t\t".'</pdfaSchema:property>'."\n";
+		$xmp .= "\t\t\t\t\t".'</rdf:li>'."\n";
+		$xmp .= "\t\t\t\t".'</rdf:Bag>'."\n";
+		$xmp .= "\t\t\t".'</pdfaExtension:schemas>'."\n";
+		$xmp .= "\t\t".'</rdf:Description>'."\n";
+		$xmp .= "\t".'</rdf:RDF>'."\n";
+		$xmp .= '</x:xmpmeta>'."\n";
+		$xmp .= '<?xpacket end="w"?>';
+		$out = '<< /Type /Metadata /Subtype /XML /Length '.strlen($xmp).' >> stream'."\n".$xmp."\n".'endstream'."\n".'endobj';
+		// restore previous isunicode value
+		$this->isunicode = $prev_isunicode;
+		$this->encrypted = $prev_encrypted;
+		$this->_out($out);
+		return $oid;
+	}
+
+	/**
 	 * Output Catalog.
 	 * @return int object id
 	 * @protected
 	 */
 	protected function _putcatalog() {
+		// put XMP
+		$xmpobj = $this->_putXMP();
+		// if required, add standard sRGB_IEC61966-2.1 blackscaled ICC colour profile
+		if ($this->pdfa_mode OR $this->force_srgb) {
+			$iccobj = $this->_newobj();
+			$icc = file_get_contents(dirname(__FILE__).'/sRGB.icc');
+			$filter = '';
+			if ($this->compress) {
+				$filter = ' /Filter /FlateDecode';
+				$icc = gzcompress($icc);
+			}
+			$icc = $this->_getrawstream($icc);
+			$this->_out('<</N 4 '.$filter.'/Length '.strlen($icc).'>> stream'."\n".$icc."\n".'endstream'."\n".'endobj');
+		}
+		// start catalog
 		$oid = $this->_newobj();
 		$out = '<< /Type /Catalog';
 		$out .= ' /Version /'.$this->PDFVersion;
@@ -11166,7 +11392,7 @@ class TCPDF {
 		$out .= ' /Pages 1 0 R';
 		//$out .= ' /PageLabels ' //...;
 		$out .= ' /Names <<';
-		if ((!empty($this->javascript)) OR (!empty($this->js_objects))) {
+		if ((!$this->pdfa_mode) AND ((!empty($this->javascript)) OR (!empty($this->js_objects)))) {
 			$out .= ' /JavaScript '.($this->n_js).' 0 R';
 		}
 		$out .= ' >>';
@@ -11196,14 +11422,25 @@ class TCPDF {
 		}
 		//$out .= ' /AA <<>>';
 		//$out .= ' /URI <<>>';
-		//$out .= ' /Metadata X Y R';
+		$out .= ' /Metadata '.$xmpobj.' 0 R';
 		//$out .= ' /StructTreeRoot <<>>';
 		//$out .= ' /MarkInfo <<>>';
 		if (isset($this->l['a_meta_language'])) {
 			$out .= ' /Lang '.$this->_textstring($this->l['a_meta_language'], $oid);
 		}
 		//$out .= ' /SpiderInfo <<>>';
-		//$out .= ' /OutputIntents []';
+		// set OutputIntent to sRGB IEC61966-2.1 if required
+		if ($this->pdfa_mode OR $this->force_srgb) {
+			$out .= ' /OutputIntents [<<';
+			$out .= ' /Type /OutputIntent';
+			$out .= ' /S /GTS_PDFA1';
+			$out .= ' /OutputCondition '.$this->_textstring('sRGB IEC61966-2.1', $oid);
+			$out .= ' /OutputConditionIdentifier '.$this->_textstring('sRGB IEC61966-2.1', $oid);
+			$out .= ' /RegistryName '.$this->_textstring('http://www.color.org', $oid);
+			$out .= ' /Info '.$this->_textstring('sRGB IEC61966-2.1', $oid);
+			$out .= ' /DestOutputProfile '.$iccobj.' 0 R';
+			$out .= ' >>]';
+		}
 		//$out .= ' /PieceInfo <<>>';
 		if (!empty($this->pdflayers)) {
 			$lyrobjs = '';
@@ -11376,11 +11613,12 @@ class TCPDF {
 	}
 
 	/**
-	 * Output PDF header.
+	 * Output PDF File Header (7.5.2).
 	 * @protected
 	 */
 	protected function _putheader() {
 		$this->_out('%PDF-'.$this->PDFVersion);
+		$this->_out('%'.chr(0xe2).chr(0xe3).chr(0xcf).chr(0xd3));
 	}
 
 	/**
@@ -11677,8 +11915,7 @@ class TCPDF {
 	 * @since 4.6.028 (2009-08-25)
 	 */
 	protected function _datestring($n=0) {
-		$current_time = substr_replace(date('YmdHisO'), '\'', (0 - 2), 0).'\'';
-		return $this->_datastring('D:'.$current_time, $n);
+		return $this->_datastring('D:'.$this->doc_date, $n);
 	}
 
 	/**
@@ -11714,6 +11951,19 @@ class TCPDF {
 			}
 		}
 		return $this->_escape($s);
+	}
+
+	/**
+	* Escape some special characters (&lt; &gt; &amp;) for XML output.
+	* @param $str (string) Input string to convert.
+	* @return converted string
+	* @since 5.9.121 (2011-09-28)
+	* @protected
+	*/
+	protected function _escapeXML($str) {
+		$replaceTable = array("\0" => '', '&' => '&amp;', '<' => '&lt;', '>' => '&gt;');
+		$str = strtr($str, $replaceTable);
+		return $str;
 	}
 
 	/**
@@ -12872,6 +13122,10 @@ class TCPDF {
 	 * @author Nicola Asuni
 	 */
 	public function SetProtection($permissions=array('print', 'modify', 'copy', 'annot-forms', 'fill-forms', 'extract', 'assemble', 'print-high'), $user_pass='', $owner_pass=null, $mode=0, $pubkeys=null) {
+		if ($this->pdfa_mode) {
+			// encryption is not allowed in PDF/A mode
+			return;
+		}
 		$this->encryptdata['protection'] = $this->getUserPermissionCode($permissions, $mode);
 		if (($pubkeys !== null) AND (is_array($pubkeys))) {
 			// public-key mode
@@ -15091,6 +15345,10 @@ class TCPDF {
 	 * @since 4.8.000 (2009-09-07)
 	 */
 	public function addJavascriptObject($script, $onload=false) {
+		if ($this->pdfa_mode) {
+			// javascript is not allowed in PDF/A mode
+			return false;
+		}
 		++$this->n;
 		$this->js_objects[$this->n] = array('n' => $this->n, 'js' => $script, 'onload' => $onload);
 		return $this->n;
@@ -15103,7 +15361,7 @@ class TCPDF {
 	 * @since 2.1.002 (2008-02-12)
 	 */
 	protected function _putjavascript() {
-		if (empty($this->javascript) AND empty($this->js_objects)) {
+		if ($this->pdfa_mode OR (empty($this->javascript) AND empty($this->js_objects))) {
 			return;
 		}
 		if (strpos($this->javascript, 'this.addField') > 0) {
@@ -16604,6 +16862,10 @@ class TCPDF {
 	 * @since 3.0.000 (2008-03-27)
 	 */
 	protected function addExtGState($parms) {
+		if ($this->pdfa_mode) {
+			// transparencies are not allowed in PDF/A mode
+			return;
+		}
 		$n = count($this->extgstates) + 1;
 		// check if this ExtGState already exist
 		for ($i = 1; $i < $n; ++$i) {
@@ -16623,6 +16885,10 @@ class TCPDF {
 	 * @since 3.0.000 (2008-03-27)
 	 */
 	protected function setExtGState($gs) {
+		if ($this->pdfa_mode) {
+			// transparency is not allowed in PDF/A mode
+			return;
+		}
 		$this->_out(sprintf('/GS%d gs', $gs));
 	}
 
@@ -16632,6 +16898,10 @@ class TCPDF {
 	 * @since 3.0.000 (2008-03-27)
 	 */
 	protected function _putextgstates() {
+		if ($this->pdfa_mode) {
+			// transparencies are not allowed in PDF/A mode
+			return;
+		}
 		$ne = count($this->extgstates);
 		for ($i = 1; $i <= $ne; ++$i) {
 			$this->extgstates[$i]['n'] = $this->_newobj();
@@ -16656,6 +16926,10 @@ class TCPDF {
 	 * @since 3.0.000 (2008-03-27)
 	 */
 	public function setAlpha($alpha, $bm='Normal') {
+		if ($this->pdfa_mode) {
+			// transparency is not allowed in PDF/A mode
+			return;
+		}
 		$gs = $this->addExtGState(array('ca' => $alpha, 'CA' => $alpha, 'BM' => '/'.$bm, 'AIS' => 'false'));
 		$this->setExtGState($gs);
 	}
@@ -16709,7 +16983,12 @@ class TCPDF {
 	 * @since 3.1.000 (2008-06-09)
 	 */
 	public function setPDFVersion($version='1.7') {
-		$this->PDFVersion = $version;
+		if ($this->pdfa_mode) {
+			// PDF/A mode
+			$this->PDFVersion = '1.4';
+		} else {
+			$this->PDFVersion = $version;
+		}
 	}
 
 	/**
@@ -16979,6 +17258,9 @@ class TCPDF {
 	 * @public
 	 */
 	public function CoonsPatchMesh($x, $y, $w, $h, $col1=array(), $col2=array(), $col3=array(), $col4=array(), $coords=array(0.00,0.0,0.33,0.00,0.67,0.00,1.00,0.00,1.00,0.33,1.00,0.67,1.00,1.00,0.67,1.00,0.33,1.00,0.00,1.00,0.00,0.67,0.00,0.33), $coords_min=0, $coords_max=1, $antialias=false) {
+		if ($this->pdfa_mode) {
+			return;
+		}
 		$this->Clip($x, $y, $w, $h);
 		$n = count($this->gradients) + 1;
 		$this->gradients[$n] = array();
@@ -17088,6 +17370,9 @@ class TCPDF {
 	 * @public
 	 */
 	public function Gradient($type, $coords, $stops, $background=array(), $antialias=false) {
+		if ($this->pdfa_mode) {
+			return;
+		}
 		$n = count($this->gradients) + 1;
 		$this->gradients[$n] = array();
 		$this->gradients[$n]['type'] = $type;
@@ -17140,7 +17425,7 @@ class TCPDF {
 			}
 			if (isset($stop['opacity'])) {
 				$this->gradients[$n]['colors'][$key]['opacity'] = $stop['opacity'];
-				if ($stop['opacity'] < 1) {
+				if ((!$this->pdfa_mode) AND ($stop['opacity'] < 1)) {
 					$this->gradients[$n]['transparency'] = true;
 				}
 			} else {
@@ -17186,6 +17471,9 @@ class TCPDF {
 	 * @protected
 	 */
 	function _putshaders() {
+		if ($this->pdfa_mode) {
+			return;
+		}
 		$idt = count($this->gradients); //index for transparency gradients
 		foreach ($this->gradients as $id => $grad) {
 			if (($grad['type'] == 2) OR ($grad['type'] == 3)) {
@@ -25122,7 +25410,11 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @since 5.3.002 (2010-06-07)
 	 */
 	public function setFontSubsetting($enable=true) {
-		$this->font_subsetting = $enable ? true : false;
+		if ($this->pdfa_mode) {
+			$this->font_subsetting = false;
+		} else {
+			$this->font_subsetting = $enable ? true : false;
+		}
 	}
 
 	/**
@@ -26881,6 +27173,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				break;
 			}
 			case 'linearGradient': {
+				if ($this->pdfa_mode) {
+					break;
+				}
 				if (!isset($attribs['id'])) {
 					$attribs['id'] = 'GR_'.(count($this->svggradients) + 1);
 				}
@@ -26914,6 +27209,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				break;
 			}
 			case 'radialGradient': {
+				if ($this->pdfa_mode) {
+					break;
+				}
 				if (!isset($attribs['id'])) {
 					$attribs['id'] = 'GR_'.(count($this->svggradients) + 1);
 				}
