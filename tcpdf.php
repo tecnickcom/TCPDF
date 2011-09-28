@@ -5063,7 +5063,7 @@ class TCPDF {
 		} elseif ($type == 'TrueTypeUnicode') {
 			$enc = 'Identity-H';
 		} elseif ($type == 'cidfont0') {
-			if ($this->pdf_mode) {
+			if ($this->pdfa_mode) {
 				$this->Error('All fonts must be embedded in PDF/A mode!');
 			}
 		} else {
