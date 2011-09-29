@@ -1,3 +1,6 @@
+5.9.122 (2011-09-29)
+	- PDF/A-1b compliance was improved to pass some online testing.
+
 5.9.121 (2011-09-28)
 	- This version includes support for PDF/A-1b format (the class constructor signature was changed - see example n. 65).
 	- Method setSRGBmode() was added to force sRGB_IEC61966-2.1 black scaled ICC color profile for the whole document (file sRGB.icc was added).

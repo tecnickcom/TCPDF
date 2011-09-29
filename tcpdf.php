@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.121
+// Version     : 5.9.122
 // Begin       : 2002-08-03
-// Last Update : 2011-09-28
+// Last Update : 2011-09-29
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -138,7 +138,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.121
+ * @version 5.9.122
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -150,7 +150,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.121
+ * @version 5.9.122
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -161,7 +161,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.121';
+	private $tcpdf_version = '5.9.122';
 
 	// Protected properties
 
@@ -8850,7 +8850,9 @@ class TCPDF {
 			}
 			$out .= ' /Contents '.($this->n + 1).' 0 R';
 			$out .= ' /Rotate '.$this->pagedim[$n]['Rotate'];
-			$out .= ' /Group << /Type /Group /S /Transparency /CS /DeviceRGB >>';
+			if (!$this->pdfa_mode) {
+				$out .= ' /Group << /Type /Group /S /Transparency /CS /DeviceRGB >>';
+			}
 			if (isset($this->pagedim[$n]['trans']) AND !empty($this->pagedim[$n]['trans'])) {
 				// page transitions
 				if (isset($this->pagedim[$n]['trans']['Dur'])) {
@@ -11276,7 +11278,6 @@ class TCPDF {
 		$xmp .= "\t\t".'<rdf:Description rdf:about="" xmlns:pdf="http://ns.adobe.com/pdf/1.3/">'."\n";
 		$xmp .= "\t\t\t".'<pdf:Keywords>'.$this->_escapeXML($this->keywords).' TCPDF</pdf:Keywords>'."\n";
 		$xmp .= "\t\t\t".'<pdf:Producer>'.$this->_escapeXML("\x54\x43\x50\x44\x46\x20".$this->tcpdf_version."\x20\x28\x68\x74\x74\x70\x3a\x2f\x2f\x77\x77\x77\x2e\x74\x63\x70\x64\x66\x2e\x6f\x72\x67\x29").'</pdf:Producer>'."\n";
-		$xmp .= "\t\t\t".'<pdf:Trapped>False</pdf:Trapped>'."\n";
 		$xmp .= "\t\t".'</rdf:Description>'."\n";
 		$xmp .= "\t\t".'<rdf:Description rdf:about="" xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/">'."\n";
 		$uuid = 'uuid:'.substr($this->file_id, 0, 8).'-'.substr($this->file_id, 8, 4).'-'.substr($this->file_id, 12, 4).'-'.substr($this->file_id, 16, 4).'-'.substr($this->file_id, 20, 12);
@@ -11297,16 +11298,6 @@ class TCPDF {
 		$xmp .= "\t\t\t\t\t\t".'<pdfaSchema:namespaceURI>http://ns.adobe.com/pdf/1.3/</pdfaSchema:namespaceURI>'."\n";
 		$xmp .= "\t\t\t\t\t\t".'<pdfaSchema:prefix>pdf</pdfaSchema:prefix>'."\n";
 		$xmp .= "\t\t\t\t\t\t".'<pdfaSchema:schema>Adobe PDF Schema</pdfaSchema:schema>'."\n";
-		$xmp .= "\t\t\t\t\t\t".'<pdfaSchema:property>'."\n";
-		$xmp .= "\t\t\t\t\t\t\t".'<rdf:Seq>'."\n";
-		$xmp .= "\t\t\t\t\t\t\t\t".'<rdf:li rdf:parseType="Resource">'."\n";
-		$xmp .= "\t\t\t\t\t\t\t\t\t".'<pdfaProperty:category>internal</pdfaProperty:category>'."\n";
-		$xmp .= "\t\t\t\t\t\t\t\t\t".'<pdfaProperty:description>A name object indicating whether the document has been modified to include trapping information</pdfaProperty:description>'."\n";
-		$xmp .= "\t\t\t\t\t\t\t\t\t".'<pdfaProperty:name>Trapped</pdfaProperty:name>'."\n";
-		$xmp .= "\t\t\t\t\t\t\t\t\t".'<pdfaProperty:valueType>Text</pdfaProperty:valueType>'."\n";
-		$xmp .= "\t\t\t\t\t\t\t\t".'</rdf:li>'."\n";
-		$xmp .= "\t\t\t\t\t\t\t".'</rdf:Seq>'."\n";
-		$xmp .= "\t\t\t\t\t\t".'</pdfaSchema:property>'."\n";
 		$xmp .= "\t\t\t\t\t".'</rdf:li>'."\n";
 		$xmp .= "\t\t\t\t\t".'<rdf:li rdf:parseType="Resource">'."\n";
 		$xmp .= "\t\t\t\t\t\t".'<pdfaSchema:namespaceURI>http://ns.adobe.com/xap/1.0/mm/</pdfaSchema:namespaceURI>'."\n";
@@ -11382,7 +11373,7 @@ class TCPDF {
 				$icc = gzcompress($icc);
 			}
 			$icc = $this->_getrawstream($icc);
-			$this->_out('<</N 4 '.$filter.'/Length '.strlen($icc).'>> stream'."\n".$icc."\n".'endstream'."\n".'endobj');
+			$this->_out('<</N 3 '.$filter.'/Length '.strlen($icc).'>> stream'."\n".$icc."\n".'endstream'."\n".'endobj');
 		}
 		// start catalog
 		$oid = $this->_newobj();
