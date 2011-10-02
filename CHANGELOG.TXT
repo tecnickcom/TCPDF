@@ -1,3 +1,7 @@
+5.9.124 (2011-10-02)
+	- Method write1DBarcode() was updated to change label vertical alignment.
+	- Core fonts were updated.
+
 5.9.123 (2011-10-02)
 	- The method addTTFfont() wad added to automatically convert TTF fonts (check the new fonts guide at http://www.tcpdf.org).
 	- Old font utils were removed.

@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.123
+// Version     : 5.9.124
 // Begin       : 2002-08-03
-// Last Update : 2011-10-01
+// Last Update : 2011-10-02
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -137,7 +137,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.123
+ * @version 5.9.124
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -149,7 +149,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.123
+ * @version 5.9.124
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -160,7 +160,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.123';
+	private $tcpdf_version = '5.9.124';
 
 	// Protected properties
 
@@ -5105,9 +5105,9 @@ class TCPDF {
 					$desc['ItalicAngle'] = -11;
 				}
 				if (isset($desc['Flags'])) {
-					$desc['Flags'] |= 128; //bit 7
+					$desc['Flags'] |= 64; //bit 7
 				} else {
-					$desc['Flags'] = 128;
+					$desc['Flags'] = 64;
 				}
 			}
 		}
@@ -19218,7 +19218,7 @@ class TCPDF {
 			$this->y = $y + $vpadding + $barh;
 			$cellpadding = $this->cell_padding;
 			$this->SetCellPadding(0);
-			$this->Cell($txtwidth, '', $label, 0, 0, 'C', 0, '', $style['stretchtext'], false, 'T', 'T');
+			$this->Cell($txtwidth, '', $label, 0, 0, 'C', false, '', $style['stretchtext'], false, 'T', 'T');
 			$this->cell_padding = $cellpadding;
 		}
 		// restore original direction
