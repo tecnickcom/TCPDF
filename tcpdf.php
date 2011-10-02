@@ -1,13 +1,12 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.122
+// Version     : 5.9.123
 // Begin       : 2002-08-03
-// Last Update : 2011-09-29
+// Last Update : 2011-10-01
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
-// Copyright (C) 2002-2011  Nicola Asuni - Tecnick.com S.r.l.
 //
 // This file is part of TCPDF software library.
 //
@@ -138,7 +137,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.122
+ * @version 5.9.123
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -150,7 +149,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.122
+ * @version 5.9.123
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -161,7 +160,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.122';
+	private $tcpdf_version = '5.9.123';
 
 	// Protected properties
 
@@ -592,6 +591,14 @@ class TCPDF {
 	 * @protected
 	 */
 	protected $unicode;
+
+	/**
+	 * Object containing font encoding maps.
+	 * @since 5.9.123 (2011-10-01)
+	 * @author Nicola Asuni
+	 * @protected
+	 */
+	protected $encmaps;
 
 	/**
 	 * PDF version.
@@ -1850,6 +1857,8 @@ class TCPDF {
 		}
 		require_once(dirname(__FILE__).'/unicode_data.php');
 		$this->unicode = new TCPDF_UNICODE_DATA();
+		require_once(dirname(__FILE__).'/encodings_maps.php');
+		$this->encmaps = new TCPDF_ENCODING_MAPS();
 		$this->font_obj_ids = array();
 		$this->page_obj_id = array();
 		$this->form_obj_id = array();
@@ -3600,7 +3609,7 @@ class TCPDF {
 	 * @since 1.4
 	 */
 	public function SetCompression($compress=true) {
-		if ((!$this->pdfa_mode) AND function_exists('gzcompress')) {
+		if (function_exists('gzcompress')) {
 			$this->compress = $compress ? true : false;
 		} else {
 			$this->compress = false;
@@ -5081,9 +5090,11 @@ class TCPDF {
 			// artificial bold
 			if (strpos($bistyle, 'B') !== false) {
 				if (isset($desc['StemV'])) {
-					$desc['StemV'] *= 2;
+					// from normal to bold
+					$desc['StemV'] = round($desc['StemV'] * 1.75);
 				} else {
-					$desc['StemV'] = 120;
+					// bold
+					$desc['StemV'] = 123;
 				}
 			}
 			// artificial italic
@@ -9673,9 +9684,58 @@ class TCPDF {
 	}
 
 	/**
-	 * Get BYTE from string (8-bit unsigned integer).
+	 * Get FWORD from string (Big Endian 16-bit signed integer).
 	 * @param $str (string) string from where to extract value
 	 * @param $offset (int) point from where to read the data
+	 * @return int 16 bit value
+	 * @author Nicola Asuni
+	 * @protected
+	 * @since 5.9.123 (2011-09-30)
+	 */
+	protected function _getFWORD($str, $offset) {
+		$v = $this->_getUSHORT($str, $offset);
+		if ($v > 0x7fff) {
+			$v -= 0x10000;
+		}
+		return $v;
+	}
+
+	/**
+	 * Get UFWORD from string (Big Endian 16-bit unsigned integer).
+	 * @param $str (string) string from where to extract value
+	 * @param $offset (int) point from where to read the data
+	 * @return int 16 bit value
+	 * @author Nicola Asuni
+	 * @protected
+	 * @since 5.9.123 (2011-09-30)
+	 */
+	protected function _getUFWORD($str, $offset) {
+		$v = $this->_getUSHORT($str, $offset);
+		return $v;
+	}
+
+	/**
+	 * Get FIXED from string (32-bit signed fixed-point number (16.16).
+	 * @param $str (string) string from where to extract value
+	 * @param $offset (int) point from where to read the data
+	 * @return int 16 bit value
+	 * @author Nicola Asuni
+	 * @protected
+	 * @since 5.9.123 (2011-09-30)
+	 */
+	protected function _getFIXED($str, $offset) {
+		// mantissa
+		$m = $this->_getFWORD($str, $offset);
+		// fraction
+		$f = $this->_getUSHORT($str, ($offset + 2));
+		$v = floatval(''.$m.'.'.$f.'');
+		return $v;
+	}
+
+	/**
+	 * Get BYTE from string (8-bit unsigned integer).
+	 * @param $str (string) String from where to extract value.
+	 * @param $offset (int) Point from where to read the data.
 	 * @return int 8 bit value
 	 * @author Nicola Asuni
 	 * @protected
@@ -9685,12 +9745,839 @@ class TCPDF {
 		$v = unpack('Ci', substr($str, $offset, 1));
 		return $v['i'];
 	}
+	/**
+	 * Update the CIDToGIDMap string with a new value.
+	 * @param $map (string) CIDToGIDMap.
+	 * @param $cid (int) CID value.
+	 * @param $gid (int) GID value.
+	 * @return (string) CIDToGIDMap.
+	 * @author Nicola Asuni
+	 * @protected
+	 * @since 5.9.123 (2011-09-29)
+	 */
+	protected function updateCIDtoGIDmap($map, $cid, $gid) {
+		if (($cid >= 0) AND ($cid <= 0xFFFF) AND ($gid >= 0)) {
+			if ($gid > 0xFFFF) {
+				$gid -= 0x10000;
+			}
+			$map{($cid * 2)} = chr($gid >> 8);
+			$map{(($cid * 2) + 1)} = chr($gid & 0xFF);
+		}
+		return $map;
+	}
+
+	/**
+	 * Convert and add the selected TTF/OTF font to the fonts folder (that must be writeable).
+	 * @param $fontfile (string) TrueType font file (full path).
+	 * @param $fonttype (string) Font type. Valid values are: TrueTypeUnicode, TrueType, Type1, CID0JP = CID-0 Japanese, CID0KR = CID-0 Korean, CID0CS = CID-0 Chinese Simplified, CID0CT = CID-0 Chinese Traditional.
+	 * @param $enc (string) Name of the encoding table to use. Omit this parameter for TrueType Unicode, OpenType Unicode and symbolic fonts like Symbol or ZapfDingBats.
+	 * @param $flags (int) Unsigned 32-bit integer containing flags specifying various characteristics of the font (PDF32000:2008 - 9.8.2 Font Descriptor Flags).
+	 * @return (string) TCPDF font name.
+	 * @author Nicola Asuni
+	 * @public
+	 * @since 5.9.123 (2010-09-30)
+	 */
+	public function addTTFfont($fontfile, $fonttype='TrueTypeUnicode', $enc='', $flags=32) {
+		if (!file_exists($fontfile)) {
+			$this->Error('Could not find file: '.$fontfile.'');
+		}
+		// font metrics
+		$fmetric = array();
+		// set font type
+		switch ($fonttype) {
+			case 'CID0CT':
+			case 'CID0CS':
+			case 'CID0KR':
+			case 'CID0JP': {
+				$fmetric['type'] = 'cidfont0';
+				break;
+			}
+			case 'Type1': {
+				$fmetric['type'] = 'Type1';
+				if (empty($enc) AND (($flags & 4) == 0)) {
+					$enc = 'cp1252';
+				}
+				break;
+			}
+			case 'TrueType': {
+				$fmetric['type'] = 'TrueType';
+				break;
+			}
+			case 'TrueTypeUnicode':
+			default: {
+				$fmetric['type'] = 'TrueTypeUnicode';
+				break;
+			}
+		}
+		// set encoding maps (if any)
+		$fmetric['enc'] = $enc;
+		$fmetric['diff'] = '';
+		if (($fmetric['type'] == 'TrueType') OR ($fmetric['type'] == 'Type1')) {
+			if (!empty($enc) AND ($enc != 'cp1252') AND isset($this->encmaps->encmap[$enc])) {
+				// build differences from reference encoding
+				$enc_ref = $this->encmaps->encmap['cp1252'];
+				$enc_target = $this->encmaps->encmap[$enc];
+				$last = 0;
+				for ($i = 32; $i <= 255; ++$i) {
+					if ($enc_target != $enc_ref[$i]) {
+						if ($i != ($last + 1)) {
+							$fmetric['diff'] .= $i.' ';
+						}
+						$last = $i;
+						$fmetric['diff'] .= '/'.$enc_target[$i].' ';
+					}
+				}
+			}
+		}
+		// build new font name for TCPDF compatibility
+		$font_name = basename($fontfile);
+		$font_name = substr($font_name, 0, -4);
+		$font_name = strtolower($font_name);
+		$font_name = preg_replace('/[^a-z0-9_]/', '', $font_name);
+		$search  = array('bold', 'oblique', 'italic', 'regular');
+		$replace = array('b', 'i', 'i', '');
+		$font_name = str_replace($search, $replace, $font_name);
+		if (empty($font_name)) {
+			// set generic name
+			$font_name = 'tcpdffont';
+		}
+		// check if this font already exist
+		if (file_exists($this->_getfontpath().$font_name.'.php')) {
+			// this font already exist (delete it from fonts folder to rebuild it)
+			return $font_name;
+		}
+		$fmetric['file'] = $font_name.'.z';
+		$fmetric['ctg'] = $font_name.'.ctg.z';
+		// get font data
+		$font = file_get_contents($fontfile);
+		$fmetric['originalsize'] = strlen($font);
+		if ($fmetric['type'] == 'Type1') {
+			// ---------- TYPE 1 ----------
+			// read first segment
+			$a = unpack('Cmarker/Ctype/Vsize', substr($font, 0, 6));
+			if ($a['marker'] != 128) {
+				$this->Error('Font file is not a valid binary Type1');
+			}
+			$fmetric['size1'] = $a['size'];
+			$data = substr($font, 6, $fmetric['size1']);
+			// read second segment
+			$a = unpack('Cmarker/Ctype/Vsize', substr($font, (6 + $fmetric['size1']), 6));
+			if ($a['marker'] != 128) {
+				$this->Error('Font file is not a valid binary Type1');
+			}
+			$fmetric['size2'] = $a['size'];
+			$encrypted = substr($font, (12 + $fmetric['size1']), $fmetric['size2']);
+			$data .= $encrypted;
+			// store compressed font
+			$fp = fopen($this->_getfontpath().$fmetric['file'], 'wb');
+			fwrite($fp, gzcompress($data));
+			fclose($fp);
+			// get font info
+			$fmetric['Flags'] = $flags;
+			preg_match ('#/FullName[\s]*\(([^\)]*)#', $font, $matches);
+			$fmetric['name'] = preg_replace('/[^a-zA-Z0-9_\-]/', '', $matches[1]);
+			preg_match('#/FontBBox[\s]*{([^}]*)#', $font, $matches);
+			$fmetric['bbox'] = trim($matches[1]);
+			$bv = explode(' ', $fmetric['bbox']);
+			$fmetric['Ascent'] = intval($bv[3]);
+			$fmetric['Descent'] = intval($bv[1]);
+			preg_match('#/ItalicAngle[\s]*([0-9\+\-]*)#', $font, $matches);
+			$fmetric['italicAngle'] = intval($matches[1]);
+			if ($fmetric['italicAngle'] != 0) {
+				$fmetric['Flags'] |= 64;
+			}
+			preg_match('#/UnderlinePosition[\s]*([0-9\+\-]*)#', $font, $matches);
+			$fmetric['underlinePosition'] = intval($matches[1]);
+			preg_match('#/UnderlineThickness[\s]*([0-9\+\-]*)#', $font, $matches);
+			$fmetric['underlineThickness'] = intval($matches[1]);
+			preg_match('#/isFixedPitch[\s]*([^\s]*)#', $font, $matches);
+			if ($matches[1] == 'true') {
+				$fmetric['Flags'] |= 1;
+			}
+			// get internal map
+			$imap = array();
+			if (preg_match_all('#dup[\s]([0-9]+)[\s]*/([^\s]*)[\s]put#sU', $font, $fmap, PREG_SET_ORDER) > 0) {
+				foreach ($fmap as $v) {
+					$imap[$v[2]] = $v[1];
+				}
+			}
+			// decrypt eexec encrypted part
+			$r = 55665; // eexec encryption constant
+			$c1 = 52845;
+			$c2 = 22719;
+			$elen = strlen($encrypted);
+			$eplain = '';
+			for ($i = 0; $i < $elen; ++$i) {
+				$chr = ord($encrypted{$i});
+				$eplain .= chr($chr ^ ($r >> 8));
+				$r = ((($chr + $r) * $c1 + $c2) % 65536);
+			}
+			if (preg_match('#/ForceBold[\s]*([^\s]*)#', $eplain, $matches) > 0) {
+				if ($matches[1] == 'true') {
+					$fmetric['Flags'] |= 0x40000;
+				}
+			}
+			if (preg_match('#/StdVW[\s]*\[([^\]]*)#', $eplain, $matches) > 0) {
+				$fmetric['StemV'] = intval($matches[1]);
+			} else {
+				$fmetric['StemV'] = 70;
+			}
+			if (preg_match('#/StdHW[\s]*\[([^\]]*)#', $eplain, $matches) > 0) {
+				$fmetric['StemH'] = intval($matches[1]);
+			} else {
+				$fmetric['StemH'] = 30;
+			}
+			if (preg_match('#/BlueValues[\s]*\[([^\]]*)#', $eplain, $matches) > 0) {
+				$bv = explode(' ', $matches[1]);
+				if (count($bv) >= 6) {
+					$v1 = intval($bv[2]);
+					$v2 = intval($bv[4]);
+					if ($v1 <= $v2) {
+						$fmetric['XHeight'] = $v1;
+						$fmetric['CapHeight'] = $v2;
+					} else {
+						$fmetric['XHeight'] = $v2;
+						$fmetric['CapHeight'] = $v1;
+					}
+				} else {
+					$fmetric['XHeight'] = 450;
+					$fmetric['CapHeight'] = 700;
+				}
+			} else {
+				$fmetric['XHeight'] = 450;
+				$fmetric['CapHeight'] = 700;
+			}
+			// get the number of random bytes at the beginning of charstrings
+			if (preg_match('#/lenIV[\s]*([0-9]*)#', $eplain, $matches) > 0) {
+				$lenIV = intval($matches[1]);
+			} else {
+				$lenIV = 4;
+			}
+			$fmetric['Leading'] = 0;
+			// get charstring data
+			$eplain = substr($eplain, (strpos($eplain, '/CharStrings') + 1));
+			preg_match_all('#/([A-Za-z0-9\.]*)[\s][0-9]+[\s]RD[\s](.*)[\s]ND#sU', $eplain, $matches, PREG_SET_ORDER);
+			if (!empty($enc) AND isset($this->encmaps->encmap[$enc])) {
+				$enc_map = $this->encmaps->encmap[$enc];
+			} else {
+				$enc_map = false;
+			}
+			$fmetric['cw'] = '';
+			$fmetric['MaxWidth'] = 0;
+			$cwidths = array();
+			foreach ($matches as $k => $v) {
+				$cid = 0;
+				if (isset($imap[$v[1]])) {
+					$cid = $imap[$v[1]];
+				} elseif ($enc_map !== false) {
+					$cid = array_search($v[1], $enc_map);
+					if ($cid === false) {
+						$cid = 0;
+					} elseif ($cid > 1000) {
+						$cid -= 1000;
+					}
+				}
+				// decrypt charstring encrypted part
+				$r = 4330; // charstring encryption constant
+				$c1 = 52845;
+				$c2 = 22719;
+				$cd = $v[2];
+				$clen = strlen($cd);
+				$ccom = array();
+				for ($i = 0; $i < $clen; ++$i) {
+					$chr = ord($cd{$i});
+					$ccom[] = ($chr ^ ($r >> 8));
+					$r = ((($chr + $r) * $c1 + $c2) % 65536);
+				}
+				// decode numbers
+				$cdec = array();
+				$ck = 0;
+				$i = $lenIV;
+				while ($i < $clen) {
+					if ($ccom[$i] < 32) {
+						$cdec[$ck] = $ccom[$i];
+						if (($ck > 0) AND ($cdec[$ck] == 13)) {
+							// hsbw command: update width
+							$cwidths[$cid] = $cdec[($ck - 1)];
+						}
+						++$i;
+					} elseif (($ccom[$i] >= 32) AND ($ccom[$i] <= 246)) {
+						$cdec[$ck] = ($ccom[$i] - 139);
+						++$i;
+					} elseif (($ccom[$i] >= 247) AND ($ccom[$i] <= 250)) {
+						$cdec[$ck] = ((($ccom[$i] - 247) * 256) + $ccom[($i + 1)] + 108);
+						$i += 2;
+					} elseif (($ccom[$i] >= 251) AND ($ccom[$i] <= 254)) {
+						$cdec[$ck] = ((-($ccom[$i] - 251) * 256) - $ccom[($i + 1)] - 108);
+						$i += 2;
+					} elseif ($ccom[$i] == 255) {
+						$sval = chr($ccom[($i + 1)]).chr($ccom[($i + 2)]).chr($ccom[($i + 3)]).chr($ccom[($i + 4)]);
+						$vsval = unpack('li', $sval);
+						$cdec[$ck] = $vsval['i'];
+						$i += 5;
+					}
+					++$ck;
+				}
+			} // end for each matches
+			$fmetric['MissingWidth'] = $cwidths[0];
+			$fmetric['MaxWidth'] = $fmetric['MissingWidth'];
+			$fmetric['AvgWidth'] = 0;
+			// set chars widths
+			for ($cid = 0; $cid <= 255; ++$cid) {
+				if (isset($cwidths[$cid])) {
+					if ($cwidths[$cid] > $fmetric['MaxWidth']) {
+						$fmetric['MaxWidth'] = $cwidths[$cid];
+					}
+					$fmetric['AvgWidth'] += $cwidths[$cid];
+					$fmetric['cw'] .= ','.$cid.'=>'.$cwidths[$cid];
+				} else {
+					$fmetric['cw'] .= ','.$cid.'=>'.$fmetric['MissingWidth'];
+				}
+			}
+			$fmetric['AvgWidth'] = round($fmetric['AvgWidth'] / count($cwidths));
+		} else {
+			// ---------- TRUE TYPE ----------
+			if ($fmetric['type'] != 'cidfont0') {
+				// store compressed font
+				$fp = fopen($this->_getfontpath().$fmetric['file'], 'wb');
+				fwrite($fp, gzcompress($font));
+				fclose($fp);
+			}
+			$offset = 0; // offset position of the font data
+			if ($this->_getULONG($font, $offset) != 0x10000) {
+				// sfnt version must be 0x00010000 for TrueType version 1.0.
+				return $font;
+			}
+			$offset += 4;
+			// get number of tables
+			$numTables = $this->_getUSHORT($font, $offset);
+			$offset += 2;
+			// skip searchRange, entrySelector and rangeShift
+			$offset += 6;
+			// tables array
+			$table = array();
+			// ---------- get tables ----------
+			for ($i = 0; $i < $numTables; ++$i) {
+				// get table info
+				$tag = substr($font, $offset, 4);
+				$offset += 4;
+				$table[$tag] = array();
+				$table[$tag]['checkSum'] = $this->_getULONG($font, $offset);
+				$offset += 4;
+				$table[$tag]['offset'] = $this->_getULONG($font, $offset);
+				$offset += 4;
+				$table[$tag]['length'] = $this->_getULONG($font, $offset);
+				$offset += 4;
+			}
+			// check magicNumber
+			$offset = $table['head']['offset'] + 12;
+			if ($this->_getULONG($font, $offset) != 0x5F0F3CF5) {
+				// magicNumber must be 0x5F0F3CF5
+				return $font;
+			}
+			$offset += 4;
+			$offset += 2; // skip flags
+			// get FUnits
+			$fmetric['unitsPerEm'] = $this->_getUSHORT($font, $offset);
+			$offset += 2;
+			// units ratio constant
+			$urk = (1000 / $fmetric['unitsPerEm']);
+			$offset += 16; // skip created, modified
+			$xMin = round($this->_getFWORD($font, $offset) * $urk);
+			$offset += 2;
+			$yMin = round($this->_getFWORD($font, $offset) * $urk);
+			$offset += 2;
+			$xMax = round($this->_getFWORD($font, $offset) * $urk);
+			$offset += 2;
+			$yMax = round($this->_getFWORD($font, $offset) * $urk);
+			$offset += 2;
+			$fmetric['bbox'] = ''.$xMin.' '.$yMin.' '.$xMax.' '.$yMax.'';
+			$macStyle = $this->_getUSHORT($font, $offset);
+			$offset += 2;
+			// PDF font flags
+			$fmetric['Flags'] = $flags;
+			if (($macStyle & 2) == 2) {
+				// italic flag
+				$fmetric['Flags'] |= 64;
+			}
+			// get offset mode (indexToLocFormat : 0 = short, 1 = long)
+			$offset = $table['head']['offset'] + 50;
+			$short_offset = ($this->_getSHORT($font, $offset) == 0);
+			$offset += 2;
+			// get the offsets to the locations of the glyphs in the font, relative to the beginning of the glyphData table
+			$indexToLoc = array();
+			$offset = $table['loca']['offset'];
+			if ($short_offset) {
+				// short version
+				$tot_num_glyphs = ($table['loca']['length'] / 2); // numGlyphs + 1
+				for ($i = 0; $i < $tot_num_glyphs; ++$i) {
+					$indexToLoc[$i] = $this->_getUSHORT($font, $offset) * 2;
+					$offset += 2;
+				}
+			} else {
+				// long version
+				$tot_num_glyphs = ($table['loca']['length'] / 4); // numGlyphs + 1
+				for ($i = 0; $i < $tot_num_glyphs; ++$i) {
+					$indexToLoc[$i] = $this->_getULONG($font, $offset);
+					$offset += 4;
+				}
+			}
+			// get glyphs indexes of chars from cmap table
+			$offset = $table['cmap']['offset'] + 2;
+			$numEncodingTables = $this->_getUSHORT($font, $offset);
+			$offset += 2;
+			$encodingTables = array();
+			for ($i = 0; $i < $numEncodingTables; ++$i) {
+				$encodingTables[$i]['platformID'] = $this->_getUSHORT($font, $offset);
+				$offset += 2;
+				$encodingTables[$i]['encodingID'] = $this->_getUSHORT($font, $offset);
+				$offset += 2;
+				$encodingTables[$i]['offset'] = $this->_getULONG($font, $offset);
+				$offset += 4;
+			}
+			// ---------- get os/2 metrics ----------
+			$offset = $table['OS/2']['offset'];
+			$offset += 2; // skip version
+			// xAvgCharWidth
+			$fmetric['AvgWidth'] = round($this->_getFWORD($font, $offset) * $urk);
+			$offset += 2;
+			// usWeightClass
+			$usWeightClass = round($this->_getUFWORD($font, $offset) * $urk);
+			// estimate StemV and StemH (400 = usWeightClass for Normal - Regular font)
+			$fmetric['StemV'] = round((70 * $usWeightClass) / 400);
+			$fmetric['StemH'] = round((30 * $usWeightClass) / 400);
+			$offset += 2;
+			$offset += 2; // usWidthClass
+			$fsType = $this->_getSHORT($font, $offset);
+			$offset += 2;
+			if ($fsType == 2) {
+				$this->Error('This Font cannot be modified, embedded or exchanged in any manner without first obtaining permission of the legal owner.');
+			}
+			// ---------- get font name ----------
+			$fmetric['name'] = '';
+			$offset = $table['name']['offset'];
+			$offset += 2; // skip Format selector (=0).
+			// Number of NameRecords that follow n.
+			$numNameRecords = $this->_getUSHORT($font, $offset);
+			$offset += 2;
+			// Offset to start of string storage (from start of table).
+			$stringStorageOffset = $this->_getUSHORT($font, $offset);
+			$offset += 2;
+			for ($i = 0; $i < $numNameRecords; ++$i) {
+				$offset += 6; // skip Platform ID, Platform-specific encoding ID, Language ID.
+				// Name ID.
+				$nameID = $this->_getUSHORT($font, $offset);
+				$offset += 2;
+				if ($nameID == 6) {
+					// String length (in bytes).
+					$stringLength = $this->_getUSHORT($font, $offset);
+					$offset += 2;
+					// String offset from start of storage area (in bytes).
+					$stringOffset = $this->_getUSHORT($font, $offset);
+					$offset += 2;
+					$offset = ($table['name']['offset'] + $stringStorageOffset + $stringOffset);
+					$fmetric['name'] = substr($font, $offset, $stringLength);
+					$fmetric['name'] = preg_replace('/[^a-zA-Z0-9_\-]/', '', $fmetric['name']);
+					break;
+				} else {
+					$offset += 4; // skip String length, String offset
+				}
+			}
+			if (empty($fmetric['name'])) {
+				$fmetric['name'] = $font_name;
+			}
+			// ---------- get post data ----------
+			$offset = $table['post']['offset'];
+			$offset += 4; // skip Format Type
+			$fmetric['italicAngle'] = $this->_getFIXED($font, $offset);
+			$offset += 4;
+			$fmetric['underlinePosition'] = round($this->_getFWORD($font, $offset) * $urk);
+			$offset += 2;
+			$fmetric['underlineThickness'] = round($this->_getFWORD($font, $offset) * $urk);
+			$offset += 2;
+			$isFixedPitch = ($this->_getULONG($font, $offset) == 0) ? false : true;
+			$offset += 2;
+			if ($isFixedPitch) {
+				$fmetric['Flags'] |= 1;
+			}
+			// ---------- get hhea data ----------
+			$offset = $table['hhea']['offset'];
+			$offset += 4; // skip Table version number
+			// Ascender
+			$fmetric['Ascent'] = round($this->_getFWORD($font, $offset) * $urk);
+			$offset += 2;
+			// Descender
+			$fmetric['Descent'] = round($this->_getFWORD($font, $offset) * $urk);
+			$offset += 2;
+			// LineGap
+			$fmetric['Leading'] = round($this->_getFWORD($font, $offset) * $urk);
+			$offset += 2;
+			// advanceWidthMax
+			$fmetric['MaxWidth'] = round($this->_getUFWORD($font, $offset) * $urk);
+			$offset += 2;
+			$offset += 22; // skip some values
+			// get the number of hMetric entries in hmtx table
+			$numberOfHMetrics = $this->_getUSHORT($font, $offset);
+			// ---------- get maxp data ----------
+			$offset = $table['maxp']['offset'];
+			$offset += 4; // skip Table version number
+			// get the the number of glyphs in the font.
+			$numGlyphs = $this->_getUSHORT($font, $offset);
+			// ---------- get CIDToGIDMap ----------
+			$ctg = array();
+			foreach ($encodingTables as $enctable) {
+				if (($enctable['platformID'] == 3) AND ($enctable['encodingID'] == 0)) {
+					$modesymbol = true;
+				} else {
+					$modesymbol = false;
+				}
+				$offset = $table['cmap']['offset'] + $enctable['offset'];
+				$format = $this->_getUSHORT($font, $offset);
+				$offset += 2;
+				switch ($format) {
+					case 0: { // Format 0: Byte encoding table
+						$offset += 4; // skip length and version/language
+						for ($c = 0; $c < 256; ++$c) {
+							$g = $this->_getBYTE($font, $offset);
+							$ctg[$c] = $g;
+							++$offset;
+						}
+						break;
+					}
+					case 2: { // Format 2: High-byte mapping through table
+						$offset += 4; // skip length and version/language
+						$numSubHeaders = 0;
+						for ($i = 0; $i < 256; ++$i) {
+							// Array that maps high bytes to subHeaders: value is subHeader index * 8.
+							$subHeaderKeys[$i] = ($this->_getUSHORT($font, $offset) / 8);
+							$offset += 2;
+							if ($numSubHeaders < $subHeaderKeys[$i]) {
+								$numSubHeaders = $subHeaderKeys[$i];
+							}
+						}
+						// the number of subHeaders is equal to the max of subHeaderKeys + 1
+						++$numSubHeaders;
+						// read subHeader structures
+						$subHeaders = array();
+						$numGlyphIndexArray = 0;
+						for ($k = 0; $k < $numSubHeaders; ++$k) {
+							$subHeaders[$k]['firstCode'] = $this->_getUSHORT($font, $offset);
+							$offset += 2;
+							$subHeaders[$k]['entryCount'] = $this->_getUSHORT($font, $offset);
+							$offset += 2;
+							$subHeaders[$k]['idDelta'] = $this->_getSHORT($font, $offset);
+							$offset += 2;
+							$subHeaders[$k]['idRangeOffset'] = $this->_getUSHORT($font, $offset);
+							$offset += 2;
+							$subHeaders[$k]['idRangeOffset'] -= (2 + (($numSubHeaders - $k - 1) * 8));
+							$subHeaders[$k]['idRangeOffset'] /= 2;
+							$numGlyphIndexArray += $subHeaders[$k]['entryCount'];
+						}
+						for ($k = 0; $k < $numGlyphIndexArray; ++$k) {
+							$glyphIndexArray[$k] = $this->_getUSHORT($font, $offset);
+							$offset += 2;
+						}
+						for ($i = 0; $i < 256; ++$i) {
+							$k = $subHeaderKeys[$i];
+							if ($k == 0) {
+								// one byte code
+								$c = $i;
+								$g = $glyphIndexArray[0];
+								$ctg[$c] = $g;
+							} else {
+								// two bytes code
+								$start_byte = $subHeaders[$k]['firstCode'];
+								$end_byte = $start_byte + $subHeaders[$k]['entryCount'];
+								for ($j = $start_byte; $j < $end_byte; ++$j) {
+									// combine high and low bytes
+									$c = (($i << 8) + $j);
+									$idRangeOffset = ($subHeaders[$k]['idRangeOffset'] + $j - $subHeaders[$k]['firstCode']);
+									$g = $glyphIndexArray[$idRangeOffset];
+									$g += ($idDelta[$k] - 65536);
+									if ($g < 0) {
+										$g = 0;
+									}
+									$ctg[$c] = $g;
+								}
+							}
+						}
+						break;
+					}
+					case 4: { // Format 4: Segment mapping to delta values
+						$length = $this->_getUSHORT($font, $offset);
+						$offset += 2;
+						$offset += 2; // skip version/language
+						$segCount = ($this->_getUSHORT($font, $offset) / 2);
+						$offset += 2;
+						$offset += 6; // skip searchRange, entrySelector, rangeShift
+						$endCount = array(); // array of end character codes for each segment
+						for ($k = 0; $k < $segCount; ++$k) {
+							$endCount[$k] = $this->_getUSHORT($font, $offset);
+							$offset += 2;
+						}
+						$offset += 2; // skip reservedPad
+						$startCount = array(); // array of start character codes for each segment
+						for ($k = 0; $k < $segCount; ++$k) {
+							$startCount[$k] = $this->_getUSHORT($font, $offset);
+							$offset += 2;
+						}
+						$idDelta = array(); // delta for all character codes in segment
+						for ($k = 0; $k < $segCount; ++$k) {
+							$idDelta[$k] = $this->_getUSHORT($font, $offset);
+							$offset += 2;
+						}
+						$idRangeOffset = array(); // Offsets into glyphIdArray or 0
+						for ($k = 0; $k < $segCount; ++$k) {
+							$idRangeOffset[$k] = $this->_getUSHORT($font, $offset);
+							$offset += 2;
+						}
+						$gidlen = ($length / 2) - 8 - (4 * $segCount);
+						$glyphIdArray = array(); // glyph index array
+						for ($k = 0; $k < $gidlen; ++$k) {
+							$glyphIdArray[$k] = $this->_getUSHORT($font, $offset);
+							$offset += 2;
+						}
+						for ($k = 0; $k < $segCount; ++$k) {
+							for ($c = $startCount[$k]; $c <= $endCount[$k]; ++$c) {
+								if ($idRangeOffset[$k] == 0) {
+									$g = $c;
+								} else {
+									$gid = (($idRangeOffset[$k] / 2) + ($c - $startCount[$k]) - ($segCount - $k));
+									$g = $glyphIdArray[$gid];
+								}
+								$g += ($idDelta[$k] - 65536);
+								if ($g < 0) {
+									$g = 0;
+								}
+								$ctg[$c] = $g;
+							}
+						}
+						break;
+					}
+					case 6: { // Format 6: Trimmed table mapping
+						$offset += 4; // skip length and version/language
+						$firstCode = $this->_getUSHORT($font, $offset);
+						$offset += 2;
+						$entryCount = $this->_getUSHORT($font, $offset);
+						$offset += 2;
+						for ($k = 0; $k < $entryCount; ++$k) {
+							$c = ($k + $firstCode);
+							$g = $this->_getUSHORT($font, $offset);
+							$ctg[$c] = $g;
+							$offset += 2;
+						}
+						break;
+					}
+					case 8: { // Format 8: Mixed 16-bit and 32-bit coverage
+						$offset += 10; // skip reserved, length and version/language
+						for ($k = 0; $k < 8192; ++$k) {
+							$is32[$k] = $this->_getBYTE($font, $offset);
+							++$offset;
+						}
+						$nGroups = $this->_getULONG($font, $offset);
+						$offset += 4;
+						for ($i = 0; $i < $nGroups; ++$i) {
+							$startCharCode = $this->_getULONG($font, $offset);
+							$offset += 4;
+							$endCharCode = $this->_getULONG($font, $offset);
+							$offset += 4;
+							$startGlyphID = $this->_getULONG($font, $offset);
+							$offset += 4;
+							for ($k = $startCharCode; $k <= $endCharCode; ++$k) {
+								$is32idx = floor($c / 8);
+								if ((isset($is32[$is32idx])) AND (($is32[$is32idx] & (1 << (7 - ($c % 8)))) == 0)) {
+									$c = $k;
+								} else {
+									// 32 bit format
+									// convert to decimal (http://www.unicode.org/faq//utf_bom.html#utf16-4)
+									//LEAD_OFFSET = (0xD800 - (0x10000 >> 10)) = 55232
+									//SURROGATE_OFFSET = (0x10000 - (0xD800 << 10) - 0xDC00) = -56613888
+									$c = ((55232 + ($k >> 10)) << 10) + (0xDC00 + ($k & 0x3FF)) -56613888;
+								}
+								$ctg[$c] = $g;
+								++$startGlyphID;
+							}
+						}
+						break;
+					}
+					case 10: { // Format 10: Trimmed array
+						$offset += 10; // skip reserved, length and version/language
+						$startCharCode = $this->_getULONG($font, $offset);
+						$offset += 4;
+						$numChars = $this->_getULONG($font, $offset);
+						$offset += 4;
+						for ($k = 0; $k < $numChars; ++$k) {
+							$c = ($k + $startCharCode);
+							$g = $this->_getUSHORT($font, $offset);
+							$ctg[$c] = $g;
+							$offset += 2;
+						}
+						break;
+					}
+					case 12: { // Format 12: Segmented coverage
+						$offset += 10; // skip length and version/language
+						$nGroups = $this->_getULONG($font, $offset);
+						$offset += 4;
+						for ($k = 0; $k < $nGroups; ++$k) {
+							$startCharCode = $this->_getULONG($font, $offset);
+							$offset += 4;
+							$endCharCode = $this->_getULONG($font, $offset);
+							$offset += 4;
+							$startGlyphCode = $this->_getULONG($font, $offset);
+							$offset += 4;
+							for ($c = $startCharCode; $c <= $endCharCode; ++$c) {
+								$ctg[$c] = $startGlyphCode;
+								++$startGlyphCode;
+							}
+						}
+						break;
+					}
+					case 13: { // Format 13: Many-to-one range mappings
+						// to be implemented ...
+						break;
+					}
+					case 14: { // Format 14: Unicode Variation Sequences
+						// to be implemented ...
+						break;
+					}
+				}
+			}
+			if (!isset($ctg[0])) {
+				$ctg[0] = 0;
+			}
+			// get xHeight (height of x)
+			$offset = ($table['glyf']['offset'] + $indexToLoc[$ctg[120]] + 4);
+			$yMin = $this->_getFWORD($font, $offset);
+			$offset += 4;
+			$yMax = $this->_getFWORD($font, $offset);
+			$offset += 2;
+			$fmetric['XHeight'] = round(($yMax - $yMin) * $urk);
+			// get CapHeight (height of H)
+			$offset = ($table['glyf']['offset'] + $indexToLoc[$ctg[72]] + 4);
+			$yMin = $this->_getFWORD($font, $offset);
+			$offset += 4;
+			$yMax = $this->_getFWORD($font, $offset);
+			$offset += 2;
+			$fmetric['CapHeight'] = round(($yMax - $yMin) * $urk);
+			// ceate widths array
+			$cw = array();
+			$offset = $table['hmtx']['offset'];
+			for ($i =0 ; $i < $numberOfHMetrics; ++$i) {
+				$cw[$i] = round($this->_getUFWORD($font, $offset) * $urk);
+				$offset += 4; // skip lsb
+			}
+			if ($numberOfHMetrics < $numGlyphs) {
+				// fill missing widths with the last value
+				$cw = array_pad($cw, $numGlyphs, $cw[($numberOfHMetrics - 1)]);
+			}
+			$fmetric['MissingWidth'] = $cw[0];
+			$fmetric['cw'] = '';
+			for ($cid = 0; $cid <= 65535; ++$cid) {
+				if (isset($ctg[$cid]) AND isset($cw[$ctg[$cid]])) {
+					$fmetric['cw'] .= ','.$cid.'=>'.$cw[$ctg[$cid]];
+				}
+			}
+		} // end of true type
+		// ---------- create php font file ----------
+		$pfile = '<'.'?'.'php'."\n";
+		$pfile .= '// TCPDF FONT FILE DESCRIPTION'."\n";
+		$pfile .= '$type=\''.$fmetric['type'].'\';'."\n";
+		$pfile .= '$name=\''.$fmetric['name'].'\';'."\n";
+		$pfile .= '$up='.$fmetric['underlinePosition'].';'."\n";
+		$pfile .= '$ut='.$fmetric['underlineThickness'].';'."\n";
+		if ($fmetric['MissingWidth'] > 0) {
+			$pfile .= '$dw='.$fmetric['MissingWidth'].';'."\n";
+		} else {
+			$pfile .= '$dw='.$fmetric['AvgWidth'].';'."\n";
+		}
+		$pfile .= '$diff=\''.$fmetric['diff'].'\';'."\n";
+		if ($fmetric['type'] == 'Type1') {
+			// Type 1
+			$pfile .= '$enc=\''.$fmetric['enc'].'\';'."\n";
+			$pfile .= '$file=\''.$fmetric['file'].'\';'."\n";
+			$pfile .= '$size1='.$fmetric['size1'].';'."\n";
+			$pfile .= '$size2='.$fmetric['size2'].';'."\n";
+		} else {
+			$pfile .= '$originalsize='.$fmetric['originalsize'].';'."\n";
+			if ($fmetric['type'] == 'cidfont0') {
+				// CID-0
+				switch ($fonttype) {
+					case 'CID0JP': {
+						$pfile .= '// Japanese'."\n";
+						$pfile .= '$enc=\'UniJIS-UTF16-H\';'."\n";
+						$pfile .= '$cidinfo=array(\'Registry\'=>\'Adobe\', \'Ordering\'=>\'Japan1\',\'Supplement\'=>5);'."\n";
+						$pfile .= 'include(dirname(__FILE__).\'/uni2cid_aj16.php\');'."\n";
+						break;
+					}
+					case 'CID0KR': {
+						$pfile .= '// Korean'."\n";
+						$pfile .= '$enc=\'UniKS-UTF16-H\';'."\n";
+						$pfile .= '$cidinfo=array(\'Registry\'=>\'Adobe\', \'Ordering\'=>\'Korea1\',\'Supplement\'=>0);'."\n";
+						$pfile .= 'include(dirname(__FILE__).\'/uni2cid_ak12.php\');'."\n";
+						break;
+					}
+					case 'CID0CS': {
+						$pfile .= '// Chinese Simplified'."\n";
+						$pfile .= '$enc=\'UniGB-UTF16-H\';'."\n";
+						$pfile .= '$cidinfo=array(\'Registry\'=>\'Adobe\', \'Ordering\'=>\'GB1\',\'Supplement\'=>2);'."\n";
+						$pfile .= 'include(dirname(__FILE__).\'/uni2cid_ag15.php\');'."\n";
+						break;
+					}
+					case 'CID0CT':
+					default: {
+						$pfile .= '// Chinese Traditional'."\n";
+						$pfile .= '$enc=\'UniCNS-UTF16-H\';'."\n";
+						$pfile .= '$cidinfo=array(\'Registry\'=>\'Adobe\', \'Ordering\'=>\'CNS1\',\'Supplement\'=>0);'."\n";
+						$pfile .= 'include(dirname(__FILE__).\'/uni2cid_aj16.php\');'."\n";
+						break;
+					}
+				}
+			} else {
+				// TrueType or OpenType
+				$pfile .= '$enc=\''.$fmetric['enc'].'\';'."\n";
+				$pfile .= '$file=\''.$fmetric['file'].'\';'."\n";
+				$pfile .= '$ctg=\''.$fmetric['ctg'].'\';'."\n";
+				// create CIDToGIDMap
+				$cidtogidmap = str_pad('', 131072, "\x00"); // (256 * 256 * 2) = 131072
+				foreach ($ctg as $cid => $gid) {
+					$cidtogidmap = $this->updateCIDtoGIDmap($cidtogidmap, $cid, $ctg[$cid]);
+				}
+				// store compressed CIDToGIDMap
+				$fp = fopen($this->_getfontpath().$fmetric['ctg'], 'wb');
+				fwrite($fp, gzcompress($cidtogidmap));
+				fclose($fp);
+			}
+		}
+		$pfile .= '$desc=array(';
+		$pfile .= '\'Flags\'=>'.$fmetric['Flags'].',';
+		$pfile .= '\'FontBBox\'=>\'['.$fmetric['bbox'].']\',';
+		$pfile .= '\'ItalicAngle\'=>'.$fmetric['italicAngle'].',';
+		$pfile .= '\'Ascent\'=>'.$fmetric['Ascent'].',';
+		$pfile .= '\'Descent\'=>'.$fmetric['Descent'].',';
+		$pfile .= '\'Leading\'=>'.$fmetric['Leading'].',';
+		$pfile .= '\'CapHeight\'=>'.$fmetric['CapHeight'].',';
+		$pfile .= '\'XHeight\'=>'.$fmetric['XHeight'].',';
+		$pfile .= '\'StemV\'=>'.$fmetric['StemV'].',';
+		$pfile .= '\'StemH\'=>'.$fmetric['StemH'].',';
+		$pfile .= '\'AvgWidth\'=>'.$fmetric['AvgWidth'].',';
+		$pfile .= '\'MaxWidth\'=>'.$fmetric['MaxWidth'].',';
+		$pfile .= '\'MissingWidth\'=>'.$fmetric['MissingWidth'].'';
+		$pfile .= ');'."\n";
+		$pfile .= '$cw=array('.substr($fmetric['cw'], 1).');'."\n";
+		$pfile .= '// --- EOF ---'."\n";
+		// store file
+		$fp = fopen($this->_getfontpath().$font_name.'.php', 'w');
+		fwrite($fp, $pfile);
+		fclose($fp);
+		// return TCPDF font name
+		return $font_name;
+	}
 
 	/**
 	 * Returns a subset of the TrueType font data without the unused glyphs.
 	 * @param $font (string) TrueType font data.
 	 * @param $subsetchars (array) Array of used characters (the glyphs to keep).
-	 * @return string a subset of TrueType font data without the unused glyphs
+	 * @return (string) A subset of TrueType font data without the unused glyphs.
 	 * @author Nicola Asuni
 	 * @protected
 	 * @since 5.2.000 (2010-06-02)
@@ -22246,6 +23133,22 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					$checked = true;
 				} else {
 					$checked = false;
+				}
+				if (isset($tag['align'])) {
+					switch ($tag['align']) {
+						case 'C': {
+							$opt['q'] = 1;
+							break;
+						}
+						case 'R': {
+							$opt['q'] = 2;
+							break;
+						}
+						case 'L':
+						default: {
+							break;
+						}
+					}
 				}
 				switch ($tag['attribute']['type']) {
 					case 'text': {

@@ -1,3 +1,12 @@
+5.9.123 (2011-10-02)
+	- The method addTTFfont() wad added to automatically convert TTF fonts (check the new fonts guide at http://www.tcpdf.org).
+	- Old font utils were removed.
+	- All fonts were updated and new arabic fonts were added (almohanad were removed and replaced by aefurat and aealarabiya).
+	- The file unicode_data.php was updated.
+	- The file encodings_maps.php was added.
+	- PDF/A files are now compressed to save space.
+	- XHTML input form fields now support text-alignment attribute.
+
 5.9.122 (2011-09-29)
 	- PDF/A-1b compliance was improved to pass some online testing.
 

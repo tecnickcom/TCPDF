@@ -8,8 +8,8 @@ http://sourceforge.net/donate/index.php?group_id=128076
 ------------------------------------------------------------
 
 Name: TCPDF
-Version: 5.9.122
-Release date: 2011-09-29
+Version: 5.9.123
+Release date: 2011-10-02
 Author:	Nicola Asuni
 
 Copyright (c) 2002-2011:
@@ -62,8 +62,7 @@ Installation (full instructions on http:  www.tcpdf.org):
 	3. call the examples/example_001.php page with your browser to see an example
 
 Source Code Documentation:
-	doc/index.html
-	http://www.tcpdf.org/doc/
+	http://www.tcpdf.org
 
 For Additional Documentation:
 	http://www.tcpdf.org

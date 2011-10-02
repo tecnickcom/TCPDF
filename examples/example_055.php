@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_055.php
 // Begin       : 2009-10-21
-// Last Update : 2010-12-27
+// Last Update : 2011-01-01
 //
 // Description : Example 055 for TCPDF class
 //               Display all characters available on core fonts.
@@ -70,7 +70,7 @@ $pdf->setLanguageArray($l);
 $pdf->SetFont('helvetica', '', 14);
 
 // array of font names
-$core_fonts = array('courier', 'helvetica', 'times', 'symbol', 'zapfdingbats');
+$core_fonts = array('courier', 'courierB', 'courierI', 'courierBI', 'helvetica', 'helveticaB', 'helveticaI', 'helveticaBI', 'times', 'timesB', 'timesI', 'timesBI', 'symbol', 'zapfdingbats');
 
 // set fill color
 $pdf->SetFillColor(221,238,255);
@@ -111,5 +111,4 @@ foreach($core_fonts as $font) {
 $pdf->Output('example_055.pdf', 'I');
 
 //============================================================+
-// END OF FILE                                                
-//============================================================+
+// END OF FILE                                               //============================================================+

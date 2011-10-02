@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_033.php
 // Begin       : 2008-06-24
-// Last Update : 2010-08-08
+// Last Update : 2011-10-01
 //
 // Description : Example 033 for TCPDF class
 //               Mixed font types
@@ -90,7 +90,7 @@ $pdf->MultiCell(80, 0, "[True Type Unicode font] : Cras eros leo, porttitor port
 
 $pdf->Ln(2);
 
-$pdf->SetFont('arialunicid0', '', 9);
+$pdf->SetFont('cid0jp', '', 9);
 
 $pdf->MultiCell(80, 0, "[CID-0 font] : Cras eros leo, porttitor porta, accumsan fermentum, ornare ac, est. Praesent dui lorem, imperdiet at, cursus sed, facilisis aliquam, nibh. Nulla accumsan nonummy diam. Donec tempus. Etiam posuere. Proin lectus. Donec purus. Duis in sem pretium urna feugiat vehicula. Ut suscipit velit eget massa. Nam nonummy, enim commodo euismod placerat, tortor elit tempus lectus, quis suscipit metus lorem blandit turpis.\n", 1, 'J', 0, 1, '', '', true, 0);
 
@@ -101,5 +101,5 @@ $pdf->MultiCell(80, 0, "[CID-0 font] : Cras eros leo, porttitor porta, accumsan 
 $pdf->Output('example_033.pdf', 'I');
 
 //============================================================+
-// END OF FILE                                                
+// END OF FILE
 //============================================================+
