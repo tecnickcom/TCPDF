@@ -1,3 +1,8 @@
+5.9.125 (2011-10-03)
+	- Support for 8-digit CMYK hexadecimal color representation was added (to be used with XHTML and SVG).
+	- Spot colors support was improved (check example n. 37).
+	- Color methods were improved.
+
 5.9.124 (2011-10-02)
 	- Core fonts were updated.
 
