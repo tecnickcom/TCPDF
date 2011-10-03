@@ -1,3 +1,7 @@
+5.9.126 (2011-10-03)
+	- Bug item #3417989 "Graphics State operator in form XObject fails to render" was fixed.
+	- Xobjects problems with transparency, gradients and spot colors were fixed.
+
 5.9.125 (2011-10-03)
 	- Support for 8-digit CMYK hexadecimal color representation was added (to be used with XHTML and SVG).
 	- Spot colors support was improved (check example n. 37).

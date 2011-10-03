@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.125
+// Version     : 5.9.126
 // Begin       : 2002-08-03
 // Last Update : 2011-10-03
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
@@ -137,7 +137,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.125
+ * @version 5.9.126
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -149,7 +149,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.125
+ * @version 5.9.126
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -160,7 +160,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.125';
+	private $tcpdf_version = '5.9.126';
 
 	// Protected properties
 
@@ -4516,6 +4516,10 @@ class TCPDF {
 		$this->ColorFlag = ($this->FillColor != $this->TextColor);
 		if ($this->page > 0) {
 			$this->_out($pdfcolor);
+		}
+		if ($this->inxobj) {
+			// we are inside an XObject template
+			$this->xobjects[$this->xobjid]['spot_colors'][$name] = $this->spot_colors[$name];
 		}
 		return $pdfcolor;
 	}
@@ -11913,6 +11917,41 @@ class TCPDF {
 				$out .= ' /Matrix [1 0 0 1 0 0]';
 				$out .= ' /Resources <<';
 				$out .= ' /ProcSet [/PDF /Text /ImageB /ImageC /ImageI]';
+				if (!$this->pdfa_mode) {
+					// transparency
+					if (isset($data['extgstates']) AND !empty($data['extgstates'])) {
+						$out .= ' /ExtGState <<';
+						foreach ($data['extgstates'] as $k => $extgstate) {
+							if (isset($this->extgstates[$k]['name'])) {
+								$out .= ' /'.$this->extgstates[$k]['name'];
+							} else {
+								$out .= ' /GS'.$k;
+							}
+							$out .= ' '.$this->extgstates[$k]['n'].' 0 R';
+						}
+						$out .= ' >>';
+					}
+					if (isset($data['gradients']) AND !empty($data['gradients'])) {
+						$gp = '';
+						$gs = '';
+						foreach ($data['gradients'] as $id => $grad) {
+							// gradient patterns
+							$gp .= ' /p'.$id.' '.$this->gradients[$id]['pattern'].' 0 R';
+							// gradient shadings
+							$gs .= ' /Sh'.$id.' '.$this->gradients[$id]['id'].' 0 R';
+						}
+						$out .= ' /Pattern <<'.$gp.' >>';
+						$out .= ' /Shading <<'.$gs.' >>';
+					}
+				}
+				// spot colors
+				if (isset($data['spot_colors']) AND !empty($data['spot_colors'])) {
+					$out .= ' /ColorSpace <<';
+					foreach ($data['spot_colors'] as $name => $color) {
+						$out .= ' /CS'.$color['i'].' '.$this->spot_colors[$name]['n'].' 0 R';
+					}
+					$out .= ' >>';
+				}
 				// fonts
 				if (!empty($data['fonts'])) {
 					$out .= ' /Font <<';
@@ -12018,35 +12057,33 @@ class TCPDF {
 		}
 		if (!$this->pdfa_mode) {
 			// transparency
-			$out .= ' /ExtGState <<';
-			foreach ($this->extgstates as $k => $extgstate) {
-				if (isset($extgstate['name'])) {
-					$out .= ' /'.$extgstate['name'];
-				} else {
-					$out .= ' /GS'.$k;
-				}
-				$out .= ' '.$extgstate['n'].' 0 R';
-			}
-			$out .= ' >>';
-			// gradient patterns
-			if (isset($this->gradients) AND (count($this->gradients) > 0)) {
-				$out .= ' /Pattern <<';
-				foreach ($this->gradients as $id => $grad) {
-					$out .= ' /p'.$id.' '.$grad['pattern'].' 0 R';
+			if (isset($this->extgstates) AND !empty($this->extgstates)) {
+				$out .= ' /ExtGState <<';
+				foreach ($this->extgstates as $k => $extgstate) {
+					if (isset($extgstate['name'])) {
+						$out .= ' /'.$extgstate['name'];
+					} else {
+						$out .= ' /GS'.$k;
+					}
+					$out .= ' '.$extgstate['n'].' 0 R';
 				}
 				$out .= ' >>';
 			}
-			// gradient shadings
-			if (isset($this->gradients) AND (count($this->gradients) > 0)) {
-				$out .= ' /Shading <<';
+			if (isset($this->gradients) AND !empty($this->gradients)) {
+				$gp = '';
+				$gs = '';
 				foreach ($this->gradients as $id => $grad) {
-					$out .= ' /Sh'.$id.' '.$grad['id'].' 0 R';
+					// gradient patterns
+					$gp .= ' /p'.$id.' '.$grad['pattern'].' 0 R';
+					// gradient shadings
+					$gs .= ' /Sh'.$id.' '.$grad['id'].' 0 R';
 				}
-				$out .= ' >>';
+				$out .= ' /Pattern <<'.$gp.' >>';
+				$out .= ' /Shading <<'.$gs.' >>';
 			}
 		}
 		// spot colors
-		if (isset($this->spot_colors) AND (count($this->spot_colors) > 0)) {
+		if (isset($this->spot_colors) AND !empty($this->spot_colors)) {
 			$out .= ' /ColorSpace <<';
 			foreach ($this->spot_colors as $color) {
 				$out .= ' /CS'.$color['i'].' '.$color['n'].' 0 R';
@@ -12067,9 +12104,9 @@ class TCPDF {
 		$this->_putocg();
 		$this->_putfonts();
 		$this->_putimages();
-		$this->_putxobjects();
 		$this->_putspotcolors();
 		$this->_putshaders();
+		$this->_putxobjects();
 		$this->_putresourcedict();
 		$this->_putdests();
 		$this->_putbookmarks();
@@ -17772,15 +17809,23 @@ class TCPDF {
 			// transparencies are not allowed in PDF/A mode
 			return;
 		}
-		$n = count($this->extgstates) + 1;
 		// check if this ExtGState already exist
-		for ($i = 1; $i < $n; ++$i) {
-			if ($this->extgstates[$i]['parms'] == $parms) {
+		foreach ($this->extgstates as $i => $ext) {
+			if ($ext['parms'] == $parms) {
+				if ($this->inxobj) {
+					// we are inside an XObject template
+					$this->xobjects[$this->xobjid]['extgstates'][$i] = $ext;
+				}
 				// return reference to existing ExtGState
 				return $i;
 			}
 		}
-		$this->extgstates[$n]['parms'] = $parms;
+		$n = (count($this->extgstates) + 1);
+		$this->extgstates[$n] = array('parms' => $parms);
+		if ($this->inxobj) {
+			// we are inside an XObject template
+			$this->xobjects[$this->xobjid]['extgstates'][$n] = $this->extgstates[$n];
+		}
 		return $n;
 	}
 
@@ -17808,11 +17853,10 @@ class TCPDF {
 			// transparencies are not allowed in PDF/A mode
 			return;
 		}
-		$ne = count($this->extgstates);
-		for ($i = 1; $i <= $ne; ++$i) {
+		foreach ($this->extgstates as $i => $ext) {
 			$this->extgstates[$i]['n'] = $this->_newobj();
 			$out = '<< /Type /ExtGState';
-			foreach ($this->extgstates[$i]['parms'] as $k => $v) {
+			foreach ($ext['parms'] as $k => $v) {
 				if (is_float($v)) {
 					$v = sprintf('%.2F', $v);
 				}
@@ -18239,6 +18283,10 @@ class TCPDF {
 		$this->_out('/Sh'.$n.' sh');
 		//restore previous Graphic State
 		$this->_out('Q');
+		if ($this->inxobj) {
+			// we are inside an XObject template
+			$this->xobjects[$this->xobjid]['gradients'][$n] = $this->gradients[$n];
+		}
 	}
 
 	/**
@@ -18368,6 +18416,10 @@ class TCPDF {
 		$this->_out('/Sh'.$n.' sh');
 		//restore previous Graphic State
 		$this->_out('Q');
+		if ($this->inxobj) {
+			// we are inside an XObject template
+			$this->xobjects[$this->xobjid]['gradients'][$n] = $this->gradients[$n];
+		}
 	}
 
 	/**
@@ -26474,6 +26526,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$this->xobjects[$this->xobjid]['images'] = array();
 		$this->xobjects[$this->xobjid]['fonts'] = array();
 		$this->xobjects[$this->xobjid]['annotations'] = array();
+		$this->xobjects[$this->xobjid]['extgstates'] = array();
+		$this->xobjects[$this->xobjid]['gradients'] = array();
+		$this->xobjects[$this->xobjid]['spot_colors'] = array();
 		// set new environment
 		$this->num_columns = 1;
 		$this->current_column = 0;
