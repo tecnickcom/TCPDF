@@ -16975,8 +16975,11 @@ class TCPDF {
 		} else {
 			$opt['as'] = 'Off';
 		}
-		// store flags
-		$this->radiobutton_groups[$this->page][$name]['#readonly#'] = ($opt['f'] & 64);
+		// store readonly flag
+		if (!isset($this->radiobutton_groups[$this->page][$name]['#readonly#'])) {
+			$this->radiobutton_groups[$this->page][$name]['#readonly#'] = false;
+		}
+		$this->radiobutton_groups[$this->page][$name]['#readonly#'] |= ($opt['f'] & 64);
 		$this->Annotation($x, $y, $w, $w, $name, $opt, 0);
 		if ($this->rtl) {
 			$this->x -= $w;
