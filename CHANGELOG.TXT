@@ -1,3 +1,6 @@
+5.9.127 (2011-10-04)
+	- Readonly mode option was activated for radiobuttons.
+
 5.9.126 (2011-10-03)
 	- Bug item #3417989 "Graphics State operator in form XObject fails to render" was fixed.
 	- Xobjects problems with transparency, gradients and spot colors were fixed.

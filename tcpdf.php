@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.126
+// Version     : 5.9.127
 // Begin       : 2002-08-03
-// Last Update : 2011-10-03
+// Last Update : 2011-10-04
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -137,7 +137,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.126
+ * @version 5.9.127
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -149,7 +149,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.126
+ * @version 5.9.127
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -160,7 +160,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.126';
+	private $tcpdf_version = '5.9.127';
 
 	// Protected properties
 
@@ -9020,13 +9020,19 @@ class TCPDF {
 						$annots .= ' /Type /Annot';
 						$annots .= ' /Subtype /Widget';
 						$annots .= ' /Rect [0 0 0 0]';
-						$annots .= ' /F 4'; // default print for PDF/A
+						if ($this->radiobutton_groups[$n][$pl['txt']]['#readonly#']) {
+							// read only
+							$annots .= ' /F 68';
+							$annots .= ' /Ff 49153';
+						} else {
+							$annots .= ' /F 4'; // default print for PDF/A
+							$annots .= ' /Ff 49152';
+						}
 						$annots .= ' /T '.$this->_datastring($pl['txt'], $radio_button_obj_id);
 						$annots .= ' /FT /Btn';
-						$annots .= ' /Ff 49152';
 						$annots .= ' /Kids [';
 						foreach ($this->radiobutton_groups[$n][$pl['txt']] as $key => $data) {
-							if ($key !== 'n') {
+							if (($key !== 'n') AND ($key != '#readonly#')) {
 								$annots .= ' '.$data['kid'].' 0 R';
 								if ($data['def'] !== 'Off') {
 									$defval = $data['def'];
@@ -16969,6 +16975,8 @@ class TCPDF {
 		} else {
 			$opt['as'] = 'Off';
 		}
+		// store flags
+		$this->radiobutton_groups[$this->page][$name]['#readonly#'] = ($opt['f'] & 64);
 		$this->Annotation($x, $y, $w, $w, $name, $opt, 0);
 		if ($this->rtl) {
 			$this->x -= $w;
