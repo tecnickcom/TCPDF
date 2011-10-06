@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.127
+// Version     : 5.9.128
 // Begin       : 2002-08-03
-// Last Update : 2011-10-04
+// Last Update : 2011-10-06
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -137,7 +137,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.127
+ * @version 5.9.128
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -149,7 +149,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.127
+ * @version 5.9.128
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -160,7 +160,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.127';
+	private $tcpdf_version = '5.9.128';
 
 	// Protected properties
 
@@ -1822,6 +1822,13 @@ class TCPDF {
 	 */
 	protected $doc_date;
 
+	/**
+	 * Custom XMP data.
+	 * @protected
+	 * @since 5.9.128 (2011-10-06)
+	 */
+	protected $custom_xmp = '';
+
 	//------------------------------------------------------------
 	// METHODS
 	//------------------------------------------------------------
@@ -1990,6 +1997,7 @@ class TCPDF {
 		// get default graphic vars
 		$this->default_graphic_vars = $this->getGraphicVars();
 		$this->header_xobj_autoreset = false;
+		$this->custom_xmp = '';
 	}
 
 	/**
@@ -9797,20 +9805,59 @@ class TCPDF {
 	/**
 	 * Convert and add the selected TTF/OTF font to the fonts folder (that must be writeable).
 	 * @param $fontfile (string) TrueType font file (full path).
-	 * @param $fonttype (string) Font type. Valid values are: TrueTypeUnicode, TrueType, Type1, CID0JP = CID-0 Japanese, CID0KR = CID-0 Korean, CID0CS = CID-0 Chinese Simplified, CID0CT = CID-0 Chinese Traditional.
-	 * @param $enc (string) Name of the encoding table to use. Omit this parameter for TrueType Unicode, OpenType Unicode and symbolic fonts like Symbol or ZapfDingBats.
-	 * @param $flags (int) Unsigned 32-bit integer containing flags specifying various characteristics of the font (PDF32000:2008 - 9.8.2 Font Descriptor Flags): +1 for fixed font; +4 for symbol or +32 for non-symbol; +64 for italic.
+	 * @param $fonttype (string) Font type. Leave empty for autodetect mode. Valid values are: TrueTypeUnicode, TrueType, Type1, CID0JP = CID-0 Japanese, CID0KR = CID-0 Korean, CID0CS = CID-0 Chinese Simplified, CID0CT = CID-0 Chinese Traditional.
+	 * @param $enc (string) Name of the encoding table to use. Leave empty for default mode. Omit this parameter for TrueType Unicode, OpenType Unicode and symbolic fonts like Symbol or ZapfDingBats.
+	 * @param $flags (int) Unsigned 32-bit integer containing flags specifying various characteristics of the font (PDF32000:2008 - 9.8.2 Font Descriptor Flags): +1 for fixed font; +4 for symbol or +32 for non-symbol; +64 for italic. Fixed and Italic mode are generally autodetected so you have to set it to 32 = non-symbolic font (default) or 4 = symbolic font.
+	 * @param $outpath (string) Output path for generated font files (must be writeable by the web server). Leave empty for default font folder.
 	 * @return (string) TCPDF font name.
 	 * @author Nicola Asuni
 	 * @public
 	 * @since 5.9.123 (2010-09-30)
 	 */
-	public function addTTFfont($fontfile, $fonttype='TrueTypeUnicode', $enc='', $flags=32) {
+	public function addTTFfont($fontfile, $fonttype='', $enc='', $flags=32, $outpath='') {
 		if (!file_exists($fontfile)) {
 			$this->Error('Could not find file: '.$fontfile.'');
 		}
 		// font metrics
 		$fmetric = array();
+		// build new font name for TCPDF compatibility
+		$font_path_parts = pathinfo($fontfile);
+		if (!isset($font_path_parts['filename'])) {
+			$font_path_parts['filename'] = substr($font_path_parts['basename'], 0, -(strlen($font_path_parts['extension']) + 1));
+		}
+		$font_name = strtolower($font_path_parts['filename']);
+		$font_name = preg_replace('/[^a-z0-9_]/', '', $font_name);
+		$search  = array('bold', 'oblique', 'italic', 'regular');
+		$replace = array('b', 'i', 'i', '');
+		$font_name = str_replace($search, $replace, $font_name);
+		if (empty($font_name)) {
+			// set generic name
+			$font_name = 'tcpdffont';
+		}
+		// set output path
+		if (empty($outpath)) {
+			$outpath = $this->_getfontpath();
+		}
+		// check if this font already exist
+		if (file_exists($outpath.$font_name.'.php')) {
+			// this font already exist (delete it from fonts folder to rebuild it)
+			return $font_name;
+		}
+		$fmetric['file'] = $font_name.'.z';
+		$fmetric['ctg'] = $font_name.'.ctg.z';
+		// get font data
+		$font = file_get_contents($fontfile);
+		$fmetric['originalsize'] = strlen($font);
+		// autodetect font type
+		if (empty($fonttype)) {
+			if ($this->_getULONG($font, 0) == 0x10000) {
+				// True Type (Unicode or not)
+				$fonttype = 'TrueTypeUnicode';
+			} else {
+				// Type 1
+				$fonttype = 'Type1';
+			}
+		}
 		// set font type
 		switch ($fonttype) {
 			case 'CID0CT':
@@ -9857,28 +9904,7 @@ class TCPDF {
 				}
 			}
 		}
-		// build new font name for TCPDF compatibility
-		$font_name = basename($fontfile);
-		$font_name = substr($font_name, 0, -4);
-		$font_name = strtolower($font_name);
-		$font_name = preg_replace('/[^a-z0-9_]/', '', $font_name);
-		$search  = array('bold', 'oblique', 'italic', 'regular');
-		$replace = array('b', 'i', 'i', '');
-		$font_name = str_replace($search, $replace, $font_name);
-		if (empty($font_name)) {
-			// set generic name
-			$font_name = 'tcpdffont';
-		}
-		// check if this font already exist
-		if (file_exists($this->_getfontpath().$font_name.'.php')) {
-			// this font already exist (delete it from fonts folder to rebuild it)
-			return $font_name;
-		}
-		$fmetric['file'] = $font_name.'.z';
-		$fmetric['ctg'] = $font_name.'.ctg.z';
-		// get font data
-		$font = file_get_contents($fontfile);
-		$fmetric['originalsize'] = strlen($font);
+		// parse the font by type
 		if ($fmetric['type'] == 'Type1') {
 			// ---------- TYPE 1 ----------
 			// read first segment
@@ -9897,7 +9923,7 @@ class TCPDF {
 			$encrypted = substr($font, (12 + $fmetric['size1']), $fmetric['size2']);
 			$data .= $encrypted;
 			// store compressed font
-			$fp = fopen($this->_getfontpath().$fmetric['file'], 'wb');
+			$fp = fopen($outpath.$fmetric['file'], 'wb');
 			fwrite($fp, gzcompress($data));
 			fclose($fp);
 			// get font info
@@ -10067,7 +10093,7 @@ class TCPDF {
 			// ---------- TRUE TYPE ----------
 			if ($fmetric['type'] != 'cidfont0') {
 				// store compressed font
-				$fp = fopen($this->_getfontpath().$fmetric['file'], 'wb');
+				$fp = fopen($outpath.$fmetric['file'], 'wb');
 				fwrite($fp, gzcompress($font));
 				fclose($fp);
 			}
@@ -10490,7 +10516,7 @@ class TCPDF {
 			// ceate widths array
 			$cw = array();
 			$offset = $table['hmtx']['offset'];
-			for ($i =0 ; $i < $numberOfHMetrics; ++$i) {
+			for ($i = 0 ; $i < $numberOfHMetrics; ++$i) {
 				$cw[$i] = round($this->_getUFWORD($font, $offset) * $urk);
 				$offset += 4; // skip lsb
 			}
@@ -10506,6 +10532,9 @@ class TCPDF {
 				}
 			}
 		} // end of true type
+		if (($fmetric['type'] == 'TrueTypeUnicode') AND (count($ctg) == 256)) {
+			$fmetric['type'] == 'TrueType';
+		}
 		// ---------- create php font file ----------
 		$pfile = '<'.'?'.'php'."\n";
 		$pfile .= '// TCPDF FONT FILE DESCRIPTION'."\n";
@@ -10571,7 +10600,7 @@ class TCPDF {
 					$cidtogidmap = $this->updateCIDtoGIDmap($cidtogidmap, $cid, $ctg[$cid]);
 				}
 				// store compressed CIDToGIDMap
-				$fp = fopen($this->_getfontpath().$fmetric['ctg'], 'wb');
+				$fp = fopen($outpath.$fmetric['ctg'], 'wb');
 				fwrite($fp, gzcompress($cidtogidmap));
 				fclose($fp);
 			}
@@ -10594,7 +10623,7 @@ class TCPDF {
 		$pfile .= '$cw=array('.substr($fmetric['cw'], 1).');'."\n";
 		$pfile .= '// --- EOF ---'."\n";
 		// store file
-		$fp = fopen($this->_getfontpath().$font_name.'.php', 'w');
+		$fp = fopen($outpath.$font_name.'.php', 'w');
 		fwrite($fp, $pfile);
 		fclose($fp);
 		// return TCPDF font name
@@ -12173,6 +12202,17 @@ class TCPDF {
 	}
 
 	/**
+	 * Set additional XMP data to be added on the default XMP data just before the end of "x:xmpmeta" tag.
+	 * IMPORTANT: This data is added as-is without controls, so you have to validate your data before using this method!
+	 * @param $xmp (string) Custom XMP data.
+	 * @since 5.9.128 (2011-10-06)
+	 * @public
+	 */
+	public function setExtraXMP($xmp) {
+		$this->custom_xmp = $xmp;
+	}
+
+	/**
 	 * Put XMP data object and return ID.
 	 * @return (int) The object ID.
 	 * @since 5.9.121 (2011-09-28)
@@ -12293,6 +12333,7 @@ class TCPDF {
 		$xmp .= "\t\t\t".'</pdfaExtension:schemas>'."\n";
 		$xmp .= "\t\t".'</rdf:Description>'."\n";
 		$xmp .= "\t".'</rdf:RDF>'."\n";
+		$xmp .= $this->custom_xmp;
 		$xmp .= '</x:xmpmeta>'."\n";
 		$xmp .= '<?xpacket end="w"?>';
 		$out = '<< /Type /Metadata /Subtype /XML /Length '.strlen($xmp).' >> stream'."\n".$xmp."\n".'endstream'."\n".'endobj';

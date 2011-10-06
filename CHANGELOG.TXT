@@ -1,3 +1,7 @@
+5.9.128 (2011-10-06)
+	- Method addTTFfont() was improved (check the source code documentation).
+	- Method setExtraXMP() to set custom XMP data was added.
+
 5.9.127 (2011-10-04)
 	- Readonly mode option was activated for radiobuttons.
 
