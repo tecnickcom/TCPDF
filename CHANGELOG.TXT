@@ -1,3 +1,8 @@
+5.9.129 (2011-10-07)
+	- Core fonts metrics was fixed (replace all helvetica and times php files on fonts folder).
+	- Form fields support was improved and some problems were fixed (check the example n. 14).
+	- Bug item #3420249 "Issue with booklet and MultiCell" was fixed.
+
 5.9.128 (2011-10-06)
 	- Method addTTFfont() was improved (check the source code documentation).
 	- Method setExtraXMP() to set custom XMP data was added.

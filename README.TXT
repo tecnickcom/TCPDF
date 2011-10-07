@@ -8,8 +8,8 @@ http://sourceforge.net/donate/index.php?group_id=128076
 ------------------------------------------------------------
 
 Name: TCPDF
-Version: 5.9.128
-Release date: 2011-10-06
+Version: 5.9.129
+Release date: 2011-10-07
 Author:	Nicola Asuni
 
 Copyright (c) 2002-2011:
@@ -31,7 +31,7 @@ Main Features:
     * no external libraries are required for the basic functions;
     * all standard page formats, custom page formats, custom margins and units of measure;
     * UTF-8 Unicode and Right-To-Left languages;
-    * TrueTypeUnicode, OpenTypeUnicode, TrueType, OpenType, Type1 and CID-0 fonts;
+    * TrueTypeUnicode, OpenTypeUnicode v1, TrueType, OpenType v1, Type1 and CID-0 fonts;
     * font subsetting;
     * methods to publish some XHTML + CSS code, Javascript and Forms;
     * images, graphic (geometric figures) and transformation methods;

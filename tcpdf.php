@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.128
+// Version     : 5.9.129
 // Begin       : 2002-08-03
-// Last Update : 2011-10-06
+// Last Update : 2011-10-07
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -42,7 +42,7 @@
 //  * no external libraries are required for the basic functions;
 //  * all standard page formats, custom page formats, custom margins and units of measure;
 //  * UTF-8 Unicode and Right-To-Left languages;
-//  * TrueTypeUnicode, OpenTypeUnicode, TrueType, OpenType, Type1 and CID-0 fonts;
+//  * TrueTypeUnicode, TrueType, Type1 and CID-0 fonts;
 //  * font subsetting;
 //  * methods to publish some XHTML + CSS code, Javascript and Forms;
 //  * images, graphic (geometric figures) and transformation methods;
@@ -109,7 +109,7 @@
  * <li>no external libraries are required for the basic functions;</li>
  * <li>all standard page formats, custom page formats, custom margins and units of measure;</li>
  * <li>UTF-8 Unicode and Right-To-Left languages;</li>
- * <li>TrueTypeUnicode, OpenTypeUnicode, TrueType, OpenType, Type1 and CID-0 fonts;</li>
+ * <li>TrueTypeUnicode, TrueType, Type1 and CID-0 fonts;</li>
  * <li>font subsetting;</li>
  * <li>methods to publish some XHTML + CSS code, Javascript and Forms;</li>
  * <li>images, graphic (geometric figures) and transformation methods;
@@ -137,7 +137,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.128
+ * @version 5.9.129
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -149,7 +149,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.128
+ * @version 5.9.129
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -160,7 +160,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.128';
+	private $tcpdf_version = '5.9.129';
 
 	// Protected properties
 
@@ -4816,7 +4816,7 @@ class TCPDF {
 			$prev_FontFamily = $this->FontFamily;
 			$prev_FontStyle = $this->FontStyle;
 			$prev_FontSizePt = $this->FontSizePt;
-			$this->SetFont($fontname, $fontstyle, $fontsize);
+			$this->SetFont($fontname, $fontstyle, $fontsize, '', 'default', false);
 		}
 		// convert UTF-8 array to Latin1 if required
 		$sa = $this->UTF8ArrToLatin1($sa);
@@ -4830,7 +4830,7 @@ class TCPDF {
 		}
 		// restore previous values
 		if (!$this->empty_string($fontname)) {
-			$this->SetFont($prev_FontFamily, $prev_FontStyle, $prev_FontSizePt);
+			$this->SetFont($prev_FontFamily, $prev_FontStyle, $prev_FontSizePt, '', 'default', false);
 		}
 		if ($getarray) {
 			return $wa;
@@ -5193,12 +5193,13 @@ class TCPDF {
 	 * @param $size (float) Font size in points. The default value is the current size. If no size has been specified since the beginning of the document, the value taken is 12
 	 * @param $fontfile (string) The font definition file. By default, the name is built from the family and style, in lower case with no spaces.
 	 * @param $subset (mixed) if true embedd only a subset of the font (stores only the information related to the used characters); if false embedd full font; if 'default' uses the default value set using setFontSubsetting(). This option is valid only for TrueTypeUnicode fonts. If you want to enable users to change the document, set this parameter to false. If you subset the font, the person who receives your PDF would need to have your same font in order to make changes to your PDF. The file size of the PDF would also be smaller because you are embedding only part of a font.
+	 * @param $out (boolean) if true output the font size command, otherwise only set the font properties.
 	 * @author Nicola Asuni
 	 * @public
 	 * @since 1.0
 	 * @see AddFont(), SetFontSize()
 	 */
-	public function SetFont($family, $style='', $size=0, $fontfile='', $subset='default') {
+	public function SetFont($family, $style='', $size=0, $fontfile='', $subset='default', $out=true) {
 		//Select a font; size given in points
 		if ($size == 0) {
 			$size = $this->FontSizePt;
@@ -5208,12 +5209,12 @@ class TCPDF {
 		$this->FontFamily = $fontdata['family'];
 		$this->FontStyle = $fontdata['style'];
 		$this->CurrentFont = $this->getFontBuffer($fontdata['fontkey']);
-		$this->SetFontSize($size);
+		$this->SetFontSize($size, $out);
 	}
 
 	/**
 	 * Defines the size of the current font.
-	 * @param $size (float) The size (in points)
+	 * @param $size (float) The font size in points.
 	 * @param $out (boolean) if true output the font size command, otherwise only set the font properties.
 	 * @public
 	 * @since 1.0
@@ -5246,8 +5247,8 @@ class TCPDF {
 		} elseif (!isset($font_ascent)) {
 			$font_ascent = $font_height - $font_descent;
 		}
-		$this->FontAscent = $font_ascent / $this->k;
-		$this->FontDescent = $font_descent / $this->k;
+		$this->FontAscent = ($font_ascent / $this->k);
+		$this->FontDescent = ($font_descent / $this->k);
 		if ($out AND ($this->page > 0) AND (isset($this->CurrentFont['i']))) {
 			$this->_out(sprintf('BT /F%d %.2F Tf ET', $this->CurrentFont['i'], $this->FontSizePt));
 		}
@@ -6567,9 +6568,23 @@ class TCPDF {
 		} // end for each page
 		// Get end-of-cell Y position
 		$currentY = $this->GetY();
-		// restore original margin values
-		$this->SetLeftMargin($lMargin);
-		$this->SetRightMargin($rMargin);
+		// restore previous values
+		if ($this->num_columns > 1) {
+			$this->selectColumn();
+		} else {
+			// restore original margins
+			$this->lMargin = $lMargin;
+			$this->rMargin = $rMargin;
+			if ($this->page > $startpage) {
+				// check for margin variations between pages (i.e. booklet mode)
+				$dl = ($this->pagedim[$this->page]['olm'] - $this->pagedim[$startpage]['olm']);
+				$dr = ($this->pagedim[$this->page]['orm'] - $this->pagedim[$startpage]['orm']);
+				if (($dl != 0) OR ($dr != 0)) {
+					$this->lMargin += $dl;
+					$this->rMargin += $dr;
+				}
+			}
+		}
 		if ($ln > 0) {
 			//Go to the beginning of the next line
 			$this->SetY($currentY + $mc_margin['B']);
@@ -9040,7 +9055,7 @@ class TCPDF {
 						$annots .= ' /FT /Btn';
 						$annots .= ' /Kids [';
 						foreach ($this->radiobutton_groups[$n][$pl['txt']] as $key => $data) {
-							if (($key !== 'n') AND ($key != '#readonly#')) {
+							if (isset($data['kid'])) {
 								$annots .= ' '.$data['kid'].' 0 R';
 								if ($data['def'] !== 'Off') {
 									$defval = $data['def'];
@@ -9497,8 +9512,6 @@ class TCPDF {
 								}
 								if (isset($pl['opt']['mk']['tp']) AND ($pl['opt']['mk']['tp'] >= 0) AND ($pl['opt']['mk']['tp'] <= 6)) {
 									$annots .= ' /TP '.intval($pl['opt']['mk']['tp']);
-								} else {
-									$annots .= ' /TP 0';
 								}
 								$annots .= '>>';
 							} // end MK
@@ -9637,7 +9650,7 @@ class TCPDF {
 	}
 
 	/**
-	 * Put appearance streams XObject used to define annotation's appearance states
+	 * Put appearance streams XObject used to define annotation's appearance states.
 	 * @param $w (int) annotation width
 	 * @param $h (int) annotation height
 	 * @param $stream (string) appearance stream
@@ -9660,14 +9673,7 @@ class TCPDF {
 		$rect = sprintf('%.2F %.2F', $w, $h);
 		$out .= ' /BBox [0 0 '.$rect.']';
 		$out .= ' /Matrix [1 0 0 1 0 0]';
-		$out .= ' /Resources <<';
-		$out .= ' /ProcSet [/PDF /Text]';
-		$out .= ' /Font <<';
-		foreach ($this->annotation_fonts as $fontkey => $fontid) {
-			$out .= ' /F'.$fontid.' '.$this->font_obj_ids[$fontkey].' 0 R';
-		}
-		$out .= ' >>';
-		$out .= ' >>';
+		$out .= ' /Resources 2 0 R';
 		$stream = $this->_getrawstream($stream);
 		$out .= ' /Length '.strlen($stream);
 		$out .= ' >>';
@@ -9803,10 +9809,10 @@ class TCPDF {
 	}
 
 	/**
-	 * Convert and add the selected TTF/OTF font to the fonts folder (that must be writeable).
-	 * @param $fontfile (string) TrueType font file (full path).
+	 * Convert and add the selected TrueType or Type1 font to the fonts folder (that must be writeable).
+	 * @param $fontfile (string) TrueType or Type1 font file (full path).
 	 * @param $fonttype (string) Font type. Leave empty for autodetect mode. Valid values are: TrueTypeUnicode, TrueType, Type1, CID0JP = CID-0 Japanese, CID0KR = CID-0 Korean, CID0CS = CID-0 Chinese Simplified, CID0CT = CID-0 Chinese Traditional.
-	 * @param $enc (string) Name of the encoding table to use. Leave empty for default mode. Omit this parameter for TrueType Unicode, OpenType Unicode and symbolic fonts like Symbol or ZapfDingBats.
+	 * @param $enc (string) Name of the encoding table to use. Leave empty for default mode. Omit this parameter for TrueType Unicode and symbolic fonts like Symbol or ZapfDingBats.
 	 * @param $flags (int) Unsigned 32-bit integer containing flags specifying various characteristics of the font (PDF32000:2008 - 9.8.2 Font Descriptor Flags): +1 for fixed font; +4 for symbol or +32 for non-symbol; +64 for italic. Fixed and Italic mode are generally autodetected so you have to set it to 32 = non-symbolic font (default) or 4 = symbolic font.
 	 * @param $outpath (string) Output path for generated font files (must be writeable by the web server). Leave empty for default font folder.
 	 * @return (string) TCPDF font name.
@@ -9853,6 +9859,9 @@ class TCPDF {
 			if ($this->_getULONG($font, 0) == 0x10000) {
 				// True Type (Unicode or not)
 				$fonttype = 'TrueTypeUnicode';
+			} elseif (substr($font, 0, 4) == 'OTTO') {
+				// Open Type (Unicode or not)
+				$this->Error('Unsupported font format: OpenType with CFF data.');
 			} else {
 				// Type 1
 				$fonttype = 'Type1';
@@ -10590,7 +10599,7 @@ class TCPDF {
 					}
 				}
 			} else {
-				// TrueType or OpenType
+				// TrueType
 				$pfile .= '$enc=\''.$fmetric['enc'].'\';'."\n";
 				$pfile .= '$file=\''.$fmetric['file'].'\';'."\n";
 				$pfile .= '$ctg=\''.$fmetric['ctg'].'\';'."\n";
@@ -12474,10 +12483,8 @@ class TCPDF {
 				}
 			}
 			$out .= ' /Fields ['.$objrefs.']';
-			if (!empty($this->form_obj_id) AND !$this->sign) {
-				// It's better to turn off this value and set the appearance stream for each annotation (/AP) to avoid conflicts with signature fields.
-				$out .= ' /NeedAppearances true';
-			}
+			// It's better to turn off this value and set the appearance stream for each annotation (/AP) to avoid conflicts with signature fields.
+			$out .= ' /NeedAppearances false';
 			if ($this->sign AND isset($this->signature_data['cert_type'])) {
 				if ($this->signature_data['cert_type'] > 0) {
 					$out .= ' /SigFlags 3';
@@ -16655,7 +16662,7 @@ class TCPDF {
 			$opt['maxlen'] = intval($prop['charLimit']);
 		}
 		if (!isset($ff)) {
-			$ff = 0;
+			$ff = 0; // default value
 		}
 		// readonly: The read-only characteristic of a field. If a field is read-only, the user can see the field but cannot change it.
 		if (isset($prop['readonly']) AND ($prop['readonly'] == 'true')) {
@@ -16879,8 +16886,22 @@ class TCPDF {
 		$this->annotation_fonts[$this->CurrentFont['fontkey']] = $this->CurrentFont['i'];
 		$fontstyle = sprintf('/F%d %.2F Tf %s', $this->CurrentFont['i'], $this->FontSizePt, $this->TextColor);
 		$popt['da'] = $fontstyle;
+		// build appearance stream
 		$popt['ap'] = array();
-		$popt['ap']['n'] = 'q BT '.$fontstyle.' ET Q';
+		$popt['ap']['n'] = '/Tx BMC q '.$fontstyle.' ';
+		$text = '';
+		if (isset($prop['value']) AND !empty($prop['value'])) {
+			$text = $prop['value'];
+		} elseif (isset($opt['v']) AND !empty($opt['v'])) {
+			$text = $opt['v'];
+		}
+		$tmpid = $this->startTemplate($w, $h, false);
+		$this->MultiCell($w, $h, $text, 0, '', false, 0, 0, 0, true, 0, false, true, 0, 'T', false);
+		$this->endTemplate();
+		--$this->n;
+		$popt['ap']['n'] .= $this->xobjects[$tmpid]['outdata'];
+		unset($this->xobjects[$tmpid]);
+		$popt['ap']['n'] .= 'Q EMC';
 		// merge options
 		$opt = array_merge($popt, $opt);
 		// remove some conflicting options
@@ -16889,32 +16910,30 @@ class TCPDF {
 		$opt['Subtype'] = 'Widget';
 		$opt['ft'] = 'Tx';
 		$opt['t'] = $name;
-		/*
-		Additional annotation's parameters (check _putannotsobj() method):
+		// Additional annotation's parameters (check _putannotsobj() method):
 		//$opt['f']
-		//$opt['ap']
 		//$opt['as']
 		//$opt['bs']
 		//$opt['be']
 		//$opt['c']
 		//$opt['border']
 		//$opt['h']
-		//$opt['mk']
+		//$opt['mk'];
 		//$opt['mk']['r']
-		//$opt['mk']['bc']
-		//$opt['mk']['bg']
-		//$opt['mk']['ca']
-		//$opt['mk']['rc']
-		//$opt['mk']['ac']
-		//$opt['mk']['i']
-		//$opt['mk']['ri']
-		//$opt['mk']['ix']
-		//$opt['mk']['if']
-		//$opt['mk']['if']['sw']
-		//$opt['mk']['if']['s']
-		//$opt['mk']['if']['a']
-		//$opt['mk']['if']['fb']
-		//$opt['mk']['tp']
+		//$opt['mk']['bc'];
+		//$opt['mk']['bg'];
+		unset($opt['mk']['ca']);
+		unset($opt['mk']['rc']);
+		unset($opt['mk']['ac']);
+		unset($opt['mk']['i']);
+		unset($opt['mk']['ri']);
+		unset($opt['mk']['ix']);
+		unset($opt['mk']['if']);
+		//$opt['mk']['if']['sw'];
+		//$opt['mk']['if']['s'];
+		//$opt['mk']['if']['a'];
+		//$opt['mk']['if']['fb'];
+		unset($opt['mk']['tp']);
 		//$opt['tu']
 		//$opt['tm']
 		//$opt['ff']
@@ -16923,7 +16942,6 @@ class TCPDF {
 		//$opt['a']
 		//$opt['aa']
 		//$opt['q']
-		*/
 		$this->Annotation($x, $y, $w, $h, $name, $opt, 0);
 		if ($this->rtl) {
 			$this->x -= $w;
@@ -16933,16 +16951,16 @@ class TCPDF {
 	}
 
 	/**
-	 * Creates a RadioButton field
-	 * @param $name (string) field name
-	 * @param $w (int) width
-	 * @param $prop (array) javascript field properties. Possible values are described on official Javascript for Acrobat API reference.
-	 * @param $opt (array) annotation parameters. Possible values are described on official PDF32000_2008 reference.
-	 * @param $onvalue (string) value to be returned if selected.
-	 * @param $checked (boolean) define the initial state.
+	 * Creates a RadioButton field.
+	 * @param $name (string) Field name.
+	 * @param $w (int) Width or the radio button.
+	 * @param $prop (array) Javascript field properties. Possible values are described on official Javascript for Acrobat API reference.
+	 * @param $opt (array) Annotation parameters. Possible values are described on official PDF32000_2008 reference.
+	 * @param $onvalue (string) Value to be returned if selected.
+	 * @param $checked (boolean) Define the initial state.
 	 * @param $x (float) Abscissa of the upper-left corner of the rectangle
 	 * @param $y (float) Ordinate of the upper-left corner of the rectangle
-	 * @param $js (boolean) if true put the field using JavaScript (requires Acrobat Writer to be rendered).
+	 * @param $js (boolean) If true put the field using JavaScript (requires Acrobat Writer to be rendered).
 	 * @public
 	 * @author Nicola Asuni
 	 * @since 4.8.000 (2009-09-07)
@@ -16977,10 +16995,8 @@ class TCPDF {
 			++$this->n;
 			$this->radiobutton_groups[$this->page][$name]['n'] = $this->n;
 			$this->radio_groups[] = $this->n;
-			$kid = ($this->n + 2);
-		} else {
-			$kid = ($this->n + 1);
 		}
+		$kid = ($this->n + 1);
 		// save object ID to be added on Kids entry on parent object
 		$this->radiobutton_groups[$this->page][$name][] = array('kid' => $kid, 'def' => $defval);
 		// get default style
@@ -16997,10 +17013,12 @@ class TCPDF {
 		$this->annotation_fonts[$tmpfont['fontkey']] = $tmpfont['i'];
 		$fontstyle = sprintf('/F%d %.2F Tf %s', $tmpfont['i'], $this->FontSizePt, $this->TextColor);
 		$popt['da'] = $fontstyle;
+		// build appearance stream
 		$popt['ap'] = array();
 		$popt['ap']['n'] = array();
-		$popt['ap']['n'][$onvalue] = 'q BT '.$fontstyle.' 0 0 Td (8) Tj ET Q';
-		$popt['ap']['n']['Off'] = 'q BT '.$fontstyle.' 0 0 Td (8) Tj ET Q';
+		$fy = (($w - ((($tmpfont['desc']['Ascent'] - $tmpfont['desc']['Descent']) * $this->FontSizePt / 1000) / $this->k)) * $this->k);
+		$popt['ap']['n'][$onvalue] = sprintf('q %s BT /F%d %.2F Tf %.2F %.2F Td ('.chr(108).') Tj ET Q', $this->TextColor, $tmpfont['i'], $this->FontSizePt, 0, $fy);
+		$popt['ap']['n']['Off'] = sprintf('q %s BT /F%d %.2F Tf %.2F %.2F Td ('.chr(109).') Tj ET Q', $this->TextColor, $tmpfont['i'], $this->FontSizePt, 0, $fy);
 		if (!isset($popt['mk'])) {
 			$popt['mk'] = array();
 		}
@@ -17057,7 +17075,7 @@ class TCPDF {
 			$this->_addfield('listbox', $name, $x, $y, $w, $h, $prop);
 			$s = '';
 			foreach ($values as $value) {
-				$s .= "'".addslashes($value)."',";
+				$s .= '\''.addslashes($value).'\',';
 			}
 			$this->javascript .= 'f'.$name.'.setItems(['.substr($s, 0, -1)."]);\n";
 			return;
@@ -17070,8 +17088,20 @@ class TCPDF {
 		$this->annotation_fonts[$this->CurrentFont['fontkey']] = $this->CurrentFont['i'];
 		$fontstyle = sprintf('/F%d %.2F Tf %s', $this->CurrentFont['i'], $this->FontSizePt, $this->TextColor);
 		$popt['da'] = $fontstyle;
+		// build appearance stream
 		$popt['ap'] = array();
-		$popt['ap']['n'] = 'q BT '.$fontstyle.' ET Q';
+		$popt['ap']['n'] = '/Tx BMC q '.$fontstyle.' ';
+		$text = '';
+		foreach($values as $item) {
+			$text .= $item."\n";
+		}
+		$tmpid = $this->startTemplate($w, $h, false);
+		$this->MultiCell($w, $h, $text, 0, '', false, 0, 0, 0, true, 0, false, true, 0, 'T', false);
+		$this->endTemplate();
+		--$this->n;
+		$popt['ap']['n'] .= $this->xobjects[$tmpid]['outdata'];
+		unset($this->xobjects[$tmpid]);
+		$popt['ap']['n'] .= 'Q EMC';
 		// merge options
 		$opt = array_merge($popt, $opt);
 		// set remaining annotation data
@@ -17079,6 +17109,14 @@ class TCPDF {
 		$opt['ft'] = 'Ch';
 		$opt['t'] = $name;
 		$opt['opt'] = $values;
+		unset($opt['mk']['ca']);
+		unset($opt['mk']['rc']);
+		unset($opt['mk']['ac']);
+		unset($opt['mk']['i']);
+		unset($opt['mk']['ri']);
+		unset($opt['mk']['ix']);
+		unset($opt['mk']['if']);
+		unset($opt['mk']['tp']);
 		$this->Annotation($x, $y, $w, $h, $name, $opt, 0);
 		if ($this->rtl) {
 			$this->x -= $w;
@@ -17129,8 +17167,20 @@ class TCPDF {
 		$this->annotation_fonts[$this->CurrentFont['fontkey']] = $this->CurrentFont['i'];
 		$fontstyle = sprintf('/F%d %.2F Tf %s', $this->CurrentFont['i'], $this->FontSizePt, $this->TextColor);
 		$popt['da'] = $fontstyle;
+		// build appearance stream
 		$popt['ap'] = array();
-		$popt['ap']['n'] = 'q BT '.$fontstyle.' ET Q';
+		$popt['ap']['n'] = '/Tx BMC q '.$fontstyle.' ';
+		$text = '';
+		foreach($values as $item) {
+			$text .= $item[1]."\n";
+		}
+		$tmpid = $this->startTemplate($w, $h, false);
+		$this->MultiCell($w, $h, $text, 0, '', false, 0, 0, 0, true, 0, false, true, 0, 'T', false);
+		$this->endTemplate();
+		--$this->n;
+		$popt['ap']['n'] .= $this->xobjects[$tmpid]['outdata'];
+		unset($this->xobjects[$tmpid]);
+		$popt['ap']['n'] .= 'Q EMC';
 		// merge options
 		$opt = array_merge($popt, $opt);
 		// set remaining annotation data
@@ -17138,6 +17188,14 @@ class TCPDF {
 		$opt['ft'] = 'Ch';
 		$opt['t'] = $name;
 		$opt['opt'] = $values;
+		unset($opt['mk']['ca']);
+		unset($opt['mk']['rc']);
+		unset($opt['mk']['ac']);
+		unset($opt['mk']['i']);
+		unset($opt['mk']['ri']);
+		unset($opt['mk']['ix']);
+		unset($opt['mk']['if']);
+		unset($opt['mk']['tp']);
 		$this->Annotation($x, $y, $w, $h, $name, $opt, 0);
 		if ($this->rtl) {
 			$this->x -= $w;
@@ -17189,10 +17247,13 @@ class TCPDF {
 		$this->annotation_fonts[$tmpfont['fontkey']] = $tmpfont['i'];
 		$fontstyle = sprintf('/F%d %.2F Tf %s', $tmpfont['i'], $this->FontSizePt, $this->TextColor);
 		$popt['da'] = $fontstyle;
+		// build appearance stream
 		$popt['ap'] = array();
 		$popt['ap']['n'] = array();
-		$popt['ap']['n']['Yes'] = 'q BT '.$fontstyle.' 0 0 Td (8) Tj ET Q';
-		$popt['ap']['n']['Off'] = 'q BT '.$fontstyle.' 0 0 Td (8) Tj ET Q';
+		$fy = ((($tmpfont['desc']['Ascent'] + $tmpfont['desc']['Descent']) * $this->FontSizePt) / (1000 * $this->k));
+		$fy = (($w - ((($tmpfont['desc']['Ascent'] - $tmpfont['desc']['Descent']) * $this->FontSizePt / 1000) / $this->k)) * $this->k);
+		$popt['ap']['n']['Yes'] = sprintf('q %s BT /F%d %.2F Tf %.2F %.2F Td ('.chr(110).') Tj ET Q', $this->TextColor, $tmpfont['i'], $this->FontSizePt, 0, $fy);
+		$popt['ap']['n']['Off'] = sprintf('q %s BT /F%d %.2F Tf %.2F %.2F Td ('.chr(111).') Tj ET Q', $this->TextColor, $tmpfont['i'], $this->FontSizePt, 0, $fy);
 		// merge options
 		$opt = array_merge($popt, $opt);
 		// set remaining annotation data
@@ -17258,8 +17319,23 @@ class TCPDF {
 		$this->annotation_fonts[$this->CurrentFont['fontkey']] = $this->CurrentFont['i'];
 		$fontstyle = sprintf('/F%d %.2F Tf %s', $this->CurrentFont['i'], $this->FontSizePt, $this->TextColor);
 		$popt['da'] = $fontstyle;
+		// build appearance stream
 		$popt['ap'] = array();
-		$popt['ap']['n'] = 'q BT '.$fontstyle.' ET Q';
+		$popt['ap']['n'] = '/Tx BMC q '.$fontstyle.' ';
+		$tmpid = $this->startTemplate($w, $h, false);
+		$bw = (2 / $this->k); // border width
+		$border = array(
+			'L' => array('width' => $bw, 'cap' => 'square', 'join' => 'miter', 'dash' => 0, 'color' => array(231)),
+			'R' => array('width' => $bw, 'cap' => 'square', 'join' => 'miter', 'dash' => 0, 'color' => array(51)),
+			'T' => array('width' => $bw, 'cap' => 'square', 'join' => 'miter', 'dash' => 0, 'color' => array(231)),
+			'B' => array('width' => $bw, 'cap' => 'square', 'join' => 'miter', 'dash' => 0, 'color' => array(51)));
+		$this->SetFillColor(204);
+		$this->Cell($w, $h, $caption, $border, 0, 'C', true, '', 1, false, 'T', 'M');
+		$this->endTemplate();
+		--$this->n;
+		$popt['ap']['n'] .= $this->xobjects[$tmpid]['outdata'];
+		unset($this->xobjects[$tmpid]);
+		$popt['ap']['n'] .= 'Q EMC';
 		// set additional default options
 		if (!isset($popt['mk'])) {
 			$popt['mk'] = array();
