@@ -16986,6 +16986,10 @@ class TCPDF {
 		} else {
 			$defval = 'Off';
 		}
+		// set font
+		$font = 'zapfdingbats';
+		$this->AddFont($font);
+		$tmpfont = $this->getFontBuffer($font);
 		// set data for parent group
 		if (!isset($this->radiobutton_groups[$this->page])) {
 			$this->radiobutton_groups[$this->page] = array();
@@ -17006,10 +17010,7 @@ class TCPDF {
 		$prop['borderStyle'] = 'inset';
 		// get annotation data
 		$popt = $this->getAnnotOptFromJSProp($prop);
-		// set additional default values
-		$font = 'zapfdingbats';
-		$this->AddFont($font);
-		$tmpfont = $this->getFontBuffer($font);
+		// set additional default options
 		$this->annotation_fonts[$tmpfont['fontkey']] = $tmpfont['i'];
 		$fontstyle = sprintf('/F%d %.2F Tf %s', $tmpfont['i'], $this->FontSizePt, $this->TextColor);
 		$popt['da'] = $fontstyle;

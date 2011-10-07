@@ -27,6 +27,7 @@
  * @since 2008-03-04
  */
 
+
 require_once('../config/lang/eng.php');
 require_once('../tcpdf.php');
 
@@ -102,12 +103,12 @@ $pdf->Ln(6);
 
 // Gender
 $pdf->Cell(35, 5, 'Gender:');
-//$pdf->ComboBox('gender', 10, 5, array('', 'M', 'F'));
 $pdf->ComboBox('gender', 30, 5, array(array('', '-'), array('M', 'Male'), array('F', 'Female')));
 $pdf->Ln(6);
 
 // Drink
 $pdf->Cell(35, 5, 'Drink:');
+//$pdf->RadioButton('drink', 5, array('readonly' => 'true'), array(), 'Water');
 $pdf->RadioButton('drink', 5, array(), array(), 'Water');
 $pdf->Cell(35, 5, 'Water');
 $pdf->Ln(6);
@@ -118,27 +119,31 @@ $pdf->Ln(6);
 $pdf->Cell(35, 5, '');
 $pdf->RadioButton('drink', 5, array(), array(), 'Wine');
 $pdf->Cell(35, 5, 'Wine');
+$pdf->Ln(6);
+$pdf->Cell(35, 5, '');
+$pdf->RadioButton('drink', 5, array(), array(), 'Milk');
+$pdf->Cell(35, 5, 'Milk');
 $pdf->Ln(10);
+
+// Newsletter
+$pdf->Cell(35, 5, 'Newsletter:');
+$pdf->CheckBox('newsletter', 5, true, array(), array(), 'OK');
+
+$pdf->Ln(10);
+// Adress
+$pdf->Cell(35, 5, 'Address:');
+$pdf->TextField('address', 60, 18, array('multiline'=>true, 'lineWidth'=>0, 'borderStyle'=>'none'), array('v'=>'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', 'dv'=>'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'));
+$pdf->Ln(19);
 
 // Listbox
 $pdf->Cell(35, 5, 'List:');
 $pdf->ListBox('listbox', 60, 15, array('', 'item1', 'item2', 'item3', 'item4', 'item5', 'item6', 'item7'), array('multipleSelection'=>'true'));
 $pdf->Ln(20);
 
-// Adress
-$pdf->Cell(35, 5, 'Address:');
-$pdf->TextField('address', 60, 18, array('multiline'=>true));
-$pdf->Ln(19);
-
 // E-mail
 $pdf->Cell(35, 5, 'E-mail:');
 $pdf->TextField('email', 50, 5);
 $pdf->Ln(6);
-
-// Newsletter
-$pdf->Cell(35, 5, 'Newsletter:');
-$pdf->CheckBox('newsletter', 5, true, array(), array(), 'OK');
-$pdf->Ln(10);
 
 // Date of the day
 $pdf->Cell(35, 5, 'Date:');
@@ -155,7 +160,6 @@ $pdf->Button('reset', 30, 10, 'Reset', array('S'=>'ResetForm'), array('lineWidth
 
 // Submit Button
 $pdf->Button('submit', 30, 10, 'Submit', array('S'=>'SubmitForm', 'F'=>'http://localhost/printvars.php', 'Flags'=>array('ExportFormat')), array('lineWidth'=>2, 'borderStyle'=>'beveled', 'fillColor'=>array(128, 196, 255), 'strokeColor'=>array(64, 64, 64)));
-
 
 // Form validation functions
 $js = <<<EOD
