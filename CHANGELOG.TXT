@@ -1,3 +1,6 @@
+5.9.131 (2011-10-13)
+	- An error message was added to ImagePngAlpha() method.
+
 5.9.130 (2011-10-12)
 	- Now you can set image data strings on HTML img tag by encoding the image binary data in this way: $imgsrc = '@'.base64_encode($imgdata);
 

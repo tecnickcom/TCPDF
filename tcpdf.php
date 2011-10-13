@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.130
+// Version     : 5.9.131
 // Begin       : 2002-08-03
-// Last Update : 2011-10-12
+// Last Update : 2011-10-13
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -137,7 +137,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.130
+ * @version 5.9.131
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -149,7 +149,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.130
+ * @version 5.9.131
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -160,7 +160,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.130';
+	private $tcpdf_version = '5.9.131';
 
 	// Protected properties
 
@@ -8213,7 +8213,7 @@ class TCPDF {
 		$tempfile_plain = K_PATH_CACHE.'mskp_'.$filehash;
 		// create temp alpha file
 		$tempfile_alpha = K_PATH_CACHE.'mska_'.$filehash;
-		if (extension_loaded('imagick')) { // ImageMagick
+		if (extension_loaded('imagick')) { // ImageMagick extension
 			// ImageMagick library
 			$img = new Imagick();
 			$img->readImage($file);
@@ -8228,7 +8228,7 @@ class TCPDF {
 			$imga->separateImageChannel(39); // 39 = (imagick::CHANNEL_ALL & ~(imagick::CHANNEL_ALPHA | imagick::CHANNEL_OPACITY | imagick::CHANNEL_MATTE));
 			$imga->setImageFormat('png');
 			$imga->writeImage($tempfile_plain);
-		} else { // GD library
+		} elseif (function_exists('imagecreatefrompng')) { // GD extension
 			// generate images
 			$img = imagecreatefrompng($file);
 			$imgalpha = imagecreate($wpx, $hpx);
@@ -8253,6 +8253,8 @@ class TCPDF {
 			imagecopy($imgplain, $img, 0, 0, 0, 0, $wpx, $hpx);
 			imagepng($imgplain, $tempfile_plain);
 			imagedestroy($imgplain);
+		} else {
+			$this->Error('TCPDF requires the Imagick or GD extension to handle PNG images with alpha channel.');
 		}
 		// embed mask image
 		$imgmask = $this->Image($tempfile_alpha, $x, $y, $w, $h, 'PNG', '', '', $resize, $dpi, '', true, false);
