@@ -1,3 +1,6 @@
+5.9.132 (2011-10-20)
+	- Bug item #3426167 "bug in function convertHTMLColorToDec()" was fixed.
+
 5.9.131 (2011-10-13)
 	- An error message was added to ImagePngAlpha() method.
 
