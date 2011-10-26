@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.132
+// Version     : 5.9.133
 // Begin       : 2002-08-03
-// Last Update : 2011-10-20
+// Last Update : 2011-10-26
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -137,7 +137,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.132
+ * @version 5.9.133
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -149,7 +149,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.132
+ * @version 5.9.133
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -160,7 +160,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.132';
+	private $tcpdf_version = '5.9.133';
 
 	// Protected properties
 
@@ -25244,7 +25244,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			$this->endPage();
 		}
 		// move all page-related states
-		$tmppage = $this->pages[$frompage];
+		$tmppage = $this->getPageBuffer($frompage);
 		$tmppagedim = $this->pagedim[$frompage];
 		$tmppagelen = $this->pagelen[$frompage];
 		$tmpintmrk = $this->intmrk[$frompage];
@@ -25279,7 +25279,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		for ($i = $frompage; $i > $topage; --$i) {
 			$j = $i - 1;
 			// shift pages down
-			$this->pages[$i] = $this->pages[$j];
+			$this->setPageBuffer($i, $this->getPageBuffer($j));
 			$this->pagedim[$i] = $this->pagedim[$j];
 			$this->pagelen[$i] = $this->pagelen[$j];
 			$this->intmrk[$i] = $this->intmrk[$j];
@@ -25313,7 +25313,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				$this->currpagegroup = $i;
 			}
 		}
-		$this->pages[$topage] = $tmppage;
+		$this->setPageBuffer($topage, $tmppage);
 		$this->pagedim[$topage] = $tmppagedim;
 		$this->pagelen[$topage] = $tmppagelen;
 		$this->intmrk[$topage] = $tmpintmrk;
@@ -25434,7 +25434,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			for ($i = $page; $i < $this->numpages; ++$i) {
 				$j = $i + 1;
 				// shift pages
-				$this->pages[$i] = $this->pages[$j];
+				$this->setPageBuffer($i, $this->getPageBuffer($j));
 				$this->pagedim[$i] = $this->pagedim[$j];
 				$this->pagelen[$i] = $this->pagelen[$j];
 				$this->intmrk[$i] = $this->intmrk[$j];
@@ -25575,7 +25575,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		// copy all page-related states
 		++$this->numpages;
 		$this->page = $this->numpages;
-		$this->pages[$this->page] = $this->pages[$page];
+		$this->setPageBuffer($this->page, $this->getPageBuffer($page));
 		$this->pagedim[$this->page] = $this->pagedim[$page];
 		$this->pagelen[$this->page] = $this->pagelen[$page];
 		$this->intmrk[$this->page] = $this->intmrk[$page];
