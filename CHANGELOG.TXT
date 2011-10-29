@@ -1,3 +1,8 @@
+5.9.134 (2011-10-29)
+	- The default value for $defcol parameter on convertHTMLColorToDec() method was fixed.
+	- Deafult HTTP headers were changed to avoid browser caching.
+	- Some deprecated syntax were replaced.
+
 5.9.133 (2011-10-26)
 	- Bug item #3428446 "copyPage method not working when diskcache enabled" was fixed.
 
