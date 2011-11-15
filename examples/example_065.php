@@ -5,7 +5,7 @@
 // Last Update : 2011-09-28
 //
 // Description : Example 065 for TCPDF class
-//               Default Header and Footer
+//               Creates an example PDF/A-1b document using TCPDF
 //
 // Author: Nicola Asuni
 //
