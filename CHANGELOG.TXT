@@ -1,3 +1,6 @@
+5.9.136 (2011-11-274)
+	- Bug item #3443387 "SetMargins with keep option does not work for top margin" was fixed.
+
 5.9.135 (2011-11-04)
 	- Bug item #3433406 "Double keywords in description" was fixed.
 
