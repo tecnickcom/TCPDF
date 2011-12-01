@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.136
+// Version     : 5.9.137
 // Begin       : 2002-08-03
-// Last Update : 2011-11-027
+// Last Update : 2011-12-01
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -137,7 +137,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.136
+ * @version 5.9.137
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -149,7 +149,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.136
+ * @version 5.9.137
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -160,7 +160,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.136';
+	private $tcpdf_version = '5.9.137';
 
 	// Protected properties
 
@@ -4732,6 +4732,36 @@ class TCPDF {
 	}
 
 	/**
+	 * Convert a color array into a string representation.
+	 * @param $c (array) Array of colors.
+	 * @return (string) The color array representation.
+	 * @protected
+	 * @since 5.9.137 (2011-12-01)
+	 */
+	protected function getColorStringFromArray($c) {
+		$color = '[';
+		switch (count($c)) {
+			case 4: {
+				// CMYK
+				$color .= sprintf('%.3F %.3F %.3F %.3F', (max(0, min(100, floatval($c[0]))) / 100), (max(0, min(100, floatval($c[1]))) / 100), (max(0, min(100, floatval($c[2]))) / 100), (max(0, min(100, floatval($c[3]))) / 100));
+				break;
+			}
+			case 3: {
+				// RGB
+				$color .= sprintf('%.3F %.3F %.3F', (max(0, min(255, floatval($c[0]))) / 255), (max(0, min(255, floatval($c[1]))) / 255), (max(0, min(255, floatval($c[2]))) / 255));
+				break;
+			}
+			case 1: {
+				// grayscale
+				$color .= sprintf('%.3F', (max(0, min(255, floatval($c[0]))) / 255));
+				break;
+			}
+		}
+		$color .= ']';
+		return $color;
+	}
+
+	/**
 	 * Defines the color used for all drawing operations (lines, rectangles and cell borders). It can be expressed in RGB components or gray scale. The method can be called before the first page is created and the value is retained from page to page.
 	 * @param $col1 (float) GRAY level for single color, or Red color for RGB (0-255), or CYAN color for CMYK (0-100).
 	 * @param $col2 (float) GREEN color for RGB (0-255), or MAGENTA color for CMYK (0-100).
@@ -9237,13 +9267,7 @@ class TCPDF {
 						$annots .= '>>';
 					}
 					if (isset($pl['opt']['c']) AND (is_array($pl['opt']['c'])) AND !empty($pl['opt']['c'])) {
-						$annots .= ' /C [';
-						foreach ($pl['opt']['c'] as $col) {
-							$col = intval($col);
-							$color = $col <= 0 ? 0 : ($col >= 255 ? 1 : $col / 255);
-							$annots .= sprintf(' %.4F', $color);
-						}
-						$annots .= ']';
+						$annots .= ' /C '.$this->getColorStringFromArray($pl['opt']['c']);
 					}
 					//$annots .= ' /StructParent ';
 					//$annots .= ' /OC ';
@@ -9453,22 +9477,10 @@ class TCPDF {
 									$annots .= ' /R '.$pl['opt']['mk']['r'];
 								}
 								if (isset($pl['opt']['mk']['bc']) AND (is_array($pl['opt']['mk']['bc']))) {
-									$annots .= ' /BC [';
-									foreach($pl['opt']['mk']['bc'] AS $col) {
-										$col = intval($col);
-										$color = $col <= 0 ? 0 : ($col >= 255 ? 1 : $col / 255);
-										$annots .= sprintf(' %.2F', $color);
-									}
-									$annots .= ']';
+									$annots .= ' /BC '.$this->getColorStringFromArray($pl['opt']['mk']['bc']);
 								}
 								if (isset($pl['opt']['mk']['bg']) AND (is_array($pl['opt']['mk']['bg']))) {
-									$annots .= ' /BG [';
-									foreach($pl['opt']['mk']['bg'] AS $col) {
-										$col = intval($col);
-										$color = $col <= 0 ? 0 : ($col >= 255 ? 1 : $col / 255);
-										$annots .= sprintf(' %.2F', $color);
-									}
-									$annots .= ']';
+									$annots .= ' /BG '.$this->getColorStringFromArray($pl['opt']['mk']['bg']);
 								}
 								if (isset($pl['opt']['mk']['ca'])) {
 									$annots .= ' /CA '.$pl['opt']['mk']['ca'];
@@ -13422,7 +13434,7 @@ class TCPDF {
 	}
 
 	/**
-	 * Returns an array (RGB or CMYK) from an html color name or a six-digit (i.e. #3FE5AA) or three-digit (i.e. #7FF) hexadecimal color representation.
+	 * Returns an array (RGB or CMYK) from an html color name, or a six-digit (i.e. #3FE5AA), or three-digit (i.e. #7FF) hexadecimal color, or a javascript color array, or javascript color name.
 	 * @param $hcolor (string) HTML color.
 	 * @param $defcol (array) Color to return in case of error.
 	 * @return array RGB or CMYK color, or false in case of error.
@@ -13431,9 +13443,46 @@ class TCPDF {
 	public function convertHTMLColorToDec($hcolor='#FFFFFF', $defcol=array('R'=>128,'G'=>128,'B'=>128)) {
 		$color = preg_replace('/[\s]*/', '', $hcolor); // remove extra spaces
 		$color = strtolower($color);
-		if (($dotpos = strpos($color, '.')) !== false) {
+		// check for javascript color array syntax
+		if (strpos($color, '[') !== false) {
+			if (preg_match('/[\[][\"\'](t|g|rgb|cmyk)[\"\'][\,]?([0-9\.]*)[\,]?([0-9\.]*)[\,]?([0-9\.]*)[\,]?([0-9\.]*)[\]]/', $color, $m) > 0) {
+				$returncolor = array();
+				switch ($m[1]) {
+					case 'cmyk': {
+						// RGB
+						$returncolor['C'] = max(0, min(100, (floatval($m[2]) * 100)));
+						$returncolor['M'] = max(0, min(100, (floatval($m[3]) * 100)));
+						$returncolor['Y'] = max(0, min(100, (floatval($m[4]) * 100)));
+						$returncolor['K'] = max(0, min(100, (floatval($m[5]) * 100)));
+						break;
+					}
+					case 'rgb': {
+						// RGB
+						$returncolor['R'] = max(0, min(255, (floatval($m[2]) * 255)));
+						$returncolor['G'] = max(0, min(255, (floatval($m[3]) * 255)));
+						$returncolor['B'] = max(0, min(255, (floatval($m[4]) * 255)));
+						break;
+					}
+					case 'g': {
+						// grayscale
+						$returncolor['G'] = max(0, min(255, (floatval($m[2]) * 255)));
+						break;
+					}
+					case 't':
+					default: {
+						// transparent (empty array)
+						break;
+					}
+				}
+				return $returncolor;
+			}
+		} elseif (($dotpos = strpos($color, '.')) !== false) {
 			// remove class parent (i.e.: color.red)
 			$color = substr($color, ($dotpos + 1));
+			if ($color == 'transparent') {
+				// transparent (empty array)
+				return array();
+			}
 		}
 		if (strlen($color) == 0) {
 			return $defcol;

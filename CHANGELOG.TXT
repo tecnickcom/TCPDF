@@ -1,4 +1,8 @@
-5.9.136 (2011-11-274)
+5.9.137 (2011-12-01)
+	- Bug item #3447005 "Background color and border of Form Elements is printed" was fixed.
+	- Color support for Form elements was improved.
+
+5.9.136 (2011-11-27)
 	- Bug item #3443387 "SetMargins with keep option does not work for top margin" was fixed.
 
 5.9.135 (2011-11-04)
