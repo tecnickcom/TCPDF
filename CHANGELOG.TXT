@@ -1,3 +1,8 @@
+5.9.138 (2011-12-10)
+	- cropMark() method was improved (check source code documentation).
+	- Example n. 56 was updated.
+	- Bug item #3452390 "Check Box still not ticked when set to true" was fixed.
+
 5.9.137 (2011-12-01)
 	- Bug item #3447005 "Background color and border of Form Elements is printed" was fixed.
 	- Color support for Form elements was improved.
