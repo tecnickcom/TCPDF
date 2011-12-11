@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.138
+// Version     : 5.9.139
 // Begin       : 2002-08-03
-// Last Update : 2011-12-10
+// Last Update : 2011-12-11
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -138,7 +138,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.138
+ * @version 5.9.139
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -150,7 +150,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.138
+ * @version 5.9.139
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -161,7 +161,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.138';
+	private $tcpdf_version = '5.9.139';
 
 	// Protected properties
 
@@ -4461,7 +4461,7 @@ class TCPDF {
 	public function AddSpotColor($name, $c, $m, $y, $k) {
 		if (!isset($this->spot_colors[$name])) {
 			$i = (1 + count($this->spot_colors));
-			$this->spot_colors[$name] = array('i' => $i, 'c' => $c, 'm' => $m, 'y' => $y, 'k' => $k);
+			$this->spot_colors[$name] = array('C' => $c, 'M' => $m, 'Y' => $y, 'K' => $k, 'name' => $name, 'i' => $i);
 		}
 	}
 
@@ -4480,7 +4480,7 @@ class TCPDF {
 		$color = strtolower($color);
 		if (isset($this->spotcolor[$color])) {
 			$this->AddSpotColor($this->spotcolor[$color][4], $this->spotcolor[$color][0], $this->spotcolor[$color][1], $this->spotcolor[$color][2], $this->spotcolor[$color][3]);
-			return $this->spot_colors[$name];
+			return $this->spot_colors[$this->spotcolor[$color][4]];
 		}
 		return false;
 	}
@@ -4500,25 +4500,24 @@ class TCPDF {
 			$this->Error('Undefined spot color: '.$name.', you must add it on the spotcolors.php file.');
 		}
 		$tint = (max(0, min(100, $tint)) / 100);
-		$intcolor = array('C' => $spotcolor['c'], 'M' => $spotcolor['m'], 'Y' => $spotcolor['y'], 'K' => $spotcolor['k'], 'name' => $spotcolor['i']);
 		$pdfcolor = sprintf('/CS%d ', $this->spot_colors[$name]['i']);
 		switch ($type) {
 			case 'draw': {
 				$pdfcolor .= sprintf('CS %.3F SCN', $tint);
 				$this->DrawColor = $pdfcolor;
-				$this->strokecolor = $intcolor;
+				$this->strokecolor = $spotcolor;
 				break;
 			}
 			case 'fill': {
 				$pdfcolor .= sprintf('cs %.3F scn', $tint);
 				$this->FillColor = $pdfcolor;
-				$this->bgcolor = $intcolor;
+				$this->bgcolor = $spotcolor;
 				break;
 			}
 			case 'text': {
 				$pdfcolor .= sprintf('cs %.3F scn', $tint);
 				$this->TextColor = $pdfcolor;
-				$this->fgcolor = $intcolor;
+				$this->fgcolor = $spotcolor;
 				break;
 			}
 		}
@@ -4574,7 +4573,7 @@ class TCPDF {
 	 * It can be expressed in RGB, CMYK or GRAY SCALE components.
 	 * The method can be called before the first page is created and the value is retained from page to page.
 	 * @param $type (string) Type of object affected by this color: ('draw', 'fill', 'text').
-	 * @param $color (array) Array of colors (1, 3 or 4 values).
+	 * @param $color (array) Array of colors (1=gray, 3=RGB, 4=CMYK or 5=spotcolor=CMYK+name values).
 	 * @param $ret (boolean) If true do not send the PDF command.
 	 * @return (string) The PDF command or empty string.
 	 * @public
@@ -4584,18 +4583,16 @@ class TCPDF {
 		if (is_array($color)) {
 			$color = array_values($color);
 			// component: grey, RGB red or CMYK cyan
-			$r = isset($color[0]) ? $color[0] : -1;
+			$c = isset($color[0]) ? $color[0] : -1;
 			// component: RGB green or CMYK magenta
-			$g = isset($color[1]) ? $color[1] : -1;
+			$m = isset($color[1]) ? $color[1] : -1;
 			// component: RGB blue or CMYK yellow
-			$b = isset($color[2]) ? $color[2] : -1;
+			$y = isset($color[2]) ? $color[2] : -1;
 			// component: CMYK black
 			$k = isset($color[3]) ? $color[3] : -1;
-			// spot color name
+			// color name
 			$name = isset($color[4]) ? $color[4] : '';
-			if ($r >= 0) {
-				return $this->setColor($type, $r, $g, $b, $k, $ret, $name);
-			}
+			return $this->setColor($type, $c, $m, $y, $k, $ret, $name);
 		}
 		return '';
 	}
@@ -7501,7 +7498,7 @@ class TCPDF {
 		$cached_file = false; // true when the file is cached
 		$exurl = ''; // external streams
 		// check if we are passing an image as file or string
-		if ($file{0} === '@') {
+		if ($file[0] === '@') {
 			// image from string
 			$imgdata = substr($file, 1);
 			$file = K_PATH_CACHE.'img_'.md5($imgdata);
@@ -12072,7 +12069,7 @@ class TCPDF {
 			$out = '[/Separation /'.str_replace(' ', '#20', $name);
 			$out .= ' /DeviceCMYK <<';
 			$out .= ' /Range [0 1 0 1 0 1 0 1] /C0 [0 0 0 0]';
-			$out .= ' '.sprintf('/C1 [%.4F %.4F %.4F %.4F] ', ($color['c'] / 100), ($color['m'] / 100), ($color['y'] / 100), ($color['k'] / 100));
+			$out .= ' '.sprintf('/C1 [%.4F %.4F %.4F %.4F] ', ($color['C'] / 100), ($color['M'] / 100), ($color['Y'] / 100), ($color['K'] / 100));
 			$out .= ' /FunctionType 2 /Domain [0 1] /N 1>>]';
 			$out .= "\n".'endobj';
 			$this->_out($out);
