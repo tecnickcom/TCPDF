@@ -1,3 +1,6 @@
+5.9.140 (2011-12-13)
+	- SVG now supports embedded images encoded as base64.
+
 5.9.139 (2011-12-11)
 	- Spot color methods were fixed.
 
