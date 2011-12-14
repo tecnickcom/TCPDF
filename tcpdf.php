@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.140
+// Version     : 5.9.141
 // Begin       : 2002-08-03
-// Last Update : 2011-12-13
+// Last Update : 2011-12-14
 // Author      : Nicola Asuni - Tecnick.com S.r.l - Via Della Pace, 11 - 09044 - Quartucciu (CA) - ITALY - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------
@@ -138,7 +138,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.140
+ * @version 5.9.141
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -150,7 +150,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.140
+ * @version 5.9.141
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -161,7 +161,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.140';
+	private $tcpdf_version = '5.9.141';
 
 	// Protected properties
 
@@ -4592,7 +4592,9 @@ class TCPDF {
 			$k = isset($color[3]) ? $color[3] : -1;
 			// color name
 			$name = isset($color[4]) ? $color[4] : '';
-			return $this->setColor($type, $c, $m, $y, $k, $ret, $name);
+			if ($c >= 0) {
+				return $this->setColor($type, $c, $m, $y, $k, $ret, $name);
+			}
 		}
 		return '';
 	}
@@ -4737,6 +4739,7 @@ class TCPDF {
 	 * @since 5.9.137 (2011-12-01)
 	 */
 	protected function getColorStringFromArray($c) {
+		$c = array_values($c);
 		$color = '[';
 		switch (count($c)) {
 			case 4: {
