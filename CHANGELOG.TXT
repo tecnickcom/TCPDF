@@ -1,3 +1,6 @@
+5.9.142 (2011-12-23)
+	- Source code documentation was updated.
+
 5.9.141 (2011-12-14)
 	- Some minor bugs were fixed.
 
