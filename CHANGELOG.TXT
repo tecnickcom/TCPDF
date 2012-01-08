@@ -1,3 +1,6 @@
+5.9.143 (2012-01-08)
+	- Bug item #3471057 "setCreator() has no effect" was fixed.
+
 5.9.142 (2011-12-23)
 	- Source code documentation was updated.
 
