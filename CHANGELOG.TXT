@@ -1,3 +1,6 @@
+5.9.144 (2012-01-12)
+	- HTML output on barcode classes was improved.
+
 5.9.143 (2012-01-08)
 	- Bug item #3471057 "setCreator() has no effect" was fixed.
 
