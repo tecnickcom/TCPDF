@@ -1,3 +1,7 @@
+5.9.145 (2012-01-28)
+	- Japanese language file was added.
+	- TCPDF license and README.TXT files were updated.
+
 5.9.144 (2012-01-12)
 	- HTML output on barcode classes was improved.
 
