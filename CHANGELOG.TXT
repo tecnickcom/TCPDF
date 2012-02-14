@@ -1,3 +1,6 @@
+5.9.147 (2012-02-14)
+	- A problem with SVG gradients has been fixed.
+
 5.9.146 (2012-02-12)
 	- Bug item #3486880 "$filehash undefine error" was fixed.
 	- The default font is now the one specified at PDF_FONT_NAME_MAIN constant.
