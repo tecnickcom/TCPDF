@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.147
+// Version     : 5.9.148
 // Begin       : 2002-08-03
-// Last Update : 2012-02-14
+// Last Update : 2012-02-17
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
 // -------------------------------------------------------------------
@@ -137,7 +137,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.147
+ * @version 5.9.148
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -149,7 +149,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.147
+ * @version 5.9.148
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -160,7 +160,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.147';
+	private $tcpdf_version = '5.9.148';
 
 	// Protected properties
 
@@ -9091,6 +9091,7 @@ class TCPDF {
 						$annots .= ' /T '.$this->_datastring($pl['txt'], $radio_button_obj_id);
 						$annots .= ' /FT /Btn';
 						$annots .= ' /Kids [';
+						$defval = '';
 						foreach ($this->radiobutton_groups[$n][$pl['txt']] as $key => $data) {
 							if (isset($data['kid'])) {
 								$annots .= ' '.$data['kid'].' 0 R';
@@ -9100,7 +9101,7 @@ class TCPDF {
 							}
 						}
 						$annots .= ' ]';
-						if (isset($defval)) {
+						if (!empty($defval)) {
 							$annots .= ' /V /'.$defval;
 						}
 						$annots .= ' >>';
