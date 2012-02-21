@@ -1,3 +1,6 @@
+5.9.149 (2012-02-21)
+	- Bug item #3489933 "SVG Parser treats tspan like text" was fixed.
+
 5.9.148 (2012-02-17)
 	- Bug item #3488600 "Multiple radiobutton sets get first set value" was fixed.
 
