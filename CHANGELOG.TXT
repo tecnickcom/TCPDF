@@ -1,3 +1,6 @@
+5.9.150 (2012-03-16)
+	- A bug related to form fields in PDF/A mode was fixed.
+
 5.9.149 (2012-02-21)
 	- Bug item #3489933 "SVG Parser treats tspan like text" was fixed.
 
