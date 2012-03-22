@@ -1,3 +1,10 @@
+5.9.151 (2012-03-22)
+	- Bug item #3509889 "Transform() distorts PDF" was fixed.
+	- Precision of real number were extended.
+	- ComboBox and ListBox methods were fixed.
+	- Bulgarian language file was added.
+	- addTOC() method was improved to include bookmark color and font style.
+
 5.9.150 (2012-03-16)
 	- A bug related to form fields in PDF/A mode was fixed.
 
