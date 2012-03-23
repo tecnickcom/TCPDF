@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.151
+// Version     : 5.9.152
 // Begin       : 2002-08-03
-// Last Update : 2012-03-22
+// Last Update : 2012-03-23
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
 // -------------------------------------------------------------------
@@ -137,7 +137,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.151
+ * @version 5.9.152
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -149,7 +149,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.151
+ * @version 5.9.152
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -160,7 +160,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.151';
+	private $tcpdf_version = '5.9.152';
 
 	// Protected properties
 
@@ -1816,11 +1816,18 @@ class TCPDF {
 	protected $pdfa_mode = false;
 
 	/**
-	 * Document creation date
+	 * Document creation date-time
 	 * @protected
-	 * @since 5.9.121 (2011-09-28)
+	 * @since 5.9.152 (2012-03-22)
 	 */
-	protected $doc_date;
+	protected $doc_creation_timestamp;
+
+	/**
+	 * Document modification date-time
+	 * @protected
+	 * @since 5.9.152 (2012-03-22)
+	 */
+	protected $doc_modification_timestamp;
 
 	/**
 	 * Custom XMP data.
@@ -1828,6 +1835,43 @@ class TCPDF {
 	 * @since 5.9.128 (2011-10-06)
 	 */
 	protected $custom_xmp = '';
+
+	/**
+	 * Overprint mode array.
+	 * (Check the "Entries in a Graphics State Parameter Dictionary" on PDF 32000-1:2008).
+	 * @protected
+	 * @since 5.9.152 (2012-03-23)
+	 */
+	protected $overprint = array('OP' => false, 'op' => false, 'OPM' => 0);
+
+	/**
+	 * Alpha mode array.
+	 * (Check the "Entries in a Graphics State Parameter Dictionary" on PDF 32000-1:2008).
+	 * @protected
+	 * @since 5.9.152 (2012-03-23)
+	 */
+	protected $alpha = array('CA' => 1, 'ca' => 1, 'BM' => '/Normal', 'AIS' => false);
+
+	/**
+	 * Define the page boundaries boxes to be set on document.
+	 * @protected
+	 * @since 5.9.152 (2012-03-23)
+	 */
+	protected $page_boxes = array('MediaBox', 'CropBox', 'BleedBox', 'TrimBox', 'ArtBox');
+
+	/**
+	 * Set the document producer metadata.
+	 * @protected
+	 * @since 5.9.152 (2012-03-23)
+	 */
+	protected $pdfproducer;
+
+	/**
+	 * If true print TCPDF meta link.
+	 * @protected
+	 * @since 5.9.152 (2012-03-23)
+	 */
+	protected $tcpdflink = true;
 
 	//------------------------------------------------------------
 	// METHODS
@@ -1953,6 +1997,8 @@ class TCPDF {
 		$this->SetCompression();
 		// set default PDF version number
 		$this->setPDFVersion();
+		$this->pdfproducer = "\x54\x43\x50\x44\x46\x20".$this->tcpdf_version."\x20\x28\x68\x74\x74\x70\x3a\x2f\x2f\x77\x77\x77\x2e\x74\x63\x70\x64\x66\x2e\x6f\x72\x67\x29";
+		$this->tcpdflink = true;
 		$this->encoding = $encoding;
 		$this->HREF = array();
 		$this->getFontsList();
@@ -1992,8 +2038,9 @@ class TCPDF {
 		$this->default_form_prop = array('lineWidth'=>1, 'borderStyle'=>'solid', 'fillColor'=>array(255, 255, 255), 'strokeColor'=>array(128, 128, 128));
 		// set file ID for trailer
 		$this->file_id = md5($this->getRandomSeed('TCPDF'.$orientation.$unit.$format.$encoding));
-		// set document date
-		$this->doc_date = substr_replace(date('YmdHisO'), '\'', (0 - 2), 0).'\'';
+		// set document creation and modification timestamp
+		$this->doc_creation_timestamp = time();
+		$this->doc_modification_timestamp = $this->doc_creation_timestamp;
 		// get default graphic vars
 		$this->default_graphic_vars = $this->getGraphicVars();
 		$this->header_xobj_autoreset = false;
@@ -3742,24 +3789,26 @@ class TCPDF {
 			$this->AddPage();
 		}
 		$this->endLayer();
-		// save current graphic settings
-		$gvars = $this->getGraphicVars();
-		$this->setEqualColumns();
-		$this->lastpage(true);
-		$this->SetAutoPageBreak(false);
-		$this->x = 0;
-		$this->y = $this->h - (1 / $this->k);
-		$this->lMargin = 0;
-		$this->_out('q');
-		$font = defined('PDF_FONT_NAME_MAIN')?PDF_FONT_NAME_MAIN:'helvetica';
-		$this->SetFont($font, '', 1);
-		$this->setTextRenderingMode(0, false, false);
-		$msg = "\x50\x6f\x77\x65\x72\x65\x64\x20\x62\x79\x20\x54\x43\x50\x44\x46\x20\x28\x77\x77\x77\x2e\x74\x63\x70\x64\x66\x2e\x6f\x72\x67\x29";
-		$lnk = "\x68\x74\x74\x70\x3a\x2f\x2f\x77\x77\x77\x2e\x74\x63\x70\x64\x66\x2e\x6f\x72\x67";
-		$this->Cell(0, 0, $msg, 0, 0, 'L', 0, $lnk, 0, false, 'D', 'B');
-		$this->_out('Q');
-		// restore graphic settings
-		$this->setGraphicVars($gvars);
+		if ($this->tcpdflink) {
+			// save current graphic settings
+			$gvars = $this->getGraphicVars();
+			$this->setEqualColumns();
+			$this->lastpage(true);
+			$this->SetAutoPageBreak(false);
+			$this->x = 0;
+			$this->y = $this->h - (1 / $this->k);
+			$this->lMargin = 0;
+			$this->_out('q');
+			$font = defined('PDF_FONT_NAME_MAIN')?PDF_FONT_NAME_MAIN:'helvetica';
+			$this->SetFont($font, '', 1);
+			$this->setTextRenderingMode(0, false, false);
+			$msg = "\x50\x6f\x77\x65\x72\x65\x64\x20\x62\x79\x20\x54\x43\x50\x44\x46\x20\x28\x77\x77\x77\x2e\x74\x63\x70\x64\x66\x2e\x6f\x72\x67\x29";
+			$lnk = "\x68\x74\x74\x70\x3a\x2f\x2f\x77\x77\x77\x2e\x74\x63\x70\x64\x66\x2e\x6f\x72\x67";
+			$this->Cell(0, 0, $msg, 0, 0, 'L', 0, $lnk, 0, false, 'D', 'B');
+			$this->_out('Q');
+			// restore graphic settings
+			$this->setGraphicVars($gvars);
+		}
 		// close page
 		$this->endPage();
 		// close document
@@ -5232,8 +5281,11 @@ class TCPDF {
 	 */
 	public function SetFont($family, $style='', $size=0, $fontfile='', $subset='default', $out=true) {
 		//Select a font; size given in points
-		if ($size == 0) {
+		if ($size === null) {
 			$size = $this->FontSizePt;
+		}
+		if ($size < 0) {
+			$size = 0;
 		}
 		// try to add font (if not already added)
 		$fontdata = $this->AddFont($family, $style, $fontfile, $subset);
@@ -5283,6 +5335,47 @@ class TCPDF {
 		if ($out AND ($this->page > 0) AND (isset($this->CurrentFont['i']))) {
 			$this->_out(sprintf('BT /F%d %F Tf ET', $this->CurrentFont['i'], $this->FontSizePt));
 		}
+	}
+
+	/**
+	 * Returns the bounding box of the current font in user units.
+	 * @return array
+	 * @public
+	 * @since 5.9.152 (2012-03-23)
+	 */
+	public function getFontBBox() {
+		$result = array();
+		if (isset($this->CurrentFont['desc']['FontBBox'])) {
+			$bbox = explode(' ', substr($this->CurrentFont['desc']['FontBBox'], 1, -1));
+			foreach ($bbox as $v) {
+				$result[] = (intval($v) * $this->FontSize / 1000);
+			}
+		} else {
+			// Find max width
+			if (isset($this->CurrentFont['desc']['MaxWidth'])) {
+				$maxw = (intval($this->CurrentFont['desc']['MaxWidth']) * $this->FontSize / 1000);
+			} else {
+				$maxw = 0;
+				if (isset($this->CurrentFont['desc']['MissingWidth'])) {
+					$maxw = max($maxw, $this->CurrentFont['desc']['MissingWidth']);
+				}
+				if (isset($this->CurrentFont['desc']['AvgWidth'])) {
+					$maxw = max($maxw, $this->CurrentFont['desc']['AvgWidth']);
+				}
+				if (isset($this->CurrentFont['dw'])) {
+					$maxw = max($maxw, $this->CurrentFont['dw']);
+				}
+				foreach ($this->CurrentFont['cw'] as $char => $w) {
+					$maxw = max($maxw, $w);
+				}
+				if ($maxw == 0) {
+					$maxw = 600;
+				}
+				$maxw = ($maxw * $this->FontSize / 1000);
+			}
+			$result = array(0, -$this->FontDescent, $maxw, $this->FontAscent);
+		}
+		return $result;
 	}
 
 	/**
@@ -8843,6 +8936,21 @@ class TCPDF {
 	}
 
 	/**
+	 * Set page boxes to be included on page descriptions.
+	 * @param $boxes (array) Array of page boxes to set on document: ('MediaBox', 'CropBox', 'BleedBox', 'TrimBox', 'ArtBox').
+	 * @protected
+	 */
+	protected function setPageBoxTypes($boxes) {
+		$validboxes = array('MediaBox', 'CropBox', 'BleedBox', 'TrimBox', 'ArtBox');
+		$this->page_boxes = array();
+		foreach ($boxes as $box) {
+			if (in_array($box, $validboxes)) {
+				$this->page_boxes[] = $box;
+			}
+		}
+	}
+
+	/**
 	 * Output pages (and replace page number aliases).
 	 * @protected
 	 */
@@ -8904,22 +9012,21 @@ class TCPDF {
 			$out = '<<';
 			$out .= ' /Type /Page';
 			$out .= ' /Parent 1 0 R';
-			$out .= ' /LastModified '.$this->_datestring();
+			$out .= ' /LastModified '.$this->_datestring(0, $this->doc_modification_timestamp);
 			$out .= ' /Resources 2 0 R';
-			$boxes = array('MediaBox', 'CropBox', 'BleedBox', 'TrimBox', 'ArtBox');
-			foreach ($boxes as $box) {
+			foreach ($this->page_boxes as $box) {
 				$out .= ' /'.$box;
 				$out .= sprintf(' [%F %F %F %F]', $this->pagedim[$n][$box]['llx'], $this->pagedim[$n][$box]['lly'], $this->pagedim[$n][$box]['urx'], $this->pagedim[$n][$box]['ury']);
 			}
 			if (isset($this->pagedim[$n]['BoxColorInfo']) AND !empty($this->pagedim[$n]['BoxColorInfo'])) {
 				$out .= ' /BoxColorInfo <<';
-				foreach ($boxes as $box) {
+				foreach ($this->page_boxes as $box) {
 					if (isset($this->pagedim[$n]['BoxColorInfo'][$box])) {
 						$out .= ' /'.$box.' <<';
 						if (isset($this->pagedim[$n]['BoxColorInfo'][$box]['C'])) {
 							$color = $this->pagedim[$n]['BoxColorInfo'][$box]['C'];
 							$out .= ' /C [';
-							$out .= sprintf(' %F %F %F', $color[0]/255, $color[1]/255, $color[2]/255);
+							$out .= sprintf(' %F %F %F', ($color[0] / 255), ($color[1] / 255), ($color[2] / 255));
 							$out .= ' ]';
 						}
 						if (isset($this->pagedim[$n]['BoxColorInfo'][$box]['W'])) {
@@ -9129,7 +9236,7 @@ class TCPDF {
 					$annots .= ' /Contents '.$this->_textstring($pl['txt'], $annot_obj_id);
 					$annots .= ' /P '.$this->page_obj_id[$n].' 0 R';
 					$annots .= ' /NM '.$this->_datastring(sprintf('%04u-%04u', $n, $key), $annot_obj_id);
-					$annots .= ' /M '.$this->_datestring($annot_obj_id);
+					$annots .= ' /M '.$this->_datestring($annot_obj_id, $this->doc_modification_timestamp);
 					if (isset($pl['opt']['f'])) {
 						$fval = 0;
 						if (is_array($pl['opt']['f'])) {
@@ -9287,7 +9394,7 @@ class TCPDF {
 						if (isset($pl['opt']['rc'])) {
 							$annots .= ' /RC '.$this->_textstring($pl['opt']['rc'], $annot_obj_id);
 						}
-						$annots .= ' /CreationDate '.$this->_datestring($annot_obj_id);
+						$annots .= ' /CreationDate '.$this->_datestring($annot_obj_id, $this->doc_creation_timestamp);
 						//$annots .= ' /IRT ';
 						if (isset($pl['opt']['subj'])) {
 							$annots .= ' /Subj '.$this->_textstring($pl['opt']['subj'], $annot_obj_id);
@@ -12217,11 +12324,11 @@ class TCPDF {
 		// restore previous isunicode value
 		$this->isunicode = $prev_isunicode;
 		// default producer
-		$out .= ' /Producer '.$this->_textstring("\x54\x43\x50\x44\x46\x20".$this->tcpdf_version."\x20\x28\x68\x74\x74\x70\x3a\x2f\x2f\x77\x77\x77\x2e\x74\x63\x70\x64\x66\x2e\x6f\x72\x67\x29", $oid);
+		$out .= ' /Producer '.$this->_textstring($this->pdfproducer, $oid);
 		// The date and time the document was created, in human-readable form
-		$out .= ' /CreationDate '.$this->_datestring();
+		$out .= ' /CreationDate '.$this->_datestring(0, $this->doc_creation_timestamp);
 		// The date and time the document was most recently modified, in human-readable form
-		$out .= ' /ModDate '.$this->_datestring();
+		$out .= ' /ModDate '.$this->_datestring(0, $this->doc_modification_timestamp);
 		// A name object indicating whether the document has been modified to include trapping information
 		$out .= ' /Trapped /False';
 		$out .= ' >>';
@@ -12281,20 +12388,27 @@ class TCPDF {
 		$xmp .= "\t\t\t\t".'</rdf:Bag>'."\n";
 		$xmp .= "\t\t\t".'</dc:subject>'."\n";
 		$xmp .= "\t\t".'</rdf:Description>'."\n";
-		// convert date format
-		$docdate = substr($this->doc_date, 0, 4).'-'.substr($this->doc_date, 4, 2).'-'.substr($this->doc_date, 6, 2);
-		$docdate .= 'T'.substr($this->doc_date, 8, 2).':'.substr($this->doc_date, 10, 2).':'.substr($this->doc_date, 12, 2);
-		$docdate .= '+'.substr($this->doc_date, 15, 2).':'.substr($this->doc_date, 18, 2);
-		$docdate = $this->_escapeXML($docdate);
+		// convert doc creation date format
+		$dcdate = $this->getFormattedDate($this->doc_creation_timestamp);
+		$doccreationdate = substr($dcdate, 0, 4).'-'.substr($dcdate, 4, 2).'-'.substr($dcdate, 6, 2);
+		$doccreationdate .= 'T'.substr($dcdate, 8, 2).':'.substr($dcdate, 10, 2).':'.substr($dcdate, 12, 2);
+		$doccreationdate .= '+'.substr($dcdate, 15, 2).':'.substr($dcdate, 18, 2);
+		$doccreationdate = $this->_escapeXML($doccreationdate);
+		// convert doc modification date format
+		$dmdate = $this->getFormattedDate($this->doc_modification_timestamp);
+		$docmoddate = substr($dmdate, 0, 4).'-'.substr($dmdate, 4, 2).'-'.substr($dmdate, 6, 2);
+		$docmoddate .= 'T'.substr($dmdate, 8, 2).':'.substr($dmdate, 10, 2).':'.substr($dmdate, 12, 2);
+		$docmoddate .= '+'.substr($dmdate, 15, 2).':'.substr($dmdate, 18, 2);
+		$docmoddate = $this->_escapeXML($docmoddate);
 		$xmp .= "\t\t".'<rdf:Description rdf:about="" xmlns:xmp="http://ns.adobe.com/xap/1.0/">'."\n";
-		$xmp .= "\t\t\t".'<xmp:CreateDate>'.$docdate.'</xmp:CreateDate>'."\n";
+		$xmp .= "\t\t\t".'<xmp:CreateDate>'.$doccreationdate.'</xmp:CreateDate>'."\n";
 		$xmp .= "\t\t\t".'<xmp:CreatorTool>'.$this->creator.'</xmp:CreatorTool>'."\n";
-		$xmp .= "\t\t\t".'<xmp:ModifyDate>'.$docdate.'</xmp:ModifyDate>'."\n";
-		$xmp .= "\t\t\t".'<xmp:MetadataDate>'.$docdate.'</xmp:MetadataDate>'."\n";
+		$xmp .= "\t\t\t".'<xmp:ModifyDate>'.$docmoddate.'</xmp:ModifyDate>'."\n";
+		$xmp .= "\t\t\t".'<xmp:MetadataDate>'.$doccreationdate.'</xmp:MetadataDate>'."\n";
 		$xmp .= "\t\t".'</rdf:Description>'."\n";
 		$xmp .= "\t\t".'<rdf:Description rdf:about="" xmlns:pdf="http://ns.adobe.com/pdf/1.3/">'."\n";
 		$xmp .= "\t\t\t".'<pdf:Keywords>'.$this->_escapeXML($this->keywords).' TCPDF</pdf:Keywords>'."\n";
-		$xmp .= "\t\t\t".'<pdf:Producer>'.$this->_escapeXML("\x54\x43\x50\x44\x46\x20".$this->tcpdf_version."\x20\x28\x68\x74\x74\x70\x3a\x2f\x2f\x77\x77\x77\x2e\x74\x63\x70\x64\x66\x2e\x6f\x72\x67\x29").'</pdf:Producer>'."\n";
+		$xmp .= "\t\t\t".'<pdf:Producer>'.$this->_escapeXML($this->pdfproducer).'</pdf:Producer>'."\n";
 		$xmp .= "\t\t".'</rdf:Description>'."\n";
 		$xmp .= "\t\t".'<rdf:Description rdf:about="" xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/">'."\n";
 		$uuid = 'uuid:'.substr($this->file_id, 0, 8).'-'.substr($this->file_id, 8, 4).'-'.substr($this->file_id, 12, 4).'-'.substr($this->file_id, 16, 4).'-'.substr($this->file_id, 20, 12);
@@ -12915,14 +13029,90 @@ class TCPDF {
 	}
 
 	/**
+	 * Set the document creation timestamp
+	 * @param $time (mixed) Document creation timestamp in seconds or date-time string.
+	 * @public
+	 * @since 5.9.152 (2012-03-23)
+	 */
+	public function setDocCreationTimestamp($time) {
+		if (is_string($time)) {
+			$time = getTimestamp($time);
+		}
+		$this->doc_creation_timestamp = intval($time);
+	}
+
+	/**
+	 * Set the document modification timestamp
+	 * @param $time (mixed) Document modification timestamp in seconds or date-time string.
+	 * @public
+	 * @since 5.9.152 (2012-03-23)
+	 */
+	public function setDocModificationTimestamp($time) {
+		if (is_string($time)) {
+			$time = getTimestamp($time);
+		}
+		$this->doc_modification_timestamp = intval($time);
+	}
+
+	/**
+	 * Returns document creation timestamp in seconds.
+	 * @return (int) Creation timestamp in seconds.
+	 * @public
+	 * @since 5.9.152 (2012-03-23)
+	 */
+	public function getDocCreationTimestamp() {
+		return $this->doc_creation_timestamp;
+	}
+
+	/**
+	 * Returns document modification timestamp in seconds.
+	 * @return (int) Modfication timestamp in seconds.
+	 * @public
+	 * @since 5.9.152 (2012-03-23)
+	 */
+	public function getDocModificationTimestamp() {
+		return $this->doc_modification_timestamp;
+	}
+
+	/**
+	 * Returns timestamp in seconds from formatted date-time.
+	 * @param $date (string) Formatted date-time.
+	 * @return int seconds.
+	 * @public
+	 * @since 5.9.152 (2012-03-23)
+	 */
+	public function getTimestamp($date) {
+		if (($date[0] == 'D') AND ($date[1] == ':')) {
+			// remove date prefix if present
+			$date = substr($date, 2);
+		}
+		return strtotime($date);
+	}
+
+	/**
+	 * Returns a formatted date-time.
+	 * @param $time (int) Time in seconds.
+	 * @return string escaped date string.
+	 * @public
+	 * @since 5.9.152 (2012-03-23)
+	 */
+	public function getFormattedDate($time) {
+		return substr_replace(date('YmdHisO', intval($time)), '\'', (0 - 2), 0).'\'';
+	}
+
+	/**
 	 * Returns a formatted date for meta information
-	 * @param $n (int) object ID
+	 * @param $n (int) Object ID.
+	 * @param $timestamp (int) Timestamp to convert.
 	 * @return string escaped date string.
 	 * @protected
 	 * @since 4.6.028 (2009-08-25)
 	 */
-	protected function _datestring($n=0) {
-		return $this->_datastring('D:'.$this->doc_date, $n);
+	protected function _datestring($n=0, $timestamp=0) {
+		if ((empty($timestamp)) OR ($timestamp < 0)) {
+			$timestamp = $this->doc_creation_timestamp;
+		}
+		return $this->_datastring('D:'.$this->getFormattedDate($timestamp), $n);
 	}
 
 	/**
@@ -17608,7 +17798,7 @@ class TCPDF {
 		if (isset($this->signature_data['info']['ContactInfo']) AND !$this->empty_string($this->signature_data['info']['ContactInfo'])) {
 			$out .= ' /ContactInfo '.$this->_textstring($this->signature_data['info']['ContactInfo'], $sigobjid);
 		}
-		$out .= ' /M '.$this->_datestring($sigobjid);
+		$out .= ' /M '.$this->_datestring($sigobjid, $this->doc_modification_timestamp);
 		$out .= ' >>';
 		$out .= "\n".'endobj';
 		$this->_out($out);
@@ -18063,16 +18253,16 @@ class TCPDF {
 	 * @since 3.0.000 (2008-03-27)
 	 */
 	protected function _putextgstates() {
-		if ($this->pdfa_mode) {
-			// transparencies are not allowed in PDF/A mode
-			return;
-		}
 		foreach ($this->extgstates as $i => $ext) {
 			$this->extgstates[$i]['n'] = $this->_newobj();
 			$out = '<< /Type /ExtGState';
 			foreach ($ext['parms'] as $k => $v) {
 				if (is_float($v)) {
 					$v = sprintf('%F', $v);
+				} elseif ($v === true) {
+					$v = 'true';
+				} elseif ($v === false) {
+					$v = 'false';
 				}
 				$out .= ' /'.$k.' '.$v;
 			}
@@ -18083,19 +18273,84 @@ class TCPDF {
 	}
 
 	/**
+	 * Set overprint mode for stroking (OP) and non-stroking (op) painting operations.
+	 * (Check the "Entries in a Graphics State Parameter Dictionary" on PDF 32000-1:2008).
+	 * @param $stroking (boolean) If true apply overprint for stroking operations.
+	 * @param $nonstroking (boolean) If true apply overprint for painting operations other than stroking.
+	 * @param $mode (integer) Overprint mode: (0 = each source colour component value replaces the value previously painted for the corresponding device colorant; 1 = a tint value of 0.0 for a source colour component shall leave the corresponding component of the previously painted colour unchanged).
+	 * @public
+	 * @since 5.9.152 (2012-03-23)
+	 */
+	public function setOverprint($stroking=true, $nonstroking='', $mode=0) {
+		$stroking = $stroking ? true : false;
+		if ($this->empty_string($nonstroking)) {
+			// default value if not set
+			$nonstroking = $stroking;
+		} else {
+			$nonstroking = $nonstroking ? true : false;
+		}
+		if (($mode != 0) AND ($mode != 1)) {
+			$mode = 0;
+		}
+		$this->overprint = array('OP' => $stroking, 'op' => $nonstroking, 'OPM' => $mode);
+		$gs = $this->addExtGState($this->overprint);
+		$this->setExtGState($gs);
+	}
+
+	/**
+	 * Get the overprint mode array (OP, op, OPM).
+	 * (Check the "Entries in a Graphics State Parameter Dictionary" on PDF 32000-1:2008).
+	 * @return array.
+	 * @public
+	 * @since 5.9.152 (2012-03-23)
+	 */
+	public function getOverprint() {
+		return $this->overprint;
+	}
+
+	/**
 	 * Set alpha for stroking (CA) and non-stroking (ca) operations.
-	 * @param $alpha (float) real value from 0 (transparent) to 1 (opaque)
+	 * @param $stroking (float) Alpha value for stroking operations: real value from 0 (transparent) to 1 (opaque).
 	 * @param $bm (string) blend mode, one of the following: Normal, Multiply, Screen, Overlay, Darken, Lighten, ColorDodge, ColorBurn, HardLight, SoftLight, Difference, Exclusion, Hue, Saturation, Color, Luminosity
+	 * @param $nonstroking (float) Alpha value for non-stroking operations: real value from 0 (transparent) to 1 (opaque).
+	 * @param $ais (boolean)
 	 * @public
 	 * @since 3.0.000 (2008-03-27)
 	 */
-	public function setAlpha($alpha, $bm='Normal') {
+	public function setAlpha($stroking=1, $bm='Normal', $nonstroking='', $ais=false) {
 		if ($this->pdfa_mode) {
 			// transparency is not allowed in PDF/A mode
 			return;
 		}
-		$gs = $this->addExtGState(array('ca' => $alpha, 'CA' => $alpha, 'BM' => '/'.$bm, 'AIS' => 'false'));
+		$stroking = floatval($stroking);
+		if ($this->empty_string($nonstroking)) {
+			// default value if not set
+			$nonstroking = $stroking;
+		} else {
+			$nonstroking = floatval($nonstroking);
+		}
+		if ($bm[0] == '/') {
+			// remove trailing slash
+			$bm = substr($bm, 1);
+		}
+		if (!in_array($bm, array('Normal', 'Multiply', 'Screen', 'Overlay', 'Darken', 'Lighten', 'ColorDodge', 'ColorBurn', 'HardLight', 'SoftLight', 'Difference', 'Exclusion', 'Hue', 'Saturation', 'Color', 'Luminosity'))) {
+			$bm = 'Normal';
+		}
+		$ais = $ais ? true : false;
+		$this->alpha = array('CA' => $stroking, 'ca' => $nonstroking, 'BM' => '/'.$bm, 'AIS' => $ais);
+		$gs = $this->addExtGState($this->alpha);
 		$this->setExtGState($gs);
+	}
+
+	/**
+	 * Get the alpha mode array (CA, ca, BM, AIS).
+	 * (Check the "Entries in a Graphics State Parameter Dictionary" on PDF 32000-1:2008).
+	 * @return array.
+	 * @public
+	 * @since 5.9.152 (2012-03-23)
+	 */
+	public function getAlpha() {
+		return $this->alpha;
 	}
 
 	/**
@@ -27638,7 +27893,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		}
 		// opacity
 		if ($svgstyle['opacity'] != 1) {
-			$this->SetAlpha($svgstyle['opacity']);
+			$this->setAlpha($svgstyle['opacity'], 'Normal', $svgstyle['opacity'], false);
 		}
 		// color
 		$fill_color = $this->convertHTMLColorToDec($svgstyle['color']);
@@ -27769,7 +28024,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		} elseif ($svgstyle['fill'] != 'none') {
 			$fill_color = $this->convertHTMLColorToDec($svgstyle['fill']);
 			if ($svgstyle['fill-opacity'] != 1) {
-				$this->SetAlpha($svgstyle['fill-opacity']);
+				$this->setAlpha($this->alpha['CA'], 'Normal', $svgstyle['fill-opacity'], false);
 			}
 			$this->SetFillColorArray($fill_color);
 			if ($svgstyle['fill-rule'] == 'evenodd') {
@@ -27780,6 +28035,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		}
 		// stroke
 		if ($svgstyle['stroke'] != 'none') {
+			if ($svgstyle['stroke-opacity'] != 1) {
+				$this->setAlpha($svgstyle['stroke-opacity'], 'Normal', $this->alpha['ca'], false);
+			}
 			$stroke_style = array(
 				'color' => $this->convertHTMLColorToDec($svgstyle['stroke']),
 				'width' => $this->getHTMLUnitToUnits($svgstyle['stroke-width'], 0, $this->svgunit, false),

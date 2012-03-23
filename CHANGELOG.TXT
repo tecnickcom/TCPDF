@@ -1,3 +1,12 @@
+5.9.152 (2012-03-23)
+	- The following overprint methods were added: setOverprint(), getOverprint().
+	- Signature of setAlpha() method was changed and method getAlpha() was added.
+	- stroke-opacity support was added on SVG.
+	- The following date methods were added: setDocCreationTimestamp(), setDocModificationTimestamp(), getDocCreationTimestamp(), getDocModificationTimestamp(), getFormattedDate(), getTimestamp().
+	- Signature of _datestring() method was changed.
+	- Method getFontBBox() was added.
+	- Method setPageBoxTypes() was aded.
+
 5.9.151 (2012-03-22)
 	- Bug item #3509889 "Transform() distorts PDF" was fixed.
 	- Precision of real number were extended.
