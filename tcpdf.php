@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.152
+// Version     : 5.9.153
 // Begin       : 2002-08-03
-// Last Update : 2012-03-23
+// Last Update : 2012-03-28
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
 // -------------------------------------------------------------------
@@ -137,7 +137,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.152
+ * @version 5.9.153
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -149,7 +149,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.152
+ * @version 5.9.153
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -160,7 +160,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.152';
+	private $tcpdf_version = '5.9.153';
 
 	// Protected properties
 
@@ -5279,7 +5279,7 @@ class TCPDF {
 	 * @since 1.0
 	 * @see AddFont(), SetFontSize()
 	 */
-	public function SetFont($family, $style='', $size=0, $fontfile='', $subset='default', $out=true) {
+	public function SetFont($family, $style='', $size=null, $fontfile='', $subset='default', $out=true) {
 		//Select a font; size given in points
 		if ($size === null) {
 			$size = $this->FontSizePt;
@@ -5418,6 +5418,70 @@ class TCPDF {
 			$ascent = 1.219 * 0.76 * $size;
 		}
 		return ($ascent / $this->k);
+	}
+
+	/**
+	 * Return the font descent value
+	 * @param $char (mixed) Character to check (integer value or string)
+	 * @param $font (string) Font name (family name).
+	 * @param $style (string) Font style.
+	 * @return (boolean) true if the char is defined, false otherwise.
+	 * @public
+	 * @since 5.9.153 (2012-03-28)
+	 */
+	public function isCharDefined($char, $font='', $style='') {
+		if (is_string($char)) {
+			// get character code
+			$char = $this->UTF8StringToArray($char);
+			$char = $char[0];
+		}
+		if ($this->empty_string($font)) {
+			$font = $this->FontFamily;
+		}
+		$fontdata = $this->AddFont($font, $style);
+		$fontinfo = $this->getFontBuffer($fontdata['fontkey']);
+		return (isset($fontinfo['cw'][intval($char)]));
+	}
+
+	/**
+	 * Replace missing font characters on selected font with specified substitutions.
+	 * @param $text (string) Text to process.
+	 * @param $font (string) Font name (family name).
+	 * @param $style (string) Font style.
+	 * @param $subs (array) Array of possible character substitutions. The key is the character to check (integer value) and the value is a single intege value or an array of possible substitutes.
+	 * @return (string) Processed text.
+	 * @public
+	 * @since 5.9.153 (2012-03-28)
+	 */
+	public function replaceMissingChars($text, $font='', $style='', $subs=array()) {
+		if (empty($subs)) {
+			return $text;
+		}
+		if ($this->empty_string($font)) {
+			$font = $this->FontFamily;
+		}
+		$fontdata = $this->AddFont($font, $style);
+		$fontinfo = $this->getFontBuffer($fontdata['fontkey']);
+		$uniarr = $this->UTF8StringToArray($text);
+		foreach ($uniarr as $k => $chr) {
+			if (!isset($fontinfo['cw'][$chr])) {
+				// this character is missing on the selected font
+				if (isset($subs[$chr])) {
+					// we have available substitutions
+					if (is_array($subs[$chr])) {
+						foreach($subs[$chr] as $s) {
+							if (isset($fontinfo['cw'][$s])) {
+								$uniarr[$k] = $s;
+								break;
+							}
+						}
+					} elseif (isset($fontinfo['cw'][$subs[$chr]])) {
+						$uniarr[$k] = $subs[$chr];
+					}
+				}
+			}
+		}
+		return $this->UniArrSubString($this->UTF8ArrayToUniArray($uniarr));
 	}
 
 	/**
@@ -9840,8 +9904,8 @@ class TCPDF {
 
 	/**
 	 * Get SHORT from string (Big Endian 16-bit signed integer).
-	 * @param $str (string) string from where to extract value
-	 * @param $offset (int) point from where to read the data
+	 * @param $str (string) String from where to extract value.
+	 * @param $offset (int) Point from where to read the data.
 	 * @return int 16 bit value
 	 * @author Nicola Asuni
 	 * @protected
@@ -9854,8 +9918,8 @@ class TCPDF {
 
 	/**
 	 * Get FWORD from string (Big Endian 16-bit signed integer).
-	 * @param $str (string) string from where to extract value
-	 * @param $offset (int) point from where to read the data
+	 * @param $str (string) String from where to extract value.
+	 * @param $offset (int) Point from where to read the data.
 	 * @return int 16 bit value
 	 * @author Nicola Asuni
 	 * @protected
@@ -10234,7 +10298,7 @@ class TCPDF {
 				fclose($fp);
 			}
 			$offset = 0; // offset position of the font data
-			if ($this->_getULONG($font, $offset) != 0x10000) {
+			if ($this->_getULONG($font, $offset) != 0x10000) { echo $this->_getULONG($font, $offset);
 				// sfnt version must be 0x00010000 for TrueType version 1.0.
 				return $font;
 			}
@@ -10455,7 +10519,7 @@ class TCPDF {
 							$offset += 2;
 							$subHeaders[$k]['entryCount'] = $this->_getUSHORT($font, $offset);
 							$offset += 2;
-							$subHeaders[$k]['idDelta'] = $this->_getSHORT($font, $offset);
+							$subHeaders[$k]['idDelta'] = $this->_getUSHORT($font, $offset);
 							$offset += 2;
 							$subHeaders[$k]['idRangeOffset'] = $this->_getUSHORT($font, $offset);
 							$offset += 2;
@@ -10482,8 +10546,7 @@ class TCPDF {
 									// combine high and low bytes
 									$c = (($i << 8) + $j);
 									$idRangeOffset = ($subHeaders[$k]['idRangeOffset'] + $j - $subHeaders[$k]['firstCode']);
-									$g = $glyphIndexArray[$idRangeOffset];
-									$g += ($idDelta[$k] - 65536);
+									$g = ($glyphIndexArray[$idRangeOffset] + $idDelta[$k]) % 65536;
 									if ($g < 0) {
 										$g = 0;
 									}
@@ -10530,12 +10593,11 @@ class TCPDF {
 						for ($k = 0; $k < $segCount; ++$k) {
 							for ($c = $startCount[$k]; $c <= $endCount[$k]; ++$c) {
 								if ($idRangeOffset[$k] == 0) {
-									$g = $c;
+									$g = ($idDelta[$k] + $c) % 65536;
 								} else {
 									$gid = (($idRangeOffset[$k] / 2) + ($c - $startCount[$k]) - ($segCount - $k));
-									$g = $glyphIdArray[$gid];
+									$g = ($glyphIdArray[$gid] + $idDelta[$k]) % 65536;
 								}
-								$g += ($idDelta[$k] - 65536);
 								if ($g < 0) {
 									$g = 0;
 								}
@@ -10584,7 +10646,7 @@ class TCPDF {
 									//SURROGATE_OFFSET = (0x10000 - (0xD800 << 10) - 0xDC00) = -56613888
 									$c = ((55232 + ($k >> 10)) << 10) + (0xDC00 + ($k & 0x3FF)) -56613888;
 								}
-								$ctg[$c] = $g;
+								$ctg[$c] = 0;
 								++$startGlyphID;
 							}
 						}
@@ -10889,7 +10951,7 @@ class TCPDF {
 						$offset += 2;
 						$subHeaders[$k]['entryCount'] = $this->_getUSHORT($font, $offset);
 						$offset += 2;
-						$subHeaders[$k]['idDelta'] = $this->_getSHORT($font, $offset);
+						$subHeaders[$k]['idDelta'] = $this->_getUSHORT($font, $offset);
 						$offset += 2;
 						$subHeaders[$k]['idRangeOffset'] = $this->_getUSHORT($font, $offset);
 						$offset += 2;
@@ -10919,8 +10981,7 @@ class TCPDF {
 								$c = (($i << 8) + $j);
 								if (isset($subsetchars[$c])) {
 									$idRangeOffset = ($subHeaders[$k]['idRangeOffset'] + $j - $subHeaders[$k]['firstCode']);
-									$g = $glyphIndexArray[$idRangeOffset];
-									$g += ($idDelta[$k] - 65536);
+									$g = ($glyphIndexArray[$idRangeOffset] + $idDelta[$k]) % 65536;
 									if ($g < 0) {
 										$g = 0;
 									}
@@ -10969,12 +11030,11 @@ class TCPDF {
 						for ($c = $startCount[$k]; $c <= $endCount[$k]; ++$c) {
 							if (isset($subsetchars[$c])) {
 								if ($idRangeOffset[$k] == 0) {
-									$g = $c;
+									$g = ($idDelta[$k] + $c) % 65536;
 								} else {
 									$gid = (($idRangeOffset[$k] / 2) + ($c - $startCount[$k]) - ($segCount - $k));
-									$g = $glyphIdArray[$gid];
+									$g = ($glyphIdArray[$gid] + $idDelta[$k]) % 65536;
 								}
-								$g += ($idDelta[$k] - 65536);
 								if ($g < 0) {
 									$g = 0;
 								}

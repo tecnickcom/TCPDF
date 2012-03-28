@@ -8,8 +8,8 @@ http://sourceforge.net/donate/index.php?group_id=128076
 ------------------------------------------------------------
 
 Name: TCPDF
-Version: 5.9.152
-Release date: 2012-03-23
+Version: 5.9.153
+Release date: 2012-03-28
 Author:	Nicola Asuni
 
 Copyright (c) 2002-2012:
@@ -93,5 +93,5 @@ Third party fonts
 	To get the original distribution archives please check the information on fonts subfolders:
 	 - DejaVu fonts 2.33 (Bitstream) - Copyright, License and other info: fonts/dejavu-fonts-ttf-2.33
 	 - GNU FreeFont (GNU-GPLv3) - Copyright, License and other info: fonts/freefont-20100919
-	
+
 ============================================================
