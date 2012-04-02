@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.153
+// Version     : 5.9.155
 // Begin       : 2002-08-03
-// Last Update : 2012-03-28
+// Last Update : 2012-04-02
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
 // -------------------------------------------------------------------
@@ -137,7 +137,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.153
+ * @version 5.9.155
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -149,7 +149,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.153
+ * @version 5.9.155
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -160,7 +160,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.153';
+	private $tcpdf_version = '5.9.155';
 
 	// Protected properties
 
@@ -4261,7 +4261,7 @@ class TCPDF {
 		// print header template
 		$x = 0;
 		$dx = 0;
-		if ($this->booklet AND (($this->page % 2) == 0)) {
+		if (!$this->header_xobj_autoreset AND $this->booklet AND (($this->page % 2) == 0)) {
 			// adjust margins for booklet mode
 			$dx = ($this->original_lMargin - $this->original_rMargin);
 		}
@@ -10001,17 +10001,19 @@ class TCPDF {
 
 	/**
 	 * Convert and add the selected TrueType or Type1 font to the fonts folder (that must be writeable).
-	 * @param $fontfile (string) TrueType or Type1 font file (full path).
+	 * @param $fontfile (string) Font file (full path).
 	 * @param $fonttype (string) Font type. Leave empty for autodetect mode. Valid values are: TrueTypeUnicode, TrueType, Type1, CID0JP = CID-0 Japanese, CID0KR = CID-0 Korean, CID0CS = CID-0 Chinese Simplified, CID0CT = CID-0 Chinese Traditional.
 	 * @param $enc (string) Name of the encoding table to use. Leave empty for default mode. Omit this parameter for TrueType Unicode and symbolic fonts like Symbol or ZapfDingBats.
 	 * @param $flags (int) Unsigned 32-bit integer containing flags specifying various characteristics of the font (PDF32000:2008 - 9.8.2 Font Descriptor Flags): +1 for fixed font; +4 for symbol or +32 for non-symbol; +64 for italic. Fixed and Italic mode are generally autodetected so you have to set it to 32 = non-symbolic font (default) or 4 = symbolic font.
 	 * @param $outpath (string) Output path for generated font files (must be writeable by the web server). Leave empty for default font folder.
+	 * @param $platid (int) Platform ID for CMAP table to extract (when building a Unicode font for Windows this value should be 3, for Macintosh should be 1).
+	 * @param $encid (int) Encoding ID for CMAP table to extract (when building a Unicode font for Windows this value should be 1, for Macintosh should be 0). When Platform ID is 3, legal values for Encoding ID are: 0=Symbol, 1=Unicode, 2=ShiftJIS, 3=PRC, 4=Big5, 5=Wansung, 6=Johab, 7=Reserved, 8=Reserved, 9=Reserved, 10=UCS-4.
 	 * @return (string) TCPDF font name.
 	 * @author Nicola Asuni
 	 * @public
 	 * @since 5.9.123 (2010-09-30)
 	 */
-	public function addTTFfont($fontfile, $fonttype='', $enc='', $flags=32, $outpath='') {
+	public function addTTFfont($fontfile, $fonttype='', $enc='', $flags=32, $outpath='', $platid=3, $encid=1) {
 		if (!file_exists($fontfile)) {
 			$this->Error('Could not find file: '.$fontfile.'');
 		}
@@ -10298,7 +10300,7 @@ class TCPDF {
 				fclose($fp);
 			}
 			$offset = 0; // offset position of the font data
-			if ($this->_getULONG($font, $offset) != 0x10000) { echo $this->_getULONG($font, $offset);
+			if ($this->_getULONG($font, $offset) != 0x10000) {
 				// sfnt version must be 0x00010000 for TrueType version 1.0.
 				return $font;
 			}
@@ -10480,217 +10482,215 @@ class TCPDF {
 			// ---------- get CIDToGIDMap ----------
 			$ctg = array();
 			foreach ($encodingTables as $enctable) {
-				if (($enctable['platformID'] == 3) AND ($enctable['encodingID'] == 0)) {
-					$modesymbol = true;
-				} else {
-					$modesymbol = false;
-				}
-				$offset = $table['cmap']['offset'] + $enctable['offset'];
-				$format = $this->_getUSHORT($font, $offset);
-				$offset += 2;
-				switch ($format) {
-					case 0: { // Format 0: Byte encoding table
-						$offset += 4; // skip length and version/language
-						for ($c = 0; $c < 256; ++$c) {
-							$g = $this->_getBYTE($font, $offset);
-							$ctg[$c] = $g;
-							++$offset;
-						}
-						break;
-					}
-					case 2: { // Format 2: High-byte mapping through table
-						$offset += 4; // skip length and version/language
-						$numSubHeaders = 0;
-						for ($i = 0; $i < 256; ++$i) {
-							// Array that maps high bytes to subHeaders: value is subHeader index * 8.
-							$subHeaderKeys[$i] = ($this->_getUSHORT($font, $offset) / 8);
-							$offset += 2;
-							if ($numSubHeaders < $subHeaderKeys[$i]) {
-								$numSubHeaders = $subHeaderKeys[$i];
-							}
-						}
-						// the number of subHeaders is equal to the max of subHeaderKeys + 1
-						++$numSubHeaders;
-						// read subHeader structures
-						$subHeaders = array();
-						$numGlyphIndexArray = 0;
-						for ($k = 0; $k < $numSubHeaders; ++$k) {
-							$subHeaders[$k]['firstCode'] = $this->_getUSHORT($font, $offset);
-							$offset += 2;
-							$subHeaders[$k]['entryCount'] = $this->_getUSHORT($font, $offset);
-							$offset += 2;
-							$subHeaders[$k]['idDelta'] = $this->_getUSHORT($font, $offset);
-							$offset += 2;
-							$subHeaders[$k]['idRangeOffset'] = $this->_getUSHORT($font, $offset);
-							$offset += 2;
-							$subHeaders[$k]['idRangeOffset'] -= (2 + (($numSubHeaders - $k - 1) * 8));
-							$subHeaders[$k]['idRangeOffset'] /= 2;
-							$numGlyphIndexArray += $subHeaders[$k]['entryCount'];
-						}
-						for ($k = 0; $k < $numGlyphIndexArray; ++$k) {
-							$glyphIndexArray[$k] = $this->_getUSHORT($font, $offset);
-							$offset += 2;
-						}
-						for ($i = 0; $i < 256; ++$i) {
-							$k = $subHeaderKeys[$i];
-							if ($k == 0) {
-								// one byte code
-								$c = $i;
-								$g = $glyphIndexArray[0];
+				// get only specified Platform ID and Encoding ID
+				if (($enctable['platformID'] == $platid) AND ($enctable['encodingID'] == $encid)) {
+					$offset = $table['cmap']['offset'] + $enctable['offset'];
+					$format = $this->_getUSHORT($font, $offset);
+					$offset += 2;
+					switch ($format) {
+						case 0: { // Format 0: Byte encoding table
+							$offset += 4; // skip length and version/language
+							for ($c = 0; $c < 256; ++$c) {
+								$g = $this->_getBYTE($font, $offset);
 								$ctg[$c] = $g;
-							} else {
-								// two bytes code
-								$start_byte = $subHeaders[$k]['firstCode'];
-								$end_byte = $start_byte + $subHeaders[$k]['entryCount'];
-								for ($j = $start_byte; $j < $end_byte; ++$j) {
-									// combine high and low bytes
-									$c = (($i << 8) + $j);
-									$idRangeOffset = ($subHeaders[$k]['idRangeOffset'] + $j - $subHeaders[$k]['firstCode']);
-									$g = ($glyphIndexArray[$idRangeOffset] + $idDelta[$k]) % 65536;
+								++$offset;
+							}
+							break;
+						}
+						case 2: { // Format 2: High-byte mapping through table
+							$offset += 4; // skip length and version/language
+							$numSubHeaders = 0;
+							for ($i = 0; $i < 256; ++$i) {
+								// Array that maps high bytes to subHeaders: value is subHeader index * 8.
+								$subHeaderKeys[$i] = ($this->_getUSHORT($font, $offset) / 8);
+								$offset += 2;
+								if ($numSubHeaders < $subHeaderKeys[$i]) {
+									$numSubHeaders = $subHeaderKeys[$i];
+								}
+							}
+							// the number of subHeaders is equal to the max of subHeaderKeys + 1
+							++$numSubHeaders;
+							// read subHeader structures
+							$subHeaders = array();
+							$numGlyphIndexArray = 0;
+							for ($k = 0; $k < $numSubHeaders; ++$k) {
+								$subHeaders[$k]['firstCode'] = $this->_getUSHORT($font, $offset);
+								$offset += 2;
+								$subHeaders[$k]['entryCount'] = $this->_getUSHORT($font, $offset);
+								$offset += 2;
+								$subHeaders[$k]['idDelta'] = $this->_getUSHORT($font, $offset);
+								$offset += 2;
+								$subHeaders[$k]['idRangeOffset'] = $this->_getUSHORT($font, $offset);
+								$offset += 2;
+								$subHeaders[$k]['idRangeOffset'] -= (2 + (($numSubHeaders - $k - 1) * 8));
+								$subHeaders[$k]['idRangeOffset'] /= 2;
+								$numGlyphIndexArray += $subHeaders[$k]['entryCount'];
+							}
+							for ($k = 0; $k < $numGlyphIndexArray; ++$k) {
+								$glyphIndexArray[$k] = $this->_getUSHORT($font, $offset);
+								$offset += 2;
+							}
+							for ($i = 0; $i < 256; ++$i) {
+								$k = $subHeaderKeys[$i];
+								if ($k == 0) {
+									// one byte code
+									$c = $i;
+									$g = $glyphIndexArray[0];
+									$ctg[$c] = $g;
+								} else {
+									// two bytes code
+									$start_byte = $subHeaders[$k]['firstCode'];
+									$end_byte = $start_byte + $subHeaders[$k]['entryCount'];
+									for ($j = $start_byte; $j < $end_byte; ++$j) {
+										// combine high and low bytes
+										$c = (($i << 8) + $j);
+										$idRangeOffset = ($subHeaders[$k]['idRangeOffset'] + $j - $subHeaders[$k]['firstCode']);
+										$g = ($glyphIndexArray[$idRangeOffset] + $idDelta[$k]) % 65536;
+										if ($g < 0) {
+											$g = 0;
+										}
+										$ctg[$c] = $g;
+									}
+								}
+							}
+							break;
+						}
+						case 4: { // Format 4: Segment mapping to delta values
+							$length = $this->_getUSHORT($font, $offset);
+							$offset += 2;
+							$offset += 2; // skip version/language
+							$segCount = ($this->_getUSHORT($font, $offset) / 2);
+							$offset += 2;
+							$offset += 6; // skip searchRange, entrySelector, rangeShift
+							$endCount = array(); // array of end character codes for each segment
+							for ($k = 0; $k < $segCount; ++$k) {
+								$endCount[$k] = $this->_getUSHORT($font, $offset);
+								$offset += 2;
+							}
+							$offset += 2; // skip reservedPad
+							$startCount = array(); // array of start character codes for each segment
+							for ($k = 0; $k < $segCount; ++$k) {
+								$startCount[$k] = $this->_getUSHORT($font, $offset);
+								$offset += 2;
+							}
+							$idDelta = array(); // delta for all character codes in segment
+							for ($k = 0; $k < $segCount; ++$k) {
+								$idDelta[$k] = $this->_getUSHORT($font, $offset);
+								$offset += 2;
+							}
+							$idRangeOffset = array(); // Offsets into glyphIdArray or 0
+							for ($k = 0; $k < $segCount; ++$k) {
+								$idRangeOffset[$k] = $this->_getUSHORT($font, $offset);
+								$offset += 2;
+							}
+							$gidlen = ($length / 2) - 8 - (4 * $segCount);
+							$glyphIdArray = array(); // glyph index array
+							for ($k = 0; $k < $gidlen; ++$k) {
+								$glyphIdArray[$k] = $this->_getUSHORT($font, $offset);
+								$offset += 2;
+							}
+							for ($k = 0; $k < $segCount; ++$k) {
+								for ($c = $startCount[$k]; $c <= $endCount[$k]; ++$c) {
+									if ($idRangeOffset[$k] == 0) {
+										$g = ($idDelta[$k] + $c) % 65536;
+									} else {
+										$gid = (($idRangeOffset[$k] / 2) + ($c - $startCount[$k]) - ($segCount - $k));
+										$g = ($glyphIdArray[$gid] + $idDelta[$k]) % 65536;
+									}
 									if ($g < 0) {
 										$g = 0;
 									}
 									$ctg[$c] = $g;
 								}
 							}
+							break;
 						}
-						break;
-					}
-					case 4: { // Format 4: Segment mapping to delta values
-						$length = $this->_getUSHORT($font, $offset);
-						$offset += 2;
-						$offset += 2; // skip version/language
-						$segCount = ($this->_getUSHORT($font, $offset) / 2);
-						$offset += 2;
-						$offset += 6; // skip searchRange, entrySelector, rangeShift
-						$endCount = array(); // array of end character codes for each segment
-						for ($k = 0; $k < $segCount; ++$k) {
-							$endCount[$k] = $this->_getUSHORT($font, $offset);
+						case 6: { // Format 6: Trimmed table mapping
+							$offset += 4; // skip length and version/language
+							$firstCode = $this->_getUSHORT($font, $offset);
 							$offset += 2;
-						}
-						$offset += 2; // skip reservedPad
-						$startCount = array(); // array of start character codes for each segment
-						for ($k = 0; $k < $segCount; ++$k) {
-							$startCount[$k] = $this->_getUSHORT($font, $offset);
+							$entryCount = $this->_getUSHORT($font, $offset);
 							$offset += 2;
-						}
-						$idDelta = array(); // delta for all character codes in segment
-						for ($k = 0; $k < $segCount; ++$k) {
-							$idDelta[$k] = $this->_getUSHORT($font, $offset);
-							$offset += 2;
-						}
-						$idRangeOffset = array(); // Offsets into glyphIdArray or 0
-						for ($k = 0; $k < $segCount; ++$k) {
-							$idRangeOffset[$k] = $this->_getUSHORT($font, $offset);
-							$offset += 2;
-						}
-						$gidlen = ($length / 2) - 8 - (4 * $segCount);
-						$glyphIdArray = array(); // glyph index array
-						for ($k = 0; $k < $gidlen; ++$k) {
-							$glyphIdArray[$k] = $this->_getUSHORT($font, $offset);
-							$offset += 2;
-						}
-						for ($k = 0; $k < $segCount; ++$k) {
-							for ($c = $startCount[$k]; $c <= $endCount[$k]; ++$c) {
-								if ($idRangeOffset[$k] == 0) {
-									$g = ($idDelta[$k] + $c) % 65536;
-								} else {
-									$gid = (($idRangeOffset[$k] / 2) + ($c - $startCount[$k]) - ($segCount - $k));
-									$g = ($glyphIdArray[$gid] + $idDelta[$k]) % 65536;
-								}
-								if ($g < 0) {
-									$g = 0;
-								}
+							for ($k = 0; $k < $entryCount; ++$k) {
+								$c = ($k + $firstCode);
+								$g = $this->_getUSHORT($font, $offset);
+								$offset += 2;
 								$ctg[$c] = $g;
 							}
+							break;
 						}
-						break;
-					}
-					case 6: { // Format 6: Trimmed table mapping
-						$offset += 4; // skip length and version/language
-						$firstCode = $this->_getUSHORT($font, $offset);
-						$offset += 2;
-						$entryCount = $this->_getUSHORT($font, $offset);
-						$offset += 2;
-						for ($k = 0; $k < $entryCount; ++$k) {
-							$c = ($k + $firstCode);
-							$g = $this->_getUSHORT($font, $offset);
-							$ctg[$c] = $g;
-							$offset += 2;
-						}
-						break;
-					}
-					case 8: { // Format 8: Mixed 16-bit and 32-bit coverage
-						$offset += 10; // skip reserved, length and version/language
-						for ($k = 0; $k < 8192; ++$k) {
-							$is32[$k] = $this->_getBYTE($font, $offset);
-							++$offset;
-						}
-						$nGroups = $this->_getULONG($font, $offset);
-						$offset += 4;
-						for ($i = 0; $i < $nGroups; ++$i) {
-							$startCharCode = $this->_getULONG($font, $offset);
+						case 8: { // Format 8: Mixed 16-bit and 32-bit coverage
+							$offset += 10; // skip reserved, length and version/language
+							for ($k = 0; $k < 8192; ++$k) {
+								$is32[$k] = $this->_getBYTE($font, $offset);
+								++$offset;
+							}
+							$nGroups = $this->_getULONG($font, $offset);
 							$offset += 4;
-							$endCharCode = $this->_getULONG($font, $offset);
-							$offset += 4;
-							$startGlyphID = $this->_getULONG($font, $offset);
-							$offset += 4;
-							for ($k = $startCharCode; $k <= $endCharCode; ++$k) {
-								$is32idx = floor($c / 8);
-								if ((isset($is32[$is32idx])) AND (($is32[$is32idx] & (1 << (7 - ($c % 8)))) == 0)) {
-									$c = $k;
-								} else {
-									// 32 bit format
-									// convert to decimal (http://www.unicode.org/faq//utf_bom.html#utf16-4)
-									//LEAD_OFFSET = (0xD800 - (0x10000 >> 10)) = 55232
-									//SURROGATE_OFFSET = (0x10000 - (0xD800 << 10) - 0xDC00) = -56613888
-									$c = ((55232 + ($k >> 10)) << 10) + (0xDC00 + ($k & 0x3FF)) -56613888;
+							for ($i = 0; $i < $nGroups; ++$i) {
+								$startCharCode = $this->_getULONG($font, $offset);
+								$offset += 4;
+								$endCharCode = $this->_getULONG($font, $offset);
+								$offset += 4;
+								$startGlyphID = $this->_getULONG($font, $offset);
+								$offset += 4;
+								for ($k = $startCharCode; $k <= $endCharCode; ++$k) {
+									$is32idx = floor($c / 8);
+									if ((isset($is32[$is32idx])) AND (($is32[$is32idx] & (1 << (7 - ($c % 8)))) == 0)) {
+										$c = $k;
+									} else {
+										// 32 bit format
+										// convert to decimal (http://www.unicode.org/faq//utf_bom.html#utf16-4)
+										//LEAD_OFFSET = (0xD800 - (0x10000 >> 10)) = 55232
+										//SURROGATE_OFFSET = (0x10000 - (0xD800 << 10) - 0xDC00) = -56613888
+										$c = ((55232 + ($k >> 10)) << 10) + (0xDC00 + ($k & 0x3FF)) -56613888;
+									}
+									$ctg[$c] = 0;
+									++$startGlyphID;
 								}
-								$ctg[$c] = 0;
-								++$startGlyphID;
 							}
+							break;
 						}
-						break;
-					}
-					case 10: { // Format 10: Trimmed array
-						$offset += 10; // skip reserved, length and version/language
-						$startCharCode = $this->_getULONG($font, $offset);
-						$offset += 4;
-						$numChars = $this->_getULONG($font, $offset);
-						$offset += 4;
-						for ($k = 0; $k < $numChars; ++$k) {
-							$c = ($k + $startCharCode);
-							$g = $this->_getUSHORT($font, $offset);
-							$ctg[$c] = $g;
-							$offset += 2;
-						}
-						break;
-					}
-					case 12: { // Format 12: Segmented coverage
-						$offset += 10; // skip length and version/language
-						$nGroups = $this->_getULONG($font, $offset);
-						$offset += 4;
-						for ($k = 0; $k < $nGroups; ++$k) {
+						case 10: { // Format 10: Trimmed array
+							$offset += 10; // skip reserved, length and version/language
 							$startCharCode = $this->_getULONG($font, $offset);
 							$offset += 4;
-							$endCharCode = $this->_getULONG($font, $offset);
+							$numChars = $this->_getULONG($font, $offset);
 							$offset += 4;
-							$startGlyphCode = $this->_getULONG($font, $offset);
-							$offset += 4;
-							for ($c = $startCharCode; $c <= $endCharCode; ++$c) {
-								$ctg[$c] = $startGlyphCode;
-								++$startGlyphCode;
+							for ($k = 0; $k < $numChars; ++$k) {
+								$c = ($k + $startCharCode);
+								$g = $this->_getUSHORT($font, $offset);
+								$ctg[$c] = $g;
+								$offset += 2;
 							}
+							break;
 						}
-						break;
-					}
-					case 13: { // Format 13: Many-to-one range mappings
-						// to be implemented ...
-						break;
-					}
-					case 14: { // Format 14: Unicode Variation Sequences
-						// to be implemented ...
-						break;
+						case 12: { // Format 12: Segmented coverage
+							$offset += 10; // skip length and version/language
+							$nGroups = $this->_getULONG($font, $offset);
+							$offset += 4;
+							for ($k = 0; $k < $nGroups; ++$k) {
+								$startCharCode = $this->_getULONG($font, $offset);
+								$offset += 4;
+								$endCharCode = $this->_getULONG($font, $offset);
+								$offset += 4;
+								$startGlyphCode = $this->_getULONG($font, $offset);
+								$offset += 4;
+								for ($c = $startCharCode; $c <= $endCharCode; ++$c) {
+									$ctg[$c] = $startGlyphCode;
+									++$startGlyphCode;
+								}
+							}
+							break;
+						}
+						case 13: { // Format 13: Many-to-one range mappings
+							// to be implemented ...
+							break;
+						}
+						case 14: { // Format 14: Unicode Variation Sequences
+							// to be implemented ...
+							break;
+						}
 					}
 				}
 			}
@@ -10910,11 +10910,7 @@ class TCPDF {
 			$offset += 4;
 		}
 		foreach ($encodingTables as $enctable) {
-			if (($enctable['platformID'] == 3) AND ($enctable['encodingID'] == 0)) {
-				$modesymbol = true;
-			} else {
-				$modesymbol = false;
-			}
+			// get all platforms and encodings
 			$offset = $table['cmap']['offset'] + $enctable['offset'];
 			$format = $this->_getUSHORT($font, $offset);
 			$offset += 2;
@@ -21123,6 +21119,8 @@ class TCPDF {
 		$html = preg_replace('/<li([^\>]*)>'.$this->re_space['p'].'*<img/'.$this->re_space['m'], '<li\\1><font size="1">&nbsp;</font><img', $html);
 		$html = preg_replace('/<([^\>\/]*)>[\s]/', '<\\1>&nbsp;', $html); // preserve some spaces
 		$html = preg_replace('/[\s]<\/([^\>]*)>/', '&nbsp;</\\1>', $html); // preserve some spaces
+		$html = preg_replace('/<su([bp])/', '<zws/><su\\1', $html); // fix sub/sup alignment
+		$html = preg_replace('/<\/su([bp])>/', '</su\\1><zws/>', $html); // fix sub/sup alignment
 		$html = preg_replace('/'.$this->re_space['p'].'+/'.$this->re_space['m'], chr(32), $html); // replace multiple spaces with a single space
 		// trim string
 		$html = $this->stringTrim($html);
@@ -23079,9 +23077,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 									$nextstr = preg_split('/'.$this->re_space['p'].'+/'.$this->re_space['m'], $dom[$nkey]['value']);
 									if (isset($nextstr[0]) AND $same_textdir) {
 										$wadj += $this->GetStringWidth($nextstr[0], $tmp_fontname, $tmp_fontstyle, $tmp_fontsize);
-									}
-									if (isset($nextstr[1])) {
-										$write_block = false;
+										if (isset($nextstr[1])) {
+											$write_block = false;
+										}
 									}
 								}
 								++$nkey;
@@ -23094,6 +23092,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 							if ($numblks > 1) {
 								// try to split on blank spaces
 								$wadj = ($cwa - $strlinelen + $this->GetStringWidth($nextstr[($numblks - 1)]));
+							} else {
+								// set the entire block on new line
+								$wadj = $this->GetStringWidth($nextstr[0]);
 							}
 						}
 						// check for reversed text direction
@@ -24401,7 +24402,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				break;
 			}
 			case 'sub': {
-				$this->SetXY($this->GetX(), $this->GetY() - ((0.3 * $parent['fontsize'])/$this->k));
+				$this->SetXY($this->GetX(), $this->GetY() - ((0.3 * $parent['fontsize']) / $this->k));
 				break;
 			}
 			case 'div': {
