@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.155
+// Version     : 5.9.156
 // Begin       : 2002-08-03
-// Last Update : 2012-04-02
+// Last Update : 2012-04-10
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
 // -------------------------------------------------------------------
@@ -137,7 +137,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.155
+ * @version 5.9.156
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -149,7 +149,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.155
+ * @version 5.9.156
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -160,7 +160,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.155';
+	private $tcpdf_version = '5.9.156';
 
 	// Protected properties
 
@@ -5718,7 +5718,7 @@ class TCPDF {
 			if ($this->current_column < ($this->num_columns - 1)) {
 				// go to next column
 				$this->selectColumn($this->current_column + 1);
-			} else {
+			} elseif ($this->AutoPageBreak) {
 				// add a new page
 				$this->AddPage();
 				// set first column
@@ -26045,11 +26045,13 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$fontstyle = $this->FontStyle;
 		$w = $this->w - $this->lMargin - $this->rMargin;
 		$spacer = $this->GetStringWidth(chr(32)) * 4;
-		$page_first = $this->getPage();
 		$lmargin = $this->lMargin;
 		$rmargin = $this->rMargin;
 		$x_start = $this->GetX();
+		$page_first = $this->page;
 		$current_page = $this->page;
+		$page_fill_start = false;
+		$page_fill_end = false;
 		$current_column = $this->current_column;
 		if ($this->empty_string($numbersfont)) {
 			$numbersfont = $this->default_monospaced_font;
@@ -26155,8 +26157,26 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			$this->Cell($tw, 0, $pagenum, 0, 1, $alignnum, 0, $link, 0);
 		}
 		$page_last = $this->getPage();
+		$numpages = ($page_last - $page_first + 1);
+		// account for booklet mode
+		if ($this->booklet) {
+			// check if a blank page is required before TOC
+			$page_fill_start = ((($page_first % 2) == 0) XOR (($page % 2) == 0));
+			$page_fill_end = (!((($numpages % 2) == 0) XOR ($page_fill_start)));
+			if ($page_fill_start) {
+				// add a page at the end (to be moved before TOC)
+				$this->addPage();
+				++$page_last;
+				++$numpages;
+			}
+			if ($page_fill_end) {
+				// add a page at the end
+				$this->addPage();
+				++$page_last;
+				++$numpages;
+			}
+		}
 		$maxpage = max($maxpage, $page_last);
-		$numpages = $page_last - $page_first + 1;
 		if (!$this->empty_string($page)) {
 			for ($p = $page_first; $p <= $page_last; ++$p) {
 				// get page data
@@ -26199,6 +26219,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			}
 			// move pages
 			$this->Bookmark($toc_name, 0, 0, $page_first, $style, $color);
+			if ($page_fill_start) {
+				$this->movePage($page_last, $page_first);
+			}
 			for ($i = 0; $i < $numpages; ++$i) {
 				$this->movePage($page_last, $page);
 			}
@@ -26229,6 +26252,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$this->htmlLinkColorArray = array();
 		$this->htmlLinkFontStyle = '';
 		$page_first = $this->getPage();
+		$page_fill_start = false;
+		$page_fill_end = false;
 		// get the font type used for numbers in each template
 		$current_font = $this->FontFamily;
 		foreach ($templates as $level => $html) {
@@ -26268,8 +26293,26 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$this->htmlLinkFontStyle = $prev_htmlLinkFontStyle;
 		// move TOC page and replace numbers
 		$page_last = $this->getPage();
+		$numpages = ($page_last - $page_first + 1);
+		// account for booklet mode
+		if ($this->booklet) {
+			// check if a blank page is required before TOC
+			$page_fill_start = ((($page_first % 2) == 0) XOR (($page % 2) == 0));
+			$page_fill_end = (!((($numpages % 2) == 0) XOR ($page_fill_start)));
+			if ($page_fill_start) {
+				// add a page at the end (to be moved before TOC)
+				$this->addPage();
+				++$page_last;
+				++$numpages;
+			}
+			if ($page_fill_end) {
+				// add a page at the end
+				$this->addPage();
+				++$page_last;
+				++$numpages;
+			}
+		}
 		$maxpage = max($maxpage, $page_last);
-		$numpages = $page_last - $page_first + 1;
 		if (!$this->empty_string($page)) {
 			for ($p = $page_first; $p <= $page_last; ++$p) {
 				// get page data
@@ -26320,6 +26363,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			}
 			// move pages
 			$this->Bookmark($toc_name, 0, 0, $page_first, $style, $color);
+			if ($page_fill_start) {
+				$this->movePage($page_last, $page_first);
+			}
 			for ($i = 0; $i < $numpages; ++$i) {
 				$this->movePage($page_last, $page);
 			}
