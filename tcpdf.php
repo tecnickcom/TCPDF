@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.156
+// Version     : 5.9.157
 // Begin       : 2002-08-03
-// Last Update : 2012-04-10
+// Last Update : 2012-04-16
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
 // -------------------------------------------------------------------
@@ -137,7 +137,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.156
+ * @version 5.9.157
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -149,7 +149,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.156
+ * @version 5.9.157
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -160,7 +160,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.156';
+	private $tcpdf_version = '5.9.157';
 
 	// Protected properties
 
@@ -27741,7 +27741,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		// scale and translate
 		$e = $ox * $this->k * (1 - $svgscale_x);
 		$f = ($this->h - $oy) * $this->k * (1 - $svgscale_y);
-		$this->_out(sprintf('%F %F %F %F %F %F cm', $svgscale_x, 0, 0, $svgscale_y, $e + $svgoffset_x, $f + $svgoffset_y));
+		$this->_out(sprintf('%F %F %F %F %F %F cm', $svgscale_x, 0, 0, $svgscale_y, ($e + $svgoffset_x), ($f + $svgoffset_y)));
 		// creates a new XML parser to be used by the other XML functions
 		$this->parser = xml_parser_create('UTF-8');
 		// the following function allows to use parser inside object
@@ -28089,10 +28089,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					$gradient['coords'][3] += $y;
 				}
 				// calculate percentages
-				$gradient['coords'][0] = ($gradient['coords'][0] - $x) / $w;
-				$gradient['coords'][1] = ($gradient['coords'][1] - $y) / $h;
-				$gradient['coords'][2] = ($gradient['coords'][2] - $x) / $w;
-				$gradient['coords'][3] = ($gradient['coords'][3] - $y) / $h;
+				$gradient['coords'][0] = (($gradient['coords'][0] - $x) / $w);
+				$gradient['coords'][1] = (($gradient['coords'][1] - $y) / $h);
+				$gradient['coords'][2] = (($gradient['coords'][2] - $x) / $w);
+				$gradient['coords'][3] = (($gradient['coords'][3] - $y) / $h);
 				if (isset($gradient['coords'][4])) {
 					$gradient['coords'][4] /= $w;
 				}
@@ -28121,9 +28121,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			if ($gradient['type'] == 3) {
 				// circular gradient
 				$cy = $this->h - $y - ($gradient['coords'][1] * ($w + $h));
-				$this->_out(sprintf('%F 0 0 %F %F %F cm', $w*$this->k, $w*$this->k, $x*$this->k, $cy*$this->k));
+				$this->_out(sprintf('%F 0 0 %F %F %F cm', ($w * $this->k), ($w * $this->k), ($x * $this->k), ($cy * $this->k)));
 			} else {
-				$this->_out(sprintf('%F 0 0 %F %F %F cm', $w*$this->k, $h*$this->k, $x*$this->k, ($this->h-($y+$h))*$this->k));
+				$this->_out(sprintf('%F 0 0 %F %F %F cm', ($w * $this->k), ($h * $this->k), ($x * $this->k), (($this->h - ($y + $h)) * $this->k)));
 			}
 			if (count($gradient['stops']) > 1) {
 				$this->Gradient($gradient['type'], $gradient['coords'], $gradient['stops'], array(), false);
@@ -28752,15 +28752,19 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					$this->svggradients[$this->svggradientid]['gradientUnits'] = 'objectBoundingBox';
 				}
 				//$attribs['spreadMethod']
-				$x1 = (isset($attribs['x1'])?$attribs['x1']:'0%');
-				$y1 = (isset($attribs['y1'])?$attribs['y1']:'0%');
-				$x2 = (isset($attribs['x2'])?$attribs['x2']:'100%');
-				$y2 = (isset($attribs['y2'])?$attribs['y2']:'0%');
-				if (substr($x1, -1) != '%') {
-					$this->svggradients[$this->svggradientid]['mode'] = 'measure';
-				} else {
+				if (((!isset($attribs['x1'])) AND (!isset($attribs['y1'])) AND (!isset($attribs['x2'])) AND (!isset($attribs['y2'])))
+					OR ((isset($attribs['x1']) AND (substr($attribs['x1'], -1) == '%'))
+						OR (isset($attribs['y1']) AND (substr($attribs['y1'], -1) == '%'))
+						OR (isset($attribs['x2']) AND (substr($attribs['x2'], -1) == '%'))
+						OR (isset($attribs['y2']) AND (substr($attribs['y2'], -1) == '%')))) {
 					$this->svggradients[$this->svggradientid]['mode'] = 'percentage';
+				} else {
+					$this->svggradients[$this->svggradientid]['mode'] = 'measure';
 				}
+				$x1 = (isset($attribs['x1'])?$attribs['x1']:'0');
+				$y1 = (isset($attribs['y1'])?$attribs['y1']:'0');
+				$x2 = (isset($attribs['x2'])?$attribs['x2']:'100');
+				$y2 = (isset($attribs['y2'])?$attribs['y2']:'0');
 				if (isset($attribs['gradientTransform'])) {
 					$this->svggradients[$this->svggradientid]['gradientTransform'] = $this->getSVGTransformMatrix($attribs['gradientTransform']);
 				}
@@ -28788,16 +28792,18 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					$this->svggradients[$this->svggradientid]['gradientUnits'] = 'objectBoundingBox';
 				}
 				//$attribs['spreadMethod']
+				if (((!isset($attribs['cx'])) AND (!isset($attribs['cy'])))
+					OR ((isset($attribs['cx']) AND (substr($attribs['cx'], -1) == '%'))
+						OR (isset($attribs['cy']) AND (substr($attribs['cy'], -1) == '%')) )) {
+					$this->svggradients[$this->svggradientid]['mode'] = 'percentage';
+				} else {
+					$this->svggradients[$this->svggradientid]['mode'] = 'measure';
+				}
 				$cx = (isset($attribs['cx'])?$attribs['cx']:0.5);
 				$cy = (isset($attribs['cy'])?$attribs['cy']:0.5);
 				$fx = (isset($attribs['fx'])?$attribs['fx']:$cx);
 				$fy = (isset($attribs['fy'])?$attribs['fy']:$cy);
 				$r = (isset($attribs['r'])?$attribs['r']:0.5);
-				if (isset($attribs['cx']) AND (substr($attribs['cx'], -1) != '%')) {
-					$this->svggradients[$this->svggradientid]['mode'] = 'measure';
-				} else {
-					$this->svggradients[$this->svggradientid]['mode'] = 'percentage';
-				}
 				if (isset($attribs['gradientTransform'])) {
 					$this->svggradients[$this->svggradientid]['gradientTransform'] = $this->getSVGTransformMatrix($attribs['gradientTransform']);
 				}
@@ -29050,14 +29056,26 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			// text
 			case 'text':
 			case 'tspan': {
+				// only basic support - advanced features must be implemented
 				$this->svgtextmode['invisible'] = $invisible;
 				if ($invisible) {
 					break;
 				}
 				array_push($this->svgstyles, $svgstyle);
-				// only basic support - advanced features must be implemented
-				$x = (isset($attribs['x'])?$this->getHTMLUnitToUnits($attribs['x'], 0, $this->svgunit, false):$this->x);
-				$y = (isset($attribs['y'])?$this->getHTMLUnitToUnits($attribs['y'], 0, $this->svgunit, false):$this->y);
+				if (isset($attribs['x'])) {
+					$x = $this->getHTMLUnitToUnits($attribs['x'], 0, $this->svgunit, false);
+				} elseif ($name == 'tspan') {
+					$x = $this->x;
+				} else {
+					$x = 0;
+				}
+				if (isset($attribs['y'])) {
+					$y = $this->getHTMLUnitToUnits($attribs['y'], 0, $this->svgunit, false);
+				} elseif ($name == 'tspan') {
+					$y = $this->y;
+				} else {
+					$y = 0;
+				}
 				$svgstyle['text-color'] = $svgstyle['fill'];
 				$this->svgtext = '';
 				if (isset($svgstyle['text-anchor'])) {
@@ -29096,8 +29114,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					if (isset($attribs['id'])) {
 						unset($attribs['id']);
 					}
-					$attribs = array_merge($use['attribs'], $attribs);
-					$this->startSVGElementHandler($parser, $use['name'], $use['attribs']);
+					$attribs = array_merge($attribs, $use['attribs']);
+					$this->startSVGElementHandler($parser, $use['name'], $attribs);
 				}
 				break;
 			}
@@ -29162,7 +29180,17 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				$textrendermode = $this->textrendermode;
 				$textstrokewidth = $this->textstrokewidth;
 				$this->setTextRenderingMode($this->svgtextmode['stroke'], true, false);
+				if ($name == 'text') {
+					// store current coordinates
+					$tmpx = $this->x;
+					$tmpy = $this->y;
+				}
 				$this->Cell($textlen, 0, $text, 0, 0, '', false, '', 0, false, 'L', 'T');
+				if ($name == 'text') {
+					// restore coordinates
+					$this->x = $tmpx;
+					$this->y = $tmpy;
+				}
 				// restore previous rendering mode
 				$this->textrendermode = $textrendermode;
 				$this->textstrokewidth = $textstrokewidth;
