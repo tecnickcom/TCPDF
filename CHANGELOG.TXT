@@ -1,3 +1,6 @@
+5.9.158 (2012-04-22)
+	- Some SVG-related bugs were fixed.
+
 5.9.157 (2012-04-16)
 	- Some SVG-related bugs were fixed.
 

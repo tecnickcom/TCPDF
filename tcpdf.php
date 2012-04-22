@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.157
+// Version     : 5.9.158
 // Begin       : 2002-08-03
-// Last Update : 2012-04-16
+// Last Update : 2012-04-22
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
 // -------------------------------------------------------------------
@@ -137,7 +137,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.157
+ * @version 5.9.158
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -149,7 +149,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.157
+ * @version 5.9.158
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -160,7 +160,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.157';
+	private $tcpdf_version = '5.9.158';
 
 	// Protected properties
 
@@ -15012,7 +15012,7 @@ class TCPDF {
 	 * @since 2.1.000 (2008-01-08)
 	 */
 	protected function _outPoint($x, $y) {
-		$this->_out(sprintf('%F %F m', $x * $this->k, ($this->h - $y) * $this->k));
+		$this->_out(sprintf('%F %F m', ($x * $this->k), (($this->h - $y) * $this->k)));
 	}
 
 	/**
@@ -15024,7 +15024,7 @@ class TCPDF {
 	 * @since 2.1.000 (2008-01-08)
 	 */
 	protected function _outLine($x, $y) {
-		$this->_out(sprintf('%F %F l', $x * $this->k, ($this->h - $y) * $this->k));
+		$this->_out(sprintf('%F %F l', ($x * $this->k), (($this->h - $y) * $this->k)));
 	}
 
 	/**
@@ -28331,6 +28331,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 								} else {
 									$this->_outLine($x, $y);
 								}
+								$x0 = $x;
+								$y0 = $y;
 							}
 							$xmin = min($xmin, $x);
 							$ymin = min($ymin, $y);
@@ -28352,6 +28354,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 							$y = $cp + $yoffset;
 							if ((abs($x0 - $x) >= $minlen) OR (abs($y0 - $y) >= $minlen)) {
 								$this->_outLine($x, $y);
+								$x0 = $x;
+								$y0 = $y;
 							}
 							$xmin = min($xmin, $x);
 							$ymin = min($ymin, $y);
@@ -28370,6 +28374,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						$x = $cp + $xoffset;
 						if ((abs($x0 - $x) >= $minlen) OR (abs($y0 - $y) >= $minlen)) {
 							$this->_outLine($x, $y);
+							$x0 = $x;
+							$y0 = $y;
 						}
 						$xmin = min($xmin, $x);
 						$xmax = max($xmax, $x);
@@ -28384,6 +28390,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						$y = $cp + $yoffset;
 						if ((abs($x0 - $x) >= $minlen) OR (abs($y0 - $y) >= $minlen)) {
 							$this->_outLine($x, $y);
+							$x0 = $x;
+							$y0 = $y;
 						}
 						$ymin = min($ymin, $y);
 						$ymax = max($ymax, $y);
@@ -28693,7 +28701,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		if (!empty($ctm)) {
 			$tm = $ctm;
 		} else {
-			$tm = $this->svgstyles[(count($this->svgstyles) - 1)]['transfmatrix'];
+			//$tm = $this->svgstyles[(count($this->svgstyles) - 1)]['transfmatrix'];
+			$tm = array(1,0,0,1,0,0);
 		}
 		if (isset($attribs['transform']) AND !empty($attribs['transform'])) {
 			$tm = $this->getTransformationMatrixProduct($tm, $this->getSVGTransformMatrix($attribs['transform']));
@@ -28732,6 +28741,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				// group together related graphics elements
 				array_push($this->svgstyles, $svgstyle);
 				$this->StartTransform();
+				$this->SVGTransform($tm);
 				$this->setSVGStyles($svgstyle, $prev_svgstyle);
 				break;
 			}
