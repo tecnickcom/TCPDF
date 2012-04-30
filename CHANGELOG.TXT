@@ -1,3 +1,6 @@
+5.9.159 (2012-04-30)
+	- Barcode classes were updated to fix PNG export Bug (ID: 3522291).
+
 5.9.158 (2012-04-22)
 	- Some SVG-related bugs were fixed.
 
