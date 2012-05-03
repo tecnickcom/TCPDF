@@ -1,3 +1,6 @@
+5.9.160 (2012-05-03)
+	- A bug on tcpdf_parser.php was fixed.
+
 5.9.159 (2012-04-30)
 	- Barcode classes were updated to fix PNG export Bug (ID: 3522291).
 
