@@ -1,5 +1,7 @@
 5.9.161 (2012-05-09)
 	- A bug on XREF table was fixed (Bug ID: 3525051).
+	- Deprecated Imagick:clone was replaced.
+	- Method objclone() was fixed for PHP4.
 
 5.9.160 (2012-05-03)
 	- A bug on tcpdf_parser.php was fixed.

@@ -8413,7 +8413,7 @@ class TCPDF {
 			$img = new Imagick();
 			$img->readImage($file);
 			// clone image object
-			$imga = $img->clone();
+			$imga = $this->objclone($img);
 			// extract alpha channel
 			$img->separateImageChannel(8); // 8 = (imagick::CHANNEL_ALPHA | imagick::CHANNEL_OPACITY | imagick::CHANNEL_MATTE);
 			$img->negateImage(true);
@@ -26468,7 +26468,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @since 4.5.029 (2009-03-19)
 	 */
 	public function objclone($object) {
-		return @clone($object);
+		// clone is defined only in PHP 5
+		return (version_compare(phpversion(), '5.0') < 0) ? $object : clone($object);
 	}
 
 	/**
