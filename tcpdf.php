@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.160
+// Version     : 5.9.161
 // Begin       : 2002-08-03
-// Last Update : 2012-05-03
+// Last Update : 2012-05-09
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
 // -------------------------------------------------------------------
@@ -137,7 +137,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.160
+ * @version 5.9.161
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -149,7 +149,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.160
+ * @version 5.9.161
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -160,7 +160,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.160';
+	private $tcpdf_version = '5.9.161';
 
 	// Protected properties
 
@@ -180,7 +180,13 @@ class TCPDF {
 	 * Array of object offsets.
 	 * @protected
 	 */
-	protected $offsets;
+	protected $offsets = array();
+
+	/**
+	 * Array of object IDs for each page.
+	 * @protected
+	 */
+	protected $pageobjects = array();
 
 	/**
 	 * Buffer holding in-memory PDF.
@@ -9509,9 +9515,11 @@ class TCPDF {
 								$annots .= ' /A <</S /URI /URI '.$this->_datastring($this->unhtmlentities($pl['txt']), $annot_obj_id).'>>';
 							} else {
 								// internal link
-								$l = $this->links[$pl['txt']];
-								if (isset($this->page_obj_id[($l[0])])) {
-									$annots .= sprintf(' /Dest [%u 0 R /XYZ 0 %F null]', $this->page_obj_id[($l[0])], ($this->pagedim[$l[0]]['h'] - ($l[1] * $this->k)));
+								if (isset($this->links[$pl['txt']])) {
+									$l = $this->links[$pl['txt']];
+									if (isset($this->page_obj_id[($l[0])])) {
+										$annots .= sprintf(' /Dest [%u 0 R /XYZ 0 %F null]', $this->page_obj_id[($l[0])], ($this->pagedim[$l[0]]['h'] - ($l[1] * $this->k)));
+									}
 								}
 							}
 							$hmodes = array('N', 'I', 'O', 'P');
@@ -12855,11 +12863,14 @@ class TCPDF {
 		$this->_out('xref');
 		$this->_out('0 '.($this->n + 1));
 		$this->_out('0000000000 65535 f ');
+		$freegen = ($this->n + 2);
 		for ($i=1; $i <= $this->n; ++$i) {
 			if (!isset($this->offsets[$i]) AND ($i > 1)) {
-				$this->offsets[$i] = $this->offsets[($i - 1)];
+				$this->_out(sprintf('0000000000 %05d f ', $freegen));
+				++$freegen;
+			} else {
+				$this->_out(sprintf('%010d 00000 n ', $this->offsets[$i]));
 			}
-			$this->_out(sprintf('%010d 00000 n ', $this->offsets[$i]));
 		}
 		// TRAILER
 		$out = 'trailer'."\n";
@@ -12899,6 +12910,7 @@ class TCPDF {
 	 */
 	protected function _beginpage($orientation='', $format='') {
 		++$this->page;
+		$this->pageobjects[$this->page] = array();
 		$this->setPageBuffer($this->page, '');
 		// initialize array for graphics tranformation positions inside a page buffer
 		$this->transfmrk[$this->page] = array();
@@ -12967,6 +12979,7 @@ class TCPDF {
 			$objid = $this->n;
 		}
 		$this->offsets[$objid] = $this->bufferlen;
+		$this->pageobjects[$this->page][] = $objid;
 		return $objid.' 0 obj';
 	}
 
@@ -25651,6 +25664,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$tmpintmrk = $this->intmrk[$frompage];
 		$tmpbordermrk = $this->bordermrk[$frompage];
 		$tmpcntmrk = $this->cntmrk[$frompage];
+		$tmppageobjects = $this->pageobjects[$frompage];
 		if (isset($this->footerpos[$frompage])) {
 			$tmpfooterpos = $this->footerpos[$frompage];
 		}
@@ -25686,6 +25700,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			$this->intmrk[$i] = $this->intmrk[$j];
 			$this->bordermrk[$i] = $this->bordermrk[$j];
 			$this->cntmrk[$i] = $this->cntmrk[$j];
+			$this->pageobjects[$i] = $this->pageobjects[$j];
 			if (isset($this->footerpos[$j])) {
 				$this->footerpos[$i] = $this->footerpos[$j];
 			} elseif (isset($this->footerpos[$i])) {
@@ -25720,6 +25735,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$this->intmrk[$topage] = $tmpintmrk;
 		$this->bordermrk[$topage] = $tmpbordermrk;
 		$this->cntmrk[$topage] = $tmpcntmrk;
+		$this->pageobjects[$topage] = $tmppageobjects;
 		if (isset($tmpfooterpos)) {
 			$this->footerpos[$topage] = $tmpfooterpos;
 		} elseif (isset($this->footerpos[$topage])) {
@@ -25807,6 +25823,12 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		unset($this->intmrk[$page]);
 		unset($this->bordermrk[$page]);
 		unset($this->cntmrk[$page]);
+		foreach ($this->pageobjects[$page] as $oid) {
+			if (isset($this->offsets[$oid])){
+				unset($this->offsets[$oid]);
+			}
+		}
+		unset($this->pageobjects[$page]);
 		if (isset($this->footerpos[$page])) {
 			unset($this->footerpos[$page]);
 		}
@@ -25841,6 +25863,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				$this->intmrk[$i] = $this->intmrk[$j];
 				$this->bordermrk[$i] = $this->bordermrk[$j];
 				$this->cntmrk[$i] = $this->cntmrk[$j];
+				$this->pageobjects[$i] = $this->pageobjects[$j];
 				if (isset($this->footerpos[$j])) {
 					$this->footerpos[$i] = $this->footerpos[$j];
 				} elseif (isset($this->footerpos[$i])) {
@@ -25881,6 +25904,12 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			unset($this->intmrk[$this->numpages]);
 			unset($this->bordermrk[$this->numpages]);
 			unset($this->cntmrk[$this->numpages]);
+			foreach ($this->pageobjects[$this->numpages] as $oid) {
+				if (isset($this->offsets[$oid])){
+					unset($this->offsets[$oid]);
+				}
+			}
+			unset($this->pageobjects[$this->numpages]);
 			if (isset($this->footerpos[$this->numpages])) {
 				unset($this->footerpos[$this->numpages]);
 			}
@@ -25982,6 +26011,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$this->intmrk[$this->page] = $this->intmrk[$page];
 		$this->bordermrk[$this->page] = $this->bordermrk[$page];
 		$this->cntmrk[$this->page] = $this->cntmrk[$page];
+		$this->pageobjects[$this->page] = $this->pageobjects[$page];
 		$this->pageopen[$this->page] = false;
 		if (isset($this->footerpos[$page])) {
 			$this->footerpos[$this->page] = $this->footerpos[$page];
