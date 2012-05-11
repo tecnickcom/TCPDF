@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.161
+// Version     : 5.9.162
 // Begin       : 2002-08-03
-// Last Update : 2012-05-09
+// Last Update : 2012-05-11
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
 // -------------------------------------------------------------------
@@ -137,7 +137,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.161
+ * @version 5.9.162
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -149,7 +149,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.161
+ * @version 5.9.162
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -160,7 +160,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.161';
+	private $tcpdf_version = '5.9.162';
 
 	// Protected properties
 
@@ -7075,7 +7075,7 @@ class TCPDF {
 			$w = $this->w - $this->rMargin - $this->x;
 		}
 		// max column width
-		$wmax = $w - $wadj;
+		$wmax = ($w - $wadj);
 		if (!$firstline) {
 			$wmax -= ($this->cell_padding['L'] + $this->cell_padding['R']);
 		}
@@ -7161,7 +7161,7 @@ class TCPDF {
 					$this->rMargin += $margin['R'];
 				}
 				$w = $this->getRemainingWidth();
-				$wmax = $w - $this->cell_padding['L'] - $this->cell_padding['R'];
+				$wmax = ($w - $this->cell_padding['L'] - $this->cell_padding['R']);
 			} else {
 				// 160 is the non-breaking space.
 				// 173 is SHY (Soft Hypen).
@@ -7197,8 +7197,8 @@ class TCPDF {
 					// we have reached the end of column
 					if ($sep == -1) {
 						// check if the line was already started
-						if (($this->rtl AND ($this->x <= ($this->w - $this->rMargin - $chrwidth)))
-							OR ((!$this->rtl) AND ($this->x >= ($this->lMargin + $chrwidth)))) {
+						if (($this->rtl AND ($this->x <= ($this->w - $this->rMargin - $this->cell_padding['R'] - $margin['R'] - $chrwidth)))
+							OR ((!$this->rtl) AND ($this->x >= ($this->lMargin + $this->cell_padding['L'] + $margin['L'] + $chrwidth)))) {
 							// print a void cell and go to next line
 							$this->Cell($w, $h, '', 0, 1);
 							$linebreak = true;
@@ -26468,8 +26468,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @since 4.5.029 (2009-03-19)
 	 */
 	public function objclone($object) {
-		// clone is defined only in PHP 5
-		return (version_compare(phpversion(), '5.0') < 0) ? $object : clone($object);
+		return @clone($object);
 	}
 
 	/**

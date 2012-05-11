@@ -1,3 +1,6 @@
+5.9.162 (2012-05-11)
+	- A bug related to long text on TD cells was fixed.
+
 5.9.161 (2012-05-09)
 	- A bug on XREF table was fixed (Bug ID: 3525051).
 	- Deprecated Imagick:clone was replaced.
