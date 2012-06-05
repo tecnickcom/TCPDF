@@ -1,3 +1,7 @@
+5.9.163 (2012-06-05)
+	- Method getGDgamma() was changed.
+	- Rendering performances of PNG images with alpha channel were improved.
+
 5.9.162 (2012-05-11)
 	- A bug related to long text on TD cells was fixed.
 
