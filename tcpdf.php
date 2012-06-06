@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.163
+// Version     : 5.9.164
 // Begin       : 2002-08-03
-// Last Update : 2012-06-05
+// Last Update : 2012-06-06
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
 // -------------------------------------------------------------------
@@ -137,7 +137,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.163
+ * @version 5.9.164
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -149,7 +149,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.163
+ * @version 5.9.164
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -160,7 +160,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.163';
+	private $tcpdf_version = '5.9.164';
 
 	// Protected properties
 
@@ -8472,21 +8472,21 @@ class TCPDF {
 	 * @since 4.3.007 (2008-12-04)
 	 */
 	protected function getGDgamma($c) {
-		if (!isset($this->gdgammacache[$c])) {
+		if (!isset($this->gdgammacache["'".$c."'"])) {
 			// shifts off the first 24 bits (where 8x3 are used for each color),
 			// and returns the remaining 7 allocated bits (commonly used for alpha)
 			$alpha = ($c >> 24);
 			// GD alpha is only 7 bit (0 -> 127)
 			$alpha = (((127 - $alpha) / 127) * 255);
 			// correct gamma
-			$this->gdgammacache[$c] = (pow(($alpha / 255), 2.2) * 255);
+			$this->gdgammacache["'".$c."'"] = (pow(($alpha / 255), 2.2) * 255);
 			// store the latest values on cache to improve performances
 			if (count($this->gdgammacache) > 8) {
 				// remove one element from the cache array
 				array_shift($this->gdgammacache);
 			}
 		}
-		return $this->gdgammacache[$c];
+		return $this->gdgammacache["'".$c."'"];
 	}
 
 	/**
