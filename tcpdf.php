@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.164
+// Version     : 5.9.165
 // Begin       : 2002-08-03
-// Last Update : 2012-06-06
+// Last Update : 2012-06-07
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
 // -------------------------------------------------------------------
@@ -137,7 +137,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.164
+ * @version 5.9.165
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -149,7 +149,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.164
+ * @version 5.9.165
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -160,7 +160,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.164';
+	private $tcpdf_version = '5.9.165';
 
 	// Protected properties
 
@@ -23772,7 +23772,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					$value = $tag['attribute']['value'];
 				}
 				if (isset($tag['attribute']['maxlength']) AND !$this->empty_string($tag['attribute']['maxlength'])) {
-					$opt['maxlen'] = intval($tag['attribute']['value']);
+					$opt['maxlen'] = intval($tag['attribute']['maxlength']);
 				}
 				$h = $this->FontSize * $this->cell_height_ratio;
 				if (isset($tag['attribute']['size']) AND !$this->empty_string($tag['attribute']['size'])) {
@@ -23818,14 +23818,23 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						break;
 					}
 					case 'checkbox': {
+						if (!isset($value)) {
+							break;
+						}
 						$this->CheckBox($name, $w, $checked, $prop, $opt, $value, '', '', false);
 						break;
 					}
 					case 'radio': {
+						if (!isset($value)) {
+							break;
+						}
 						$this->RadioButton($name, $w, $prop, $opt, $value, $checked, '', '', false);
 						break;
 					}
 					case 'submit': {
+						if (!isset($value)) {
+							$value = 'submit';
+						}
 						$w = $this->GetStringWidth($value) * 1.5;
 						$h *= 1.6;
 						$prop = array('lineWidth'=>1, 'borderStyle'=>'beveled', 'fillColor'=>array(196, 196, 196), 'strokeColor'=>array(255, 255, 255));
@@ -23842,6 +23851,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						break;
 					}
 					case 'reset': {
+						if (!isset($value)) {
+							$value = 'reset';
+						}
 						$w = $this->GetStringWidth($value) * 1.5;
 						$h *= 1.6;
 						$prop = array('lineWidth'=>1, 'borderStyle'=>'beveled', 'fillColor'=>array(196, 196, 196), 'strokeColor'=>array(255, 255, 255));
@@ -23887,6 +23899,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						break;
 					}
 					case 'button': {
+						if (!isset($value)) {
+							$value = ' ';
+						}
 						$w = $this->GetStringWidth($value) * 1.5;
 						$h *= 1.6;
 						$prop = array('lineWidth'=>1, 'borderStyle'=>'beveled', 'fillColor'=>array(196, 196, 196), 'strokeColor'=>array(255, 255, 255));

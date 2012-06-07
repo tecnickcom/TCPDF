@@ -1,3 +1,6 @@
+5.9.165 (2012-06-07)
+	- Some HTML form related bugs were fixed.
+
 5.9.164 (2012-06-06)
 	- A bug introduced on the latest release was fixed.
 
