@@ -1,3 +1,7 @@
+5.9.166 (2012-06-21)
+	- Array to string conversion on file_id creation was fixed.
+	- Thai language rendering was fixed (thanks to Atsawin Chaowanakritsanakul).
+
 5.9.165 (2012-06-07)
 	- Some HTML form related bugs were fixed.
 
