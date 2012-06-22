@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.166
+// Version     : 5.9.167
 // Begin       : 2002-08-03
-// Last Update : 2012-06-21
+// Last Update : 2012-06-22
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
 // -------------------------------------------------------------------
@@ -57,7 +57,7 @@
 //  * no-write page regions;
 //  * bookmarks, named destinations and table of content;
 //  * text hyphenation;
-//  * text stretching and spacing (tracking/kerning);
+//  * text stretching and spacing (tracking);
 //  * automatic page break, line break and text alignments including justification;
 //  * automatic page numbering and page groups;
 //  * move and delete pages;
@@ -125,7 +125,7 @@
  * <li>no-write page regions;</li>
  * <li>bookmarks, named destinations and table of content;</li>
  * <li>text hyphenation;</li>
- * <li>text stretching and spacing (tracking/kerning);</li>
+ * <li>text stretching and spacing (tracking);</li>
  * <li>automatic page break, line break and text alignments including justification;</li>
  * <li>automatic page numbering and page groups;</li>
  * <li>move and delete pages;</li>
@@ -137,7 +137,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.166
+ * @version 5.9.167
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -149,7 +149,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.166
+ * @version 5.9.167
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -160,7 +160,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.166';
+	private $tcpdf_version = '5.9.167';
 
 	// Protected properties
 
@@ -1596,7 +1596,7 @@ class TCPDF {
 	protected $font_stretching = 100;
 
 	/**
-	 * Increases or decreases the space between characters in a text by the specified amount (tracking/kerning).
+	 * Increases or decreases the space between characters in a text by the specified amount (tracking).
 	 * @protected
 	 * @since 5.9.000 (2010-09-29)
 	 */
@@ -4933,7 +4933,7 @@ class TCPDF {
 	}
 
 	/**
-	 * Returns the length of the char in user unit for the current font considering current stretching and spacing (tracking/kerning).
+	 * Returns the length of the char in user unit for the current font considering current stretching and spacing (tracking).
 	 * @param $char (int) The char code whose length is to be returned
 	 * @param $notlast (boolean) set to false for the latest character on string, true otherwise (default)
 	 * @return float char width
@@ -5414,7 +5414,7 @@ class TCPDF {
 	}
 
 	/**
-	 * Return the font ascent value
+	 * Return the font ascent value.
 	 * @param $font (string) font name
 	 * @param $style (string) font style
 	 * @param $size (float) The size (in points)
@@ -5435,7 +5435,7 @@ class TCPDF {
 	}
 
 	/**
-	 * Return the font descent value
+	 * Return true in the character is present in the specified font.
 	 * @param $char (mixed) Character to check (integer value or string)
 	 * @param $font (string) Font name (family name).
 	 * @param $style (string) Font style.
@@ -5450,6 +5450,9 @@ class TCPDF {
 			$char = $char[0];
 		}
 		if ($this->empty_string($font)) {
+			if ($this->empty_string($style)) {
+				return (isset($this->CurrentFont['cw'][intval($char)]));
+			}
 			$font = $this->FontFamily;
 		}
 		$fontdata = $this->AddFont($font, $style);
@@ -6063,71 +6066,57 @@ class TCPDF {
 										// sara um
 										if (in_array($ch1, $longtail)) {
 											// tonemark at upper left
-											$newchr = (0xf713 + $ch0 - 0x0e48);
-											$output[] = $newchr;
-											$this->CurrentFont['subsetchars'][$newchr] = true;
+											$output[] = $this->replaceChar($ch0, (0xf713 + $ch0 - 0x0e48));
 										} else {
 											// tonemark at upper right (normal position)
 											$output[] = $ch0;
 										}
 									} elseif (in_array($ch1, $longtail) OR (in_array($ch2, $longtail) AND in_array($ch1, $lowvowel))) {
 										// tonemark at lower left
-										$newchr = (0xf705 + $ch0 - 0x0e48);
-										$output[] = $newchr;
-										$this->CurrentFont['subsetchars'][$newchr] = true;
+										$output[] = $this->replaceChar($ch0, (0xf705 + $ch0 - 0x0e48));
 									} elseif (in_array($ch1, $upvowel)) {
 										if (in_array($ch2, $longtail)) {
 											// tonemark at upper left
-											$newchr = (0xf713 + $ch0 - 0x0e48);
-											$output[] = $newchr;
-											$this->CurrentFont['subsetchars'][$newchr] = true;
+											$output[] = $this->replaceChar($ch0, (0xf713 + $ch0 - 0x0e48));
 										} else {
 											// tonemark at upper right (normal position)
 											$output[] = $ch0;
 										}
 									} else {
 										// tonemark at lower right
-										$newchr = (0xf70a + $ch0 - 0x0e48);
-										$output[] = $newchr;
-										$this->CurrentFont['subsetchars'][$newchr] = true;
+										$output[] = $this->replaceChar($ch0, (0xf70a + $ch0 - 0x0e48));
 									}
 								} elseif (($ch0 == 0x0e33) AND (in_array($ch1, $longtail) OR (in_array($ch2, $longtail) AND in_array($ch1, $tonemark)))) {
 									// add lower left nikhahit and sara aa
-									$output[] = 0xf711;
-									$this->CurrentFont['subsetchars'][0xf711] = true;
-									$output[] = 0x0e32;
-									$this->CurrentFont['subsetchars'][0x0e32] = true;
+									if ($this->isCharDefined(0xf711) AND $this->isCharDefined(0x0e32)) {
+										$output[] = 0xf711;
+										$output[] = 0x0e32;
+									} else {
+										$output[] = $ch0;
+									}
 								} elseif (in_array($ch1, $longtail)) {
 									if ($ch0 == 0x0e31) {
 										// lower left mai hun arkad
-										$output[] = 0xf710;
-										$this->CurrentFont['subsetchars'][0xf710] = true;
+										$output[] = $this->replaceChar($ch0, 0xf710);
 									} elseif (in_array($ch0, $upvowel)) {
 										// lower left
-										$newchr = (0xf701 + $ch0 - 0x0e34);
-										$output[] = $newchr;
-										$this->CurrentFont['subsetchars'][$newchr] = true;
+										$output[] = $this->replaceChar($ch0, (0xf701 + $ch0 - 0x0e34));
 									} elseif ($ch0 == 0x0e47) {
 										// lower left mai tai koo
-										$output[] = 0xf712;
-										$this->CurrentFont['subsetchars'][0xf712] = true;
+										$output[] = $this->replaceChar($ch0, 0xf712);
 									} else {
 										// normal character
 										$output[] = $ch0;
 									}
 								} elseif (in_array($ch1, $lowtail) AND in_array($ch0, $lowvowel)) {
 									// lower vowel
-									$newchr = (0xf718 + $ch0 - 0x0e38);
-									$output[] = $newchr;
-									$this->CurrentFont['subsetchars'][$newchr] = true;
+									$output[] = $this->replaceChar($ch0, (0xf718 + $ch0 - 0x0e38));
 								} elseif (($ch0 == 0x0e0d) AND in_array($chn, $lowvowel)) {
 									// yo ying without lower part
-									$output[] = 0xf70f;
-									$this->CurrentFont['subsetchars'][0xf70f] = true;
+									$output[] = $this->replaceChar($ch0, 0xf70f);
 								} elseif (($ch0 == 0x0e10) AND in_array($chn, $lowvowel)) {
 									// tho santan without lower part
-									$output[] = 0xf700;
-									$this->CurrentFont['subsetchars'][0xf700] = true;
+									$output[] = $this->replaceChar($ch0, 0xf700);
 								} else {
 									$output[] = $ch0;
 								}
@@ -6136,6 +6125,7 @@ class TCPDF {
 								$output[] = $unicode[$i];
 							}
 						}
+						$unicode = $output;
 					} // end of K_THAI_TOPCHARS
 					$txt2 = $this->arrUTF8ToUTF16BE($unicode, false);
 				}
@@ -6253,6 +6243,27 @@ class TCPDF {
 			$xdk = $xdx * $k;
 			// print text
 			$s .= sprintf('BT %F %F Td [(%s)] TJ ET', $xdk, (($this->h - $basefonty) * $k), $txt2);
+			if (isset($uniblock)) {
+				// print overlapping characters as separate string
+				$xshift = 0; // horizontal shift
+				$ty = (($this->h - $basefonty + (0.2 * $this->FontSize)) * $k);
+				$spw = (($w - $txwidth - $this->cell_padding['L'] - $this->cell_padding['R']) / ($ns?$ns:1));
+				foreach ($uniblock as $uk => $uniarr) {
+					if (($uk % 2) == 0) {
+						// x space to skip
+						if ($spacewidth != 0) {
+							// justification shift
+							$xshift += (count(array_keys($uniarr, 32)) * $spw);
+						}
+						$xshift += $this->GetArrStringWidth($uniarr); // + shift justification
+					} else {
+						// character to print
+						$topchr = $this->arrUTF8ToUTF16BE($uniarr, false);
+						$topchr = $this->_escape($topchr);
+						$s .= sprintf(' BT %F %F Td [(%s)] TJ ET', ($xdk + ($xshift * $k)), $ty, $topchr);
+					}
+				}
+			}
 			if ($this->underline) {
 				$s .= ' '.$this->_dounderlinew($xdx, $basefonty, $width);
 			}
@@ -6313,6 +6324,25 @@ class TCPDF {
 		$this->cell_padding = $prev_cell_padding;
 		$this->cell_margin = $prev_cell_margin;
 		return $rs;
+	}
+
+	/**
+	 * Replace a char if is defined on the current font.
+	 * @param $oldchar (int) Integer code (unicode) of the character to replace.
+	 * @param $newchar (int) Integer code (unicode) of the new character.
+	 * @return int the replaced char or the old char in case the new char i not defined
+	 * @protected
+	 * @since 5.9.167 (2012-06-22)
+	 */
+	protected function replaceChar($oldchar, $newchar) {
+		if ($this->isCharDefined($newchar)) {
+			// add the new char on the subset list
+			$this->CurrentFont['subsetchars'][$newchar] = true;
+			// return the new char
+			return $newchr;
+		}
+		// return the old char
+		return $oldchar;
 	}
 
 	/**
@@ -20970,7 +21000,7 @@ class TCPDF {
 	/**
 	 * Returns the letter-spacing value from CSS value
 	 * @param $spacing (string) letter-spacing value
-	 * @param $parent (float) font spacing (tracking/kerning) value of the parent element
+	 * @param $parent (float) font spacing (tracking) value of the parent element
 	 * @return float quantity to increases or decreases the space between characters in a text.
 	 * @protected
 	 * @since 5.9.000 (2010-10-02)
@@ -21918,7 +21948,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$curfontascent = $this->getFontAscent($curfontname, $curfontstyle, $curfontsize);
 		$curfontdescent = $this->getFontDescent($curfontname, $curfontstyle, $curfontsize);
 		$curfontstretcing = $this->font_stretching;
-		$curfontkerning = $this->font_spacing;
+		$curfonttracking = $this->font_spacing;
 		$this->newline = true;
 		$newline = true;
 		$startlinepage = $this->page;
@@ -22057,7 +22087,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					$this_method_vars['curfontascent'] = $curfontascent;
 					$this_method_vars['curfontdescent'] = $curfontdescent;
 					$this_method_vars['curfontstretcing'] = $curfontstretcing;
-					$this_method_vars['curfontkerning'] = $curfontkerning;
+					$this_method_vars['curfonttracking'] = $curfonttracking;
 					$this_method_vars['minstartliney'] = $minstartliney;
 					$this_method_vars['maxbottomliney'] = $maxbottomliney;
 					$this_method_vars['yshift'] = $yshift;
@@ -27453,7 +27483,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 
 	/**
 	 * Get the amount to increase or decrease the space between characters in a text.
-	 * @return int font spacing (tracking/kerning) value
+	 * @return int font spacing (tracking) value
 	 * @author Nicola Asuni
 	 * @public
 	 * @since 5.9.000 (2010-09-29)

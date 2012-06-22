@@ -66,6 +66,9 @@ $pdf->setLanguageArray($l);
 
 // ---------------------------------------------------------
 
+// set default font subsetting mode
+$pdf->setFontSubsetting(true);
+
 // set font
 $pdf->SetFont('freeserif', '', 12);
 

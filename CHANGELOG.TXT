@@ -1,3 +1,9 @@
+5.9.167 (2012-06-22)
+	- Thai language rendering was fixed and improved.
+	- Method isCharDefined() was improved.
+	- Protected method replaceChar() was added.
+	- Font "kerning" word was corrected to "tracking".
+
 5.9.166 (2012-06-21)
 	- Array to string conversion on file_id creation was fixed.
 	- Thai language rendering was fixed (thanks to Atsawin Chaowanakritsanakul).
@@ -601,7 +607,7 @@
 	- The problem of blank page for nobr table higher than a single page was fixed.
 
 5.9.000 (2010-10-06)
-	- Support for text stretching and spacing (kerning) was added, see example n. 63 and methods setFontStretching(), getFontStretching(), setFontSpacing(), getFontSpacing().
+	- Support for text stretching and spacing (tracking) was added, see example n. 63 and methods setFontStretching(), getFontStretching(), setFontSpacing(), getFontSpacing().
 	- Support for CSS properties 'font-stretch' and 'letter-spacing' was added (see example n. 63).
 	- The cMargin state was replaced by cell_padding array that can be set/get using setCellPadding() and getCellPadding() methods.
 	- Methods getCellPaddings() and setCellPaddings() were added to fine tune cell paddings (see example n. 5).
