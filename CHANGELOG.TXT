@@ -1,3 +1,6 @@
+5.9.168 (2012-06-22)
+	- Thai language rendering was fixed.
+
 5.9.167 (2012-06-22)
 	- Thai language rendering was fixed and improved.
 	- Method isCharDefined() was improved.

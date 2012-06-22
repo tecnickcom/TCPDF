@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.167
+// Version     : 5.9.168
 // Begin       : 2002-08-03
 // Last Update : 2012-06-22
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
@@ -137,7 +137,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.167
+ * @version 5.9.168
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -149,7 +149,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.167
+ * @version 5.9.168
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -160,7 +160,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.167';
+	private $tcpdf_version = '5.9.168';
 
 	// Protected properties
 
@@ -6090,7 +6090,9 @@ class TCPDF {
 									// add lower left nikhahit and sara aa
 									if ($this->isCharDefined(0xf711) AND $this->isCharDefined(0x0e32)) {
 										$output[] = 0xf711;
+										$this->CurrentFont['subsetchars'][0xf711] = true;
 										$output[] = 0x0e32;
+										$this->CurrentFont['subsetchars'][0x0e32] = true;
 									} else {
 										$output[] = $ch0;
 									}
@@ -6338,8 +6340,8 @@ class TCPDF {
 		if ($this->isCharDefined($newchar)) {
 			// add the new char on the subset list
 			$this->CurrentFont['subsetchars'][$newchar] = true;
-			// return the new char
-			return $newchr;
+			// return the new character
+			return $newchar;
 		}
 		// return the old char
 		return $oldchar;
