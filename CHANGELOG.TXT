@@ -1,3 +1,6 @@
+5.9.169 (2012-06-25)
+	- Some SVG rendering problems were fixed.
+
 5.9.168 (2012-06-22)
 	- Thai language rendering was fixed.
 

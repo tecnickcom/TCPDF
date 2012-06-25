@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.168
+// Version     : 5.9.169
 // Begin       : 2002-08-03
-// Last Update : 2012-06-22
+// Last Update : 2012-06-25
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
 // -------------------------------------------------------------------
@@ -137,7 +137,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.168
+ * @version 5.9.169
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -149,7 +149,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.168
+ * @version 5.9.169
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -160,7 +160,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.168';
+	private $tcpdf_version = '5.9.169';
 
 	// Protected properties
 
@@ -28817,6 +28817,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		// get styling properties
 		$prev_svgstyle = $this->svgstyles[(count($this->svgstyles) - 1)]; // previous style
 		$svgstyle = $this->svgstyles[0]; // set default style
+		if (($name == 'polyline') AND !isset($attribs['fill']) AND (!isset($attribs['style']) OR (!preg_match('/[;\"\s]{1}fill[\s]*:[\s]*([^;\"]*)/si', $attribs['style'], $attrval)))) {
+			// default fill attribute for polyline
+			$attribs['fill'] = 'none';
+		}
 		if (isset($attribs['style']) AND !$this->empty_string($attribs['style'])) {
 			// fix style for regular expression
 			$attribs['style'] = ';'.$attribs['style'];
@@ -29145,7 +29149,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					$this->StartTransform();
 					$this->SVGTransform($tm);
 					$obstyle = $this->setSVGStyles($svgstyle, $prev_svgstyle, $x, $y, $w, $h, 'PolyLine', array($p, 'CNZ'));
-					$this->PolyLine($p, 'D', array(), array());
+					if (!empty($obstyle)) {
+						$this->PolyLine($p, $obstyle, array(), array());
+					}
 					$this->StopTransform();
 				} else { // polygon
 					if ($clipping) {
@@ -29264,16 +29270,19 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			}
 			// use
 			case 'use': {
-				if (isset($attribs['xlink:href'])) {
-					$use = $this->svgdefs[substr($attribs['xlink:href'], 1)];
-					if (isset($attribs['xlink:href'])) {
-						unset($attribs['xlink:href']);
+				if (isset($attribs['xlink:href']) AND !empty($attribs['xlink:href'])) {
+					$svgdefid = substr($attribs['xlink:href'], 1);
+					if (isset($this->svgdefs[$svgdefid])) {
+						$use = $this->svgdefs[$svgdefid];
+						if (isset($attribs['xlink:href'])) {
+							unset($attribs['xlink:href']);
+						}
+						if (isset($attribs['id'])) {
+							unset($attribs['id']);
+						}
+						$attribs = array_merge($attribs, $use['attribs']);
+						$this->startSVGElementHandler($parser, $use['name'], $attribs);
 					}
-					if (isset($attribs['id'])) {
-						unset($attribs['id']);
-					}
-					$attribs = array_merge($attribs, $use['attribs']);
-					$this->startSVGElementHandler($parser, $use['name'], $attribs);
 				}
 				break;
 			}
