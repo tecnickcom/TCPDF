@@ -1,3 +1,6 @@
+5.9.171 (2012-07-01)
+	- Some SVG rendering problems were fixed.
+
 5.9.170 (2012-06-27)
 	- Bug #3538227 "Numerous errors inserting shared images" was fixed.
 
