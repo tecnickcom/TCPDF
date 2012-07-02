@@ -1,3 +1,6 @@
+5.9.172 (2012-07-02)
+	- A PNG color profile issue was fixed.
+
 5.9.171 (2012-07-01)
 	- Some SVG rendering problems were fixed.
 
