@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.172
+// Version     : 5.9.173
 // Begin       : 2002-08-03
-// Last Update : 2012-07-02
+// Last Update : 2012-07-23
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
 // -------------------------------------------------------------------
@@ -137,7 +137,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.172
+ * @version 5.9.173
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -149,7 +149,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.172
+ * @version 5.9.173
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -160,7 +160,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.172';
+	private $tcpdf_version = '5.9.173';
 
 	// Protected properties
 
@@ -3073,8 +3073,8 @@ class TCPDF {
 			// swap X and Y coordinates (change page orientation)
 			$this->swapPageBoxCoordinates($this->page);
 		}
-		$this->w = $this->wPt / $this->k;
-		$this->h = $this->hPt / $this->k;
+		$this->w = ($this->wPt / $this->k);
+		$this->h = ($this->hPt / $this->k);
 		if ($this->empty_string($autopagebreak)) {
 			if (isset($this->AutoPageBreak)) {
 				$autopagebreak = $this->AutoPageBreak;
@@ -6128,6 +6128,8 @@ class TCPDF {
 							}
 						}
 						$unicode = $output;
+						// update font subsetchars
+						$this->setFontSubBuffer($this->CurrentFont['fontkey'], 'subsetchars', $this->CurrentFont['subsetchars']);
 					} // end of K_THAI_TOPCHARS
 					$txt2 = $this->arrUTF8ToUTF16BE($unicode, false);
 				}
@@ -7794,7 +7796,9 @@ class TCPDF {
 					curl_setopt($cs, CURLOPT_BINARYTRANSFER, true);
 					curl_setopt($cs, CURLOPT_FAILONERROR, true);
 					curl_setopt($cs, CURLOPT_RETURNTRANSFER, true);
-					curl_setopt($cs, CURLOPT_FOLLOWLOCATION, true);
+					if ((ini_get('open_basedir') == '') AND (ini_get('safe_mode') == 'Off')) {
+						curl_setopt($cs, CURLOPT_FOLLOWLOCATION, true);
+					}
 					curl_setopt($cs, CURLOPT_CONNECTTIMEOUT, 5);
 					curl_setopt($cs, CURLOPT_TIMEOUT, 30);
 					curl_setopt($cs, CURLOPT_SSL_VERIFYPEER, false);
@@ -16522,12 +16526,13 @@ class TCPDF {
 	 * @param $name (string) Destination name.
 	 * @param $y (float) Y position in user units of the destiantion on the selected page (default = -1 = current position; 0 = page start;).
 	 * @param $page (int) Target page number (leave empty for current page).
+	 * @param $x (float) X position in user units of the destiantion on the selected page (default = -1 = current position;).
 	 * @return (string) Stripped named destination identifier or false in case of error.
 	 * @public
 	 * @author Christian Deligant, Nicola Asuni
 	 * @since 5.9.097 (2011-06-23)
 	 */
-	public function setDestination($name, $y=-1, $page='') {
+	public function setDestination($name, $y=-1, $page='', $x=-1) {
 		// remove unsupported characters
 		$name = $this->encodeNameObject($name);
 		if ($this->empty_string($name)) {
@@ -16535,6 +16540,17 @@ class TCPDF {
 		}
 		if ($y == -1) {
 			$y = $this->GetY();
+		} elseif ($y < 0) {
+			$y = 0;
+		} elseif ($y > $this->h) {
+			$y = $this->h;
+		}
+		if ($x == -1) {
+			$x = $this->GetX();
+		} elseif ($x < 0) {
+			$x = 0;
+		} elseif ($x > $this->w) {
+			$x = $this->w;
 		}
 		if (empty($page)) {
 			$page = $this->PageNo();
@@ -16542,7 +16558,7 @@ class TCPDF {
 				return;
 			}
 		}
-		$this->dests[$name] = array('y' => $y, 'p' => $page);
+		$this->dests[$name] = array('x' => $x, 'y' => $y, 'p' => $page);
 		return $name;
 	}
 
@@ -16570,7 +16586,7 @@ class TCPDF {
 		$this->n_dests = $this->_newobj();
 		$out = ' <<';
 		foreach($this->dests as $name => $o) {
-			$out .= ' /'.$name.' '.sprintf('[%u 0 R /XYZ 0 %F null]', $this->page_obj_id[($o['p'])], ($this->pagedim[$o['p']]['h'] - ($o['y'] * $this->k)));
+			$out .= ' /'.$name.' '.sprintf('[%u 0 R /XYZ %F %F null]', $this->page_obj_id[($o['p'])], ($o['x'] * $this->k), ($this->pagedim[$o['p']]['h'] - ($o['y'] * $this->k)));
 		}
 		$out .= ' >>';
 		$out .= "\n".'endobj';
@@ -16599,11 +16615,12 @@ class TCPDF {
 	 * @param $page (int) Target page number (leave empty for current page).
 	 * @param $style (string) Font style: B = Bold, I = Italic, BI = Bold + Italic.
 	 * @param $color (array) RGB color array (values from 0 to 255).
+	 * @param $x (float) X position in user units of the bookmark on the selected page (default = -1 = current position;).
 	 * @public
 	 * @author Olivier Plathey, Nicola Asuni
 	 * @since 2.1.002 (2008-02-12)
 	 */
-	public function Bookmark($txt, $level=0, $y=-1, $page='', $style='', $color=array(0,0,0)) {
+	public function Bookmark($txt, $level=0, $y=-1, $page='', $style='', $color=array(0,0,0), $x=-1) {
 		if ($level < 0) {
 			$level = 0;
 		}
@@ -16618,6 +16635,17 @@ class TCPDF {
 		}
 		if ($y == -1) {
 			$y = $this->GetY();
+		} elseif ($y < 0) {
+			$y = 0;
+		} elseif ($y > $this->h) {
+			$y = $this->h;
+		}
+		if ($x == -1) {
+			$x = $this->GetX();
+		} elseif ($x < 0) {
+			$x = 0;
+		} elseif ($x > $this->w) {
+			$x = $this->w;
 		}
 		if (empty($page)) {
 			$page = $this->PageNo();
@@ -16625,7 +16653,7 @@ class TCPDF {
 				return;
 			}
 		}
-		$this->outlines[] = array('t' => $txt, 'l' => $level, 'y' => $y, 'p' => $page, 's' => strtoupper($style), 'c' => $color);
+		$this->outlines[] = array('t' => $txt, 'l' => $level, 'x' => $x, 'y' => $y, 'p' => $page, 's' => strtoupper($style), 'c' => $color);
 	}
 
 	/**
@@ -16708,7 +16736,7 @@ class TCPDF {
 				$out .= ' /Last '.($n + $o['last']).' 0 R';
 			}
 			if (isset($this->page_obj_id[($o['p'])])) {
-				$out .= ' '.sprintf('/Dest [%u 0 R /XYZ 0 %F null]', $this->page_obj_id[($o['p'])], ($this->pagedim[$o['p']]['h'] - ($o['y'] * $this->k)));
+				$out .= ' '.sprintf('/Dest [%u 0 R /XYZ %F %F null]', $this->page_obj_id[($o['p'])], ($o['x'] * $this->k), ($this->pagedim[$o['p']]['h'] - ($o['y'] * $this->k)));
 			}
 			// set font style
 			$style = 0;
@@ -19696,7 +19724,7 @@ class TCPDF {
 		// create new barcode object
 		$barcodeobj = new TCPDFBarcode($code, $type);
 		$arrcode = $barcodeobj->getBarcodeArray();
-		if ($arrcode === false) {
+		if (($arrcode === false) OR empty($arrcode) OR ($arrcode['maxw'] == 0)) {
 			$this->Error('Error in 1D barcode string');
 		}
 		// set default values
@@ -20067,7 +20095,7 @@ class TCPDF {
 		// create new barcode object
 		$barcodeobj = new TCPDF2DBarcode($code, $type);
 		$arrcode = $barcodeobj->getBarcodeArray();
-		if (($arrcode === false) OR empty($arrcode)) {
+		if (($arrcode === false) OR empty($arrcode) OR ($arrcode['num_rows'] == 0) OR ($arrcode['num_cols'] == 0)) {
 			$this->Error('Error in 2D barcode string');
 		}
 		// set default values
@@ -20122,6 +20150,9 @@ class TCPDF {
 		// module width and height
 		$mw = $style['module_width'];
 		$mh = $style['module_height'];
+		if (($mw == 0) OR ($mh == 0)) {
+			$this->Error('Error in 2D barcode string');
+		}
 		// get max dimensions
 		if ($this->rtl) {
 			$maxw = $x - $this->lMargin;
@@ -26157,7 +26188,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$tmpoutlines = $this->outlines;
 		foreach ($tmpoutlines as $key => $outline) {
 			if ($outline['p'] == $page) {
-				$this->outlines[] = array('t' => $outline['t'], 'l' => $outline['l'], 'y' => $outline['y'], 'p' => $this->page, 's' => $outline['s'], 'c' => $outline['c']);
+				$this->outlines[] = array('t' => $outline['t'], 'l' => $outline['l'], 'x' => $outline['x'], 'y' => $outline['y'], 'p' => $this->page, 's' => $outline['s'], 'c' => $outline['c']);
 			}
 		}
 		// copy links

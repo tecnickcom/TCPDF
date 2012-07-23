@@ -1,3 +1,10 @@
+5.9.173 (2012-07-23)
+	- Some additional control wher added on barcode methods.
+	- The option CURLOPT_FOLLOWLOCATION on Image method is now disabled if PHP safe_mode is on or open_basedir is set.
+	- Method Bookmark() was extended to include X parameter.
+	- Method setDestination() was extended to include X parameter.
+	- A problem with Thai language was fixed.
+
 5.9.172 (2012-07-02)
 	- A PNG color profile issue was fixed.
 
