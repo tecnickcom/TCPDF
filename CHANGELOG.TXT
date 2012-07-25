@@ -1,3 +1,12 @@
+5.9.174 (2012-07-25)
+	- The problem of wrong filename when downloading PDF from an Android device was fixed.
+	- The method setHeaderData() was extended to set text and line color for header (see example n. 1).
+	- The method setFooterData() was added to set text and line color for footer (see example n. 1).
+	- The methods setTextShadow() and getTextShadow() were added to set text shadows (see example n. 1).
+	- The GetCharWidth() method was fixed for negative character spacing.
+	- A 'none' border mode is now correctly recognized.
+	- Break on hyphen problem was fixed.
+
 5.9.173 (2012-07-23)
 	- Some additional control wher added on barcode methods.
 	- The option CURLOPT_FOLLOWLOCATION on Image method is now disabled if PHP safe_mode is on or open_basedir is set.

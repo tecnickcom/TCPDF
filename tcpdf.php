@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.173
+// Version     : 5.9.174
 // Begin       : 2002-08-03
-// Last Update : 2012-07-23
+// Last Update : 2012-07-25
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
 // -------------------------------------------------------------------
@@ -97,7 +97,8 @@
 // Laurent Minguet for some suggestions.
 // Christian Deligant for some suggestions and fixes.
 // Travis Harris for crop mark suggestion.
-// Anyone that has reported a bug or sent a suggestion.
+// Aleksey Kuznetsov for some suggestions and text shadows.
+// Anyone else that has reported a bug or sent a suggestion.
 //============================================================+
 
 /**
@@ -137,7 +138,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.173
+ * @version 5.9.174
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -149,7 +150,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.173
+ * @version 5.9.174
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -160,7 +161,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.173';
+	private $tcpdf_version = '5.9.174';
 
 	// Protected properties
 
@@ -710,6 +711,41 @@ class TCPDF {
 	 * @protected
 	 */
 	protected $header_string = '';
+
+	/**
+	 * Color for header text (RGB array).
+	 * @since 5.9.174 (2012-07-25)
+	 * @protected
+	 */
+	protected $header_text_color = array(0,0,0);
+
+	/**
+	 * Color for header line (RGB array).
+	 * @since 5.9.174 (2012-07-25)
+	 * @protected
+	 */
+	protected $header_line_color = array(0,0,0);
+
+	/**
+	 * Color for footer text (RGB array).
+	 * @since 5.9.174 (2012-07-25)
+	 * @protected
+	 */
+	protected $footer_text_color = array(0,0,0);
+
+	/**
+	 * Color for footer line (RGB array).
+	 * @since 5.9.174 (2012-07-25)
+	 * @protected
+	 */
+	protected $footer_line_color = array(0,0,0);
+
+	/**
+	 * Text shadow data array.
+	 * @since 5.9.174 (2012-07-25)
+	 * @protected
+	 */
+	protected $txtshadow = array('enabled'=>false, 'depth_w'=>0, 'depth_h'=>0, 'color'=>false, 'opacity'=>1, 'blend_mode'=>'Normal');
 
 	/**
 	 * Default number of columns for html table.
@@ -2019,6 +2055,7 @@ class TCPDF {
 		$this->strokecolor = array('R' => 0, 'G' => 0, 'B' => 0);
 		$this->bgcolor = array('R' => 255, 'G' => 255, 'B' => 255);
 		$this->extgstates = array();
+		$this->setTextShadow();
 		// user's rights
 		$this->sign = false;
 		$this->ur['enabled'] = false;
@@ -4097,13 +4134,28 @@ class TCPDF {
 	 * @param $lw (string) header image logo width in mm
 	 * @param $ht (string) string to print as title on document header
 	 * @param $hs (string) string to print on document header
+	 * @param $tc (array) RGB array color for text.
+	 * @param $lc (array) RGB array color for line.
 	 * @public
 	 */
-	public function setHeaderData($ln='', $lw=0, $ht='', $hs='') {
+	public function setHeaderData($ln='', $lw=0, $ht='', $hs='', $tc=array(0,0,0), $lc=array(0,0,0)) {
 		$this->header_logo = $ln;
 		$this->header_logo_width = $lw;
 		$this->header_title = $ht;
 		$this->header_string = $hs;
+		$this->header_text_color = $tc;
+		$this->header_line_color = $lc;
+	}
+
+	/**
+	 * Set footer data.
+	 * @param $tc (array) RGB array color for text.
+	 * @param $lc (array) RGB array color for line.
+	 * @public
+	 */
+	public function setFooterData($tc=array(0,0,0), $lc=array(0,0,0)) {
+		$this->footer_text_color = $tc;
+		$this->footer_line_color = $lc;
 	}
 
 	/**
@@ -4119,6 +4171,8 @@ class TCPDF {
 		$ret['logo_width'] = $this->header_logo_width;
 		$ret['title'] = $this->header_title;
 		$ret['string'] = $this->header_string;
+		$ret['text_color'] = $this->header_text_color;
+		$ret['line_color'] = $this->header_line_color;
 		return $ret;
 	}
 
@@ -4252,7 +4306,7 @@ class TCPDF {
 				$header_x = $this->original_lMargin + ($headerdata['logo_width'] * 1.1);
 			}
 			$cw = $this->w - $this->original_lMargin - $this->original_rMargin - ($headerdata['logo_width'] * 1.1);
-			$this->SetTextColor(0, 0, 0);
+			$this->SetTextColorArray($this->header_text_color);
 			// header title
 			$this->SetFont($headerfont[0], 'B', $headerfont[2] + 1);
 			$this->SetX($header_x);
@@ -4262,7 +4316,7 @@ class TCPDF {
 			$this->SetX($header_x);
 			$this->MultiCell($cw, $cell_height, $headerdata['string'], 0, '', 0, 1, '', '', true, 0, false, true, 0, 'T', false);
 			// print an ending header line
-			$this->SetLineStyle(array('width' => 0.85 / $this->k, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)));
+			$this->SetLineStyle(array('width' => 0.85 / $this->k, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => $headerdata['line_color']));
 			$this->SetY((2.835 / $this->k) + max($imgy, $this->y));
 			if ($this->rtl) {
 				$this->SetX($this->original_rMargin);
@@ -4298,10 +4352,10 @@ class TCPDF {
 	 */
 	public function Footer() {
 		$cur_y = $this->y;
-		$this->SetTextColor(0, 0, 0);
+		$this->SetTextColorArray($this->footer_text_color);
 		//set style for cell border
-		$line_width = 0.85 / $this->k;
-		$this->SetLineStyle(array('width' => $line_width, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)));
+		$line_width = (0.85 / $this->k);
+		$this->SetLineStyle(array('width' => $line_width, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => $this->footer_line_color));
 		//print document barcode
 		$barcode = $this->getBarcode();
 		if (!empty($barcode)) {
@@ -4944,7 +4998,7 @@ class TCPDF {
 	public function GetCharWidth($char, $notlast=true) {
 		// get raw width
 		$chw = $this->getRawCharWidth($char);
-		if (($this->font_spacing != 0) AND $notlast) {
+		if (($this->font_spacing < 0) OR (($this->font_spacing > 0) AND $notlast)) {
 			// increase/decrease font spacing
 			$chw += $this->font_spacing;
 		}
@@ -5845,6 +5899,35 @@ class TCPDF {
 			}
 		}
 		$this->checkPageBreak($h + $this->cell_margin['T'] + $this->cell_margin['B']);
+		// apply text shadow if enabled
+		if ($this->txtshadow['enabled']) {
+			// save data
+			$x = $this->x;
+			$y = $this->y;
+			$bc = $this->bgcolor;
+			$fc = $this->fgcolor;
+			$sc = $this->strokecolor;
+			$alpha = $this->alpha;
+			// print shadow
+			$this->x += $this->txtshadow['depth_w'];
+			$this->y += $this->txtshadow['depth_h'];
+			$this->SetFillColorArray($this->txtshadow['color']);
+			$this->SetTextColorArray($this->txtshadow['color']);
+			$this->SetDrawColorArray($this->txtshadow['color']);
+			if ($this->txtshadow['opacity'] != $alpha['CA']) {
+				$this->setAlpha($this->txtshadow['opacity'], $this->txtshadow['blend_mode']);
+			}
+			$this->_out($this->getCellCode($w, $h, $txt, $border, $ln, $align, $fill, $link, $stretch, true, $calign, $valign));
+			//restore data
+			$this->x = $x;
+			$this->y = $y;
+			$this->SetFillColorArray($bc);
+			$this->SetTextColorArray($fc);
+			$this->SetDrawColorArray($sc);
+			if ($this->txtshadow['opacity'] != $alpha['CA']) {
+				$this->setAlpha($alpha['CA'], $alpha['BM'], $alpha['ca'], $alpha['AIS']);
+			}
+		}
 		$this->_out($this->getCellCode($w, $h, $txt, $border, $ln, $align, $fill, $link, $stretch, true, $calign, $valign));
 		$this->cell_padding = $prev_cell_padding;
 		$this->cell_margin = $prev_cell_margin;
@@ -7261,9 +7344,21 @@ class TCPDF {
 				// \p{Z} or \p{Separator}: any kind of Unicode whitespace or invisible separator.
 				// \p{Lo} or \p{Other_Letter}: a Unicode letter or ideograph that does not have lowercase and uppercase variants.
 				// \p{Lo} is needed because Chinese characters are packed next to each other without spaces in between.
-				if (($c != 160) AND (($c == 173) OR preg_match($this->re_spaces, $this->unichr($c)))) {
+				if (($c != 160) 
+					AND (($c == 173) 
+						OR preg_match($this->re_spaces, $this->unichr($c))
+						OR (($c == 45)
+							AND ($i < ($nb - 1))
+							AND @preg_match('/[\p{L}]/'.$this->re_space['m'], $this->unichr($pc))
+							AND @preg_match('/[\p{L}]/'.$this->re_space['m'], $this->unichr($chars[($i + 1)]))
+						)
+					)
+				) {
 					// update last blank space position
 					$sep = $i;
+					if ($c == 45) {
+						++$sep;
+					}
 					// check if is a SHY
 					if ($c == 173) {
 						$shy = true;
@@ -8851,7 +8946,7 @@ class TCPDF {
 					header('Pragma: public');
 					header('Expires: Sat, 26 Jul 1997 05:00:00 GMT'); // Date in the past
 					header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
-					header('Content-Disposition: inline; filename="'.basename($name).'";');
+					header('Content-Disposition: inline; filename="'.basename($name).'"');
 					$this->sendOutputData($this->getBuffer(), $this->bufferlen);
 				} else {
 					echo $this->getBuffer();
@@ -8882,7 +8977,7 @@ class TCPDF {
 					header('Content-Type: application/pdf');
 				}
 				// use the Content-Disposition header to supply a recommended filename
-				header('Content-Disposition: attachment; filename="'.basename($name).'";');
+				header('Content-Disposition: attachment; filename="'.basename($name).'"');
 				header('Content-Transfer-Encoding: binary');
 				$this->sendOutputData($this->getBuffer(), $this->bufferlen);
 				break;
@@ -8909,7 +9004,7 @@ class TCPDF {
 					header('Pragma: public');
 					header('Expires: Sat, 26 Jul 1997 05:00:00 GMT'); // Date in the past
 					header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
-					header('Content-Disposition: inline; filename="'.basename($name).'";');
+					header('Content-Disposition: inline; filename="'.basename($name).'"');
 					$this->sendOutputData(file_get_contents($name), filesize($name));
 				} elseif ($dest == 'FD') {
 					// send headers to browser
@@ -8934,7 +9029,7 @@ class TCPDF {
 						header('Content-Type: application/pdf');
 					}
 					// use the Content-Disposition header to supply a recommended filename
-					header('Content-Disposition: attachment; filename="'.basename($name).'";');
+					header('Content-Disposition: attachment; filename="'.basename($name).'"');
 					header('Content-Transfer-Encoding: binary');
 					$this->sendOutputData(file_get_contents($name), filesize($name));
 				}
@@ -19315,7 +19410,7 @@ class TCPDF {
 	 */
 	public function PieSectorXY($xc, $yc, $rx, $ry, $a, $b, $style='FD', $cw=false, $o=0, $nc=2) {
 		if ($this->rtl) {
-			$xc = $this->w - $xc;
+			$xc = ($this->w - $xc);
 		}
 		$op = $this->getPathPaintOperator($style);
 		if ($op == 'f') {
@@ -19323,8 +19418,8 @@ class TCPDF {
 		}
 		if ($cw) {
 			$d = $b;
-			$b = 360 - $a + $o;
-			$a = 360 - $d + $o;
+			$b = (360 - $a + $o);
+			$a = (360 - $d + $o);
 		} else {
 			$b += $o;
 			$a += $o;
@@ -20095,7 +20190,7 @@ class TCPDF {
 		// create new barcode object
 		$barcodeobj = new TCPDF2DBarcode($code, $type);
 		$arrcode = $barcodeobj->getBarcodeArray();
-		if (($arrcode === false) OR empty($arrcode) OR ($arrcode['num_rows'] == 0) OR ($arrcode['num_cols'] == 0)) {
+		if (($arrcode === false) OR empty($arrcode) OR !isset($arrcode['num_rows']) OR ($arrcode['num_rows'] == 0) OR !isset($arrcode['num_cols']) OR ($arrcode['num_cols'] == 0)) {
 			$this->Error('Error in 2D barcode string');
 		}
 		// set default values
@@ -21648,7 +21743,7 @@ class TCPDF {
 						}
 						if (isset($dom[$key]['style']['border-style'])) {
 							$brd_styles = preg_split('/[\s]+/', trim($dom[$key]['style']['border-style']));
-							if (isset($brd_styles[3])) {
+							if (isset($brd_styles[3]) AND ($brd_styles[3]!='none')) {
 								$dom[$key]['border']['L']['cap'] = 'square';
 								$dom[$key]['border']['L']['join'] = 'miter';
 								$dom[$key]['border']['L']['dash'] = $this->getCSSBorderDashStyle($brd_styles[3]);
@@ -26877,6 +26972,58 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		}
 		$this->textrendermode = $textrendermode;
 		$this->textstrokewidth = $stroke * $this->k;
+	}
+
+	/**
+	 * Set parameters for drop shadow effect for text.
+	 * @param $params (array) Array of parameters: enabled (boolean) set to true to enable shadow; depth_w (float) shadow width in user units; depth_h (float) shadow height in user units; color (array) shadow color or false to use the stroke color; opacity (float) Alpha value: real value from 0 (transparent) to 1 (opaque); blend_mode (string) blend mode, one of the following: Normal, Multiply, Screen, Overlay, Darken, Lighten, ColorDodge, ColorBurn, HardLight, SoftLight, Difference, Exclusion, Hue, Saturation, Color, Luminosity.
+	 * @since 5.9.174 (2012-07-25)
+	 * @public
+	*/
+	public function setTextShadow($params=array('enabled'=>false, 'depth_w'=>0, 'depth_h'=>0, 'color'=>false, 'opacity'=>1, 'blend_mode'=>'Normal')) {
+		if (isset($params['enabled'])) {
+			$this->txtshadow['enabled'] = $params['enabled']?true:false;
+		} else {
+			$this->txtshadow['enabled'] = false;
+		}
+		if (isset($params['depth_w'])) {
+			$this->txtshadow['depth_w'] = floatval($params['depth_w']);
+		} else {
+			$this->txtshadow['depth_w'] = 0;
+		}
+		if (isset($params['depth_h'])) {
+			$this->txtshadow['depth_h'] = floatval($params['depth_h']);
+		} else {
+			$this->txtshadow['depth_h'] = 0;
+		}
+		if (isset($params['color']) AND ($params['color'] !== false) AND is_array($params['color'])) {
+			$this->txtshadow['color'] = $params['color'];
+		} else {
+			$this->txtshadow['color'] = $this->strokecolor;
+		}
+		if (isset($params['opacity'])) {
+			$this->txtshadow['opacity'] = min(1, max(0, floatval($params['opacity'])));
+		} else {
+			$this->txtshadow['opacity'] = 1;
+		}
+		if (isset($params['blend_mode']) AND in_array($params['blend_mode'], array('Normal', 'Multiply', 'Screen', 'Overlay', 'Darken', 'Lighten', 'ColorDodge', 'ColorBurn', 'HardLight', 'SoftLight', 'Difference', 'Exclusion', 'Hue', 'Saturation', 'Color', 'Luminosity'))) {
+			$this->txtshadow['blend_mode'] = $params['blend_mode'];
+		} else {
+			$this->txtshadow['blend_mode'] = 'Normal';
+		}
+		if ((($this->txtshadow['depth_w'] == 0) AND ($this->txtshadow['depth_h'] == 0)) OR ($this->txtshadow['opacity'] == 0)) {
+			$this->txtshadow['enabled'] = false;
+		}
+	}
+
+	/**
+	 * Return the text shadow parameters array.
+	 * @return Array of parameters.
+	 * @since 5.9.174 (2012-07-25)
+	 * @public
+	 */
+	public function getTextShadow() {
+		return $this->txtshadow;
 	}
 
 	/**
