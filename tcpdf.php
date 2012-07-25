@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.174
+// Version     : 5.9.175
 // Begin       : 2002-08-03
 // Last Update : 2012-07-25
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
@@ -138,7 +138,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.174
+ * @version 5.9.175
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -150,7 +150,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.174
+ * @version 5.9.175
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -161,7 +161,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.174';
+	private $tcpdf_version = '5.9.175';
 
 	// Protected properties
 
@@ -7344,8 +7344,8 @@ class TCPDF {
 				// \p{Z} or \p{Separator}: any kind of Unicode whitespace or invisible separator.
 				// \p{Lo} or \p{Other_Letter}: a Unicode letter or ideograph that does not have lowercase and uppercase variants.
 				// \p{Lo} is needed because Chinese characters are packed next to each other without spaces in between.
-				if (($c != 160) 
-					AND (($c == 173) 
+				if (($c != 160)
+					AND (($c == 173)
 						OR preg_match($this->re_spaces, $this->unichr($c))
 						OR (($c == 45)
 							AND ($i < ($nb - 1))
@@ -7356,11 +7356,8 @@ class TCPDF {
 				) {
 					// update last blank space position
 					$sep = $i;
-					if ($c == 45) {
-						++$sep;
-					}
 					// check if is a SHY
-					if ($c == 173) {
+					if (($c == 173) OR ($c == 45)) {
 						$shy = true;
 						if ($pc == 45) {
 							$tmp_shy_replacement_width = 0;
@@ -7449,9 +7446,9 @@ class TCPDF {
 								$linew = $this->GetArrStringWidth($tmparr);
 								unset($tmparr);
 								if ($this->rtl) {
-									$this->endlinex = $startx - $linew;
+									$this->endlinex = ($startx - $linew);
 								} else {
-									$this->endlinex = $startx + $linew;
+									$this->endlinex = ($startx + $linew);
 								}
 								$w = $linew;
 								$tmpcellpadding = $this->cell_padding;
@@ -7514,6 +7511,9 @@ class TCPDF {
 							$this->Cell($w, $h, $shy_char_left.$tmpstr.$shy_char_right, 0, 1, $align, $fill, $link, $stretch);
 							unset($tmpstr);
 							if ($firstline) {
+								if ($chars[$sep] == 45) {
+									$endspace += 1;
+								}
 								// return the remaining text
 								$this->cell_padding = $tmpcellpadding;
 								return ($this->UniArrSubString($uchars, ($sep + $endspace)));
@@ -7521,7 +7521,7 @@ class TCPDF {
 							$i = $sep;
 							$sep = -1;
 							$shy = false;
-							$j = ($i+1);
+							$j = ($i + 1);
 						}
 					}
 					// account for margin changes

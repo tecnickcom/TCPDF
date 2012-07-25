@@ -1,3 +1,6 @@
+5.9.175 (2012-07-25)
+	- The problem of missing letter on hyphen break was fixed.
+
 5.9.174 (2012-07-25)
 	- The problem of wrong filename when downloading PDF from an Android device was fixed.
 	- The method setHeaderData() was extended to set text and line color for header (see example n. 1).
