@@ -1,3 +1,7 @@
+5.9.176 (2012-07-25)
+	- A bug related to stroke width was fixed.
+	- A problem related to font spacing in HTML was fixed.
+
 5.9.175 (2012-07-25)
 	- The problem of missing letter on hyphen break was fixed.
 

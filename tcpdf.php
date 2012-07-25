@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.175
+// Version     : 5.9.176
 // Begin       : 2002-08-03
 // Last Update : 2012-07-25
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
@@ -138,7 +138,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.175
+ * @version 5.9.176
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -150,7 +150,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.175
+ * @version 5.9.176
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -161,7 +161,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.175';
+	private $tcpdf_version = '5.9.176';
 
 	// Protected properties
 
@@ -4989,7 +4989,7 @@ class TCPDF {
 	/**
 	 * Returns the length of the char in user unit for the current font considering current stretching and spacing (tracking).
 	 * @param $char (int) The char code whose length is to be returned
-	 * @param $notlast (boolean) set to false for the latest character on string, true otherwise (default)
+	 * @param $notlast (boolean) If false ignore the font-spacing.
 	 * @return float char width
 	 * @author Nicola Asuni
 	 * @public
@@ -6257,7 +6257,7 @@ class TCPDF {
 				$s .= 'q '.$this->TextColor.' ';
 			}
 			// rendering mode
-			$s .= sprintf('BT %d Tr %F w ET ', $this->textrendermode, $this->textstrokewidth);
+			$s .= sprintf('BT %d Tr %F w ET ', $this->textrendermode, ($this->textstrokewidth * $this->k));
 			// count number of spaces
 			$ns = substr_count($txt, chr(32));
 			// Justification
@@ -23295,9 +23295,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					} else {
 						$wadj = 0; // space to leave for block continuity
 						if ($this->rtl) {
-							$cwa = $this->x - $this->lMargin;
+							$cwa = ($this->x - $this->lMargin);
 						} else {
-							$cwa = $this->w - $this->rMargin - $this->x;
+							$cwa = ($this->w - $this->rMargin - $this->x);
 						}
 						if (($strlinelen < $cwa) AND (isset($dom[($key + 1)])) AND ($dom[($key + 1)]['tag']) AND (!$dom[($key + 1)]['block'])) {
 							// check the next text blocks for continuity
@@ -23387,6 +23387,14 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					}
 				} else {
 					$loop = 0;
+					// add the positive font spacing of the last character (if any)
+					 if ($this->font_spacing > 0) {
+					 	if ($this->rtl) {
+							$this->x -= $this->font_spacing;
+						} else {
+							$this->x += $this->font_spacing;
+						}
+					}
 				}
 			}
 			++$key;
@@ -26971,7 +26979,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			}
 		}
 		$this->textrendermode = $textrendermode;
-		$this->textstrokewidth = $stroke * $this->k;
+		$this->textstrokewidth = $stroke;
 	}
 
 	/**
