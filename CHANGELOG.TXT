@@ -1,3 +1,6 @@
+5.9.177 (2012-08-02)
+	- An additional control on annotations was fixed.
+
 5.9.176 (2012-07-25)
 	- A bug related to stroke width was fixed.
 	- A problem related to font spacing in HTML was fixed.
