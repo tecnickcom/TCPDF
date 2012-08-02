@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.177
+// Version     : 5.9.178
 // Begin       : 2002-08-03
 // Last Update : 2012-08-02
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
@@ -138,7 +138,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.177
+ * @version 5.9.178
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -150,7 +150,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.177
+ * @version 5.9.178
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -161,7 +161,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.177';
+	private $tcpdf_version = '5.9.178';
 
 	// Protected properties
 
@@ -29149,11 +29149,11 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				} else {
 					$this->svggradients[$this->svggradientid]['mode'] = 'measure';
 				}
-				$cx = (isset($attribs['cx'])?$attribs['cx']:0.5);
-				$cy = (isset($attribs['cy'])?$attribs['cy']:0.5);
-				$fx = (isset($attribs['fx'])?$attribs['fx']:$cx);
-				$fy = (isset($attribs['fy'])?$attribs['fy']:$cy);
-				$r = (isset($attribs['r'])?$attribs['r']:0.5);
+				$cx = (isset($attribs['cx']) ? $attribs['cx'] : 0.5);
+				$cy = (isset($attribs['cy']) ? $attribs['cy'] : 0.5);
+				$fx = (isset($attribs['fx']) ? $attribs['fx'] : $cx);
+				$fy = (isset($attribs['fy']) ? $attribs['fy'] : $cy);
+				$r = (isset($attribs['r']) ? $attribs['r'] : 0.5);
 				if (isset($attribs['gradientTransform'])) {
 					$this->svggradients[$this->svggradientid]['gradientTransform'] = $this->getSVGTransformMatrix($attribs['gradientTransform']);
 				}
@@ -29232,12 +29232,12 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				if ($invisible) {
 					break;
 				}
-				$cx = (isset($attribs['cx'])?$this->getHTMLUnitToUnits($attribs['cx'], 0, $this->svgunit, false):0);
-				$cy = (isset($attribs['cy'])?$this->getHTMLUnitToUnits($attribs['cy'], 0, $this->svgunit, false):0);
-				$r = (isset($attribs['r'])?$this->getHTMLUnitToUnits($attribs['r'], 0, $this->svgunit, false):0);
-				$x = $cx - $r;
-				$y = $cy - $r;
-				$w = 2 * $r;
+				$r = (isset($attribs['r']) ? $this->getHTMLUnitToUnits($attribs['r'], 0, $this->svgunit, false) : 0);
+				$cx = (isset($attribs['cx']) ? $this->getHTMLUnitToUnits($attribs['cx'], 0, $this->svgunit, false) : (isset($attribs['x']) ? ($this->getHTMLUnitToUnits($attribs['x'], 0, $this->svgunit, false) + $r) : 0));
+				$cy = (isset($attribs['cy']) ? $this->getHTMLUnitToUnits($attribs['cy'], 0, $this->svgunit, false) : (isset($attribs['y']) ? ($this->getHTMLUnitToUnits($attribs['y'], 0, $this->svgunit, false) + $r) : 0));
+				$x = ($cx - $r);
+				$y = ($cy - $r);
+				$w = (2 * $r);
 				$h = $w;
 				if ($clipping) {
 					$this->SVGTransform($tm);
@@ -29257,14 +29257,14 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				if ($invisible) {
 					break;
 				}
-				$cx = (isset($attribs['cx'])?$this->getHTMLUnitToUnits($attribs['cx'], 0, $this->svgunit, false):0);
-				$cy = (isset($attribs['cy'])?$this->getHTMLUnitToUnits($attribs['cy'], 0, $this->svgunit, false):0);
-				$rx = (isset($attribs['rx'])?$this->getHTMLUnitToUnits($attribs['rx'], 0, $this->svgunit, false):0);
-				$ry = (isset($attribs['ry'])?$this->getHTMLUnitToUnits($attribs['ry'], 0, $this->svgunit, false):0);
-				$x = $cx - $rx;
-				$y = $cy - $ry;
-				$w = 2 * $rx;
-				$h = 2 * $ry;
+				$rx = (isset($attribs['rx']) ? $this->getHTMLUnitToUnits($attribs['rx'], 0, $this->svgunit, false) : 0);
+				$ry = (isset($attribs['ry']) ? $this->getHTMLUnitToUnits($attribs['ry'], 0, $this->svgunit, false) : 0);
+				$cx = (isset($attribs['cx']) ? $this->getHTMLUnitToUnits($attribs['cx'], 0, $this->svgunit, false) : (isset($attribs['x']) ? ($this->getHTMLUnitToUnits($attribs['x'], 0, $this->svgunit, false) + $rx) : 0));
+				$cy = (isset($attribs['cy']) ? $this->getHTMLUnitToUnits($attribs['cy'], 0, $this->svgunit, false) : (isset($attribs['y']) ? ($this->getHTMLUnitToUnits($attribs['y'], 0, $this->svgunit, false) + $ry) : 0));
+				$x = ($cx - $rx);
+				$y = ($cy - $ry);
+				$w = (2 * $rx);
+				$h = (2 * $ry);
 				if ($clipping) {
 					$this->SVGTransform($tm);
 					$this->Ellipse($cx, $cy, $rx, $ry, 0, 0, 360, 'CNZ', array(), array(), 8);

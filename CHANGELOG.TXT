@@ -1,3 +1,6 @@
+5.9.178 (2012-08-02)
+	- SVG 'use' tag was fixed for 'circle' and 'ellipse'.
+
 5.9.177 (2012-08-02)
 	- An additional control on annotations was fixed.
 
