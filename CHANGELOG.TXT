@@ -1,3 +1,7 @@
+5.9.179 (2012-08-04)
+	- SVG 'use' tag was fixed for 'circle' and 'ellipse' shift problem.
+	- Alpha status is now correctly stored and restored by getGraphicVars() and SetGraphicVars() methods.
+
 5.9.178 (2012-08-02)
 	- SVG 'use' tag was fixed for 'circle' and 'ellipse'.
 
