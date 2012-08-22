@@ -1,3 +1,6 @@
+5.9.180 (2012-08-22)
+	- Bug item #3560493 "Problems with nested cells in HTML" was fixed.
+
 5.9.179 (2012-08-04)
 	- SVG 'use' tag was fixed for 'circle' and 'ellipse' shift problem.
 	- Alpha status is now correctly stored and restored by getGraphicVars() and SetGraphicVars() methods.
