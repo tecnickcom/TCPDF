@@ -1,3 +1,7 @@
+5.9.181 (2012-08-31)
+	- composer.json file was added.
+	- Bug item #3563369 "Cached images are not unlinked some time" was fixed.
+
 5.9.180 (2012-08-22)
 	- Bug item #3560493 "Problems with nested cells in HTML" was fixed.
 

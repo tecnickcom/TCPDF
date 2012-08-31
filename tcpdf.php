@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.180
+// Version     : 5.9.181
 // Begin       : 2002-08-03
-// Last Update : 2012-08-22
+// Last Update : 2012-08-31
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
 // -------------------------------------------------------------------
@@ -138,7 +138,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.180
+ * @version 5.9.181
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -150,7 +150,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.180
+ * @version 5.9.181
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -161,7 +161,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.180';
+	private $tcpdf_version = '5.9.181';
 
 	// Protected properties
 
@@ -358,6 +358,12 @@ class TCPDF {
 	 * @protected
 	 */
 	protected $images = array();
+
+	/**
+	 * Array of cached files.
+	 * @protected
+	 */
+	protected $cached_files = array();
 
 	/**
 	 * Array of Annotations in pages.
@@ -7849,7 +7855,6 @@ class TCPDF {
 		}
 		// check page for no-write regions and adapt page margins if necessary
 		list($x, $y) = $this->checkPageRegions($h, $x, $y);
-		$cached_file = false; // true when the file is cached
 		$exurl = ''; // external streams
 		// check if we are passing an image as file or string
 		if ($file[0] === '@') {
@@ -7860,11 +7865,11 @@ class TCPDF {
 			fwrite($fp, $imgdata);
 			fclose($fp);
 			unset($imgdata);
-			$cached_file = true;
 			$imsize = @getimagesize($file);
 			if ($imsize === FALSE) {
 				unlink($file);
-				$cached_file = false;
+			} else {
+				$this->cached_files[] = $file;
 			}
 		} else { // image file
 			if ($file{0} === '*') {
@@ -7908,11 +7913,11 @@ class TCPDF {
 						fwrite($fp, $imgdata);
 						fclose($fp);
 						unset($imgdata);
-						$cached_file = true;
 						$imsize = @getimagesize($file);
 						if ($imsize === FALSE) {
 							unlink($file);
-							$cached_file = false;
+						} else {
+							$this->cached_files[] = $file;
 						}
 					}
 				} elseif (($w > 0) AND ($h > 0)) {
@@ -8171,10 +8176,6 @@ class TCPDF {
 			$info['altimgs'] = $altimgs;
 			// add image to document
 			$this->setImageBuffer($file, $info);
-		}
-		if ($cached_file) {
-			// remove cached file
-			unlink($file);
 		}
 		// set alignment
 		$this->img_rb_y = $y + $h;
@@ -9075,6 +9076,7 @@ class TCPDF {
 				AND ($val != 'bufferlen')
 				AND ($val != 'buffer')
 				AND ($val != 'diskcache')
+				AND ($val != 'cached_files')
 				AND ($val != 'sign')
 				AND ($val != 'signature_data')
 				AND ($val != 'signature_max_length')
@@ -9084,6 +9086,15 @@ class TCPDF {
 					unset($this->$val);
 				}
 			}
+		}
+		if (isset($this->cached_files) AND !empty($this->cached_files)) {
+			// remove cached files
+			foreach ($this->cached_files as $cachefile) {
+				if (is_file($cachefile)) {
+					unlink($cachefile);
+				}
+			}
+			unset($this->cached_files);
 		}
 	}
 
