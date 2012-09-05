@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.181
+// Version     : 5.9.182
 // Begin       : 2002-08-03
-// Last Update : 2012-08-31
+// Last Update : 2012-09-05
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
 // -------------------------------------------------------------------
@@ -138,7 +138,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.181
+ * @version 5.9.182
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -150,7 +150,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.181
+ * @version 5.9.182
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -161,7 +161,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.181';
+	private $tcpdf_version = '5.9.182';
 
 	// Protected properties
 
@@ -7237,6 +7237,10 @@ class TCPDF {
 		$chrwidth = $this->GetCharWidth(46); // dot character
 		// get array of unicode values
 		$chars = $this->UTF8StringToArray($s);
+		// calculate maximum width for a single character on string
+		$chrw = $this->GetArrStringWidth($chars, '', '', 0, true);
+		array_walk($chrw, array($this, 'getRawCharWidth'));
+		$maxchwidth = max($chrw);
 		// get array of chars
 		$uchars = $this->UTF8ArrayToUniArray($chars);
 		// get the number of characters
@@ -7261,8 +7265,8 @@ class TCPDF {
 		if (!$firstline) {
 			$wmax -= ($this->cell_padding['L'] + $this->cell_padding['R']);
 		}
-		if ((!$firstline) AND (($chrwidth > $wmax) OR ($this->GetCharWidth($chars[0]) > $wmax))) {
-			// a single character do not fit on column
+		if ((!$firstline) AND (($chrwidth > $wmax) OR ($maxchwidth > $wmax))) {
+			// the maximum width character do not fit on column
 			return '';
 		}
 		// minimum row height

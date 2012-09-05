@@ -1,3 +1,6 @@
+5.9.182 (2012-09-05)
+	- Bug item #3564982 "Infinite loop in Write() method" was fixed.
+
 5.9.181 (2012-08-31)
 	- composer.json file was added.
 	- Bug item #3563369 "Cached images are not unlinked some time" was fixed.
