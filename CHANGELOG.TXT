@@ -1,3 +1,6 @@
+5.9.183 (2012-09-07)
+	- A problem with font names normalization was fixed.
+
 5.9.182 (2012-09-05)
 	- Bug item #3564982 "Infinite loop in Write() method" was fixed.
 
