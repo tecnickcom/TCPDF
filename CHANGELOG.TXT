@@ -1,3 +1,6 @@
+5.9.184 (2012-09-11)
+	- A problem with EAN barcodes was fixed.
+
 5.9.183 (2012-09-07)
 	- A problem with font names normalization was fixed.
 
