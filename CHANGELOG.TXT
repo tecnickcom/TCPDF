@@ -1,3 +1,12 @@
+5.9.186 (2012-09-13)
+	- barcodes.php file was resynced.
+	- Methods SetAbsX, SetAbsY, SetAbsXY where added to set the absolute pointer coordinates.
+	- Method getCharBBox were added to get single character bounding box.
+	- Signature of addTTFfont method was changed ($addcbbox paramter was added).
+
+5.9.185 (2012-09-12)
+	- Method _putfontwidths() was fixed.
+
 5.9.184 (2012-09-11)
 	- A problem with EAN barcodes was fixed.
 

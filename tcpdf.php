@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.184
+// Version     : 5.9.186
 // Begin       : 2002-08-03
-// Last Update : 2012-09-11
+// Last Update : 2012-09-13
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
 // -------------------------------------------------------------------
@@ -98,6 +98,7 @@
 // Christian Deligant for some suggestions and fixes.
 // Travis Harris for crop mark suggestion.
 // Aleksey Kuznetsov for some suggestions and text shadows.
+// Jim Hanlon for several suggestions and patches.
 // Anyone else that has reported a bug or sent a suggestion.
 //============================================================+
 
@@ -138,7 +139,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.184
+ * @version 5.9.186
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -150,7 +151,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.184
+ * @version 5.9.186
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -161,7 +162,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.184';
+	private $tcpdf_version = '5.9.186';
 
 	// Protected properties
 
@@ -5039,7 +5040,7 @@ class TCPDF {
 		} else {
 			$w = 600;
 		}
-		return ($w * $this->FontSize / 1000);
+		return $this->getAbsFontMeasure($w);
 	}
 
 	/**
@@ -5295,9 +5296,13 @@ class TCPDF {
 				}
 			}
 		}
+		// check if the array of characters bounding boxes is defined
+		if (!isset($cbbox)) {
+			$cbbox = array();
+		}
 		// initialize subsetchars to contain default ASCII values (0-255)
 		$subsetchars = array_fill(0, 256, true);
-		$this->setFontBuffer($fontkey, array('fontkey' => $fontkey, 'i' => $this->numfonts, 'type' => $type, 'name' => $name, 'desc' => $desc, 'up' => $up, 'ut' => $ut, 'cw' => $cw, 'dw' => $dw, 'enc' => $enc, 'cidinfo' => $cidinfo, 'file' => $file, 'ctg' => $ctg, 'subset' => $subset, 'subsetchars' => $subsetchars));
+		$this->setFontBuffer($fontkey, array('fontkey' => $fontkey, 'i' => $this->numfonts, 'type' => $type, 'name' => $name, 'desc' => $desc, 'up' => $up, 'ut' => $ut, 'cw' => $cw, 'cbbox' => $cbbox, 'dw' => $dw, 'enc' => $enc, 'cidinfo' => $cidinfo, 'file' => $file, 'ctg' => $ctg, 'subset' => $subset, 'subsetchars' => $subsetchars));
 		if ($this->inxobj) {
 			// we are inside an XObject template
 			$this->xobjects[$this->xobjid]['fonts'][$fontkey] = $this->numfonts;
@@ -5418,16 +5423,14 @@ class TCPDF {
 	 * @since 5.9.152 (2012-03-23)
 	 */
 	public function getFontBBox() {
-		$result = array();
+		$fbbox = array();
 		if (isset($this->CurrentFont['desc']['FontBBox'])) {
-			$bbox = explode(' ', substr($this->CurrentFont['desc']['FontBBox'], 1, -1));
-			foreach ($bbox as $v) {
-				$result[] = (intval($v) * $this->FontSize / 1000);
-			}
+			$tmpbbox = explode(' ', substr($this->CurrentFont['desc']['FontBBox'], 1, -1));
+			$fbbox = array_map(array($this,'getAbsFontMeasure'), $tmpbbox);
 		} else {
 			// Find max width
 			if (isset($this->CurrentFont['desc']['MaxWidth'])) {
-				$maxw = (intval($this->CurrentFont['desc']['MaxWidth']) * $this->FontSize / 1000);
+				$maxw = $this->getAbsFontMeasure(intval($this->CurrentFont['desc']['MaxWidth']));
 			} else {
 				$maxw = 0;
 				if (isset($this->CurrentFont['desc']['MissingWidth'])) {
@@ -5445,11 +5448,34 @@ class TCPDF {
 				if ($maxw == 0) {
 					$maxw = 600;
 				}
-				$maxw = ($maxw * $this->FontSize / 1000);
+				$maxw = $this->getAbsFontMeasure($maxw);
 			}
-			$result = array(0, -$this->FontDescent, $maxw, $this->FontAscent);
+			$fbbox = array(0, -$this->FontDescent, $maxw, $this->FontAscent);
 		}
-		return $result;
+		return $fbbox;
+	}
+
+	/**
+	 * Convert a relative font measure into absolute value.
+	 * @param $s (int) Font measure.
+	 * @return float Absolute measure.
+	 * @since 5.9.186 (2012-09-13)
+	 */
+	public function getAbsFontMeasure($s) {
+		return ($s * $this->FontSize / 1000);
+	}
+
+	/**
+	 * Returns the glyph bounding box of the specified character in the current font in user units.
+	 * @param $char (int) Input character code.
+	 * @return mixed array(xMin, yMin, xMax, yMax) or FALSE if not defined.
+	 * @since 5.9.186 (2012-09-13)
+	 */
+	public function getCharBBox($char) {
+		if (isset($this->CurrentFont['cbbox'][$char])) {
+			return array_map(array($this,'getAbsFontMeasure'), $this->CurrentFont['cbbox'][intval($char)]);
+		}
+		return false;
 	}
 
 	/**
@@ -5468,7 +5494,7 @@ class TCPDF {
 		if (isset($fontinfo['desc']['Descent']) AND ($fontinfo['desc']['Descent'] <= 0)) {
 			$descent = (- $fontinfo['desc']['Descent'] * $size / 1000);
 		} else {
-			$descent = 1.219 * 0.24 * $size;
+			$descent = (1.219 * 0.24 * $size);
 		}
 		return ($descent / $this->k);
 	}
@@ -8757,13 +8783,14 @@ class TCPDF {
 	/**
 	 * Defines the abscissa of the current position.
 	 * If the passed value is negative, it is relative to the right of the page (or left if language is RTL).
-	 * @param $x (float) The value of the abscissa.
+	 * @param $x (float) The value of the abscissa in user units.
 	 * @param $rtloff (boolean) if true always uses the page top-left corner as origin of axis.
 	 * @public
 	 * @since 1.2
 	 * @see GetX(), GetY(), SetY(), SetXY()
 	 */
 	public function SetX($x, $rtloff=false) {
+		$x = floatval($x);
 		if (!$rtloff AND $this->rtl) {
 			if ($x >= 0) {
 				$this->x = $this->w - $x;
@@ -8788,7 +8815,7 @@ class TCPDF {
 	/**
 	 * Moves the current abscissa back to the left margin and sets the ordinate.
 	 * If the passed value is negative, it is relative to the bottom of the page.
-	 * @param $y (float) The value of the ordinate.
+	 * @param $y (float) The value of the ordinate in user units.
 	 * @param $resetx (bool) if true (default) reset the X position.
 	 * @param $rtloff (boolean) if true always uses the page top-left corner as origin of axis.
 	 * @public
@@ -8796,6 +8823,7 @@ class TCPDF {
 	 * @see GetX(), GetY(), SetY(), SetXY()
 	 */
 	public function SetY($y, $resetx=true, $rtloff=false) {
+		$y = floatval($y);
 		if ($resetx) {
 			//reset x
 			if (!$rtloff AND $this->rtl) {
@@ -8832,6 +8860,41 @@ class TCPDF {
 		$this->SetX($x, $rtloff);
 	}
 
+	/**
+	 * Set the absolute X coordinate of the current pointer.
+	 * @param $x (float) The value of the abscissa in user units.
+	 * @public
+	 * @since 5.9.186 (2012-09-13)
+	 * @see setAbsX(), setAbsY(), SetAbsXY()
+	 */
+	public function SetAbsX($x) {
+		$this->x = floatval($x);
+	}
+
+	/**
+	 * Set the absolute Y coordinate of the current pointer.
+	 * @param $y (float) (float) The value of the ordinate in user units.
+	 * @public
+	 * @since 5.9.186 (2012-09-13)
+	 * @see setAbsX(), setAbsY(), SetAbsXY()
+	 */
+	public function SetAbsY($y) {
+		$this->y = floatval($y);
+	}
+
+	/**
+	 * Set the absolute X and Y coordinates of the current pointer.
+	 * @param $x (float) The value of the abscissa in user units.
+	 * @param $y (float) (float) The value of the ordinate in user units.
+	 * @public
+	 * @since 5.9.186 (2012-09-13)
+	 * @see setAbsX(), setAbsY(), SetAbsXY()
+	 */
+	public function SetAbsXY($x, $y) {
+		$this->SetAbsX($x);
+		$this->SetAbsY($y);
+	}
+	
 	/**
 	 * Ouput input data and compress it if possible.
 	 * @param $data (string) Data to output.
@@ -10235,12 +10298,13 @@ class TCPDF {
 	 * @param $outpath (string) Output path for generated font files (must be writeable by the web server). Leave empty for default font folder.
 	 * @param $platid (int) Platform ID for CMAP table to extract (when building a Unicode font for Windows this value should be 3, for Macintosh should be 1).
 	 * @param $encid (int) Encoding ID for CMAP table to extract (when building a Unicode font for Windows this value should be 1, for Macintosh should be 0). When Platform ID is 3, legal values for Encoding ID are: 0=Symbol, 1=Unicode, 2=ShiftJIS, 3=PRC, 4=Big5, 5=Wansung, 6=Johab, 7=Reserved, 8=Reserved, 9=Reserved, 10=UCS-4.
+	 * @param $addcbbox (boolean) If true includes the character bounding box information on the php font file.
 	 * @return (string) TCPDF font name.
 	 * @author Nicola Asuni
 	 * @public
 	 * @since 5.9.123 (2010-09-30)
 	 */
-	public function addTTFfont($fontfile, $fonttype='', $enc='', $flags=32, $outpath='', $platid=3, $encid=1) {
+	public function addTTFfont($fontfile, $fonttype='', $enc='', $flags=32, $outpath='', $platid=3, $encid=1, $addcbbox=false) {
 		if (!file_exists($fontfile)) {
 			$this->Error('Could not find file: '.$fontfile.'');
 		}
@@ -10952,8 +11016,18 @@ class TCPDF {
 			$fmetric['MissingWidth'] = $cw[0];
 			$fmetric['cw'] = '';
 			for ($cid = 0; $cid <= 65535; ++$cid) {
-				if (isset($ctg[$cid]) AND isset($cw[$ctg[$cid]])) {
-					$fmetric['cw'] .= ','.$cid.'=>'.$cw[$ctg[$cid]];
+				if (isset($ctg[$cid])) {
+					if (isset($cw[$ctg[$cid]])) {
+						$fmetric['cw'] .= ','.$cid.'=>'.$cw[$ctg[$cid]];
+					}
+					if ($addcbbox AND isset($indexToLoc[$ctg[$cid]])) {
+						$offset = ($table['glyf']['offset'] + $indexToLoc[$ctg[$cid]]);
+						$xMin = round($this->_getFWORD($font, $offset + 2)) * $urk;
+						$yMin = round($this->_getFWORD($font, $offset + 4)) * $urk;
+						$xMax = round($this->_getFWORD($font, $offset + 6)) * $urk;
+						$yMax = round($this->_getFWORD($font, $offset + 8)) * $urk;
+						$fmetric['cbbox'] .= ','.$cid.'=>array('.$xMin.','.$yMin.','.$xMax.','.$yMax.')';
+					}
 				}
 			}
 		} // end of true type
@@ -11045,6 +11119,9 @@ class TCPDF {
 		$pfile .= '\'MaxWidth\'=>'.$fmetric['MaxWidth'].',';
 		$pfile .= '\'MissingWidth\'=>'.$fmetric['MissingWidth'].'';
 		$pfile .= ');'."\n";
+		if (isset($fmetric['cbbox'])) {
+			$pfile .= '$cbbox=array('.substr($fmetric['cbbox'], 1).');'."\n";
+		}
 		$pfile .= '$cw=array('.substr($fmetric['cw'], 1).');'."\n";
 		$pfile .= '// --- EOF ---'."\n";
 		// store file
@@ -11605,7 +11682,9 @@ class TCPDF {
 				} else {
 					$prevint = false;
 				}
-				unset($range[$k]['interval']);
+				if (isset($range[$k]['interval'])) {
+					unset($range[$k]['interval']);
+				}
 				--$nextk;
 			} else {
 				$prevint = false;
