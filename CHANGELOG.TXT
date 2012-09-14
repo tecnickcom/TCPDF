@@ -1,3 +1,6 @@
+5.9.187 (2012-09-14)
+	- Subset feature was extended to include the first 256 characters.
+
 5.9.186 (2012-09-13)
 	- barcodes.php file was resynced.
 	- Methods SetAbsX, SetAbsY, SetAbsXY where added to set the absolute pointer coordinates.
