@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : datamatrix.php
-// Version     : 1.0.001
+// Version     : 1.0.003
 // Begin       : 2010-06-07
-// Last Update : 2011-09-14
+// Last Update : 2012-09-15
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -40,7 +40,7 @@
  *
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 1.0.001
+ * @version 1.0.003
  */
 
 // custom definitions
@@ -105,7 +105,7 @@ define('ENC_ASCII_NUM', 7);
  *
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 1.0.001
+ * @version 1.0.003
  */
 class Datamatrix {
 
@@ -184,7 +184,7 @@ class Datamatrix {
 	protected $chset_id = array(ENC_C40 => 'C40', ENC_TXT => 'TXT', ENC_X12 =>'X12');
 
 	/**
-	 * Basic set of charactes for each encodation mode.
+	 * Basic set of characters for each encodation mode.
 	 * @protected
 	 */
 	protected $chset = array(
@@ -270,7 +270,7 @@ class Datamatrix {
 				$cw[] = 129;
 				++$nd;
 				// add remaining pads
-				for ($i = $nd; $i <= $params[11]; ++$i) {
+				for ($i = $nd; $i < $params[11]; ++$i) {
 					$cw[] = $this->get253StateCodeword(129, $i);
 				}
 			}
@@ -280,7 +280,7 @@ class Datamatrix {
 		// initialize empty arrays
 		$grid = array_fill(0, ($params[2] * $params[3]), 0);
 		// get placement map
-		$places = $this->getPlacemetMap($params[2], $params[3]);
+		$places = $this->getPlacementMap($params[2], $params[3]);
 		// fill the grid with data
 		$grid = array();
 		$i = 0;
@@ -365,7 +365,7 @@ class Datamatrix {
 		if (($a == 0) OR ($b == 0)) {
 			return 0;
 		}
-		return $alog[($log[$a] + $log[$b]) % ($gf - 1)];
+		return ($alog[($log[$a] + $log[$b]) % ($gf - 1)]);
 	}
 
 	/**
@@ -872,23 +872,23 @@ class Datamatrix {
 							$pos = $epos;
 							$field_lenght = 0;
 						}
-						// 1. If the EDIFACT encoding is at the point of starting a new triple symbol character and if the look-ahead test (starting at step J) indicates another mode, switch to that mode.
-						if ($field_lenght == 0) {
-							// get remaining number of data symbols
-							$cwr = ($this->getMaxDataCodewords($cw_num + 2) - $cw_num);
-							if ($cwr < 3) {
-								// return to ascii without unlatch
-								$enc = ENC_ASCII;
+					}
+					// 1. If the EDIFACT encoding is at the point of starting a new triple symbol character and if the look-ahead test (starting at step J) indicates another mode, switch to that mode.
+					if ($field_lenght == 0) {
+						// get remaining number of data symbols
+						$cwr = ($this->getMaxDataCodewords($cw_num + 2) - $cw_num);
+						if ($cwr < 3) {
+							// return to ascii without unlatch
+							$enc = ENC_ASCII;
+							break; // exit from EDIFACT mode
+						} else {
+							$newenc = $this->lookAheadTest($data, $pos, $enc);
+							if ($newenc != $enc) {
+								// 1. If the look-ahead test (starting at step J) indicates another mode, switch to that mode.
+								$enc = $newenc;
+								$cw[] = $this->getSwitchEncodingCodeword($enc);
+								++$cw_num;
 								break; // exit from EDIFACT mode
-							} else {
-								$newenc = $this->lookAheadTest($data, $pos, $enc);
-								if ($newenc != $enc) {
-									// 1. If the look-ahead test (starting at step J) indicates another mode, switch to that mode.
-									$enc = $newenc;
-									$cw[] = $this->getSwitchEncodingCodeword($enc);
-									++$cw_num;
-									break; // exit from EDIFACT mode
-								}
 							}
 						}
 					}
@@ -1076,7 +1076,6 @@ class Datamatrix {
 		return $marr;
 	}
 
-
 	/**
 	 * Build a placement map.
 	 * (Annex F - ECC 200 symbol character placement)
@@ -1085,7 +1084,7 @@ class Datamatrix {
 	 * @return array
 	 * @protected
 	 */
-	protected function getPlacemetMap($nrow, $ncol) {
+	protected function getPlacementMap($nrow, $ncol) {
 		// initialize array with zeros
 		$marr = array_fill(0, ($nrow * $ncol), 0);
 		// set starting values
