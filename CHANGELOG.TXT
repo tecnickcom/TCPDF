@@ -1,4 +1,7 @@
-5.9.187 (2012-09-15)
+5.9.189 (2012-09-18)
+	- Bug item #3568969 "ini_get safe_mode error" was fixed.
+
+5.9.188 (2012-09-15)
 	- A datamatrix barcode bug was fixed.
 
 5.9.187 (2012-09-14)

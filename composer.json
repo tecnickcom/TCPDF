@@ -1,6 +1,6 @@
 {
 	"name": "tcpdf/tcpdf",
-	"version": "5.9.188",
+	"version": "5.9.189",
 	"homepage": "http://www.tcpdf.org/",
 	"type": "library",
 	"description": "TCPDF is a PHP class for generating PDF files on-the-fly without requiring external extensions.",
