@@ -1,3 +1,7 @@
+5.9.190 (2012-09-23)
+	- "page" word translation is now set to empty if not defined.
+	- Tooltip feature was added on the radiobutton annotation.
+
 5.9.189 (2012-09-18)
 	- Bug item #3568969 "ini_get safe_mode error" was fixed.
 
