@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.189
+// Version     : 5.9.192
 // Begin       : 2002-08-03
-// Last Update : 2012-09-18
+// Last Update : 2012-09-24
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
 // -------------------------------------------------------------------
@@ -139,7 +139,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.189
+ * @version 5.9.192
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -151,7 +151,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.189
+ * @version 5.9.192
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -162,7 +162,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.189';
+	private $tcpdf_version = '5.9.192';
 
 	// Protected properties
 
@@ -4382,10 +4382,11 @@ class TCPDF {
 			);
 			$this->write1DBarcode($barcode, 'C128', '', $cur_y + $line_width, '', (($this->footer_margin / 3) - $line_width), 0.3, $style, '');
 		}
+		$w_page = isset($this->l['w_page']) ? $this->l['w_page'].' ' : '';
 		if (empty($this->pagegroups)) {
-			$pagenumtxt = $this->l['w_page'].' '.$this->getAliasNumPage().' / '.$this->getAliasNbPages();
+			$pagenumtxt = $w_page.$this->getAliasNumPage().' / '.$this->getAliasNbPages();
 		} else {
-			$pagenumtxt = $this->l['w_page'].' '.$this->getPageNumGroupAlias().' / '.$this->getPageGroupAlias();
+			$pagenumtxt = $w_page.$this->getPageNumGroupAlias().' / '.$this->getPageGroupAlias();
 		}
 		$this->SetY($cur_y);
 		//Print page number
@@ -9548,6 +9549,9 @@ class TCPDF {
 							$annots .= ' /Ff 49152';
 						}
 						$annots .= ' /T '.$this->_datastring($pl['txt'], $radio_button_obj_id);
+						if (isset($pl['opt']['tu']) AND is_string($pl['opt']['tu'])) {
+							$annots .= ' /TU '.$this->_datastring($pl['opt']['tu'], $radio_button_obj_id);
+						}
 						$annots .= ' /FT /Btn';
 						$annots .= ' /Kids [';
 						$defval = '';
@@ -29489,7 +29493,15 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 							$img = str_replace(K_PATH_URL, K_PATH_MAIN, $img);
 						}
 					}
-					$this->Image($img, $x, $y, $w, $h);
+					// get image type
+					$imgtype = $this->getImageFileType($img);
+					if (($imgtype == 'eps') OR ($imgtype == 'ai')) {
+						$this->ImageEps($img, $x, $y, $w, $h);
+					} elseif ($imgtype == 'svg') {
+						$this->ImageSVG($img, $x, $y, $w, $h);
+					} else {
+						$this->Image($img, $x, $y, $w, $h);
+					}
 					$this->StopTransform();
 				}
 				break;

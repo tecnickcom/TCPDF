@@ -1,3 +1,6 @@
+5.9.192 (2012-09-24)
+	- A problem on the releasing process was fixed.
+
 5.9.191 (2012-09-24)
 	- SVG image naow support svg and eps images.
 
