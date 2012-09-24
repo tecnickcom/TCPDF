@@ -1,3 +1,6 @@
+5.9.191 (2012-09-24)
+	- SVG image naow support svg and eps images.
+
 5.9.190 (2012-09-23)
 	- "page" word translation is now set to empty if not defined.
 	- Tooltip feature was added on the radiobutton annotation.
