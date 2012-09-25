@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.192
+// Version     : 5.9.193
 // Begin       : 2002-08-03
-// Last Update : 2012-09-24
+// Last Update : 2012-09-25
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
 // -------------------------------------------------------------------
@@ -139,7 +139,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.192
+ * @version 5.9.193
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -151,7 +151,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.192
+ * @version 5.9.193
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -162,7 +162,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.192';
+	private $tcpdf_version = '5.9.193';
 
 	// Protected properties
 
@@ -9797,8 +9797,13 @@ class TCPDF {
 						}
 						case 'link': {
 							if (is_string($pl['txt'])) {
-								// external URI link
-								$annots .= ' /A <</S /URI /URI '.$this->_datastring($this->unhtmlentities($pl['txt']), $annot_obj_id).'>>';
+								if ($pl['txt'][0] == '#') {
+									// internal destination
+									$annots .= ' /Dest /'.$this->encodeNameObject(substr($pl['txt'], 1));
+								} else {
+									// external URI link
+									$annots .= ' /A <</S /URI /URI '.$this->_datastring($this->unhtmlentities($pl['txt']), $annot_obj_id).'>>';
+								}
 							} else {
 								// internal link
 								if (isset($this->links[$pl['txt']])) {
@@ -13960,7 +13965,7 @@ class TCPDF {
 	 * @public
 	 */
 	public function addHtmlLink($url, $name, $fill=false, $firstline=false, $color='', $style=-1, $firstblock=false) {
-		if (!$this->empty_string($url) AND ($url{0} == '#')) {
+		if (!$this->empty_string($url) AND ($url[0] == '#') AND is_numeric($url[1])) {
 			// convert url to internal link
 			$lnkdata = explode(',', $url);
 			if (isset($lnkdata[0])) {
@@ -16766,7 +16771,7 @@ class TCPDF {
 	}
 
 	/**
-	 * Create a javascript PDF string.
+	 * Insert Named Destinations.
 	 * @protected
 	 * @author Johannes Güntert, Nicola Asuni
 	 * @since 5.9.098 (2011-06-23)
