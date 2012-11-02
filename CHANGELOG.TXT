@@ -1,3 +1,7 @@
+5.9.196 (2012-11-02)
+	- Several methods were improved to avoid output when the context is out of page.
+	- Bug item #755 "remove cached files before unsetting" was fixed.
+
 5.9.195 (2012-10-24)
 	- Method _putfonts() was improved.
 
