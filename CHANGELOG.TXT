@@ -1,3 +1,6 @@
+5.9.197 (2012-11-06)
+	- Bug item #756 "TCPDF 5.9.196 shows line on top of all PDFs" was fixed.
+
 5.9.196 (2012-11-02)
 	- Several methods were improved to avoid output when the context is out of page.
 	- Bug item #755 "remove cached files before unsetting" was fixed.
