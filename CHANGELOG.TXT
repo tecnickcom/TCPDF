@@ -1,3 +1,6 @@
+5.9.1998 (2012-11-29)
+	- Internal setImageBuffer() method was improved.
+
 5.9.198 (2012-11-19)
 	- Datamatrix EDIFACT mode was fixed.
 
