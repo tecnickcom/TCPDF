@@ -1,3 +1,6 @@
+5.9.201 (2012-12-10)
+	- First 256 chars are now always included on font subset to overcome a problem reported on the forum.
+
 5.9.200 (2012-12-05)
 	- Bug item #768 "Rowspan with Pagebreak error" was fixed.
 	- Page regions now works also with limited MultiCell() cells.
