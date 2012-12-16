@@ -1,3 +1,6 @@
+5.9.202 (2012-12-16)
+	- Vertical space problem after table was fixed.
+
 5.9.201 (2012-12-10)
 	- First 256 chars are now always included on font subset to overcome a problem reported on the forum.
 
