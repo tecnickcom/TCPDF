@@ -1,3 +1,8 @@
+5.9.204 (2013-01-23)
+	- The method Bookmark() was extended to include named destinations, URLs, internal links or embedded files (see example n. 15).
+	- automatic path calculation on configuration file was fixed.
+	- Error() method was extended to throw new Exception if PHP > 5.
+
 5.9.203 (2013-01-22)
 	- Horizontal position of radiobuttons and checkboxes was adjusted.
 
