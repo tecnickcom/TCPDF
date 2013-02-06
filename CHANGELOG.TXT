@@ -1,3 +1,7 @@
+5.9.205 (2013-02-06)
+	- The constant K_TCPDF_THROW_EXCEPTION_ERROR was added on configuration file to change the behavior of Error() method.
+	- PDF417 barcode bug was fixed.
+
 5.9.204 (2013-01-23)
 	- The method Bookmark() was extended to include named destinations, URLs, internal links or embedded files (see example n. 15).
 	- automatic path calculation on configuration file was fixed.
