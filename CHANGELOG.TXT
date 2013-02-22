@@ -1,3 +1,7 @@
+5.9.206 (2013-02-22)
+	- Bug item #754 "PNG with alpha channel becomes gray scale" was fixed.
+	- Minor documentation fixes.
+
 5.9.205 (2013-02-06)
 	- The constant K_TCPDF_THROW_EXCEPTION_ERROR was added on configuration file to change the behavior of Error() method.
 	- PDF417 barcode bug was fixed.
