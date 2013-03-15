@@ -1,3 +1,7 @@
+5.9.208 (2013-03-15)
+	- objclone fuction was patched to support old imagick extensions.
+	- tcpdf_parser was improved to support Cross-Reference Streams and large streams.
+
 5.9.207 (2013-03-04)
 	- Datamatrix class was fixed (a debug echo was removed).
 

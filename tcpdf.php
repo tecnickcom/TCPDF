@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 5.9.207
+// Version     : 5.9.208
 // Begin       : 2002-08-03
-// Last Update : 2013-03-04
+// Last Update : 2013-03-14
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
 // -------------------------------------------------------------------
@@ -139,7 +139,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 5.9.207
+ * @version 5.9.208
  */
 
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
@@ -151,7 +151,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 5.9.207
+ * @version 5.9.208
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -162,7 +162,7 @@ class TCPDF {
 	 * Current TCPDF version.
 	 * @private
 	 */
-	private $tcpdf_version = '5.9.207';
+	private $tcpdf_version = '5.9.208';
 
 	// Protected properties
 
@@ -27048,6 +27048,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @since 4.5.029 (2009-03-19)
 	 */
 	public function objclone($object) {
+		if (($object instanceof Imagick) AND (version_compare('3.1.0', phpversion('imagick')) === 1)) {
+			// imagick extension is older than 3.1.0 version
+			return $object->clone();
+		}
 		return @clone($object);
 	}
 
