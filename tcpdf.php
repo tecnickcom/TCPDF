@@ -27048,9 +27048,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @since 4.5.029 (2009-03-19)
 	 */
 	public function objclone($object) {
-		if (($object instanceof Imagick) AND (version_compare('3.1.0', phpversion('imagick')) === 1)) {
-			// imagick extension is older than 3.1.0 version
-			return $object->clone();
+		if (($object instanceof Imagick) AND (version_compare(phpversion('imagick'), '3.0.1') !== 1)) {
+			// on the versions after 3.0.1 the clone() method was deprecated in favour of clone keyword 
+			return @$object->clone();
 		}
 		return @clone($object);
 	}
