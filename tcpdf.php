@@ -7999,7 +7999,7 @@ class TCPDF {
 					$imgdata = curl_exec($cs);
 					curl_close($cs);
 				} else {
-					$imgdata = @file_get_contents($file);              
+					$imgdata = @file_get_contents($file);
 				}
 			}
 		}
@@ -25940,13 +25940,13 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 
 	/**
 	 * Returns a temporary filename for caching object on filesystem.
-	 * @param $name (string) prefix to add to filename
+	 * @param $name (string) Prefix to add to the file name.
 	 * @return string filename.
 	 * @since 4.5.000 (2008-12-31)
 	 * @protected
 	 */
 	protected function getObjFilename($name) {
-		return tempnam(K_PATH_CACHE, $name.'_'.$this->file_id.'_');
+		return tempnam(K_PATH_CACHE, $name.'_');
 	}
 
 	/**
@@ -27035,7 +27035,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 */
 	public function objclone($object) {
 		if (($object instanceof Imagick) AND (version_compare(phpversion('imagick'), '3.0.1') !== 1)) {
-			// on the versions after 3.0.1 the clone() method was deprecated in favour of clone keyword 
+			// on the versions after 3.0.1 the clone() method was deprecated in favour of clone keyword
 			return @$object->clone();
 		}
 		return @clone($object);
