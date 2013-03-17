@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_006.php
 // Begin       : 2008-03-04
-// Last Update : 2010-11-20
+// Last Update : 2013-03-16
 //
 // Description : Example 006 for TCPDF class
 //               WriteHTML and RTL support
@@ -233,12 +233,10 @@ $pdf->lastPage();
 // add a page
 $pdf->AddPage();
 
-require('../htmlcolors.php');
-
 $textcolors = '<h1>HTML Text Colors</h1>';
 $bgcolors = '<hr /><h1>HTML Background Colors</h1>';
 
-foreach($webcolor as $k => $v) {
+foreach(TCPDF_COLORS::$webcolor as $k => $v) {
 	$textcolors .= '<span color="#'.$v.'">'.$v.'</span> ';
 	$bgcolors .= '<span bgcolor="#'.$v.'" color="#333333">'.$v.'</span> ';
 }

@@ -1,3 +1,12 @@
+6.0.000 (2013-03-17)
+	- IMPORTANT: PHP4 support has been removed starting from this version. PHP 5.3 or greater version is required.
+	- Several TCPDF methods and vars were moved to new class files: tcpdf_static.php, tcpdf_colors.php, tcpdf_images.php, tcpdf_font_data.php, tcpdf_fonts.php.
+	- Files htmlcolors.php, spotcolors.php, unicode_data.php and ecodings_maps.php were removed.
+	- Barcode classes were renamed and new barcode examples were added.
+	- Class TCPDF_PARSER was improved.
+
+********************************************************************************
+
 5.9.209 (2013-03-15)
 	- Image method was improved.
 

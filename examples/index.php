@@ -17,6 +17,8 @@ echo '<'.'?'.'xml version="1.0" encoding="UTF-8"'.'?'.'>';
 
 <h1>TCPDF Examples</h1>
 
+<h2>PDF</h2>
+
 <ol>
 <li>Simple PDF with default Header and Footer: [<a href="example_001.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Simple PDF without Header and Footer: [<a href="example_002.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
@@ -83,6 +85,30 @@ echo '<'.'?'.'xml version="1.0" encoding="UTF-8"'.'?'.'>';
 <li>Text stretching and spacing (tracking/kerning): [<a href="example_063.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>No-write page regions: [<a href="example_064.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>PDF/A-1b (ISO 19005-1:2005) document: [<a href="example_065.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
+</ol>
+
+<h2>Barcodes</h2>
+
+<ol>
+<li>1D barcode HTML format [<a href="barcodes/example_1d_html.php" title="1D barcode [HTML] [new window]" target="_blank">HTML</a>]</li>
+<li>1D barcode PNG format [<a href="barcodes/example_1d_png.php" title="1D barcode [PNG] [new window]" target="_blank">PNG</a>]</li>
+<li>1D barcode SVG format [<a href="barcodes/example_1d_svg.php" title="1D barcode [SVG] [new window]" target="_blank">SVG</a>]</li>
+<li>1D barcode SVG INLINE format [<a href="barcodes/example_1d_svgi.php" title="1D barcode [SVGI] [new window]" target="_blank">SVG INLINE</a>]</li>
+
+<li>2D datamatrix barcode HTML format [<a href="barcodes/example_2d_datamatrix_html.php" title="2D datamatrix barcode [HTML] [new window]" target="_blank">HTML</a>]</li>
+<li>2D datamatrix barcode PNG format [<a href="barcodes/example_2d_datamatrix_png.php" title="2D datamatrix barcode [PNG] [new window]" target="_blank">PNG</a>]</li>
+<li>2D datamatrix barcode SVG format [<a href="barcodes/example_2d_datamatrix_svg.php" title="2D datamatrix barcode [SVG] [new window]" target="_blank">SVG</a>]</li>
+<li>2D datamatrix barcode SVG INLINE format [<a href="barcodes/example_2d_datamatrix_svgi.php" title="2D datamatrix barcode [SVGI] [new window]" target="_blank">SVG INLINE</a>]</li>
+
+<li>2D pdf417 barcode HTML format [<a href="barcodes/example_2d_pdf417_html.php" title="2D pdf417 barcode [HTML] [new window]" target="_blank">HTML</a>]</li>
+<li>2D pdf417 barcode PNG format [<a href="barcodes/example_2d_pdf417_png.php" title="2D pdf417 barcode [PNG] [new window]" target="_blank">PNG</a>]</li>
+<li>2D pdf417 barcode SVG format [<a href="barcodes/example_2d_pdf417_svg.php" title="2D pdf417 barcode [SVG] [new window]" target="_blank">SVG</a>]</li>
+<li>2D pdf417 barcode SVG INLINE format [<a href="barcodes/example_2d_pdf417_svgi.php" title="2D pdf417 barcode [SVGI] [new window]" target="_blank">SVG INLINE</a>]</li>
+
+<li>2D qrcode barcode HTML format [<a href="barcodes/example_2d_qrcode_html.php" title="2D qrcode barcode [HTML] [new window]" target="_blank">HTML</a>]</li>
+<li>2D qrcode barcode PNG format [<a href="barcodes/example_2d_qrcode_png.php" title="2D qrcode barcode [PNG] [new window]" target="_blank">PNG</a>]</li>
+<li>2D qrcode barcode SVG format [<a href="barcodes/example_2d_qrcode_svg.php" title="2D qrcode barcode [SVG] [new window]" target="_blank">SVG</a>]</li>
+<li>2D qrcode barcode SVG INLINE format [<a href="barcodes/example_2d_qrcode_svgi.php" title="2D qrcode barcode [SVGI] [new window]" target="_blank">SVG INLINE</a>]</li>
 </ol>
 
 </body>
