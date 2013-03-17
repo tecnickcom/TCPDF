@@ -838,6 +838,7 @@ class TCPDF_STATIC {
 	 * @param $urx (float) upper-right x coordinate in user units.
 	 * @param $ury (float) upper-right y coordinate in user units.
 	 * @param $points (boolean) If true uses user units as unit of measure, otherwise uses PDF points.
+	 * @param $k (float) Scale factor (number of points in user unit).
 	 * @param $pagedim (array) Array of page dimensions.
 	 * @return pagedim array of page dimensions.
 	 * @since 5.0.010 (2010-05-17)
@@ -1417,8 +1418,10 @@ class TCPDF_STATIC {
 	/**
 	 * Returns the input text encrypted using RC4 algorithm and the specified key.
 	 * RC4 is the standard encryption algorithm used in PDF format
-	 * @param $key (string) encryption key
-	 * @param $text (String) input text to be encrypted
+	 * @param $key (string) Encryption key.
+	 * @param $text (String) Input text to be encrypted.
+	 * @param $last_enc_key (String) Reference to last RC4 key encrypted.
+	 * @param $last_enc_key_c (String) Reference to last RC4 computed key.
 	 * @return String encrypted text
 	 * @since 2.0.000 (2008-01-02)
 	 * @author Klemen Vodopivec, Nicola Asuni

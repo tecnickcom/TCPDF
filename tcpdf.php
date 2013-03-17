@@ -4150,7 +4150,6 @@ class TCPDF {
 	/**
 	 * Returns the unicode caracter specified by the value
 	 * @param $c (int) UTF-8 value
-	 * @param $unicode (boolean) True if we are in unicode mode, false otherwise.
 	 * @return Returns the specified character.
 	 * @since 2.3.000 (2008-03-05)
 	 * @public
