@@ -3,7 +3,7 @@
 // File name   : tcpdf_fonts.php
 // Version     : 1.0.000
 // Begin       : 2008-01-01
-// Last Update : 2013-03-16
+// Last Update : 2013-03-18
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -499,7 +499,7 @@ class TCPDF_FONTS {
 			// ---------- get post data ----------
 			$offset = $table['post']['offset'];
 			$offset += 4; // skip Format Type
-			$fmetric['italicAngle'] = self::_getFIXED($font, $offset);
+			$fmetric['italicAngle'] = TCPDF_STATIC::_getFIXED($font, $offset);
 			$offset += 4;
 			$fmetric['underlinePosition'] = round(TCPDF_STATIC::_getFWORD($font, $offset) * $urk);
 			$offset += 2;
