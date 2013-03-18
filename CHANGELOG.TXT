@@ -1,3 +1,6 @@
+6.0.001 (2013-03-18)
+	- Fixed $uni_type call on tcpdf.php.
+
 6.0.000 (2013-03-17)
 	- IMPORTANT: PHP4 support has been removed starting from this version. PHP 5.3 or greater version is required.
 	- Several TCPDF methods and vars were moved to new class files: tcpdf_static.php, tcpdf_colors.php, tcpdf_images.php, tcpdf_font_data.php, tcpdf_fonts.php.
