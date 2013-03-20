@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf_fonts.php
-// Version     : 1.0.000
+// Version     : 1.0.001
 // Begin       : 2008-01-01
-// Last Update : 2013-03-18
+// Last Update : 2013-03-20
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -42,7 +42,7 @@
  * @class TCPDF_FONTS
  * Font methods for TCPDF library.
  * @package com.tecnick.tcpdf
- * @version 1.0.000
+ * @version 1.0.001
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF_FONTS {
@@ -1758,8 +1758,10 @@ class TCPDF_FONTS {
 	 */
 	public static function uniord($uch) {
 		if (function_exists('mb_convert_encoding')) {
-			list(, $char) = unpack('N', mb_convert_encoding($uch, 'UCS-4BE', 'UTF-8'));
-			return $char;
+			list(, $char) = @unpack('N', mb_convert_encoding($uch, 'UCS-4BE', 'UTF-8'));
+			if ($char >= 0) {
+				return $char;
+			}
 		}
 		$bytes = array(); // array containing single character byte sequences
 		$countbytes = 0;
@@ -1817,29 +1819,36 @@ class TCPDF_FONTS {
 	 * Converts UTF-8 strings to codepoints array.<br>
 	 * Invalid byte sequences will be replaced with 0xFFFD (replacement character)<br>
 	 * @param $str (string) string to process.
+	 * @param $isunicode (boolean) True when the documetn is in Unicode mode, false otherwise.
 	 * @param $currentfont (array) Reference to current font array.
 	 * @return array containing codepoints (UTF-8 characters values)
 	 * @author Nicola Asuni
 	 * @public static
 	 */
-	public static function UTF8StringToArray($str, &$currentfont) {
-		// requires PCRE unicode support turned on
-		$uchars = preg_split("//u", $str, -1, PREG_SPLIT_NO_EMPTY);
-		$uarr = array_map(array('self', 'uniord'), $uchars);
-		$currentfont['subsetchars'] += array_fill_keys($uarr, true);
-		return $uarr;
+	public static function UTF8StringToArray($str, $isunicode=true, &$currentfont) {
+		if ($isunicode) {
+			// requires PCRE unicode support turned on
+			$chars = preg_split("//u", $str, -1, PREG_SPLIT_NO_EMPTY);
+			$carr = array_map(array('self', 'uniord'), $chars);
+		} else {
+			$chars = str_split($str);
+			$carr = array_map('ord', $chars);
+		}
+		$currentfont['subsetchars'] += array_fill_keys($carr, true);
+		return $carr;
 	}
 
 	/**
 	 * Converts UTF-8 strings to Latin1 when using the standard 14 core fonts.<br>
 	 * @param $str (string) string to process.
+	 * @param $isunicode (boolean) True when the documetn is in Unicode mode, false otherwise.
 	 * @param $currentfont (array) Reference to current font array.
 	 * @return string
 	 * @since 3.2.000 (2008-06-23)
 	 * @public static
 	 */
-	public static function UTF8ToLatin1($str, &$currentfont) {
-		$unicode = self::UTF8StringToArray($str, $currentfont); // array containing UTF-8 unicode values
+	public static function UTF8ToLatin1($str, $isunicode=true, &$currentfont) {
+		$unicode = self::UTF8StringToArray($str, $isunicode, $currentfont); // array containing UTF-8 unicode values
 		return self::UTF8ArrToLatin1($unicode);
 	}
 
@@ -1858,7 +1867,7 @@ class TCPDF_FONTS {
 		if (!$isunicode) {
 			return $str; // string is not in unicode
 		}
-		$unicode = self::UTF8StringToArray($str, $currentfont); // array containing UTF-8 unicode values
+		$unicode = self::UTF8StringToArray($str, $isunicode, $currentfont); // array containing UTF-8 unicode values
 		return self::arrUTF8ToUTF16BE($unicode, $setbom);
 	}
 
@@ -1875,7 +1884,7 @@ class TCPDF_FONTS {
 	 * @public static
 	 */
 	public static function utf8StrRev($str, $setbom=false, $forcertl=false, $isunicode=true, &$currentfont) {
-		return self::utf8StrArrRev(self::UTF8StringToArray($str, $currentfont), $str, $setbom, $forcertl, $isunicode, $currentfont);
+		return self::utf8StrArrRev(self::UTF8StringToArray($str, $isunicode, $currentfont), $str, $setbom, $forcertl, $isunicode, $currentfont);
 	}
 
 	/**

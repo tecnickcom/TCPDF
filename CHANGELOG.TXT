@@ -1,3 +1,6 @@
+6.0.003 (2013-03-20)
+	- A bug related to non-unicode mode was fixed.
+
 6.0.002 (2013-03-18)
 	- _getFIXED call on tcpdf_fonts.php was fixed.
 
