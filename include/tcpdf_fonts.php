@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf_fonts.php
-// Version     : 1.0.001
+// Version     : 1.0.002
 // Begin       : 2008-01-01
-// Last Update : 2013-03-20
+// Last Update : 2013-03-21
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -42,7 +42,7 @@
  * @class TCPDF_FONTS
  * Font methods for TCPDF library.
  * @package com.tecnick.tcpdf
- * @version 1.0.001
+ * @version 1.0.002
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF_FONTS {
@@ -355,7 +355,7 @@ class TCPDF_FONTS {
 			$offset = 0; // offset position of the font data
 			if (TCPDF_STATIC::_getULONG($font, $offset) != 0x10000) {
 				// sfnt version must be 0x00010000 for TrueType version 1.0.
-				return $font;
+				return false;
 			}
 			$offset += 4;
 			// get number of tables
@@ -382,7 +382,7 @@ class TCPDF_FONTS {
 			$offset = $table['head']['offset'] + 12;
 			if (TCPDF_STATIC::_getULONG($font, $offset) != 0x5F0F3CF5) {
 				// magicNumber must be 0x5F0F3CF5
-				return $font;
+				return false;
 			}
 			$offset += 4;
 			$offset += 2; // skip flags

@@ -1,3 +1,6 @@
+6.0.004 (2013-03-21)
+	- Return value of addTTFfont() method was fixed.
+
 6.0.003 (2013-03-20)
 	- A bug related to non-unicode mode was fixed.
 
