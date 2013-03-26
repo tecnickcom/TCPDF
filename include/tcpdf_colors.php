@@ -3,7 +3,7 @@
 // File name   : tcpdf_colors.php
 // Version     : 1.0.000
 // Begin       : 2002-04-09
-// Last Update : 2013-03-16
+// Last Update : 2013-03-25
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -260,7 +260,7 @@ class TCPDF_COLORS {
 	 * @return array RGB or CMYK color, or false in case of error.
 	 * @public static
 	 */
-	public static function convertHTMLColorToDec($hcolor='#FFFFFF', &$spotc, $defcol=array('R'=>128,'G'=>128,'B'=>128)) {
+	public static function convertHTMLColorToDec($hcolor, &$spotc, $defcol=array('R'=>128,'G'=>128,'B'=>128)) {
 		$color = preg_replace('/[\s]*/', '', $hcolor); // remove extra spaces
 		$color = strtolower($color);
 		// check for javascript color array syntax

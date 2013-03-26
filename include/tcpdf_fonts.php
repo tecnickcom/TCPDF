@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf_fonts.php
-// Version     : 1.0.002
+// Version     : 1.0.003
 // Begin       : 2008-01-01
-// Last Update : 2013-03-21
+// Last Update : 2013-03-26
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -1667,8 +1667,11 @@ class TCPDF_FONTS {
 	 * @public static
 	 */
 	public static function _getfontpath() {
-		if (!defined('K_PATH_FONTS') AND is_dir(dirname(__FILE__).'/fonts')) {
-			define('K_PATH_FONTS', dirname(__FILE__).'/fonts/');
+		if (!defined('K_PATH_FONTS') AND is_dir($fdir = realpath(dirname(__FILE__).'/../fonts'))) {
+			if (substr($fdir, -1) != '/') {
+				$fdir .= '/';
+			}
+			define('K_PATH_FONTS', $fdir);
 		}
 		return defined('K_PATH_FONTS') ? K_PATH_FONTS : '';
 	}
