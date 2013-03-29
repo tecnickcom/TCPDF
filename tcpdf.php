@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.006
+// Version     : 6.0.007
 // Begin       : 2002-08-03
-// Last Update : 2013-03-26
+// Last Update : 2013-03-29
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
 // -------------------------------------------------------------------
@@ -139,7 +139,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.006
+ * @version 6.0.007
  */
 
 if (!defined('K_TCPDF_EXTERNAL_CONFIG')) {
@@ -168,7 +168,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.006
+ * @version 6.0.007
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -16007,11 +16007,11 @@ class TCPDF {
 				break;
 			}
 			case 'wider': {
-				$val = $parent + 10;
+				$val = ($parent + 10);
 				break;
 			}
 			case 'narrower': {
-				$val = $parent - 10;
+				$val = ($parent - 10);
 				break;
 			}
 			case 'inherit': {
@@ -16027,6 +16027,62 @@ class TCPDF {
 			}
 		}
 		return $val;
+	}
+
+	/**
+	 * Convert HTML string containing font size value to points
+	 * @param $val (string) String containing font size value and unit.
+	 * @param $refsize (float) Reference font size in points.
+	 * @param $parent_size (float) Parent font size in points.
+	 * @param $defaultunit (string) Default unit (can be one of the following: %, em, ex, px, in, mm, pc, pt).
+	 * @return float value in points
+	 * @public
+	 */
+	public function getHTMLFontUnits($val, $refsize=12, $parent_size=12, $defaultunit='pt') {
+		$refsize = TCPDF_FONTS::getFontRefSize($refsize);
+		$parent_size = TCPDF_FONTS::getFontRefSize($parent_size, $refsize);
+		switch ($val) {
+			case 'xx-small': {
+				$size = ($refsize - 4);
+				break;
+			}
+			case 'x-small': {
+				$size = ($refsize - 3);
+				break;
+			}
+			case 'small': {
+				$size = ($refsize - 2);
+				break;
+			}
+			case 'medium': {
+				$size = $refsize;
+				break;
+			}
+			case 'large': {
+				$size = ($refsize + 2);
+				break;
+			}
+			case 'x-large': {
+				$size = ($refsize + 4);
+				break;
+			}
+			case 'xx-large': {
+				$size = ($refsize + 6);
+				break;
+			}
+			case 'smaller': {
+				$size = ($parent_size - 3);
+				break;
+			}
+			case 'larger': {
+				$size = ($parent_size + 3);
+				break;
+			}
+			default: {
+				$size = $this->getHTMLUnitToUnits($val, $parent_size, $defaultunit, true);
+			}
+		}
+		return $size;
 	}
 
 	/**
@@ -16379,49 +16435,7 @@ class TCPDF {
 						// font size
 						if (isset($dom[$key]['style']['font-size'])) {
 							$fsize = trim($dom[$key]['style']['font-size']);
-							switch ($fsize) {
-								// absolute-size
-								case 'xx-small': {
-									$dom[$key]['fontsize'] = $dom[0]['fontsize'] - 4;
-									break;
-								}
-								case 'x-small': {
-									$dom[$key]['fontsize'] = $dom[0]['fontsize'] - 3;
-									break;
-								}
-								case 'small': {
-									$dom[$key]['fontsize'] = $dom[0]['fontsize'] - 2;
-									break;
-								}
-								case 'medium': {
-									$dom[$key]['fontsize'] = $dom[0]['fontsize'];
-									break;
-								}
-								case 'large': {
-									$dom[$key]['fontsize'] = $dom[0]['fontsize'] + 2;
-									break;
-								}
-								case 'x-large': {
-									$dom[$key]['fontsize'] = $dom[0]['fontsize'] + 4;
-									break;
-								}
-								case 'xx-large': {
-									$dom[$key]['fontsize'] = $dom[0]['fontsize'] + 6;
-									break;
-								}
-								// relative-size
-								case 'smaller': {
-									$dom[$key]['fontsize'] = $dom[$parentkey]['fontsize'] - 3;
-									break;
-								}
-								case 'larger': {
-									$dom[$key]['fontsize'] = $dom[$parentkey]['fontsize'] + 3;
-									break;
-								}
-								default: {
-									$dom[$key]['fontsize'] = $this->getHTMLUnitToUnits($fsize, $dom[$parentkey]['fontsize'], 'pt', true);
-								}
-							}
+							$dom[$key]['fontsize'] = $this->getHTMLFontUnits($fsize, $dom[0]['fontsize'], $dom[$parentkey]['fontsize'], 'pt');
 						}
 						// font-stretch
 						if (isset($dom[$key]['style']['font-stretch'])) {
@@ -19977,10 +19991,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 
 	/**
 	 * Convert HTML string containing value and unit of measure to user's units or points.
-	 * @param $htmlval (string) string containing values and unit
-	 * @param $refsize (string) reference value in points
-	 * @param $defaultunit (string) default unit (can be one of the following: %, em, ex, px, in, mm, pc, pt).
-	 * @param $points (boolean) if true returns points, otherwise returns value in user's units
+	 * @param $htmlval (string) String containing values and unit.
+	 * @param $refsize (string) Reference value in points.
+	 * @param $defaultunit (string) Default unit (can be one of the following: %, em, ex, px, in, mm, pc, pt).
+	 * @param $points (boolean) If true returns points, otherwise returns value in user's units.
 	 * @return float value in user's unit or point if $points=true
 	 * @public
 	 * @since 4.4.004 (2008-12-10)
@@ -19990,9 +20004,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$retval = 0;
 		$value = 0;
 		$unit = 'px';
-		$k = $this->k;
 		if ($points) {
 			$k = 1;
+		} else {
+			$k = $this->k;
 		}
 		if (in_array($defaultunit, $supportedunits)) {
 			$unit = $defaultunit;
@@ -20020,37 +20035,40 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			}
 			// height of lower case 'x' (about half the font-size)
 			case 'ex': {
-				$retval = $value * ($refsize / 2);
+				$retval = ($value * ($refsize / 2));
 				break;
 			}
 			// absolute-size
 			case 'in': {
-				$retval = ($value * $this->dpi) / $k;
+				$retval = (($value * $this->dpi) / $k);
 				break;
 			}
 			// centimeters
 			case 'cm': {
-				$retval = ($value / 2.54 * $this->dpi) / $k;
+				$retval = (($value / 2.54 * $this->dpi) / $k);
 				break;
 			}
 			// millimeters
 			case 'mm': {
-				$retval = ($value / 25.4 * $this->dpi) / $k;
+				$retval = (($value / 25.4 * $this->dpi) / $k);
 				break;
 			}
 			// one pica is 12 points
 			case 'pc': {
-				$retval = ($value * 12) / $k;
+				$retval = (($value * 12) / $k);
 				break;
 			}
 			// points
 			case 'pt': {
-				$retval = $value / $k;
+				$retval = ($value / $k);
 				break;
 			}
 			// pixels
 			case 'px': {
 				$retval = $this->pixelsToUnits($value);
+				if ($points) {
+					$retval *= $this->k;
+				}
 				break;
 			}
 		}
@@ -23006,7 +23024,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			$font_stretch = $svgstyle['font-stretch'];
 			$font_spacing = $svgstyle['letter-spacing'];
 		}
-		$font_size = $this->getHTMLUnitToUnits($font_size, $prevsvgstyle['font-size'], $this->svgunit, false) * $this->k;
+		$font_size = $this->getHTMLFontUnits($font_size, $this->svgstyles[0]['font-size'], $prevsvgstyle['font-size'], $this->svgunit);
 		$font_stretch = $this->getCSSFontStretching($font_stretch, $svgstyle['font-stretch']);
 		$font_spacing = $this->getCSSFontSpacing($font_spacing, $svgstyle['letter-spacing']);
 		switch ($font_style) {

@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf_fonts.php
-// Version     : 1.0.003
+// Version     : 1.0.004
 // Begin       : 2008-01-01
-// Last Update : 2013-03-26
+// Last Update : 2013-03-29
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -42,7 +42,7 @@
  * @class TCPDF_FONTS
  * Font methods for TCPDF library.
  * @package com.tecnick.tcpdf
- * @version 1.0.002
+ * @version 1.0.004
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF_FONTS {
@@ -2474,6 +2474,55 @@ class TCPDF_FONTS {
 			$currentfont['subsetchars'][$cd['char']] = true;
 		}
 		return $ordarray;
+	}
+
+	/**
+	 * Get a reference font size.
+	 * @param $size (string) String containing font size value.
+	 * @param $refsize (float) Reference font size in points.
+	 * @return float value in points
+	 * @public static
+	 */
+	public static function getFontRefSize($size, $refsize=12) {
+		switch ($size) {
+			case 'xx-small': {
+				$size = ($refsize - 4);
+				break;
+			}
+			case 'x-small': {
+				$size = ($refsize - 3);
+				break;
+			}
+			case 'small': {
+				$size = ($refsize - 2);
+				break;
+			}
+			case 'medium': {
+				$size = $refsize;
+				break;
+			}
+			case 'large': {
+				$size = ($refsize + 2);
+				break;
+			}
+			case 'x-large': {
+				$size = ($refsize + 4);
+				break;
+			}
+			case 'xx-large': {
+				$size = ($refsize + 6);
+				break;
+			}
+			case 'smaller': {
+				$size = ($refsize - 3);
+				break;
+			}
+			case 'larger': {
+				$size = ($refsize + 3);
+				break;
+			}
+		}
+		return $size;
 	}
 
 } // --- END OF CLASS ---

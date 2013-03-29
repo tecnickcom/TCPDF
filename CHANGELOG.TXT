@@ -1,3 +1,6 @@
+6.0.007 (2013-03-29)
+	- HTML/CSS font size conversion were improved.
+
 6.0.006 (2013-03-27)
 	- Bug related to SVG and EPS files on xobjects were fixed.
 
