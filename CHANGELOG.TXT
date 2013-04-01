@@ -1,3 +1,7 @@
+6.0.008 (2013-04-01)
+	- Duplicated encoding maps was removed from tcpdf_font_data.php.
+	- Fixing bug on AddTTFFont().
+
 6.0.007 (2013-03-29)
 	- HTML/CSS font size conversion were improved.
 
