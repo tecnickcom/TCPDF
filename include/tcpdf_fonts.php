@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf_fonts.php
-// Version     : 1.0.004
+// Version     : 1.0.005
 // Begin       : 2008-01-01
-// Last Update : 2013-03-29
+// Last Update : 2013-04-01
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -42,7 +42,7 @@
  * @class TCPDF_FONTS
  * Font methods for TCPDF library.
  * @package com.tecnick.tcpdf
- * @version 1.0.004
+ * @version 1.0.005
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF_FONTS {
@@ -141,10 +141,10 @@ class TCPDF_FONTS {
 		$fmetric['enc'] = preg_replace('/[^A-Za-z0-9_\-]/', '', $enc);
 		$fmetric['diff'] = '';
 		if (($fmetric['type'] == 'TrueType') OR ($fmetric['type'] == 'Type1')) {
-			if (!empty($enc) AND ($enc != 'cp1252') AND isset(TCPDF_FONT_DATA::$uni_utf8tolatin[$enc])) {
+			if (!empty($enc) AND ($enc != 'cp1252') AND isset(TCPDF_FONT_DATA::$encmap[$enc])) {
 				// build differences from reference encoding
-				$enc_ref = TCPDF_FONT_DATA::$uni_utf8tolatin['cp1252'];
-				$enc_target = TCPDF_FONT_DATA::$uni_utf8tolatin[$enc];
+				$enc_ref = TCPDF_FONT_DATA::$encmap['cp1252'];
+				$enc_target = TCPDF_FONT_DATA::$encmap[$enc];
 				$last = 0;
 				for ($i = 32; $i <= 255; ++$i) {
 					if ($enc_target != $enc_ref[$i]) {
@@ -266,8 +266,8 @@ class TCPDF_FONTS {
 			// get charstring data
 			$eplain = substr($eplain, (strpos($eplain, '/CharStrings') + 1));
 			preg_match_all('#/([A-Za-z0-9\.]*)[\s][0-9]+[\s]RD[\s](.*)[\s]ND#sU', $eplain, $matches, PREG_SET_ORDER);
-			if (!empty($enc) AND isset(TCPDF_FONT_DATA::$uni_utf8tolatin[$enc])) {
-				$enc_map = TCPDF_FONT_DATA::$uni_utf8tolatin[$enc];
+			if (!empty($enc) AND isset(TCPDF_FONT_DATA::$encmap[$enc])) {
+				$enc_map = TCPDF_FONT_DATA::$encmap[$enc];
 			} else {
 				$enc_map = false;
 			}

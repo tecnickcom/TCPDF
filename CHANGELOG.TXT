@@ -1,3 +1,6 @@
+6.0.009 (2013-04-02)
+	- Adding back some files that were not properly committed on the latest release.
+
 6.0.008 (2013-04-01)
 	- Duplicated encoding maps was removed from tcpdf_font_data.php.
 	- Fixing bug on AddTTFFont().
