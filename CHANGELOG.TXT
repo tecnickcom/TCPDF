@@ -1,3 +1,6 @@
+6.0.010 (2013-04-03)
+	- The method Rect() was fixed to print borders correctly.
+
 6.0.009 (2013-04-02)
 	- Adding back some files that were not properly committed on the latest release.
 

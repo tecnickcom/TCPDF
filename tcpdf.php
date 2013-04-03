@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.009
+// Version     : 6.0.010
 // Begin       : 2002-08-03
-// Last Update : 2013-04-01
+// Last Update : 2013-04-03
 // Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
 // -------------------------------------------------------------------
@@ -139,7 +139,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.009
+ * @version 6.0.010
  */
 
 if (!defined('K_TCPDF_EXTERNAL_CONFIG')) {
@@ -168,7 +168,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.009
+ * @version 6.0.010
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -11525,7 +11525,7 @@ class TCPDF {
 	 *	 <li>all: Line style of all borders. Array like for SetLineStyle().</li>
 	 *	 <li>L, T, R, B or combinations: Line style of left, top, right or bottom border. Array like for SetLineStyle().</li>
 	 * </ul>
-	 * If a key is not present or is null, not draws the border. Default value: default line style (empty array).
+	 * If a key is not present or is null, the correspondent border is not drawn. Default value: default line style (empty array).
 	 * @param $fill_color (array) Fill color. Format: array(GREY) or array(R,G,B) or array(C,M,Y,K) or array(C,M,Y,K,SpotColorName). Default value: default color (empty array).
 	 * @public
 	 * @since 1.0
@@ -11535,18 +11535,31 @@ class TCPDF {
 		if ($this->state != 2) {
 			return;
 		}
-		if (!(false === strpos($style, 'F')) AND !empty($fill_color)) {
+		if (empty($style)) {
+			$style = 'S';
+		}
+		if (!(strpos($style, 'F') === false) AND !empty($fill_color)) {
+			// set background color
 			$this->SetFillColorArray($fill_color);
 		}
-		$op = TCPDF_STATIC::getPathPaintOperator($style);
-		if ((!$border_style) OR (isset($border_style['all']))) {
-			if (isset($border_style['all']) AND $border_style['all']) {
+		if (!empty($border_style)) {
+			if (isset($border_style['all']) AND !empty($border_style['all'])) {
+				//set global style for border
 				$this->SetLineStyle($border_style['all']);
 				$border_style = array();
+			} else {
+				// remove stroke operator from style
+				$opnostroke = array('S' => '', 'D' => '', 's' => '', 'd' => '', 'B' => 'F', 'FD' => 'F', 'DF' => 'F', 'B*' => 'F*', 'F*D' => 'F*', 'DF*' => 'F*', 'b' => 'f', 'fd' => 'f', 'df' => 'f', 'b*' => 'f*', 'f*d' => 'f*', 'df*' => 'f*' );
+				if (isset($opnostroke[$style])) {
+					$style = $opnostroke[$style];
+				}
 			}
 		}
-		$this->_outRect($x, $y, $w, $h, $op);
-		if ($border_style) {
+		if (!empty($style)) {
+			$op = TCPDF_STATIC::getPathPaintOperator($style);
+			$this->_outRect($x, $y, $w, $h, $op);
+		}
+		if (!empty($border_style)) {
 			$border_style2 = array();
 			foreach ($border_style as $line => $value) {
 				$length = strlen($line);
