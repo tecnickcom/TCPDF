@@ -8,16 +8,13 @@ http://sourceforge.net/donate/index.php?group_id=128076
 ------------------------------------------------------------
 
 Name: TCPDF
-Version: 6.0.010
-Release date: 2013-04-03
+Version: 6.0.011
+Release date: 2013-04-22
 Author:	Nicola Asuni
 
 Copyright (c) 2002-2013:
 	Nicola Asuni
 	Tecnick.com LTD
-	Manor Coach House, Church Hill
-	Aldershot, Hants, GU12 4RQ
-	UK
 	www.tecnick.com
 
 URLs:

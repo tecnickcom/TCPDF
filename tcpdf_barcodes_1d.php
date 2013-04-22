@@ -4,7 +4,7 @@
 // Version     : 1.0.025
 // Begin       : 2008-06-09
 // Last Update : 2013-03-17
-// Author      : Nicola Asuni - Tecnick.com LTD - Manor Coach House, Church Hill, Aldershot, Hants, GU12 4RQ, UK - www.tecnick.com - info@tecnick.com
+// Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
 // Copyright (C) 2008-2013 Nicola Asuni - Tecnick.com LTD

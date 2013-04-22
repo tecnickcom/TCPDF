@@ -12,9 +12,6 @@
 // (c) Copyright:
 //               Nicola Asuni
 //               Tecnick.com LTD
-//               Manor Coach House, Church Hill
-//               Aldershot, Hants, GU12 4RQ
-//               UK
 //               www.tecnick.com
 //               info@tecnick.com
 //============================================================+
