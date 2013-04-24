@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.011
+// Version     : 6.0.012
 // Begin       : 2002-08-03
 // Last Update : 2013-04-03
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
@@ -139,7 +139,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.011
+ * @version 6.0.012
  */
 
 if (!defined('K_TCPDF_EXTERNAL_CONFIG')) {
@@ -168,7 +168,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.011
+ * @version 6.0.012
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -10390,7 +10390,7 @@ class TCPDF {
 	 * @public
 	 */
 	public function addHtmlLink($url, $name, $fill=false, $firstline=false, $color='', $style=-1, $firstblock=false) {
-		if (!TCPDF_STATIC::empty_string($url) AND ($url[0] == '#') AND is_numeric($url[1])) {
+		if (isset($url[1]) AND ($url[0] == '#') AND is_numeric($url[1])) {
 			// convert url to internal link
 			$lnkdata = explode(',', $url);
 			if (isset($lnkdata[0])) {
