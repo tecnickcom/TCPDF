@@ -1,3 +1,9 @@
+6.0.013 (2013-04-)
+	- Add support for SVG dx and dy text/tspan attributes.
+	- replace require() with require_once().
+	- fix some minor typos on documentation.
+	- fix a problem when deleting all pages.
+
 6.0.012 (2013-04-24)
 	- An error condition in addHtmlLink() method was fixed (bug #799).
 
