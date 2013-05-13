@@ -2,11 +2,11 @@
 //============================================================+
 // File name   : bul.php
 // Begin       : 2004-03-03
-// Last Update : 2010-03-22
+// Last Update : 2013-05-13
 //
 // Description : Language module for TCPDF
 //               (contains translated texts)
-//               Arabic
+//               Bulgarian
 //
 // Author: Nicola Asuni
 //

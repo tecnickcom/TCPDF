@@ -1,4 +1,7 @@
-6.0.013 (2013-04-)
+6.0.014 (2013-04-13)
+	- The signature of addTTFfont() method includes a new parameter to link existing fonts instead of copying and compressing them.
+
+6.0.013 (2013-04-10)
 	- Add support for SVG dx and dy text/tspan attributes.
 	- replace require() with require_once().
 	- fix some minor typos on documentation.
