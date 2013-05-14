@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_006.php
 // Begin       : 2008-03-04
-// Last Update : 2013-03-16
+// Last Update : 2013-05-14
 //
 // Description : Example 006 for TCPDF class
 //               WriteHTML and RTL support
@@ -24,8 +24,8 @@
  * @since 2008-03-04
  */
 
-require_once('../config/lang/eng.php');
-require_once('../tcpdf.php');
+// Include the main TCPDF library (search for installation path).
+require_once('tcpdf_include.php');
 
 // create new PDF document
 $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -47,19 +47,22 @@ $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
-//set margins
+// set margins
 $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
 $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
-//set auto page breaks
+// set auto page breaks
 $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
-//set image scale factor
+// set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
-//set some language-dependent strings
-$pdf->setLanguageArray($l);
+// set some language-dependent strings (optional)
+if (file_exists(dirname(__FILE__).'/lang/eng.php')) {
+	require_once(dirname(__FILE__).'/lang/eng.php');
+	$pdf->setLanguageArray($l);
+}
 
 // ---------------------------------------------------------
 
@@ -78,7 +81,7 @@ Some special characters: &lt; € &euro; &#8364; &amp; è &egrave; &copy; &gt; \
 <h2>List</h2>
 List example:
 <ol>
-	<li><img src="../images/logo_example.png" alt="test alt attribute" width="30" height="30" border="0" /> test image</li>
+	<li><img src="images/logo_example.png" alt="test alt attribute" width="30" height="30" border="0" /> test image</li>
 	<li><b>bold text</b></li>
 	<li><i>italic text</i></li>
 	<li><u>underlined text</u></li>
@@ -106,7 +109,7 @@ List example:
 	<dd>White cold drink</dd>
 </dl>
 <div style="text-align:center">IMAGES<br />
-<img src="../images/logo_example.png" alt="test alt attribute" width="100" height="100" border="0" /><img src="../images/tiger.ai" alt="test alt attribute" width="100" height="100" border="0" /><img src="../images/logo_example.jpg" alt="test alt attribute" width="100" height="100" border="0" />
+<img src="images/logo_example.png" alt="test alt attribute" width="100" height="100" border="0" /><img src="images/tiger.ai" alt="test alt attribute" width="100" height="100" border="0" /><img src="images/logo_example.jpg" alt="test alt attribute" width="100" height="100" border="0" />
 </div>';
 
 // output the HTML content
@@ -209,13 +212,13 @@ $pdf->AddPage();
 // create some HTML content
 $html = '<h1>Image alignments on HTML table</h1>
 <table cellpadding="1" cellspacing="1" border="1" style="text-align:center;">
-<tr><td><img src="../images/logo_example.png" border="0" height="41" width="41" /></td></tr>
-<tr style="text-align:left;"><td><img src="../images/logo_example.png" border="0" height="41" width="41" align="top" /></td></tr>
-<tr style="text-align:center;"><td><img src="../images/logo_example.png" border="0" height="41" width="41" align="middle" /></td></tr>
-<tr style="text-align:right;"><td><img src="../images/logo_example.png" border="0" height="41" width="41" align="bottom" /></td></tr>
-<tr><td style="text-align:left;"><img src="../images/logo_example.png" border="0" height="41" width="41" align="top" /></td></tr>
-<tr><td style="text-align:center;"><img src="../images/logo_example.png" border="0" height="41" width="41" align="middle" /></td></tr>
-<tr><td style="text-align:right;"><img src="../images/logo_example.png" border="0" height="41" width="41" align="bottom" /></td></tr>
+<tr><td><img src="images/logo_example.png" border="0" height="41" width="41" /></td></tr>
+<tr style="text-align:left;"><td><img src="images/logo_example.png" border="0" height="41" width="41" align="top" /></td></tr>
+<tr style="text-align:center;"><td><img src="images/logo_example.png" border="0" height="41" width="41" align="middle" /></td></tr>
+<tr style="text-align:right;"><td><img src="images/logo_example.png" border="0" height="41" width="41" align="bottom" /></td></tr>
+<tr><td style="text-align:left;"><img src="images/logo_example.png" border="0" height="41" width="41" align="top" /></td></tr>
+<tr><td style="text-align:center;"><img src="images/logo_example.png" border="0" height="41" width="41" align="middle" /></td></tr>
+<tr><td style="text-align:right;"><img src="images/logo_example.png" border="0" height="41" width="41" align="bottom" /></td></tr>
 </table>';
 
 // output the HTML content
@@ -301,7 +304,7 @@ $pdf->AddPage();
 
 $html = <<<EOF
 <h1>Test custom bullet image for list items</h1>
-<ul style="font-size:14pt;list-style-type:img|png|4|4|../images/logo_example.png">
+<ul style="font-size:14pt;list-style-type:img|png|4|4|images/logo_example.png">
 	<li>test custom bullet image</li>
 	<li>test custom bullet image</li>
 	<li>test custom bullet image</li>
@@ -323,5 +326,5 @@ $pdf->lastPage();
 $pdf->Output('example_006.pdf', 'I');
 
 //============================================================+
-// END OF FILE                                                
+// END OF FILE
 //============================================================+

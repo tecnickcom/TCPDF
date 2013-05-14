@@ -1,11 +1,11 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.014
+// Version     : 6.0.015
 // Begin       : 2002-08-03
 // Last Update : 2013-05-13
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
-// License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
+// License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
 // Copyright (C) 2002-2013 Nicola Asuni - Tecnick.com LTD
 //
@@ -139,12 +139,22 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.014
+ * @version 6.0.015
  */
 
+// Load main configuration file only if the K_TCPDF_EXTERNAL_CONFIG constant is set to false.
 if (!defined('K_TCPDF_EXTERNAL_CONFIG')) {
-	// Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
-	require_once(dirname(__FILE__).'/config/tcpdf_config.php');
+	// define a list of default config files in order of priority
+	$tcpdf_config_files = array(dirname(__FILE__).'/config/tcpdf_config.php', '/etc/php-tcpdf/tcpdf_config.php', '/etc/tcpdf/tcpdf_config.php', '/etc/tcpdf_config.php');
+	foreach ($tcpdf_config_files as $tcpdf_config) {
+		if (file_exists($tcpdf_config) AND is_readable($tcpdf_config)) {
+			require_once($tcpdf_config);
+			break;
+		}
+	}
+}
+if (!defined('K_PATH_MAIN')) {
+	$this->Error('Unable to include configuration file.');
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -168,7 +178,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.014
+ * @version 6.0.015
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -4267,12 +4277,6 @@ class TCPDF {
 				$this->xobjects[$this->xobjid]['fonts'][$fontkey] = $fb['i'];
 			}
 			return $fontdata;
-		}
-		if (isset($type)) {
-			unset($type);
-		}
-		if (isset($cw)) {
-			unset($cw);
 		}
 		// get specified font directory (if any)
 		$fontdir = false;
@@ -10857,7 +10861,7 @@ class TCPDF {
 	 * @param $user_pass (String) user password. Empty by default.
 	 * @param $owner_pass (String) owner password. If not specified, a random value is used.
 	 * @param $mode (int) encryption strength: 0 = RC4 40 bit; 1 = RC4 128 bit; 2 = AES 128 bit; 3 = AES 256 bit.
-	 * @param $pubkeys (String) array of recipients containing public-key certificates ('c') and permissions ('p'). For example: array(array('c' => 'file://../config/cert/tcpdf.crt', 'p' => array('print')))
+	 * @param $pubkeys (String) array of recipients containing public-key certificates ('c') and permissions ('p'). For example: array(array('c' => 'file://../examples/data/cert/tcpdf.crt', 'p' => array('print')))
 	 * @public
 	 * @since 2.0.000 (2008-01-02)
 	 * @author Nicola Asuni
@@ -13427,8 +13431,7 @@ class TCPDF {
 		++$this->n; // signature object ($this->sig_obj_id + 1)
 		$this->signature_data = array();
 		if (strlen($signing_cert) == 0) {
-			$signing_cert = 'file://'.dirname(__FILE__).'/config/cert/tcpdf.crt';
-			$private_key_password = 'tcpdfdemo';
+			$this->Error('Please provide a certificate file and password!');
 		}
 		if (strlen($private_key) == 0) {
 			$private_key = $signing_cert;
@@ -18811,7 +18814,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				if (isset($tag['attribute']['action'])) {
 					$this->form_action = $tag['attribute']['action'];
 				} else {
-					$this->form_action = K_PATH_URL.$_SERVER['SCRIPT_NAME'];
+					$this->Error('Please explicitly set action attribute path!');
 				}
 				if (isset($tag['attribute']['enctype'])) {
 					$this->form_enctype = $tag['attribute']['enctype'];

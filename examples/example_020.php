@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_020.php
 // Begin       : 2008-03-04
-// Last Update : 2010-08-08
+// Last Update : 2013-05-14
 //
 // Description : Example 020 for TCPDF class
 //               Two columns composed by MultiCell of different
@@ -25,32 +25,32 @@
 * @since 2008-03-04
 */
 
-require_once('../config/lang/eng.php');
-require_once('../tcpdf.php');
+// Include the main TCPDF library (search for installation path).
+require_once('tcpdf_include.php');
 
 // extend TCPF with custom functions
 class MYPDF extends TCPDF {
-	
+
 	public function MultiRow($left, $right) {
 		// MultiCell($w, $h, $txt, $border=0, $align='J', $fill=0, $ln=1, $x='', $y='', $reseth=true, $stretch=0)
-	
+
 		$page_start = $this->getPage();
 		$y_start = $this->GetY();
-	
+
 		// write the left cell
 		$this->MultiCell(40, 0, $left, 1, 'R', 1, 2, '', '', true, 0);
-	
+
 		$page_end_1 = $this->getPage();
 		$y_end_1 = $this->GetY();
-	
+
 		$this->setPage($page_start);
-	
+
 		// write the right cell
 		$this->MultiCell(0, 0, $right, 1, 'J', 0, 1, $this->GetX() ,$y_start, true, 0);
-	
+
 		$page_end_2 = $this->getPage();
 		$y_end_2 = $this->GetY();
-	
+
 		// set the new row position by case
 		if (max($page_end_1,$page_end_2) == $page_start) {
 			$ynew = max($y_end_1, $y_end_2);
@@ -61,7 +61,7 @@ class MYPDF extends TCPDF {
 		} else {
 			$ynew = $y_end_2;
 		}
-	
+
 		$this->setPage(max($page_end_1,$page_end_2));
 		$this->SetXY($this->GetX(),$ynew);
 	}
@@ -88,19 +88,22 @@ $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
-//set margins
+// set margins
 $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
 $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
-//set auto page breaks
+// set auto page breaks
 $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
-//set image scale factor
+// set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
-//set some language-dependent strings
-$pdf->setLanguageArray($l);
+// set some language-dependent strings (optional)
+if (file_exists(dirname(__FILE__).'/lang/eng.php')) {
+	require_once(dirname(__FILE__).'/lang/eng.php');
+	$pdf->setLanguageArray($l);
+}
 
 // ---------------------------------------------------------
 
@@ -139,5 +142,5 @@ $pdf->lastPage();
 $pdf->Output('example_020.pdf', 'I');
 
 //============================================================+
-// END OF FILE                                                
+// END OF FILE
 //============================================================+

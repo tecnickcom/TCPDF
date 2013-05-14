@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_051.php
 // Begin       : 2009-04-16
-// Last Update : 2011-06-01
+// Last Update : 2013-05-14
 //
 // Description : Example 051 for TCPDF class
 //               Full page background
@@ -24,8 +24,8 @@
  * @since 2009-04-16
  */
 
-require_once('../config/lang/eng.php');
-require_once('../tcpdf.php');
+// Include the main TCPDF library (search for installation path).
+require_once('tcpdf_include.php');
 
 
 // Extend the TCPDF class to create custom Header and Footer
@@ -64,7 +64,7 @@ $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
-//set margins
+// set margins
 $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
 $pdf->SetHeaderMargin(0);
 $pdf->SetFooterMargin(0);
@@ -72,14 +72,17 @@ $pdf->SetFooterMargin(0);
 // remove default footer
 $pdf->setPrintFooter(false);
 
-//set auto page breaks
+// set auto page breaks
 $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
-//set image scale factor
+// set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
-//set some language-dependent strings
-$pdf->setLanguageArray($l);
+// set some language-dependent strings (optional)
+if (file_exists(dirname(__FILE__).'/lang/eng.php')) {
+	require_once(dirname(__FILE__).'/lang/eng.php');
+	$pdf->setLanguageArray($l);
+}
 
 // ---------------------------------------------------------
 

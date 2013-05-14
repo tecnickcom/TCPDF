@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_059.php
 // Begin       : 2010-05-06
-// Last Update : 2011-04-15
+// Last Update : 2013-05-14
 //
 // Description : Example 059 for TCPDF class
 //               Table Of Content using HTML templates.
@@ -24,8 +24,8 @@
  * @since 2010-05-06
  */
 
-require_once('../config/lang/eng.php');
-require_once('../tcpdf.php');
+// Include the main TCPDF library (search for installation path).
+require_once('tcpdf_include.php');
 
 /**
  * TCPDF class extension with custom header and footer for TOC page
@@ -82,19 +82,22 @@ $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
-//set margins
+// set margins
 $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
 $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
-//set auto page breaks
+// set auto page breaks
 $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
-//set image scale factor
+// set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
-//set some language-dependent strings
-$pdf->setLanguageArray($l);
+// set some language-dependent strings (optional)
+if (file_exists(dirname(__FILE__).'/lang/eng.php')) {
+	require_once(dirname(__FILE__).'/lang/eng.php');
+	$pdf->setLanguageArray($l);
+}
 
 // set font
 $pdf->SetFont('helvetica', '', 10);
@@ -180,7 +183,7 @@ $pdf->endTOCPage();
 // ---------------------------------------------------------
 
 //Close and output PDF document
-$pdf->Output('example_059.pdf', 'I');
+$pdf->Output('example_059.pdf', 'D');
 
 //============================================================+
 // END OF FILE

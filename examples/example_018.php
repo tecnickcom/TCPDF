@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_018.php
 // Begin       : 2008-03-06
-// Last Update : 2011-10-01
+// Last Update : 2013-05-14
 //
 // Description : Example 018 for TCPDF class
 //               RTL document with Persian language
@@ -24,8 +24,8 @@
  * @since 2008-03-06
  */
 
-require_once('../config/lang/eng.php');
-require_once('../tcpdf.php');
+// Include the main TCPDF library (search for installation path).
+require_once('tcpdf_include.php');
 
 // create new PDF document
 $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -47,15 +47,15 @@ $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
-//set margins
+// set margins
 $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
 $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
-//set auto page breaks
+// set auto page breaks
 $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
-//set image scale factor
+// set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // set some language dependent data:
@@ -65,7 +65,7 @@ $lg['a_meta_dir'] = 'rtl';
 $lg['a_meta_language'] = 'fa';
 $lg['w_page'] = 'page';
 
-//set some language-dependent strings
+// set some language-dependent strings (optional)
 $pdf->setLanguageArray($lg);
 
 // ---------------------------------------------------------

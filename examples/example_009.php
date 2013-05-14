@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_009.php
 // Begin       : 2008-03-04
-// Last Update : 2010-12-04
+// Last Update : 2013-05-14
 //
 // Description : Example 009 for TCPDF class
 //               Test Image
@@ -24,8 +24,8 @@
  * @since 2008-03-04
  */
 
-require_once('../config/lang/eng.php');
-require_once('../tcpdf.php');
+// Include the main TCPDF library (search for installation path).
+require_once('tcpdf_include.php');
 
 // create new PDF document
 $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -47,19 +47,22 @@ $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
-//set margins
+// set margins
 $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
 $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
-//set auto page breaks
+// set auto page breaks
 $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
-//set image scale factor
+// set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
-//set some language-dependent strings
-$pdf->setLanguageArray($l);
+// set some language-dependent strings (optional)
+if (file_exists(dirname(__FILE__).'/lang/eng.php')) {
+	require_once(dirname(__FILE__).'/lang/eng.php');
+	$pdf->setLanguageArray($l);
+}
 
 // -------------------------------------------------------------------
 
@@ -83,7 +86,7 @@ $pdf->Image('@'.$imgdata);
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 // Image example with resizing
-$pdf->Image('../images/image_demo.jpg', 15, 140, 75, 113, 'JPG', 'http://www.tcpdf.org', '', true, 150, '', false, false, 1, false, false, false);
+$pdf->Image('images/image_demo.jpg', 15, 140, 75, 113, 'JPG', 'http://www.tcpdf.org', '', true, 150, '', false, false, 1, false, false, false);
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -103,7 +106,7 @@ for ($i = 0; $i < 3; ++$i) {
 	for ($j = 0; $j < 3; ++$j) {
 		$fitbox{1} = $vertical_alignments[$j];
 		$pdf->Rect($x, $y, $w, $h, 'F', array(), array(128,255,128));
-		$pdf->Image('../images/image_demo.jpg', $x, $y, $w, $h, 'JPG', '', '', false, 300, '', false, false, 0, $fitbox, false, false);
+		$pdf->Image('images/image_demo.jpg', $x, $y, $w, $h, 'JPG', '', '', false, 300, '', false, false, 0, $fitbox, false, false);
 		$x += 32; // new column
 	}
 	$y += 32; // new row
@@ -119,7 +122,7 @@ for ($i = 0; $i < 3; ++$i) {
 	for ($j = 0; $j < 3; ++$j) {
 		$fitbox{1} = $vertical_alignments[$j];
 		$pdf->Rect($x, $y, $w, $h, 'F', array(), array(128,255,255));
-		$pdf->Image('../images/image_demo.jpg', $x, $y, $w, $h, 'JPG', '', '', false, 300, '', false, false, 0, $fitbox, false, false);
+		$pdf->Image('images/image_demo.jpg', $x, $y, $w, $h, 'JPG', '', '', false, 300, '', false, false, 0, $fitbox, false, false);
 		$x += 27; // new column
 	}
 	$y += 52; // new row
@@ -130,8 +133,8 @@ for ($i = 0; $i < 3; ++$i) {
 // Stretching, position and alignment example
 
 $pdf->SetXY(110, 200);
-$pdf->Image('../images/image_demo.jpg', '', '', 40, 40, '', '', 'T', false, 300, '', false, false, 1, false, false, false);
-$pdf->Image('../images/image_demo.jpg', '', '', 40, 40, '', '', '', false, 300, '', false, false, 1, false, false, false);
+$pdf->Image('images/image_demo.jpg', '', '', 40, 40, '', '', 'T', false, 300, '', false, false, 1, false, false, false);
+$pdf->Image('images/image_demo.jpg', '', '', 40, 40, '', '', '', false, 300, '', false, false, 1, false, false, false);
 
 // -------------------------------------------------------------------
 

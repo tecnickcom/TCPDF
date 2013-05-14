@@ -1,3 +1,11 @@
+6.0.015 (2013-04-14)
+	- Some unused vars were removed from AddFont() method.
+	- Some directories were moved inside the examples directory.
+	- All examples were updated to reflect the new default structure.
+	- Source code were clean-up up to be more compatible with system packaging.
+	- Files encodings and permissions were reset.
+	- The command line tool tcpdf_addfont.php was added on the tools directory.
+
 6.0.014 (2013-04-13)
 	- The signature of addTTFfont() method includes a new parameter to link existing fonts instead of copying and compressing them.
 

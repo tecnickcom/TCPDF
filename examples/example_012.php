@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_012.php
 // Begin       : 2008-03-04
-// Last Update : 2010-08-08
+// Last Update : 2013-05-14
 //
 // Description : Example 012 for TCPDF class
 //               Graphic Functions
@@ -24,8 +24,8 @@
  * @since 2008-03-04
  */
 
-require_once('../config/lang/eng.php');
-require_once('../tcpdf.php');
+// Include the main TCPDF library (search for installation path).
+require_once('tcpdf_include.php');
 
 // create new PDF document
 $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -44,17 +44,20 @@ $pdf->setPrintFooter(false);
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
-//set margins
+// set margins
 $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
 
-//set auto page breaks
+// set auto page breaks
 $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
-//set image scale factor
+// set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
-//set some language-dependent strings
-$pdf->setLanguageArray($l);
+// set some language-dependent strings (optional)
+if (file_exists(dirname(__FILE__).'/lang/eng.php')) {
+	require_once(dirname(__FILE__).'/lang/eng.php');
+	$pdf->setLanguageArray($l);
+}
 
 // ---------------------------------------------------------
 
@@ -155,10 +158,10 @@ $pdf->RoundedRect(140, 255, 40, 30, 8.0, '0101', 'DF', $style6, array(200, 200, 
 $pdf->Text(185, 249, 'Arrows');
 $pdf->SetLineStyle($style5);
 $pdf->SetFillColor(255, 0, 0);
-$pdf->Arrow($x0=200, $y0=280, $x1=185, $y1=266, $head_style=0, $arm_size=5, $arm_angle=15);
-$pdf->Arrow($x0=200, $y0=280, $x1=190, $y1=263, $head_style=1, $arm_size=5, $arm_angle=15);
-$pdf->Arrow($x0=200, $y0=280, $x1=195, $y1=261, $head_style=2, $arm_size=5, $arm_angle=15);
-$pdf->Arrow($x0=200, $y0=280, $x1=200, $y1=260, $head_style=3, $arm_size=5, $arm_angle=15);
+$pdf->Arrow(200, 280, 185, 266, 0, 5, 15);
+$pdf->Arrow(200, 280, 190, 263, 1, 5, 15);
+$pdf->Arrow(200, 280, 195, 261, 2, 5, 15);
+$pdf->Arrow(200, 280, 200, 260, 3, 5, 15);
 
 // - . - . - . - . - . - . - . - . - . - . - . - . - . - . -
 
@@ -185,11 +188,11 @@ $pdf->Line($xc-50, $yc+50, $xc+50, $yc-50);
 
 // ellipse
 $pdf->SetDrawColor(200, 255, 200);
-$pdf->Ellipse($xc, $yc, $rx=30, $ry=15, $angle=45, $astart=0, $afinish=360, $style='D', $line_style=array(), $fill_color=array(), $nc=2);
+$pdf->Ellipse($xc, $yc, 30, 15, 45, 0, 360, 'D', array(), array(), 2);
 
 // ellipse arc
 $pdf->SetDrawColor(255, 0, 0);
-$pdf->Ellipse($xc, $yc, $rx=30, $ry=15, $angle=45, $astart=45, $afinish=90, $style='D', $line_style=array(), $fill_color=array(), $nc=2);
+$pdf->Ellipse($xc, $yc, 30, 15, 45, 45, 90, 'D', array(), array(), 2);
 
 
 // ---------------------------------------------------------

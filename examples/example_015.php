@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_015.php
 // Begin       : 2008-03-04
-// Last Update : 2013-01-28
+// Last Update : 2013-05-14
 //
 // Description : Example 015 for TCPDF class
 //               Bookmarks (Table of Content)
@@ -25,8 +25,8 @@
  * @since 2008-03-04
  */
 
-require_once('../config/lang/eng.php');
-require_once('../tcpdf.php');
+// Include the main TCPDF library (search for installation path).
+require_once('tcpdf_include.php');
 
 // create new PDF document
 $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -48,19 +48,22 @@ $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
-//set margins
+// set margins
 $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
 $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
-//set auto page breaks
+// set auto page breaks
 $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
-//set image scale factor
+// set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
-//set some language-dependent strings
-$pdf->setLanguageArray($l);
+// set some language-dependent strings (optional)
+if (file_exists(dirname(__FILE__).'/lang/eng.php')) {
+	require_once(dirname(__FILE__).'/lang/eng.php');
+	$pdf->setLanguageArray($l);
+}
 
 // ---------------------------------------------------------
 
@@ -132,7 +135,7 @@ $pdf->SetFont('helvetica', '', 10);
 $pdf->Write(0, $txt, '', 0, 'L', true, 0, false, false, 0);
 
 // attach an external file TXT file
-$pdf->Annotation(20, 50, 5, 5, 'TXT file', array('Subtype'=>'FileAttachment', 'Name' => 'PushPin', 'FS' => '../cache/utf8test.txt'));
+$pdf->Annotation(20, 50, 5, 5, 'TXT file', array('Subtype'=>'FileAttachment', 'Name' => 'PushPin', 'FS' => 'data/utf8test.txt'));
 
 // attach an external file
 $pdf->Annotation(50, 50, 5, 5, 'PDF file', array('Subtype'=>'FileAttachment', 'Name' => 'PushPin', 'FS' => 'example_012.pdf'));
@@ -151,7 +154,7 @@ $pdf->Bookmark('External URL', 0, 0, '', 'B', array(0,0,255), -1, 'http://www.tc
 // ---------------------------------------------------------
 
 //Close and output PDF document
-$pdf->Output('example_015.pdf', 'I');
+$pdf->Output('example_015.pdf', 'D');
 
 //============================================================+
 // END OF FILE

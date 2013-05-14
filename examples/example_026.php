@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_026.php
 // Begin       : 2008-03-04
-// Last Update : 2010-08-08
+// Last Update : 2013-05-14
 //
 // Description : Example 026 for TCPDF class
 //               Text Rendering Modes and Text Clipping
@@ -24,8 +24,8 @@
  * @since 2008-03-04
  */
 
-require_once('../config/lang/eng.php');
-require_once('../tcpdf.php');
+// Include the main TCPDF library (search for installation path).
+require_once('tcpdf_include.php');
 
 // create new PDF document
 $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -47,19 +47,22 @@ $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
-//set margins
+// set margins
 $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
 $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
-//set auto page breaks
+// set auto page breaks
 $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
-//set image scale factor
+// set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
-//set some language-dependent strings
-$pdf->setLanguageArray($l);
+// set some language-dependent strings (optional)
+if (file_exists(dirname(__FILE__).'/lang/eng.php')) {
+	require_once(dirname(__FILE__).'/lang/eng.php');
+	$pdf->setLanguageArray($l);
+}
 
 // ---------------------------------------------------------
 
@@ -91,25 +94,25 @@ $pdf->Write(0, 'Neither fill nor stroke text (invisible)', '', 0, '', true, 0, f
 $pdf->StartTransform();
 $pdf->setTextRenderingMode($stroke=0, $fill=true, $clip=true);
 $pdf->Write(0, 'Fill text and add to path for clipping', '', 0, '', true, 0, false, false, 0);
-$pdf->Image('../images/image_demo.jpg', 15, 65, 170, 10, '', '', '', true, 72);
+$pdf->Image('images/image_demo.jpg', 15, 65, 170, 10, '', '', '', true, 72);
 $pdf->StopTransform();
 
 $pdf->StartTransform();
 $pdf->setTextRenderingMode($stroke=0.3, $fill=false, $clip=true);
 $pdf->Write(0, 'Stroke text and add to path for clipping', '', 0, '', true, 0, false, false, 0);
-$pdf->Image('../images/image_demo.jpg', 15, 75, 170, 10, '', '', '', true, 72);
+$pdf->Image('images/image_demo.jpg', 15, 75, 170, 10, '', '', '', true, 72);
 $pdf->StopTransform();
 
 $pdf->StartTransform();
 $pdf->setTextRenderingMode($stroke=0.3, $fill=true, $clip=true);
 $pdf->Write(0, 'Fill, then stroke text and add to path for clipping', '', 0, '', true, 0, false, false, 0);
-$pdf->Image('../images/image_demo.jpg', 15, 85, 170, 10, '', '', '', true, 72);
+$pdf->Image('images/image_demo.jpg', 15, 85, 170, 10, '', '', '', true, 72);
 $pdf->StopTransform();
 
 $pdf->StartTransform();
 $pdf->setTextRenderingMode($stroke=0, $fill=false, $clip=true);
 $pdf->Write(0, 'Add text to path for clipping', '', 0, '', true, 0, false, false, 0);
-$pdf->Image('../images/image_demo.jpg', 15, 95, 170, 10, '', '', '', true, 72);
+$pdf->Image('images/image_demo.jpg', 15, 95, 170, 10, '', '', '', true, 72);
 $pdf->StopTransform();
 
 // reset text rendering mode
