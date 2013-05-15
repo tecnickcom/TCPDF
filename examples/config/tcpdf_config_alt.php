@@ -57,7 +57,7 @@ $_SERVER['DOCUMENT_ROOT'] = str_replace('//', '/', $_SERVER['DOCUMENT_ROOT'].'/'
 // Try to automatically set the value for the following K_PATH_MAIN constant.
 // NOTE: delete this section and manually set the K_PATH_MAIN constant below for better performances.
 $tcpdf_install_dirs = array();
-if (strpos(dirname(__FILE__), '/config') !== false) {
+if ((strpos(dirname(__FILE__), '/config') !== false) OR (strpos(dirname(__FILE__), '\config') !== false)) {
 	// default config file
 	$k_path_main_default = str_replace( '\\', '/', realpath(substr(dirname(__FILE__), 0, 0-strlen('examples/config'))));
 	if (substr($k_path_main_default, -1) != '/') {
