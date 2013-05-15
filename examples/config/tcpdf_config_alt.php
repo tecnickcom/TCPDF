@@ -116,7 +116,7 @@ define ('K_PATH_FONTS', K_PATH_MAIN.'fonts/');
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // Try to automatically set the value for the following K_PATH_IMAGES constant.
 // NOTE: delete this section and manually set the K_PATH_IMAGES constant below for better performances.
-$tcpdf_images_dirs = array(K_PATH_MAIN.'examples/images/', '/usr/share/doc/tcpdf/', '/usr/share/doc/php-tcpdf/', '/usr/share/doc/php/tcpdf/', K_PATH_MAIN);
+$tcpdf_images_dirs = array(K_PATH_MAIN.'examples/images/', '/usr/share/doc/tcpdf/examples/images/', '/usr/share/doc/php-tcpdf/examples/images/', '/usr/share/doc/php/tcpdf/examples/images/', '/var/www/tcpdf/images/', '/var/www/html/tcpdf/images/', '/usr/local/apache2/htdocs/tcpdf/images/', K_PATH_MAIN);
 foreach ($tcpdf_images_dirs as $tcpdf_images_path) {
 	if (file_exists($tcpdf_images_path)) {
 		break;
@@ -126,6 +126,7 @@ foreach ($tcpdf_images_dirs as $tcpdf_images_path) {
 
 /**
  * Default images directory.
+ * By default it is automatically set but you can also set it as a fixed string to improve performances.
  */
 define ('K_PATH_IMAGES', $tcpdf_images_path);
 
@@ -164,10 +165,20 @@ define ('PDF_HEADER_TITLE', 'TCPDF Example');
  */
 define ('PDF_HEADER_STRING', "by Nicola Asuni - Tecnick.com\nwww.tcpdf.org");
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// Try to automatically set the value for the following K_PATH_IMAGES constant.
+// NOTE: delete this section and manually set the K_PATH_IMAGES constant below for better performances.
+$tcpdf_header_logo = '';
+if (file_exists(K_PATH_IMAGES.'tcpdf_logo.jpg')) {
+	$tcpdf_header_logo = 'tcpdf_logo.jpg';
+}
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 /**
- * Image logo.
+ * Deafult image logo used be the default Header() method.
+ * Please set here your own logo or an empty string to disable it.
  */
-define ('PDF_HEADER_LOGO', 'tcpdf_logo.jpg');
+define ('PDF_HEADER_LOGO', $tcpdf_header_logo);
 
 /**
  * Header logo image width [mm].
