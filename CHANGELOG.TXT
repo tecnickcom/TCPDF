@@ -1,5 +1,6 @@
 6.0.016 (2013-05-15)
 	- The tcpdf_addfont.php tool was improved (thanks to Remi Collet).
+	- Constant K_PATH_IMAGES is now automatically set in configuration file.
 
 6.0.015 (2013-05-14)
 	- Some unused vars were removed from AddFont() method.

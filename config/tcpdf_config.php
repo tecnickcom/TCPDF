@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tcpdf_config.php
 // Begin       : 2004-06-11
-// Last Update : 2013-05-14
+// Last Update : 2013-05-15
 //
 // Description : Configuration file for TCPDF.
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
@@ -114,10 +114,21 @@ if (!defined('K_TCPDF_EXTERNAL_CONFIG')) {
 	 */
 	define ('K_PATH_FONTS', K_PATH_MAIN.'fonts/');
 
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// Try to automatically set the value for the following K_PATH_IMAGES constant.
+	// NOTE: delete this section and manually set the K_PATH_IMAGES constant below for better performances.
+	$tcpdf_images_dirs = array(K_PATH_MAIN.'examples/images/', '/usr/share/doc/tcpdf/', '/usr/share/doc/php-tcpdf/', '/usr/share/doc/php/tcpdf/', K_PATH_MAIN);
+	foreach ($tcpdf_images_dirs as $tcpdf_images_path) {
+		if (file_exists($tcpdf_images_path)) {
+			break;
+		}
+	}
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 	/**
 	 * Default images directory.
 	 */
-	define ('K_PATH_IMAGES', K_PATH_MAIN.'examples/images/');
+	define ('K_PATH_IMAGES', $tcpdf_images_path);
 
 	/**
 	 * Blank image.
