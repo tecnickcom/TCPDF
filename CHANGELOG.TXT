@@ -1,4 +1,7 @@
-6.0.015 (2013-04-14)
+6.0.016 (2013-05-15)
+	- The tcpdf_addfont.php tool was improved (thanks to Remi Collet).
+
+6.0.015 (2013-05-14)
 	- Some unused vars were removed from AddFont() method.
 	- Some directories were moved inside the examples directory.
 	- All examples were updated to reflect the new default structure.
