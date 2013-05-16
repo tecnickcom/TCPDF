@@ -24,11 +24,6 @@
  * @since 2008-03-04
  */
 
-
-
-// load alternative config file
-require_once('config/tcpdf_config_alt.php');
-
 // Include the main TCPDF library (search for installation path).
 require_once('tcpdf_include.php');
 
