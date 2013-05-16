@@ -1,3 +1,8 @@
+6.0.017 (2013-05-16)
+	- The command line tool tcpdf_addfont.php was improved.
+	- The php logic was removed from configuration files that now contains only constant defines.
+	- The tcpdf_autoconfig.php file was added to automatically set missing configuration values.
+
 6.0.016 (2013-05-15)
 	- The tcpdf_addfont.php tool was improved (thanks to Remi Collet).
 	- Constant K_PATH_IMAGES is now automatically set in configuration file.

@@ -8,8 +8,8 @@ http://sourceforge.net/donate/index.php?group_id=128076
 ------------------------------------------------------------
 
 Name: TCPDF
-Version: 6.0.016
-Release date: 2013-05-15
+Version: 6.0.017
+Release date: 2013-05-16
 Author:	Nicola Asuni
 
 Copyright (c) 2002-2013:
@@ -18,8 +18,8 @@ Copyright (c) 2002-2013:
 	www.tecnick.com
 
 URLs:
-	http:  www.tcpdf.org
-	http:  www.sourceforge.net/projects/tcpdf
+	http://www.tcpdf.org
+	http://www.sourceforge.net/projects/tcpdf
 
 Description:
 	TCPDF is a PHP class for generating PDF files on-the-fly without requiring external extensions.
