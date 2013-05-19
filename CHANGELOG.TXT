@@ -1,3 +1,6 @@
+6.0.018 (2013-05-19)
+	- The barcode examples were changed to automatically search for the barcode class path (in case the examples directory is not installed under the TCPDF root).
+
 6.0.017 (2013-05-16)
 	- The command line tool tcpdf_addfont.php was improved.
 	- The php logic was removed from configuration files that now contains only constant defines.

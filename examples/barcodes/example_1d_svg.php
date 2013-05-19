@@ -3,7 +3,7 @@
 // File name   : example_1d_svg.php
 // Version     : 1.0.000
 // Begin       : 2011-07-21
-// Last Update : 2013-03-17
+// Last Update : 2013-03-19
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -27,20 +27,20 @@
 // See LICENSE.TXT file for more information.
 // -------------------------------------------------------------------
 //
-// Description : Example for tcpdf_barcodes_1d.php class
+// Description : Example for tcpdf_barcodes_2d.php class
 //
 //============================================================+
 
 /**
  * @file
- * Example for tcpdf_barcodes_1d.php class
+ * Example for tcpdf_barcodes_2d.php class
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
  * @version 1.0.000
  */
 
-// include 1D barcode class
-require_once(dirname(__FILE__).'/../../tcpdf_barcodes_1d.php');
+// include 1D barcode class (search for installation path)
+require_once(__DIR__.'/tcpdf_barcodes_1d_include.php');
 
 // set the barcode content and type
 $barcodeobj = new TCPDFBarcode('http://www.tcpdf.org', 'C128');
