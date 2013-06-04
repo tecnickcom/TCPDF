@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.018
+// Version     : 6.0.019
 // Begin       : 2002-08-03
-// Last Update : 2013-05-19
+// Last Update : 2013-06-04
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -139,21 +139,21 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.018
+ * @version 6.0.019
  */
 
 // TCPDF configuration
-require_once(__DIR__.'/tcpdf_autoconfig.php');
+require_once(dirname(__FILE__).'/tcpdf_autoconfig.php');
 // TCPDF static font methods and data
-require_once(__DIR__.'/include/tcpdf_font_data.php');
+require_once(dirname(__FILE__).'/include/tcpdf_font_data.php');
 // TCPDF static font methods and data
-require_once(__DIR__.'/include/tcpdf_fonts.php');
+require_once(dirname(__FILE__).'/include/tcpdf_fonts.php');
 // TCPDF static color methods and data
-require_once(__DIR__.'/include/tcpdf_colors.php');
+require_once(dirname(__FILE__).'/include/tcpdf_colors.php');
 // TCPDF static image methods and data
-require_once(__DIR__.'/include/tcpdf_images.php');
+require_once(dirname(__FILE__).'/include/tcpdf_images.php');
 // TCPDF static methods and data
-require_once(__DIR__.'/include/tcpdf_static.php');
+require_once(dirname(__FILE__).'/include/tcpdf_static.php');
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -163,7 +163,7 @@ require_once(__DIR__.'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.018
+ * @version 6.0.019
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -4275,23 +4275,23 @@ class TCPDF {
 		}
 		$missing_style = false; // true when the font style variation is missing
 		// search and include font file
-		if (TCPDF_STATIC::empty_string($fontfile) OR (!file_exists($fontfile))) {
+		if (TCPDF_STATIC::empty_string($fontfile) OR (!@file_exists($fontfile))) {
 			// build a standard filenames for specified font
 			$tmp_fontfile = str_replace(' ', '', $family).strtolower($style).'.php';
 			// search files on various directories
-			if (($fontdir !== false) AND file_exists($fontdir.$tmp_fontfile)) {
+			if (($fontdir !== false) AND @file_exists($fontdir.$tmp_fontfile)) {
 				$fontfile = $fontdir.$tmp_fontfile;
-			} elseif (file_exists(TCPDF_FONTS::_getfontpath().$tmp_fontfile)) {
+			} elseif (@file_exists(TCPDF_FONTS::_getfontpath().$tmp_fontfile)) {
 				$fontfile = TCPDF_FONTS::_getfontpath().$tmp_fontfile;
-			} elseif (file_exists($tmp_fontfile)) {
+			} elseif (@file_exists($tmp_fontfile)) {
 				$fontfile = $tmp_fontfile;
 			} elseif (!TCPDF_STATIC::empty_string($style)) {
 				$missing_style = true;
 				// try to remove the style part
 				$tmp_fontfile = str_replace(' ', '', $family).'.php';
-				if (($fontdir !== false) AND file_exists($fontdir.$tmp_fontfile)) {
+				if (($fontdir !== false) AND @file_exists($fontdir.$tmp_fontfile)) {
 					$fontfile = $fontdir.$tmp_fontfile;
-				} elseif (file_exists(TCPDF_FONTS::_getfontpath().$tmp_fontfile)) {
+				} elseif (@file_exists(TCPDF_FONTS::_getfontpath().$tmp_fontfile)) {
 					$fontfile = TCPDF_FONTS::_getfontpath().$tmp_fontfile;
 				} else {
 					$fontfile = $tmp_fontfile;
@@ -4299,7 +4299,7 @@ class TCPDF {
 			}
 		}
 		// include font file
-		if (file_exists($fontfile)) {
+		if (@file_exists($fontfile)) {
 			include($fontfile);
 		} else {
 			$this->Error('Could not include font definition file: '.$family.'');
@@ -4827,19 +4827,19 @@ class TCPDF {
 		$this->PageAnnots[$page][] = array('n' => ++$this->n, 'x' => $x, 'y' => $y, 'w' => $w, 'h' => $h, 'txt' => $text, 'opt' => $opt, 'numspaces' => $spaces);
 		if (!$this->pdfa_mode) {
 			if ((($opt['Subtype'] == 'FileAttachment') OR ($opt['Subtype'] == 'Sound')) AND (!TCPDF_STATIC::empty_string($opt['FS']))
-				AND (file_exists($opt['FS']) OR TCPDF_STATIC::isValidURL($opt['FS']))
+				AND (@file_exists($opt['FS']) OR TCPDF_STATIC::isValidURL($opt['FS']))
 				AND (!isset($this->embeddedfiles[basename($opt['FS'])]))) {
 				$this->embeddedfiles[basename($opt['FS'])] = array('f' => ++$this->n, 'n' => ++$this->n, 'file' => $opt['FS']);
 			}
 		}
 		// Add widgets annotation's icons
-		if (isset($opt['mk']['i']) AND file_exists($opt['mk']['i'])) {
+		if (isset($opt['mk']['i']) AND @file_exists($opt['mk']['i'])) {
 			$this->Image($opt['mk']['i'], '', '', 10, 10, '', '', '', false, 300, '', false, false, 0, false, true);
 		}
-		if (isset($opt['mk']['ri']) AND file_exists($opt['mk']['ri'])) {
+		if (isset($opt['mk']['ri']) AND @file_exists($opt['mk']['ri'])) {
 			$this->Image($opt['mk']['ri'], '', '', 0, 0, '', '', '', false, 300, '', false, false, 0, false, true);
 		}
-		if (isset($opt['mk']['ix']) AND file_exists($opt['mk']['ix'])) {
+		if (isset($opt['mk']['ix']) AND @file_exists($opt['mk']['ix'])) {
 			$this->Image($opt['mk']['ix'], '', '', 0, 0, '', '', '', false, 300, '', false, false, 0, false, true);
 		}
 	}
@@ -4859,7 +4859,7 @@ class TCPDF {
 		foreach ($this->embeddedfiles as $filename => $filedata) {
 			// update name tree
 			$this->efnames[$filename] = $filedata['f'].' 0 R';
-			// embedded file specification  object
+			// embedded file specification object
 			$out = $this->_getobj($filedata['f'])."\n";
 			$out .= '<</Type /Filespec /F '.$this->_datastring($filename, $filedata['f']).' /EF <</F '.$filedata['n'].' 0 R>> >>';
 			$out .= "\n".'endobj';
@@ -8748,11 +8748,11 @@ class TCPDF {
 			$file = strtolower($file);
 			$fontfile = '';
 			// search files on various directories
-			if (($fontdir !== false) AND file_exists($fontdir.$file)) {
+			if (($fontdir !== false) AND @file_exists($fontdir.$file)) {
 				$fontfile = $fontdir.$file;
-			} elseif (file_exists(TCPDF_FONTS::_getfontpath().$file)) {
+			} elseif (@file_exists(TCPDF_FONTS::_getfontpath().$file)) {
 				$fontfile = TCPDF_FONTS::_getfontpath().$file;
-			} elseif (file_exists($file)) {
+			} elseif (@file_exists($file)) {
 				$fontfile = $file;
 			}
 			if (!TCPDF_STATIC::empty_string($fontfile)) {
@@ -8974,11 +8974,11 @@ class TCPDF {
 			// search and get ctg font file to embedd
 			$fontfile = '';
 			// search files on various directories
-			if (($fontdir !== false) AND file_exists($fontdir.$ctgfile)) {
+			if (($fontdir !== false) AND @file_exists($fontdir.$ctgfile)) {
 				$fontfile = $fontdir.$ctgfile;
-			} elseif (file_exists(TCPDF_FONTS::_getfontpath().$ctgfile)) {
+			} elseif (@file_exists(TCPDF_FONTS::_getfontpath().$ctgfile)) {
 				$fontfile = TCPDF_FONTS::_getfontpath().$ctgfile;
-			} elseif (file_exists($ctgfile)) {
+			} elseif (@file_exists($ctgfile)) {
 				$fontfile = $ctgfile;
 			}
 			if (TCPDF_STATIC::empty_string($fontfile)) {
@@ -9613,7 +9613,7 @@ class TCPDF {
 		// if required, add standard sRGB_IEC61966-2.1 blackscaled ICC colour profile
 		if ($this->pdfa_mode OR $this->force_srgb) {
 			$iccobj = $this->_newobj();
-			$icc = file_get_contents(__DIR__.'/include/sRGB.icc');
+			$icc = file_get_contents(dirname(__FILE__).'/include/sRGB.icc');
 			$filter = '';
 			if ($this->compress) {
 				$filter = ' /Filter /FlateDecode';
@@ -15051,7 +15051,7 @@ class TCPDF {
 		if (TCPDF_STATIC::empty_string(trim($code))) {
 			return;
 		}
-		require_once(__DIR__.'/tcpdf_barcodes_1d.php');
+		require_once(dirname(__FILE__).'/tcpdf_barcodes_1d.php');
 		// save current graphic settings
 		$gvars = $this->getGraphicVars();
 		// create new barcode object
@@ -15367,7 +15367,7 @@ class TCPDF {
 		if (TCPDF_STATIC::empty_string(trim($code))) {
 			return;
 		}
-		require_once(__DIR__.'/tcpdf_barcodes_2d.php');
+		require_once(dirname(__FILE__).'/tcpdf_barcodes_2d.php');
 		// save current graphic settings
 		$gvars = $this->getGraphicVars();
 		// create new barcode object

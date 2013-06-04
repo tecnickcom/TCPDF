@@ -40,7 +40,7 @@
  */
 
 // include 1D barcode class (search for installation path)
-require_once(__DIR__.'/tcpdf_barcodes_1d_include.php');
+require_once(dirname(__FILE__).'/tcpdf_barcodes_1d_include.php');
 
 // set the barcode content and type
 $barcodeobj = new TCPDFBarcode('http://www.tcpdf.org', 'C128');

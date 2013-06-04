@@ -40,7 +40,7 @@
  */
 
 // include 2D barcode class (search for installation path)
-require_once(__DIR__.'/tcpdf_barcodes_2d_include.php');
+require_once(dirname(__FILE__).'/tcpdf_barcodes_2d_include.php');
 
 // set the barcode content and type
 $barcodeobj = new TCPDF2DBarcode('http://www.tcpdf.org', 'QRCODE,H');

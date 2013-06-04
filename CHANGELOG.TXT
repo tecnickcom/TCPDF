@@ -1,3 +1,7 @@
+6.0.019 (2013-06-04)
+	- The magic constant __DIR__ was replaced with dirname(__FILE__) for php 5.2 compatibility.
+	- The exceptions raised by file_exists() function were suppressed.
+
 6.0.018 (2013-05-19)
 	- The barcode examples were changed to automatically search for the barcode class path (in case the examples directory is not installed under the TCPDF root).
 
