@@ -55,7 +55,7 @@ class TCPDF_STATIC {
 	 * Current TCPDF version.
 	 * @private static
 	 */
-	private static $tcpdf_version = '6.0.021';
+	private static $tcpdf_version = '6.0.022';
 
 	/**
 	 * String alias for total number of pages.
@@ -2733,7 +2733,7 @@ class TCPDF_STATIC {
 	 * @param $flags (int) The flags as specified on the preg_split PHP function.
 	 * @return Returns an array containing substrings of subject split along boundaries matched by pattern.modifier
 	 * @author Nicola Asuni
-	 * @since 6.0.021
+	 * @since 6.0.022
 	 * @public static
 	 */
 	public static function pregSplit($pattern, $modifiers, $subject, $limit=NULL, $flags=NULL) {
