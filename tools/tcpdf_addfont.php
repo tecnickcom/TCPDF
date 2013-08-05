@@ -1,10 +1,10 @@
-#!/usr/bin/php
+#!/usr/bin/php -q
 <?php
 //============================================================+
 // File name   : tcpdf_addfont.php
 // Version     : 1.0.002
 // Begin       : 2013-05-13
-// Last Update : 2013-05-16
+// Last Update : 2013-08-05
 // Authors     : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 //               Remi Collet
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)

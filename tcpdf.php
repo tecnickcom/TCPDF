@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.022
+// Version     : 6.0.023
 // Begin       : 2002-08-03
-// Last Update : 2013-08-02
+// Last Update : 2013-08-05
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -11,7 +11,7 @@
 //
 // This file is part of TCPDF software library.
 //
-// TCPDF is free software: you can redistribute it and/or modify it
+// TCPDF is free software: you can ioredistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
@@ -139,7 +139,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.022
+ * @version 6.0.023
  */
 
 // TCPDF configuration
@@ -163,7 +163,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.022
+ * @version 6.0.023
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -1850,6 +1850,9 @@ class TCPDF {
 	/**
 	 * This is the class constructor.
 	 * It allows to set up the page format, the orientation and the measure unit used in all the methods (except for the font sizes).
+	 * 
+	 * IMPORTANT: Please note that this method sets the mb_internal_encoding to ASCII, so if you are using the mbstring module functions with TCPDF you need to correctly set/unset the mb_internal_encoding when needed.
+	 * 
 	 * @param $orientation (string) page orientation. Possible values are (case insensitive):<ul><li>P or Portrait (default)</li><li>L or Landscape</li><li>'' (empty string) for automatic orientation</li></ul>
 	 * @param $unit (string) User measure unit. Possible values are:<ul><li>pt: point</li><li>mm: millimeter (default)</li><li>cm: centimeter</li><li>in: inch</li></ul><br />A point equals 1/72 of inch, that is to say about 0.35 mm (an inch being 2.54 cm). This is a very common unit in typography; font sizes are expressed in that unit.
 	 * @param $format (mixed) The format used for pages. It can be either: one of the string values specified at getPageSizeFromFormat() or an array of parameters specified at setPageFormat().
@@ -7006,7 +7009,7 @@ class TCPDF {
 			if ((method_exists('TCPDF_IMAGES', $mtd)) AND (!($resize AND (function_exists($gdfunction) OR extension_loaded('imagick'))))) {
 				// TCPDF image functions
 				$info = TCPDF_IMAGES::$mtd($file);
-				if ($info == 'pngalpha') {
+				if (($info === 'pngalpha') OR (isset($info['trns']) AND !empty($info['trns']))) {
 					return $this->ImagePngAlpha($file, $x, $y, $pixw, $pixh, $w, $h, 'PNG', $link, $align, $resize, $dpi, $palign, $filehash);
 				}
 			}
@@ -7189,7 +7192,7 @@ class TCPDF {
 	}
 
 	/**
-	 * Extract info from a PNG image with alpha channel using the GD library.
+	 * Extract info from a PNG image with alpha channel using the Imagick or GD library.
 	 * @param $file (string) Name of the file containing the image.
 	 * @param $x (float) Abscissa of the upper-left corner.
 	 * @param $y (float) Ordinate of the upper-left corner.

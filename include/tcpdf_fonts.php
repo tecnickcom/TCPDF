@@ -2533,7 +2533,7 @@ class TCPDF_FONTS {
 		return $size;
 	}
 
-} // --- END OF CLASS ---
+} // END OF TCPDF_FONTS CLASS
 
 //============================================================+
 // END OF FILE

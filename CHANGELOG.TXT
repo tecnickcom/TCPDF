@@ -1,3 +1,8 @@
+6.0.023 (2013-08-05)
+	- GNU Freefont fonts were updated.
+	- Licensing and copyright information about fonts were improved.
+	- PNG image support was improved.
+
 6.0.022 (2013-08-02)
 	- fixing initialization problem for signature_appearance property.
 
