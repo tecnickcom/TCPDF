@@ -1,3 +1,8 @@
+6.0.025 (2013-09-04)
+	- A pregSplit() bug was fixed.
+	- Improved content loading from URLs.
+	- Improved font path loading.
+
 6.0.024 (2013-09-02)
 	- Bug #826 "addEmptySignatureAppearance issue" was fixed.
 
