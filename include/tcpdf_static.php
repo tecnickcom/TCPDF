@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf_static.php
-// Version     : 1.0.001
+// Version     : 1.0.002
 // Begin       : 2002-08-03
-// Last Update : 2013-09-04
+// Last Update : 2013-09-14
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -38,7 +38,7 @@
  * This is a PHP class that contains static methods for the TCPDF class.<br>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 1.0.001
+ * @version 1.0.002
  */
 
 /**
@@ -46,7 +46,7 @@
  * Static methods used by the TCPDF class.
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 1.0.001
+ * @version 1.0.002
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF_STATIC {
@@ -55,7 +55,7 @@ class TCPDF_STATIC {
 	 * Current TCPDF version.
 	 * @private static
 	 */
-	private static $tcpdf_version = '6.0.026';
+	private static $tcpdf_version = '6.0.027';
 
 	/**
 	 * String alias for total number of pages.
@@ -1428,7 +1428,7 @@ class TCPDF_STATIC {
 	 * @public static
 	 */
 	public static function _RC4($key, $text, &$last_enc_key, &$last_enc_key_c) {
-		if (function_exists('mcrypt_decrypt') AND ($out = @mcrypt_decrypt(MCRYPT_ARCFOUR, $key, $text, MCRYPT_MODE_STREAM, ''))) {
+		if (function_exists('mcrypt_encrypt') AND ($out = @mcrypt_encrypt(MCRYPT_ARCFOUR, $key, $text, MCRYPT_MODE_STREAM, ''))) {
 			// try to use mcrypt function if exist
 			return $out;
 		}

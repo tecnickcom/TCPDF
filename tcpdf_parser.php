@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf_parser.php
-// Version     : 1.0.004
+// Version     : 1.0.005
 // Begin       : 2011-05-23
 // Last Update : 2013-09-14
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
@@ -37,7 +37,7 @@
  * This is a PHP class for parsing PDF documents.<br>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 1.0.004
+ * @version 1.0.005
  */
 
 // include class for decoding filters
@@ -48,7 +48,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_filters.php');
  * This is a PHP class for parsing PDF documents.<br>
  * @package com.tecnick.tcpdf
  * @brief This is a PHP class for parsing PDF documents..
- * @version 1.0.003
+ * @version 1.0.005
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF_PARSER {
@@ -135,16 +135,17 @@ class TCPDF_PARSER {
 			}
 			$matches = array_pop($matches);
 			$startxref = $matches[1];
+		} elseif (strpos($this->pdfdata, 'xref', $offset) == $offset) {
+			// Already pointing at the xref table
+			$startxref = $offset;
+		} elseif (preg_match('/([0-9]+[\s][0-9]+[\s]obj)/i', $this->pdfdata, $matches, PREG_OFFSET_CAPTURE, $offset)) {
+			// Cross-Reference Stream object
+			$startxref = $offset;
+		} elseif (preg_match('/[\r\n]startxref[\s]*[\r\n]+([0-9]+)[\s]*[\r\n]+%%EOF/i', $this->pdfdata, $matches, PREG_OFFSET_CAPTURE, $offset)) {
+			// startxref found
+			$startxref = $matches[1][0];
 		} else {
-			if (preg_match('/([0-9]+[\s][0-9]+[\s]obj)/i', $this->pdfdata, $matches, PREG_OFFSET_CAPTURE, $offset)) {
-				// Cross-Reference Stream object
-				$startxref = $offset;
-			} elseif (preg_match('/[\r\n]startxref[\s]*[\r\n]+([0-9]+)[\s]*[\r\n]+%%EOF/i', $this->pdfdata, $matches, PREG_OFFSET_CAPTURE, $offset)) {
-				// startxref found
-				$startxref = $matches[1][0];
-			} else {
-				$this->Error('Unable to find startxref');
-			}
+			$this->Error('Unable to find startxref');
 		}
 		// check xref position
 		if (strpos($this->pdfdata, 'xref', $startxref) == $startxref) {
@@ -209,6 +210,7 @@ class TCPDF_PARSER {
 				}
 				if (preg_match('/Encrypt[\s]+([0-9]+)[\s]+([0-9]+)[\s]+R/i', $trailer_data, $matches) > 0) {
 					$xref['trailer']['encrypt'] = intval($matches[1]).'_'.intval($matches[2]);
+					$this->Error('Encrypted documents are not supported!');
 				}
 				if (preg_match('/Info[\s]+([0-9]+)[\s]+([0-9]+)[\s]+R/i', $trailer_data, $matches) > 0) {
 					$xref['trailer']['info'] = intval($matches[1]).'_'.intval($matches[2]);
@@ -447,7 +449,7 @@ class TCPDF_PARSER {
 		// skip initial white space chars: \x00 null (NUL), \x09 horizontal tab (HT), \x0A line feed (LF), \x0C form feed (FF), \x0D carriage return (CR), \x20 space (SP)
 		$offset += strspn($this->pdfdata, "\x00\x09\x0a\x0c\x0d\x20", $offset);
 		// get first char
-		$char = $this->pdfdata{$offset};
+		$char = $this->pdfdata[$offset];
 		// get object type
 		switch ($char) {
 			case '%': { // \x25 PERCENT SIGN
@@ -545,8 +547,9 @@ class TCPDF_PARSER {
 					// hexadecimal string object
 					$objtype = $char;
 					++$offset;
-					if (($char == '<') AND (preg_match('/^([0-9A-Fa-f]+)[>]/iU', substr($this->pdfdata, $offset), $matches) == 1)) {
-						$objval = $matches[1];
+					if (($char == '<') AND (preg_match('/^([0-9A-Fa-f\x09\x0a\x0c\x0d\x20]+)>/iU', substr($this->pdfdata, $offset), $matches) == 1)) {
+						// remove white space characters
+						$objval = strtr($matches[1], "\x09\x0a\x0c\x0d\x20", '');
 						$offset += strlen($matches[0]);
 					}
 				}
@@ -636,7 +639,7 @@ class TCPDF_PARSER {
 		$i = 0; // object main index
 		do {
 			// get element
-			$element = $this->getRawObject($offset);
+			$element = $this->getRawObject($offset); print_r($element);//DEBUG
 			$offset = $element[2];
 			// decode stream using stream's dictionary information
 			if ($decoding AND ($element[0] == 'stream') AND (isset($objdata[($i - 1)][0])) AND ($objdata[($i - 1)][0] == '<<')) {

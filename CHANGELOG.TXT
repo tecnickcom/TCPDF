@@ -1,3 +1,8 @@
+6.0.027 (2013-09-14)
+	- A bug in tcpdf_parser wen parsing hexadecimal strings was fixed.
+	- A bug in tcpdf_parser wen looking for statxref was fixed.
+	- A bug on RC4 encryption was fixed.
+
 6.0.026 (2013-09-14)
 	- A bug in tcpdf_parser wen decoding streams was fixed.
 
