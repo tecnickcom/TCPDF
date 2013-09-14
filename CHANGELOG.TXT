@@ -1,3 +1,6 @@
+6.0.026 (2013-09-14)
+	- A bug in tcpdf_parser wen decoding streams was fixed.
+
 6.0.025 (2013-09-04)
 	- A pregSplit() bug was fixed.
 	- Improved content loading from URLs.

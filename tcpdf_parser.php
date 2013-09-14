@@ -1,11 +1,11 @@
 <?php
 //============================================================+
 // File name   : tcpdf_parser.php
-// Version     : 1.0.003
+// Version     : 1.0.004
 // Begin       : 2011-05-23
-// Last Update : 2013-03-17
+// Last Update : 2013-09-14
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
-// License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
+// License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
 // -------------------------------------------------------------------
 // Copyright (C) 2011-2013 Nicola Asuni - Tecnick.com LTD
 //
@@ -37,7 +37,7 @@
  * This is a PHP class for parsing PDF documents.<br>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 1.0.003
+ * @version 1.0.004
  */
 
 // include class for decoding filters
@@ -576,12 +576,12 @@ class TCPDF_PARSER {
 					// start stream object
 					$objtype = 'stream';
 					$offset += 6;
-					if (preg_match('/^([\r\n]+)/isU', substr($this->pdfdata, $offset), $matches) == 1) {
+					if (preg_match('/^([\r]?[\n])/isU', substr($this->pdfdata, $offset), $matches) == 1) {
 						$offset += strlen($matches[0]);
-					}
-					if (preg_match('/([\r\n]*endstream)/isU', substr($this->pdfdata, $offset), $matches, PREG_OFFSET_CAPTURE) == 1) {
-						$objval = substr($this->pdfdata, $offset, $matches[0][1]);
-						$offset += $matches[0][1];
+						if (preg_match('/([\r]?[\n])(endstream)/isU', substr($this->pdfdata, $offset), $matches, PREG_OFFSET_CAPTURE) == 1) {
+							$objval = substr($this->pdfdata, $offset, $matches[0][1]);
+							$offset += $matches[2][1];
+						}
 					}
 				} elseif (substr($this->pdfdata, $offset, 9) == 'endstream') {
 					// end stream object
@@ -640,7 +640,7 @@ class TCPDF_PARSER {
 			$offset = $element[2];
 			// decode stream using stream's dictionary information
 			if ($decoding AND ($element[0] == 'stream') AND (isset($objdata[($i - 1)][0])) AND ($objdata[($i - 1)][0] == '<<')) {
-				$element[3] = $this->decodeStream($objdata[($i - 1)][1], substr($element[1], 1));
+				$element[3] = $this->decodeStream($objdata[($i - 1)][1], $element[1]);
 			}
 			$objdata[$i] = $element;
 			++$i;
