@@ -406,7 +406,7 @@ class TCPDF_FILTERS {
 	 * @public static
 	 */
 	public static function decodeFilterCCITTFaxDecode($data) {
-		self::Error('decodeFilterCCITTFaxDecode: this method has not been yet implemented');
+		self::Error('~decodeFilterCCITTFaxDecode: this method has not been yet implemented');
 		//return $data;
 	}
 
@@ -419,7 +419,7 @@ class TCPDF_FILTERS {
 	 * @public static
 	 */
 	public static function decodeFilterJBIG2Decode($data) {
-		self::Error('decodeFilterJBIG2Decode: this method has not been yet implemented');
+		self::Error('~decodeFilterJBIG2Decode: this method has not been yet implemented');
 		//return $data;
 	}
 
@@ -432,7 +432,7 @@ class TCPDF_FILTERS {
 	 * @public static
 	 */
 	public static function decodeFilterDCTDecode($data) {
-		self::Error('decodeFilterDCTDecode: this method has not been yet implemented');
+		self::Error('~decodeFilterDCTDecode: this method has not been yet implemented');
 		//return $data;
 	}
 
@@ -445,7 +445,7 @@ class TCPDF_FILTERS {
 	 * @public static
 	 */
 	public static function decodeFilterJPXDecode($data) {
-		self::Error('decodeFilterJPXDecode: this method has not been yet implemented');
+		self::Error('~decodeFilterJPXDecode: this method has not been yet implemented');
 		//return $data;
 	}
 
@@ -458,7 +458,7 @@ class TCPDF_FILTERS {
 	 * @public static
 	 */
 	public static function decodeFilterCrypt($data) {
-		self::Error('decodeFilterCrypt: this method has not been yet implemented');
+		self::Error('~decodeFilterCrypt: this method has not been yet implemented');
 		//return $data;
 	}
 

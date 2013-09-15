@@ -1,7 +1,12 @@
+6.0.029 (2013-09-15)
+	- Constants K_TCPDF_PARSER_THROW_EXCEPTION_ERROR and K_TCPDF_PARSER_IGNORE_DECODING_ERRORS where removed in favor of a new configuration array in the TCPDF_PARSER class.
+	- The TCPDF_PARSER class can now be configured using the new $cfg parameter.
+
 6.0.028 (2013-09-15)
 	- A debug print_r was removed form tcpdf_parser.php.
-	- TCPDF_FILTERS now throws an exception in case of error.
-	- TCPDF_PARSER now throws an exception in case of error unless you define the constant K_TCPDF_PARSER_THROW_EXCEPTION_ERROR to false.
+	- TCPDF_FILTERS class now throws an exception in case of error.
+	- TCPDF_PARSER class now throws an exception in case of error unless you define the constant K_TCPDF_PARSER_THROW_EXCEPTION_ERROR to false.
+	- The constant K_TCPDF_PARSER_IGNORE_DECODING_ERRORS can be set to tru eto ignore decoding errors on TCPDF_PARSER.
 
 6.0.027 (2013-09-14)
 	- A bug in tcpdf_parser wen parsing hexadecimal strings was fixed.
