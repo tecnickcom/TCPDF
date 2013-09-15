@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf_parser.php
-// Version     : 1.0.005
+// Version     : 1.0.006
 // Begin       : 2011-05-23
-// Last Update : 2013-09-14
+// Last Update : 2013-09-15
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
 // -------------------------------------------------------------------
@@ -37,7 +37,7 @@
  * This is a PHP class for parsing PDF documents.<br>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 1.0.005
+ * @version 1.0.006
  */
 
 // include class for decoding filters
@@ -639,7 +639,7 @@ class TCPDF_PARSER {
 		$i = 0; // object main index
 		do {
 			// get element
-			$element = $this->getRawObject($offset); print_r($element);//DEBUG
+			$element = $this->getRawObject($offset);
 			$offset = $element[2];
 			// decode stream using stream's dictionary information
 			if ($decoding AND ($element[0] == 'stream') AND (isset($objdata[($i - 1)][0])) AND ($objdata[($i - 1)][0] == '<<')) {
@@ -721,7 +721,11 @@ class TCPDF_PARSER {
 		$remaining_filters = array();
 		foreach ($filters as $filter) {
 			if (in_array($filter, $this->FilterDecoders->getAvailableFilters())) {
-				$stream = $this->FilterDecoders->decodeFilter($filter, $stream);
+				try {
+					$stream = $this->FilterDecoders->decodeFilter($filter, $stream);
+				} catch (Exception $e) {
+					$this->Error($e->getMessage());
+				}
 			} else {
 				// add missing filter to array
 				$remaining_filters[] = $filter;
@@ -731,14 +735,17 @@ class TCPDF_PARSER {
 	}
 
 	/**
-	 * This method is automatically called in case of fatal error; it simply outputs the message and halts the execution.
+	 * Throw an exception or print an error message and die if the K_TCPDF_PARSER_THROW_EXCEPTION_ERROR constant is set to true.
 	 * @param $msg (string) The error message
 	 * @public
 	 * @since 1.0.000 (2011-05-23)
 	 */
 	public function Error($msg) {
-		// exit program and print error
-		die('<strong>TCPDF_PARSER ERROR: </strong>'.$msg);
+		if (defined('K_TCPDF_PARSER_THROW_EXCEPTION_ERROR') AND !K_TCPDF_PARSER_THROW_EXCEPTION_ERROR) {
+			die('<strong>TCPDF_PARSER ERROR: </strong>'.$msg);
+		} else {
+			throw new Exception('TCPDF_PARSER ERROR: '.$msg);
+		}
 	}
 
 } // END OF TCPDF_PARSER CLASS

@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.027
+// Version     : 6.0.028
 // Begin       : 2002-08-03
-// Last Update : 2013-09-14
+// Last Update : 2013-09-15
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -139,7 +139,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.027
+ * @version 6.0.028
  */
 
 // TCPDF configuration
@@ -163,7 +163,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.027
+ * @version 6.0.028
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -2919,8 +2919,7 @@ class TCPDF {
 	}
 
 	/**
-	 * This method is automatically called in case of fatal error; it simply outputs the message and halts the execution. An inherited class may override it to customize the error handling but should always halt the script, or the resulting document would probably be invalid.
-	 * 2004-06-11 :: Nicola Asuni : changed bold tag with strong
+	 * Throw an exception or print an error message and die if the K_TCPDF_PARSER_THROW_EXCEPTION_ERROR constant is set to true.
 	 * @param $msg (string) The error message
 	 * @public
 	 * @since 1.0
@@ -2928,8 +2927,7 @@ class TCPDF {
 	public function Error($msg) {
 		// unset all class variables
 		$this->_destroy(true);
-		// exit program and print error
-		if (!K_TCPDF_THROW_EXCEPTION_ERROR) {
+		if (defined('K_TCPDF_THROW_EXCEPTION_ERROR') AND !K_TCPDF_THROW_EXCEPTION_ERROR) {
 			die('<strong>TCPDF ERROR: </strong>'.$msg);
 		} else {
 			throw new Exception('TCPDF ERROR: '.$msg);

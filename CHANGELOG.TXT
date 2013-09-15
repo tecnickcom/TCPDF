@@ -1,3 +1,8 @@
+6.0.028 (2013-09-15)
+	- A debug print_r was removed form tcpdf_parser.php.
+	- TCPDF_FILTERS now throws an exception in case of error.
+	- TCPDF_PARSER now throws an exception in case of error unless you define the constant K_TCPDF_PARSER_THROW_EXCEPTION_ERROR to false.
+
 6.0.027 (2013-09-14)
 	- A bug in tcpdf_parser wen parsing hexadecimal strings was fixed.
 	- A bug in tcpdf_parser wen looking for statxref was fixed.
