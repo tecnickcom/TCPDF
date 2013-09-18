@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.030
+// Version     : 6.0.031
 // Begin       : 2002-08-03
 // Last Update : 2013-09-15
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
@@ -139,7 +139,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.030
+ * @version 6.0.031
  */
 
 // TCPDF configuration
@@ -163,7 +163,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.030
+ * @version 6.0.031
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -5381,7 +5381,7 @@ class TCPDF {
 					// get string width without spaces
 					$width = $this->GetStringWidth(str_replace(' ', '', $txt));
 					// calculate average space width
-					$spacewidth = -1000 * ($w - $width - $this->cell_padding['L'] - $this->cell_padding['R']) / ($ns?$ns:1) / $this->FontSize;
+					$spacewidth = -1000 * ($w - $width - $this->cell_padding['L'] - $this->cell_padding['R']) / ($ns?$ns:1) / ($this->FontSize?$this->FontSize:1);
 					if ($this->font_stretching != 100) {
 						// word spacing is affected by stretching
 						$spacewidth /= ($this->font_stretching / 100);
@@ -6698,10 +6698,16 @@ class TCPDF {
 		if ($w <= 0) {
 			// set maximum width
 			$w = ($this->w - $this->lMargin - $this->rMargin);
+			if ($w <= 0) {
+				$w = 1;
+			}
 		}
 		if ($h <= 0) {
 			// set maximum height
 			$h = ($this->PageBreakTrigger - $this->tMargin);
+			if ($h <= 0) {
+				$h = 1;
+			}
 		}
 		// resize the block to be vertically contained on a single page or single column
 		if ($fitonpage OR $this->AutoPageBreak) {
@@ -13489,7 +13495,12 @@ class TCPDF {
 		// calculate aproximatively the ratio between widths of aliases and replacements.
 		$ref = '{'.TCPDF_STATIC::$alias_right_shift.'}{'.TCPDF_STATIC::$alias_tot_pages.'}{'.TCPDF_STATIC::$alias_num_page.'}';
 		$rep = str_repeat(' ', $this->GetNumChars($ref));
-		$wdiff = max(1, ($this->GetStringWidth($ref) / $this->GetStringWidth($rep)));
+		$wrep = $this->GetStringWidth($rep);
+		if ($wrep > 0) {
+			$wdiff = max(1, ($this->GetStringWidth($ref) / $wrep));
+		} else {
+			$wdiff = 1;
+		}
 		$sdiff = sprintf('%F', $wdiff);
 		$alias = TCPDF_STATIC::$alias_right_shift.$sdiff.'}';
 		if ($this->isUnicodeFont()) {
@@ -13924,6 +13935,9 @@ class TCPDF {
 	public function colorRegistrationBar($x, $y, $w, $h, $transition=true, $vertical=false, $colors='A,R,G,B,C,M,Y,K') {
 		$bars = explode(',', $colors);
 		$numbars = count($bars); // number of bars to print
+		if ($numbars <= 0) {
+			return;
+		}
 		// set bar measures
 		if ($vertical) {
 			$coords = array(0, 0, 0, 1);
@@ -15016,8 +15030,11 @@ class TCPDF {
 		// create new barcode object
 		$barcodeobj = new TCPDFBarcode($code, $type);
 		$arrcode = $barcodeobj->getBarcodeArray();
-		if (($arrcode === false) OR empty($arrcode) OR ($arrcode['maxw'] == 0)) {
+		if (($arrcode === false) OR empty($arrcode) OR ($arrcode['maxw'] <= 0)) {
 			$this->Error('Error in 1D barcode string');
+		}
+		if ($arrcode['maxh'] <= 0) {
+			$arrcode['maxh'] = 1;
 		}
 		// set default values
 		if (!isset($style['position'])) {
@@ -15384,10 +15401,13 @@ class TCPDF {
 		// number of barcode columns and rows
 		$rows = $arrcode['num_rows'];
 		$cols = $arrcode['num_cols'];
+		if (($rows <= 0) || ($cols <= 0)){
+			$this->Error('Error in 2D barcode string');
+		}
 		// module width and height
 		$mw = $style['module_width'];
 		$mh = $style['module_height'];
-		if (($mw == 0) OR ($mh == 0)) {
+		if (($mw <= 0) OR ($mh <= 0)) {
 			$this->Error('Error in 2D barcode string');
 		}
 		// get max dimensions
@@ -17437,6 +17457,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 								}
 								// calculate additional space to add to each existing space
 								$spacewidth = ($mdiff / ($ns - $no)) * $this->k;
+								if ($this->FontSize <= 0) {
+									$this->FontSize = 1;
+								}
 								$spacewidthu = -1000 * ($mdiff + (($ns + $no) * $one_space_width)) / $ns / $this->FontSize;
 								if ($this->font_spacing != 0) {
 									// fixed spacing mode
@@ -17732,7 +17755,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						$this->newline = true;
 					}
 					// table
-					if ($dom[$key]['value'] == 'table') {
+					if (($dom[$key]['value'] == 'table') AND isset($dom[$key]['cols']) AND ($dom[$key]['cols'] > 0)) {
 						// available page width
 						if ($this->rtl) {
 							$wtmp = $this->x - $this->lMargin;
@@ -17787,7 +17810,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						if (isset($dom[$key]['border']) AND !empty($dom[$key]['border'])) {
 							$tdborder = $dom[$key]['border'];
 						}
-						$colspan = $dom[$key]['attribute']['colspan'];
+						$colspan = intval($dom[$key]['attribute']['colspan']);
+						if ($colspan <= 0) {
+							$colspan = 1;
+						}
 						$old_cell_padding = $this->cell_padding;
 						if (isset($dom[($dom[$trid]['parent'])]['attribute']['cellpadding'])) {
 							$crclpd = $this->getHTMLUnitToUnits($dom[($dom[$trid]['parent'])]['attribute']['cellpadding'], 1, 'px');
@@ -21139,7 +21165,12 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				$maxpage = max($maxpage, $outline['p']);
 			}
 			$fw = ($tw - $this->GetStringWidth($pagenum.$filler));
-			$numfills = floor($fw / $this->GetStringWidth($filler));
+			$wfiller = $this->GetStringWidth($filler);
+			if ($wfiller > 0) {
+				$numfills = floor($fw / $wfiller);
+			} else {
+				$numfills = 0;
+			}
 			if ($numfills > 0) {
 				$rowfill = str_repeat($filler, $numfills);
 			} else {
@@ -22087,7 +22118,13 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		// check page for no-write regions and adapt page margins if necessary
 		list($x, $y) = $this->checkPageRegions($h, $x, $y);
 		$ow = $this->xobjects[$id]['w'];
+		if ($ow <= 0) {
+			$ow = 1;
+		}
 		$oh = $this->xobjects[$id]['h'];
+		if ($oh <= 0) {
+			$oh = 1;
+		}
 		// calculate template width and height on document
 		if (($w <= 0) AND ($h <= 0)) {
 			$w = $ow;
@@ -22128,8 +22165,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		// print XObject Template + Transformation matrix
 		$this->StartTransform();
 		// translate and scale
-		$sx = ($w / $this->xobjects[$id]['w']);
-		$sy = ($h / $this->xobjects[$id]['h']);
+		$sx = ($w / $ow);
+		$sy = ($h / $oh);
 		$tm = array();
 		$tm[0] = $sx;
 		$tm[1] = 0;
@@ -22495,6 +22532,12 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					}
 				}
 			}
+		}
+		if ($ow <= 0) {
+			$ow = 1;
+		}
+		if ($oh <= 0) {
+			$oh = 1;
 		}
 		// calculate image width and height on document
 		if (($w <= 0) AND ($h <= 0)) {

@@ -1,3 +1,7 @@
+6.0.031 (2013-09-18)
+	- Bug #836 "Optional EOL marker before endstream" was fixed.
+	- Some additional controls were added to avoid "division by zero" error with badly formatted input.
+
 6.0.030 (2013-09-17)
 	- Bug #835 "PDF417 and Cyrilic simbols" was fixed.
 

@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf_parser.php
-// Version     : 1.0.007
+// Version     : 1.0.008
 // Begin       : 2011-05-23
-// Last Update : 2013-09-15
+// Last Update : 2013-09-18
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
 // -------------------------------------------------------------------
@@ -37,7 +37,7 @@
  * This is a PHP class for parsing PDF documents.<br>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 1.0.007
+ * @version 1.0.008
  */
 
 // include class for decoding filters
@@ -605,7 +605,7 @@ class TCPDF_PARSER {
 					$offset += 6;
 					if (preg_match('/^([\r]?[\n])/isU', substr($this->pdfdata, $offset), $matches) == 1) {
 						$offset += strlen($matches[0]);
-						if (preg_match('/([\r]?[\n])(endstream)/isU', substr($this->pdfdata, $offset), $matches, PREG_OFFSET_CAPTURE) == 1) {
+						if (preg_match('/([\r]?[\n])?(endstream)[\x09\x0a\x0c\x0d\x20]/isU', substr($this->pdfdata, $offset), $matches, PREG_OFFSET_CAPTURE) == 1) {
 							$objval = substr($this->pdfdata, $offset, $matches[0][1]);
 							$offset += $matches[2][1];
 						}
