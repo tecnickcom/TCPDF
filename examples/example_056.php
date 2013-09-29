@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_056.php
 // Begin       : 2010-03-26
-// Last Update : 2013-05-14
+// Last Update : 2013-09-29
 //
 // Description : Example 056 for TCPDF class
 //               Crop marks and color registration bars
@@ -85,10 +85,10 @@ $pdf->colorRegistrationBar(135, 70, 5, 50, false, false, 'A,W,R,G,B,C,M,Y,K');
 
 // corner crop marks
 
-$pdf->cropMark(50, 70, 10, 10, 'TL', array(0,0,0));
-$pdf->cropMark(140, 70, 10, 10, 'TR', array(0,0,0));
-$pdf->cropMark(50, 120, 10, 10, 'BL', array(0,0,0));
-$pdf->cropMark(140, 120, 10, 10, 'BR', array(0,0,0));
+$pdf->cropMark(50, 70, 10, 10, 'TL');
+$pdf->cropMark(140, 70, 10, 10, 'TR');
+$pdf->cropMark(50, 120, 10, 10, 'BL');
+$pdf->cropMark(140, 120, 10, 10, 'BR');
 
 // various crop marks
 
@@ -102,10 +102,10 @@ $pdf->cropMark(95, 140, 5, 5, 'A,D', array(0,0,255));
 
 // registration marks
 
-$pdf->registrationMark(40, 60, 5, false, array(0,0,0), array(255,255,255));
+$pdf->registrationMark(40, 60, 5, false);
 $pdf->registrationMark(150, 60, 5, true, array(0,0,0), array(255,255,0));
 $pdf->registrationMark(40, 130, 5, true, array(0,0,0), array(255,255,0));
-$pdf->registrationMark(150, 130, 5, false, array(0,0,0), array(255,255,255));
+$pdf->registrationMark(150, 130, 5, false, array(0,0,0,0,'None'), array(100,100,100,100,'All'));
 
 // ---------------------------------------------------------
 

@@ -1,3 +1,7 @@
+6.0.036 (2013-09-29)
+	- Methods for registration bars and crop marks were extended to support registration color (see example n. 56).
+	- New default spot colors were added to tcpdf_colors.php, including the 'All' and 'None' special registration colors.
+
 6.0.035 (2013-09-25)
 	- TCPDF_PARSER class was improved.
 

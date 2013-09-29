@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.035
+// Version     : 6.0.036
 // Begin       : 2002-08-03
-// Last Update : 2013-09-25
+// Last Update : 2013-09-29
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.035
+ * @version 6.0.036
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.035
+ * @version 6.0.036
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -3684,7 +3684,7 @@ class TCPDF {
 	public function setSpotColor($type, $name, $tint=100) {
 		$spotcolor = TCPDF_COLORS::getSpotColor($name, $this->spot_colors);
 		if ($spotcolor === false) {
-			$this->Error('Undefined spot color: '.$name.', you must add it on the spotcolors.php file.');
+			$this->Error('Undefined spot color: '.$name.', you must add it using the AddSpotColor() method.');
 		}
 		$tint = (max(0, min(100, $tint)) / 100);
 		$pdfcolor = sprintf('/CS%d ', $this->spot_colors[$name]['i']);
@@ -13919,7 +13919,7 @@ class TCPDF {
 	 * @param $h (float) height of the rectangle.
 	 * @param $transition (boolean) if true prints tcolor transitions to white.
 	 * @param $vertical (boolean) if true prints bar vertically.
-	 * @param $colors (string) colors to print, one letter per color separated by comma (for example 'A,W,R,G,B,C,M,Y,K'): A=black, W=white, R=red, G=green, B=blue, C=cyan, M=magenta, Y=yellow, K=black.
+	 * @param $colors (string) colors to print, one letter per color separated by comma (for example 'A,W,R,G,B,C,M,Y,K,RGB,CMYK,ALL'): A = grayscale black, W = grayscale white, R = RGB red, G RGB green, B RGB blue, C = CMYK cyan, M = CMYK magenta, Y = CMYK yellow, K = CMYK key/black, RGB = RGB registration color, CMYK = CMYK registration color, ALL = Spot registration color.
 	 * @author Nicola Asuni
 	 * @since 4.9.000 (2010-03-26)
 	 * @public
@@ -13949,54 +13949,65 @@ class TCPDF {
 		foreach ($bars as $col) {
 			switch ($col) {
 				// set transition colors
-				case 'A': { // BLACK
+				case 'A': { // BLACK (GRAYSCALE)
 					$col_a = array(255);
 					$col_b = array(0);
 					break;
 				}
-				case 'W': { // WHITE
+				case 'W': { // WHITE (GRAYSCALE)
 					$col_a = array(0);
 					$col_b = array(255);
 					break;
 				}
-				case 'R': { // R
+				case 'R': { // RED (RGB)
 					$col_a = array(255,255,255);
 					$col_b = array(255,0,0);
 					break;
 				}
-				case 'G': { // G
+				case 'G': { // GREEN (RGB)
 					$col_a = array(255,255,255);
 					$col_b = array(0,255,0);
 					break;
 				}
-				case 'B': { // B
+				case 'B': { // BLUE (RGB)
 					$col_a = array(255,255,255);
 					$col_b = array(0,0,255);
 					break;
 				}
-				case 'C': { // C
+				case 'C': { // CYAN (CMYK)
 					$col_a = array(0,0,0,0);
 					$col_b = array(100,0,0,0);
 					break;
 				}
-				case 'M': { // M
+				case 'M': { // MAGENTA (CMYK)
 					$col_a = array(0,0,0,0);
 					$col_b = array(0,100,0,0);
 					break;
 				}
-				case 'Y': { // Y
+				case 'Y': { // YELLOW (CMYK)
 					$col_a = array(0,0,0,0);
 					$col_b = array(0,0,100,0);
 					break;
 				}
-				case 'K': { // K
+				case 'K': { // KEY - BLACK (CMYK)
 					$col_a = array(0,0,0,0);
 					$col_b = array(0,0,0,100);
 					break;
 				}
-				default: { // GRAY
-					$col_a = array(255);
-					$col_b = array(0);
+				case 'RGB': { // BLACK REGISTRATION (RGB)
+					$col_a = array(255,255,255);
+					$col_b = array(0,0,0);
+					break;
+				}
+				case 'CMYK': { // BLACK REGISTRATION (CMYK)
+					$col_a = array(0,0,0,0);
+					$col_b = array(100,100,100,100);
+					break;
+				}
+				case 'ALL':
+				default: { // SPOT COLOR REGISTRATION
+					$col_a = array(0,0,0,0,'None');
+					$col_b = array(100,100,100,100,'All');
 					break;
 				}
 			}
@@ -14004,8 +14015,8 @@ class TCPDF {
 				// color gradient
 				$this->LinearGradient($xb, $yb, $wb, $hb, $col_a, $col_b, $coords);
 			} else {
-				// color rectangle
 				$this->SetFillColorArray($col_b);
+				// colored rectangle
 				$this->Rect($xb, $yb, $wb, $hb, 'F', array());
 			}
 			$xb += $xd;
@@ -14020,12 +14031,12 @@ class TCPDF {
 	 * @param $w (float) width of the crop mark.
 	 * @param $h (float) height of the crop mark.
 	 * @param $type (string) type of crop mark, one symbol per type separated by comma: T = TOP, F = BOTTOM, L = LEFT, R = RIGHT, TL = A = TOP-LEFT, TR = B = TOP-RIGHT, BL = C = BOTTOM-LEFT, BR = D = BOTTOM-RIGHT.
-	 * @param $color (array) crop mark color (default black).
+	 * @param $color (array) crop mark color (default spot registration color).
 	 * @author Nicola Asuni
 	 * @since 4.9.000 (2010-03-26)
 	 * @public
 	 */
-	public function cropMark($x, $y, $w, $h, $type='T,R,B,L', $color=array(0,0,0)) {
+	public function cropMark($x, $y, $w, $h, $type='T,R,B,L', $color=array(100,100,100,100,'All')) {
 		$this->SetLineStyle(array('width' => (0.5 / $this->k), 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => $color));
 		$type = strtoupper($type);
 		$type = preg_replace('/[^A-Z\-\,]*/', '', $type);
@@ -14090,13 +14101,13 @@ class TCPDF {
 	 * @param $y (float) ordinate of the registration mark center.
 	 * @param $r (float) radius of the crop mark.
 	 * @param $double (boolean) if true print two concentric crop marks.
-	 * @param $cola (array) crop mark color (default black).
-	 * @param $colb (array) second crop mark color.
+	 * @param $cola (array) crop mark color (default spot registration color 'All').
+	 * @param $colb (array) second crop mark color (default spot registration color 'None').
 	 * @author Nicola Asuni
 	 * @since 4.9.000 (2010-03-26)
 	 * @public
 	 */
-	public function registrationMark($x, $y, $r, $double=false, $cola=array(0,0,0), $colb=array(255,255,255)) {
+	public function registrationMark($x, $y, $r, $double=false, $cola=array(100,100,100,100,'All'), $colb=array(0,0,0,0,'None')) {
 		$line_style = array('width' => (0.5 / $this->k), 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => $cola);
 		$this->SetFillColorArray($cola);
 		$this->PieSector($x, $y, $r, 90, 180, 'F');
@@ -14302,6 +14313,7 @@ class TCPDF {
 		$numcolspace = count($stops[0]['color']);
 		$bcolor = array_values($background);
 		switch($numcolspace) {
+			case 5:   // SPOT
 			case 4: { // CMYK
 				$this->gradients[$n]['colspace'] = 'DeviceCMYK';
 				if (!empty($background)) {
