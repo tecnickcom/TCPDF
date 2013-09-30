@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_037.php
 // Begin       : 2008-09-12
-// Last Update : 2013-05-14
+// Last Update : 2013-09-30
 //
 // Description : Example 037 for TCPDF class
 //               Spot colors
@@ -86,7 +86,11 @@ $pdf->SetFont('helvetica', '', 10);
 
 $pdf->AddSpotColor('My TCPDF Dark Green', 100, 50, 80, 45);
 $pdf->AddSpotColor('My TCPDF Light Yellow', 0, 0, 55, 0);
-
+$pdf->AddSpotColor('My TCPDF Black', 0, 0, 0, 100);
+$pdf->AddSpotColor('My TCPDF Red', 30, 100, 90, 10);
+$pdf->AddSpotColor('My TCPDF Green', 100, 30, 100, 0);
+$pdf->AddSpotColor('My TCPDF Blue', 100, 60, 10, 5);
+$pdf->AddSpotColor('My TCPDF Yellow', 0, 20, 100, 0);
 
 // Select the spot color
 // $tint (the second parameter) is the intensity of the color (0-100).

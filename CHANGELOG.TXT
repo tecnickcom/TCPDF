@@ -1,3 +1,11 @@
+6.0.037 (2013-09-30)
+	- Method getAllSpotColors() was added to return all spot colors.
+	- Method colorRegistrationBar() was extended to automatically print all spot colors and support individual spot colors.
+	- The method registrationMarkCMYK() was added to print a registration mark for CMYK colors.
+	- A bug related to page groups was fixed.
+	- Gradient() method now supports CMYK equivalents of spot colors.
+	- Example n. 56 was updated.
+
 6.0.036 (2013-09-29)
 	- Methods for registration bars and crop marks were extended to support registration color (see example n. 56).
 	- New default spot colors were added to tcpdf_colors.php, including the 'All' and 'None' special registration colors.
