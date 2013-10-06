@@ -1,3 +1,6 @@
+6.0.038 (2013-10-06)
+	- Bug #841 "Division by zero warning at writeHTML a <li> tag" was fixed.
+
 6.0.037 (2013-09-30)
 	- Method getAllSpotColors() was added to return all spot colors.
 	- Method colorRegistrationBar() was extended to automatically print all spot colors and support individual spot colors.
