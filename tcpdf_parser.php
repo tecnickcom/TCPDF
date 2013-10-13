@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf_parser.php
-// Version     : 1.0.010
+// Version     : 1.0.011
 // Begin       : 2011-05-23
-// Last Update : 2013-09-25
+// Last Update : 2013-10-13
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
 // -------------------------------------------------------------------
@@ -37,7 +37,7 @@
  * This is a PHP class for parsing PDF documents.<br>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 1.0.010
+ * @version 1.0.011
  */
 
 // include class for decoding filters
@@ -318,9 +318,9 @@ class TCPDF_PARSER {
 			} elseif ($filltrailer) {
 				if (($v[0] == '/') AND ($v[1] == 'Size') AND (isset($sarr[($k +1)]) AND ($sarr[($k +1)][0] == 'numeric'))) {
 					$xref['trailer']['size'] = $sarr[($k +1)][1];
-				} elseif (($v[0] == '/') AND ($v[1] == 'Root') AND (isset($sarr[($k +1)]) AND ($sarr[($k +1)][0] == 'ojbref'))) {
+				} elseif (($v[0] == '/') AND ($v[1] == 'Root') AND (isset($sarr[($k +1)]) AND ($sarr[($k +1)][0] == 'objref'))) {
 					$xref['trailer']['root'] = $sarr[($k +1)][1];
-				} elseif (($v[0] == '/') AND ($v[1] == 'Info') AND (isset($sarr[($k +1)]) AND ($sarr[($k +1)][0] == 'ojbref'))) {
+				} elseif (($v[0] == '/') AND ($v[1] == 'Info') AND (isset($sarr[($k +1)]) AND ($sarr[($k +1)][0] == 'objref'))) {
 					$xref['trailer']['info'] = $sarr[($k +1)][1];
 				} elseif (($v[0] == '/') AND ($v[1] == 'ID') AND (isset($sarr[($k +1)]))) {
 					$xref['trailer']['id'] = array();
@@ -494,7 +494,7 @@ class TCPDF_PARSER {
 				$next = strcspn($this->pdfdata, "\r\n", $offset);
 				if ($next > 0) {
 					$offset += $next;
-					return $this->getRawObject($this->pdfdata, $offset);
+					return $this->getRawObject($offset);
 				}
 				break;
 			}
@@ -629,12 +629,12 @@ class TCPDF_PARSER {
 					$offset += 9;
 				} elseif (preg_match('/^([0-9]+)[\s]+([0-9]+)[\s]+R/iU', substr($this->pdfdata, $offset, 33), $matches) == 1) {
 					// indirect object reference
-					$objtype = 'ojbref';
+					$objtype = 'objref';
 					$offset += strlen($matches[0]);
 					$objval = intval($matches[1]).'_'.intval($matches[2]);
 				} elseif (preg_match('/^([0-9]+)[\s]+([0-9]+)[\s]+obj/iU', substr($this->pdfdata, $offset, 33), $matches) == 1) {
 					// object start
-					$objtype = 'ojb';
+					$objtype = 'obj';
 					$objval = intval($matches[1]).'_'.intval($matches[2]);
 					$offset += strlen ($matches[0]);
 				} elseif (($numlen = strspn($this->pdfdata, '+-.0123456789', $offset)) > 0) {
@@ -665,6 +665,8 @@ class TCPDF_PARSER {
 			return;
 		}
 		$objref = $obj[0].' '.$obj[1].' obj';
+		// ignore leading zeros
+		$offset += strspn($this->pdfdata, '0', $offset);
 		if (strpos($this->pdfdata, $objref, $offset) != $offset) {
 			// an indirect reference to an undefined object shall be considered a reference to the null object
 			return array('null', 'null', $offset);
