@@ -1,3 +1,8 @@
+6.0.039 (2013-10-13)
+	- Bug #843 "Wrong call in parser" was fixed.
+	- Bug #844 "Wrong object type named" was fixed.
+	- Bug #845 "Parsing error on obj ref prefixed by '000000'" was fixed.
+
 6.0.038 (2013-10-06)
 	- Bug #841 "Division by zero warning at writeHTML a <li> tag" was fixed.
 
