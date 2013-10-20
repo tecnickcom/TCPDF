@@ -121,7 +121,7 @@ class TCPDF_IMAGES {
 	 */
 	public static function _toPNG($image) {
 		// set temporary image file name
-		$tempname = TCPDF_STATIC::getObjFilename('png');
+		$tempname = TCPDF_STATIC::getObjFilename('img');
 		// turn off interlaced mode
 		imageinterlace($image, 0);
 		// create temporary PNG image
@@ -144,7 +144,7 @@ class TCPDF_IMAGES {
 	 * @public static
 	 */
 	public static function _toJPEG($image, $quality) {
-		$tempname = TCPDF_STATIC::getObjFilename('jpg');
+		$tempname = TCPDF_STATIC::getObjFilename('img');
 		imagejpeg($image, $tempname, $quality);
 		imagedestroy($image);
 		$retvars = self::_parsejpeg($tempname);

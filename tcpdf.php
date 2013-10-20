@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.039
+// Version     : 6.0.040
 // Begin       : 2002-08-03
-// Last Update : 2013-10-13
+// Last Update : 2013-10-20
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.039
+ * @version 6.0.040
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.039
+ * @version 6.0.040
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -6080,7 +6080,7 @@ class TCPDF {
 	 * @param $cellpadding (float) Internal cell padding, if empty uses default cell padding.
 	 * @param $border (mixed) Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
 	 * @return float Return the minimal height needed for multicell method for printing the $txt param.
-	 * @author Alexander Escalona Fernández, Nicola Asuni
+	 * @author Alexander Escalona Fern\E1ndez, Nicola Asuni
 	 * @public
 	 * @since 4.5.011
 	 */
@@ -6187,7 +6187,7 @@ class TCPDF {
 	 * @param $cellpadding (float) Internal cell padding, if empty uses default cell padding.
 	 * @param $border (mixed) Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
 	 * @return float Return the minimal height needed for multicell method for printing the $txt param.
-	 * @author Nicola Asuni, Alexander Escalona Fernández
+	 * @author Nicola Asuni, Alexander Escalona Fern\E1ndez
 	 * @public
 	 */
 	public function getStringHeight($w, $txt, $reseth=false, $autopadding=true, $cellpadding='', $border=0) {
@@ -6803,6 +6803,7 @@ class TCPDF {
 		}
 		if (isset($imgdata) AND ($imgdata !== FALSE)) {
 			// copy image to cache
+			$original_file = $file;
 			$file = TCPDF_STATIC::getObjFilename('img');
 			$fp = fopen($file, 'w');
 			fwrite($fp, $imgdata);
@@ -6811,6 +6812,7 @@ class TCPDF {
 			$imsize = @getimagesize($file);
 			if ($imsize === FALSE) {
 				unlink($file);
+				$file = $original_file;
 			} else {
 				$this->cached_files[] = $file;
 			}
@@ -6822,7 +6824,7 @@ class TCPDF {
 				$ph = $this->getHTMLUnitToUnits($h, 0, $this->pdfunit, true) * $this->imgscale * $this->k;
 				$imsize = array($pw, $ph);
 			} else {
-				$this->Error('[Image] Unable to get image: '.$file);
+				$this->Error('[Image] Unable to get the size of the image: '.$file);
 			}
 		}
 		// file hash
@@ -6923,10 +6925,12 @@ class TCPDF {
 					$newimage = true;
 				}
 			}
-		} elseif (substr($file, 0, -34) != K_PATH_CACHE.'msk') {
+		} elseif (($ismask === false) AND ($imgmask === false)) {
 			// check for cached images with alpha channel
-			$tempfile_plain = K_PATH_CACHE.'mskp_'.$filehash;
-			$tempfile_alpha = K_PATH_CACHE.'mska_'.$filehash;
+			// create temp image file (without alpha channel)
+			$tempfile_plain = K_PATH_CACHE.'__tcpdf_imgmask_plain_'.$filehash;
+			// create temp alpha file
+			$tempfile_alpha = K_PATH_CACHE.'__tcpdf_imgmask_alpha_'.$filehash;
 			if (in_array($tempfile_plain, $this->imagekeys)) {
 				// get existing image data
 				$info = $this->getImageBuffer($tempfile_plain);
@@ -6969,22 +6973,24 @@ class TCPDF {
 				try {
 					// GD library
 					$img = $gdfunction($file);
-					if ($resize) {
-						$imgr = imagecreatetruecolor($neww, $newh);
-						if (($type == 'gif') OR ($type == 'png')) {
-							$imgr = TCPDF_IMAGES::setGDImageTransparency($imgr, $img);
-						}
-						imagecopyresampled($imgr, $img, 0, 0, 0, 0, $neww, $newh, $pixw, $pixh);
-						if (($type == 'gif') OR ($type == 'png')) {
-							$info = TCPDF_IMAGES::_toPNG($imgr);
+					if ($img !== false) {
+						if ($resize) {
+							$imgr = imagecreatetruecolor($neww, $newh);
+							if (($type == 'gif') OR ($type == 'png')) {
+								$imgr = TCPDF_IMAGES::setGDImageTransparency($imgr, $img);
+							}
+							imagecopyresampled($imgr, $img, 0, 0, 0, 0, $neww, $newh, $pixw, $pixh);
+							if (($type == 'gif') OR ($type == 'png')) {
+								$info = TCPDF_IMAGES::_toPNG($imgr);
+							} else {
+								$info = TCPDF_IMAGES::_toJPEG($imgr, $this->jpeg_quality);
+							}
 						} else {
-							$info = TCPDF_IMAGES::_toJPEG($imgr, $this->jpeg_quality);
-						}
-					} else {
-						if (($type == 'gif') OR ($type == 'png')) {
-							$info = TCPDF_IMAGES::_toPNG($img);
-						} else {
-							$info = TCPDF_IMAGES::_toJPEG($img, $this->jpeg_quality);
+							if (($type == 'gif') OR ($type == 'png')) {
+								$info = TCPDF_IMAGES::_toPNG($img);
+							} else {
+								$info = TCPDF_IMAGES::_toJPEG($img, $this->jpeg_quality);
+							}
 						}
 					}
 				} catch(Exception $e) {
@@ -7038,7 +7044,7 @@ class TCPDF {
 					}
 					$img->setCompressionQuality($this->jpeg_quality);
 					$img->setImageFormat('jpeg');
-					$tempname = TCPDF_STATIC::getObjFilename('jpg');
+					$tempname = TCPDF_STATIC::getObjFilename('img');
 					$img->writeImage($tempname);
 					$info = TCPDF_IMAGES::_parsejpeg($tempname);
 					unlink($tempname);
@@ -7172,13 +7178,14 @@ class TCPDF {
 	 * @see Image()
 	 */
 	protected function ImagePngAlpha($file, $x, $y, $wpx, $hpx, $w, $h, $type, $link, $align, $resize, $dpi, $palign, $filehash='') {
+		// create temp images
 		if (empty($filehash)) {
 			$filehash = md5($this->file_id.$file);
 		}
 		// create temp image file (without alpha channel)
-		$tempfile_plain = K_PATH_CACHE.'mskp_'.$filehash;
+		$tempfile_plain = K_PATH_CACHE.'__tcpdf_imgmask_plain_'.$filehash;
 		// create temp alpha file
-		$tempfile_alpha = K_PATH_CACHE.'mska_'.$filehash;
+		$tempfile_alpha = K_PATH_CACHE.'__tcpdf_imgmask_alpha_'.$filehash;
 		$parsed = false;
 		$parse_error = '';
 		// ImageMagick extension
@@ -7524,7 +7531,7 @@ class TCPDF {
 			$byterange .= str_repeat(' ', ($byterange_string_len - strlen($byterange)));
 			$pdfdoc = str_replace(TCPDF_STATIC::$byterange_string, $byterange, $pdfdoc);
 			// write the document to a temporary folder
-			$tempdoc = TCPDF_STATIC::getObjFilename('tmppdf');
+			$tempdoc = TCPDF_STATIC::getObjFilename('doc');
 			$f = fopen($tempdoc, 'wb');
 			if (!$f) {
 				$this->Error('Unable to create temporary file: '.$tempdoc);
@@ -7533,7 +7540,7 @@ class TCPDF {
 			fwrite($f, $pdfdoc, $pdfdoc_length);
 			fclose($f);
 			// get digital signature via openssl library
-			$tempsign = TCPDF_STATIC::getObjFilename('tmpsig');
+			$tempsign = TCPDF_STATIC::getObjFilename('sig');
 			if (empty($this->signature_data['extracerts'])) {
 				openssl_pkcs7_sign($tempdoc, $tempsign, $this->signature_data['signcert'], array($this->signature_data['privkey'], $this->signature_data['password']), array(), PKCS7_BINARY | PKCS7_DETACHED);
 			} else {
@@ -10766,7 +10773,7 @@ class TCPDF {
 				// envelope data
 				$envelope = $seed.$pkpermissions;
 				// write the envelope data to a temporary file
-				$tempkeyfile = TCPDF_STATIC::getObjFilename('tmpkey');
+				$tempkeyfile = TCPDF_STATIC::getObjFilename('key');
 				$f = fopen($tempkeyfile, 'wb');
 				if (!$f) {
 					$this->Error('Unable to create temporary key file: '.$tempkeyfile);
@@ -10774,7 +10781,7 @@ class TCPDF {
 				$envelope_length = strlen($envelope);
 				fwrite($f, $envelope, $envelope_length);
 				fclose($f);
-				$tempencfile = TCPDF_STATIC::getObjFilename('tmpenc');
+				$tempencfile = TCPDF_STATIC::getObjFilename('enc');
 				if (!openssl_pkcs7_encrypt($tempkeyfile, $tempencfile, $pubkey['c'], array(), PKCS7_BINARY | PKCS7_DETACHED)) {
 					$this->Error('Unable to encrypt the file: '.$tempkeyfile);
 				}
@@ -11398,7 +11405,7 @@ class TCPDF {
 	}
 
 	/**
-	 * Append a cubic Bézier curve to the current path. The curve shall extend from the current point to the point (x3, y3), using (x1, y1) and (x2, y2) as the Bézier control points.
+	 * Append a cubic B\E9zier curve to the current path. The curve shall extend from the current point to the point (x3, y3), using (x1, y1) and (x2, y2) as the B\E9zier control points.
 	 * The new current point shall be (x3, y3).
 	 * @param $x1 (float) Abscissa of control point 1.
 	 * @param $y1 (float) Ordinate of control point 1.
@@ -11416,7 +11423,7 @@ class TCPDF {
 	}
 
 	/**
-	 * Append a cubic Bézier curve to the current path. The curve shall extend from the current point to the point (x3, y3), using the current point and (x2, y2) as the Bézier control points.
+	 * Append a cubic B\E9zier curve to the current path. The curve shall extend from the current point to the point (x3, y3), using the current point and (x2, y2) as the B\E9zier control points.
 	 * The new current point shall be (x3, y3).
 	 * @param $x2 (float) Abscissa of control point 2.
 	 * @param $y2 (float) Ordinate of control point 2.
@@ -11432,7 +11439,7 @@ class TCPDF {
 	}
 
 	/**
-	 * Append a cubic Bézier curve to the current path. The curve shall extend from the current point to the point (x3, y3), using (x1, y1) and (x3, y3) as the Bézier control points.
+	 * Append a cubic B\E9zier curve to the current path. The curve shall extend from the current point to the point (x3, y3), using (x1, y1) and (x3, y3) as the B\E9zier control points.
 	 * The new current point shall be (x3, y3).
 	 * @param $x1 (float) Abscissa of control point 1.
 	 * @param $y1 (float) Ordinate of control point 1.
@@ -12227,7 +12234,7 @@ class TCPDF {
 	/**
 	 * Insert Named Destinations.
 	 * @protected
-	 * @author Johannes Güntert, Nicola Asuni
+	 * @author Johannes G\FCntert, Nicola Asuni
 	 * @since 5.9.098 (2011-06-23)
 	 */
 	protected function _putdests() {
@@ -12455,7 +12462,7 @@ class TCPDF {
 	 * Adds a javascript
 	 * @param $script (string) Javascript code
 	 * @public
-	 * @author Johannes Güntert, Nicola Asuni
+	 * @author Johannes G\FCntert, Nicola Asuni
 	 * @since 2.1.002 (2008-02-12)
 	 */
 	public function IncludeJS($script) {
@@ -12484,7 +12491,7 @@ class TCPDF {
 	/**
 	 * Create a javascript PDF string.
 	 * @protected
-	 * @author Johannes Güntert, Nicola Asuni
+	 * @author Johannes G\FCntert, Nicola Asuni
 	 * @since 2.1.002 (2008-02-12)
 	 */
 	protected function _putjavascript() {
@@ -14216,7 +14223,7 @@ class TCPDF {
 	 * @param $col1 (array) first color (Grayscale, RGB or CMYK components).
 	 * @param $col2 (array) second color (Grayscale, RGB or CMYK components).
 	 * @param $coords (array) array of the form (x1, y1, x2, y2) which defines the gradient vector (see linear_gradient_coords.jpg). The default value is from left to right (x1=0, y1=0, x2=1, y2=0).
-	 * @author Andreas Würmser, Nicola Asuni
+	 * @author Andreas W\FCrmser, Nicola Asuni
 	 * @since 3.1.000 (2008-06-09)
 	 * @public
 	 */
@@ -14234,7 +14241,7 @@ class TCPDF {
 	 * @param $col1 (array) first color (Grayscale, RGB or CMYK components).
 	 * @param $col2 (array) second color (Grayscale, RGB or CMYK components).
 	 * @param $coords (array) array of the form (fx, fy, cx, cy, r) where (fx, fy) is the starting point of the gradient with color1, (cx, cy) is the center of the circle with color2, and r is the radius of the circle (see radial_gradient_coords.jpg). (fx, fy) should be inside the circle, otherwise some areas will not be defined.
-	 * @author Andreas Würmser, Nicola Asuni
+	 * @author Andreas W\FCrmser, Nicola Asuni
 	 * @since 3.1.000 (2008-06-09)
 	 * @public
 	 */
@@ -14257,7 +14264,7 @@ class TCPDF {
 	 * @param $coords_min (array) minimum value used by the coordinates. If a coordinate's value is smaller than this it will be cut to coords_min. default: 0
 	 * @param $coords_max (array) maximum value used by the coordinates. If a coordinate's value is greater than this it will be cut to coords_max. default: 1
 	 * @param $antialias (boolean) A flag indicating whether to filter the shading function to prevent aliasing artifacts.
-	 * @author Andreas Würmser, Nicola Asuni
+	 * @author Andreas W\FCrmser, Nicola Asuni
 	 * @since 3.1.000 (2008-06-09)
 	 * @public
 	 */
@@ -14349,7 +14356,7 @@ class TCPDF {
 	 * @param $y (float) ordinate of the top left corner of the rectangle.
 	 * @param $w (float) width of the rectangle.
 	 * @param $h (float) height of the rectangle.
-	 * @author Andreas Würmser, Nicola Asuni
+	 * @author Andreas W\FCrmser, Nicola Asuni
 	 * @since 3.1.000 (2008-06-09)
 	 * @protected
 	 */
@@ -20494,7 +20501,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$this->bufferlen += strlen($data);
 		if ($this->diskcache) {
 			if (!isset($this->buffer) OR TCPDF_STATIC::empty_string($this->buffer)) {
-				$this->buffer = TCPDF_STATIC::getObjFilename('buffer');
+				$this->buffer = TCPDF_STATIC::getObjFilename('buf');
 			}
 			$this->writeDiskCache($this->buffer, $data, true);
 		} else {
@@ -20512,7 +20519,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$this->bufferlen = strlen($data);
 		if ($this->diskcache) {
 			if (!isset($this->buffer) OR TCPDF_STATIC::empty_string($this->buffer)) {
-				$this->buffer = TCPDF_STATIC::getObjFilename('buffer');
+				$this->buffer = TCPDF_STATIC::getObjFilename('buf');
 			}
 			$this->writeDiskCache($this->buffer, $data, false);
 		} else {
@@ -20545,7 +20552,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	protected function setPageBuffer($page, $data, $append=false) {
 		if ($this->diskcache) {
 			if (!isset($this->pages[$page])) {
-				$this->pages[$page] = TCPDF_STATIC::getObjFilename('page'.$page);
+				$this->pages[$page] = TCPDF_STATIC::getObjFilename('page');
 			}
 			$this->writeDiskCache($this->pages[$page], $data, $append);
 		} else {
@@ -20594,7 +20601,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		}
 		if ($this->diskcache) {
 			if (!isset($this->images[$image])) {
-				$this->images[$image] = TCPDF_STATIC::getObjFilename('image'.$image);
+				$this->images[$image] = TCPDF_STATIC::getObjFilename('img');
 			}
 			$this->writeDiskCache($this->images[$image], serialize($data));
 		} else {
@@ -23338,7 +23345,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					}
 					break;
 				}
-				case 'Q': { // quadratic Bézier curveto
+				case 'Q': { // quadratic B\E9zier curveto
 					foreach ($params as $ck => $cp) {
 						$params[$ck] = $cp;
 						if ((($ck + 1) % 4) == 0) {
@@ -23364,7 +23371,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					}
 					break;
 				}
-				case 'T': { // shorthand/smooth quadratic Bézier curveto
+				case 'T': { // shorthand/smooth quadratic B\E9zier curveto
 					foreach ($params as $ck => $cp) {
 						$params[$ck] = $cp;
 						if (($ck % 2) != 0) {
@@ -23567,7 +23574,6 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		if (!empty($ctm)) {
 			$tm = $ctm;
 		} else {
-			//$tm = $this->svgstyles[(count($this->svgstyles) - 1)]['transfmatrix'];
 			$tm = array(1,0,0,1,0,0);
 		}
 		if (isset($attribs['transform']) AND !empty($attribs['transform'])) {
@@ -23713,13 +23719,18 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				if (isset($attribs['d'])) {
 					$d = trim($attribs['d']);
 					if (!empty($d)) {
+						$x = (isset($attribs['x'])?$attribs['x']:0);
+						$y = (isset($attribs['y'])?$attribs['y']:0);
+						$w = (isset($attribs['width'])?$attribs['width']:1);
+						$h = (isset($attribs['height'])?$attribs['height']:1);
+						$tm = TCPDF_STATIC::getTransformationMatrixProduct($tm, array($w, 0, 0, $h, $x, $y));
 						if ($clipping) {
 							$this->SVGTransform($tm);
 							$this->SVGPath($d, 'CNZ');
 						} else {
 							$this->StartTransform();
 							$this->SVGTransform($tm);
-							$obstyle = $this->setSVGStyles($svgstyle, $prev_svgstyle, 0, 0, 1, 1, 'SVGPath', array($d, 'CNZ'));
+							$obstyle = $this->setSVGStyles($svgstyle, $prev_svgstyle, $x, $y, $w, $h, 'SVGPath', array($d, 'CNZ'));
 							if (!empty($obstyle)) {
 								$this->SVGPath($d, $obstyle);
 							}
@@ -24008,7 +24019,13 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						if (isset($attribs['id'])) {
 							unset($attribs['id']);
 						}
-						$attribs = array_merge($attribs, $use['attribs']);
+						if (isset($use['attribs']['x']) AND isset($attribs['x'])) {
+							$attribs['x'] += $use['attribs']['x'];
+						}
+						if (isset($use['attribs']['y']) AND isset($attribs['y'])) {
+							$attribs['y'] += $use['attribs']['y'];
+						}
+						$attribs = array_merge($use['attribs'], $attribs);
 						$this->startSVGElementHandler($parser, $use['name'], $attribs);
 					}
 				}

@@ -1,3 +1,7 @@
+6.0.040 (2013-10-20)
+	- Bug #849 "SVG import bug" was fixed.
+	- Bug #851 "Problem with images in PDF. PHP timing out" was fixed.
+
 6.0.039 (2013-10-13)
 	- Bug #843 "Wrong call in parser" was fixed.
 	- Bug #844 "Wrong object type named" was fixed.
