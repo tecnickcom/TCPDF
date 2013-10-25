@@ -1,3 +1,6 @@
+6.0.042 (2013-10-25)
+	- Bug #852 "CMYK Colors Bug" was fixed.
+
 6.0.041 (2013-10-21)
 	- Bug #851 "Problem with images in PDF. PHP timing out" was fixed.
 
