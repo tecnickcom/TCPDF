@@ -1,3 +1,8 @@
+6.0.044 (2013-11-10)
+	- Bug #857 "Undefined offset error" was fixed.
+	- The uniord method now uses a static cache to improve performances (thanks to Mathieu Masseboeuf for the sugegstion).
+	- Two bugs in the TCPDF_FONTS class were fixed.
+
 6.0.043 (2013-10-29)
 	- Bug #854 "CSS instruction display" was fixed.
 

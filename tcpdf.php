@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.043
+// Version     : 6.0.044
 // Begin       : 2002-08-03
 // Last Update : 2013-10-29
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.043
+ * @version 6.0.044
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.043
+ * @version 6.0.044
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -9404,7 +9404,7 @@ class TCPDF {
 		}
 		if (!TCPDF_STATIC::empty_string($this->keywords)) {
 			// Keywords associated with the document.
-			$out .= ' /Keywords '.$this->_textstring($this->keywords.' TCPDF', $oid);
+			$out .= ' /Keywords '.$this->_textstring($this->keywords, $oid);
 		}
 		if (!TCPDF_STATIC::empty_string($this->creator)) {
 			// If the document was converted to PDF from another format, the name of the conforming product that created the original document from which it was converted.
@@ -9473,7 +9473,7 @@ class TCPDF {
 		$xmp .= "\t\t\t".'</dc:description>'."\n";
 		$xmp .= "\t\t\t".'<dc:subject>'."\n";
 		$xmp .= "\t\t\t\t".'<rdf:Bag>'."\n";
-		$xmp .= "\t\t\t\t\t".'<rdf:li>'.TCPDF_STATIC::_escapeXML($this->keywords).' TCPDF</rdf:li>'."\n";
+		$xmp .= "\t\t\t\t\t".'<rdf:li>'.TCPDF_STATIC::_escapeXML($this->keywords).'</rdf:li>'."\n";
 		$xmp .= "\t\t\t\t".'</rdf:Bag>'."\n";
 		$xmp .= "\t\t\t".'</dc:subject>'."\n";
 		$xmp .= "\t\t".'</rdf:Description>'."\n";
@@ -9496,7 +9496,7 @@ class TCPDF {
 		$xmp .= "\t\t\t".'<xmp:MetadataDate>'.$doccreationdate.'</xmp:MetadataDate>'."\n";
 		$xmp .= "\t\t".'</rdf:Description>'."\n";
 		$xmp .= "\t\t".'<rdf:Description rdf:about="" xmlns:pdf="http://ns.adobe.com/pdf/1.3/">'."\n";
-		$xmp .= "\t\t\t".'<pdf:Keywords>'.TCPDF_STATIC::_escapeXML($this->keywords).' TCPDF</pdf:Keywords>'."\n";
+		$xmp .= "\t\t\t".'<pdf:Keywords>'.TCPDF_STATIC::_escapeXML($this->keywords).'</pdf:Keywords>'."\n";
 		$xmp .= "\t\t\t".'<pdf:Producer>'.TCPDF_STATIC::_escapeXML(TCPDF_STATIC::getTCPDFProducer()).'</pdf:Producer>'."\n";
 		$xmp .= "\t\t".'</rdf:Description>'."\n";
 		$xmp .= "\t\t".'<rdf:Description rdf:about="" xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/">'."\n";
@@ -17613,6 +17613,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 										case 'l': {
 											// get current X position
 											preg_match('/([0-9\.\+\-]*)[\s]('.$strpiece[1][0].')[\s]('.$strpiece[2][0].')([\s]*)/x', $pmid, $xmatches);
+											if (!isset($xmatches[1])) {
+												break;
+											}
 											$currentxpos = $xmatches[1];
 											$textpos = $currentxpos;
 											if (($strcount <= $maxkk) AND ($strpiece[2][0] == 'Td')) {
@@ -17636,6 +17639,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 												continue;
 											}
 											preg_match('/([0-9\.\+\-]*)[\s]([0-9\.\+\-]*)[\s]([0-9\.\+\-]*)[\s]('.$strpiece[1][0].')[\s](re)([\s]*)/x', $pmid, $xmatches);
+											if (!isset($xmatches[1])) {
+												break;
+											}
 											$currentxpos = $xmatches[1];
 											global $x_diff, $w_diff;
 											$x_diff = 0;
@@ -17675,6 +17681,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 										case 'c': {
 											// get current X position
 											preg_match('/([0-9\.\+\-]*)[\s]([0-9\.\+\-]*)[\s]([0-9\.\+\-]*)[\s]([0-9\.\+\-]*)[\s]([0-9\.\+\-]*)[\s]('.$strpiece[1][0].')[\s](c)([\s]*)/x', $pmid, $xmatches);
+											if (!isset($xmatches[1])) {
+												break;
+											}
 											$currentxpos = $xmatches[1];
 											// justify block
 											$pmid = preg_replace_callback('/('.$xmatches[1].')[\s]('.$xmatches[2].')[\s]('.$xmatches[3].')[\s]('.$xmatches[4].')[\s]('.$xmatches[5].')[\s]('.$strpiece[1][0].')[\s](c)([\s]*)/x',

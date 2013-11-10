@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf_fonts.php
-// Version     : 1.0.009
+// Version     : 1.0.010
 // Begin       : 2008-01-01
-// Last Update : 2013-09-04
+// Last Update : 2013-11-10
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -42,10 +42,16 @@
  * @class TCPDF_FONTS
  * Font methods for TCPDF library.
  * @package com.tecnick.tcpdf
- * @version 1.0.009
+ * @version 1.0.010
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF_FONTS {
+
+	/**
+	 * Static cache used for speed up uniord performances
+	 * @protected
+	 */
+	protected static $cache_uniord = array();
 
 	/**
 	 * Convert and add the selected TrueType or Type1 font to the fonts folder (that must be writeable).
@@ -607,7 +613,7 @@ class TCPDF_FONTS {
 										// combine high and low bytes
 										$c = (($i << 8) + $j);
 										$idRangeOffset = ($subHeaders[$k]['idRangeOffset'] + $j - $subHeaders[$k]['firstCode']);
-										$g = ($glyphIndexArray[$idRangeOffset] + $idDelta[$k]) % 65536;
+										$g = ($glyphIndexArray[$idRangeOffset] + $subHeaders[$k]['idDelta']) % 65536;
 										if ($g < 0) {
 											$g = 0;
 										}
@@ -1074,7 +1080,7 @@ class TCPDF_FONTS {
 								$c = (($i << 8) + $j);
 								if (isset($subsetchars[$c])) {
 									$idRangeOffset = ($subHeaders[$k]['idRangeOffset'] + $j - $subHeaders[$k]['firstCode']);
-									$g = ($glyphIndexArray[$idRangeOffset] + $idDelta[$k]) % 65536;
+									$g = ($glyphIndexArray[$idRangeOffset] + $subHeaders[$k]['idDelta']) % 65536;
 									if ($g < 0) {
 										$g = 0;
 									}
@@ -1758,6 +1764,20 @@ class TCPDF_FONTS {
 
 	/**
 	 * Converts UTF-8 character to integer value.<br>
+	 * Uses the getUniord() method if the value is not cached.
+	 * @param $uch (string) character string to process.
+	 * @return integer Unicode value
+	 * @public static
+	 */
+	public static function uniord($uch) {
+		if (!isset(self::$cache_uniord[$uch])) {
+			self::$cache_uniord[$uch] = self::getUniord($uch);
+		}
+		return self::$cache_uniord[$uch];
+	}
+
+	/**
+	 * Converts UTF-8 character to integer value.<br>
 	 * Invalid byte sequences will be replaced with 0xFFFD (replacement character)<br>
 	 * Based on: http://www.faqs.org/rfcs/rfc3629.html
 	 * <pre>
@@ -1789,7 +1809,7 @@ class TCPDF_FONTS {
 	 * @author Nicola Asuni
 	 * @public static
 	 */
-	public static function uniord($uch) {
+	public static function getUniord($uch) {
 		if (function_exists('mb_convert_encoding')) {
 			list(, $char) = @unpack('N', mb_convert_encoding($uch, 'UCS-4BE', 'UTF-8'));
 			if ($char >= 0) {
