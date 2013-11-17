@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.045
+// Version     : 6.0.046
 // Begin       : 2002-08-03
-// Last Update : 2013-10-29
+// Last Update : 2013-11-17
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.045
+ * @version 6.0.046
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.045
+ * @version 6.0.046
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -17567,7 +17567,6 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 								if ($this->isRTLTextDir()) {
 									$textpos = $this->wPt;
 								}
-								global $spacew;
 								while (preg_match('/([0-9\.\+\-]*)[\s](Td|cm|m|l|c|re)[\s]/x', $pmid, $strpiece, PREG_OFFSET_CAPTURE, $offset) == 1) {
 									// check if we are inside a string section '[( ... )]'
 									$stroffset = strpos($pmid, '[(', $offset);
@@ -17626,10 +17625,11 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 												++$strcount;
 											}
 											// justify block
-											$pmid = preg_replace_callback('/([0-9\.\+\-]*)[\s]('.$strpiece[1][0].')[\s]('.$strpiece[2][0].')([\s]*)/x',
-												create_function('$matches', 'global $spacew;
-												$newx = sprintf("%F",(floatval($matches[1]) + $spacew));
-												return "".$newx." ".$matches[2]." x*#!#*x".$matches[3].$matches[4];'), $pmid, 1);
+											if (preg_match('/([0-9\.\+\-]*)[\s]('.$strpiece[1][0].')[\s]('.$strpiece[2][0].')([\s]*)/x', $pmid, $pmatch) == 1) {
+												$newpmid = sprintf('%F',(floatval($pmatch[1]) + $spacew)).' '.$pmatch[2].' x*#!#*x'.$pmatch[3].$pmatch[4];
+												$pmid = str_replace($pmatch[0], $newpmid, $pmid);
+												unset($pmatch, $newpmid);
+											}
 											break;
 										}
 										case 're': {
@@ -17643,7 +17643,6 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 												break;
 											}
 											$currentxpos = $xmatches[1];
-											global $x_diff, $w_diff;
 											$x_diff = 0;
 											$w_diff = 0;
 											if ($this->isRTLTextDir()) { // RTL
@@ -17671,11 +17670,13 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 													}
 												}
 											}
-											$pmid = preg_replace_callback('/('.$xmatches[1].')[\s]('.$xmatches[2].')[\s]('.$xmatches[3].')[\s]('.$strpiece[1][0].')[\s](re)([\s]*)/x',
-												create_function('$matches', 'global $x_diff, $w_diff;
-												$newx = sprintf("%F",(floatval($matches[1]) + $x_diff));
-												$neww = sprintf("%F",(floatval($matches[3]) + $w_diff));
-												return "".$newx." ".$matches[2]." ".$neww." ".$matches[4]." x*#!#*x".$matches[5].$matches[6];'), $pmid, 1);
+											if (preg_match('/('.$xmatches[1].')[\s]('.$xmatches[2].')[\s]('.$xmatches[3].')[\s]('.$strpiece[1][0].')[\s](re)([\s]*)/x', $pmid, $pmatch) == 1) {
+												$newx = sprintf('%F',(floatval($pmatch[1]) + $x_diff));
+												$neww = sprintf('%F',(floatval($pmatch[3]) + $w_diff));
+												$newpmid = $newx.' '.$pmatch[2].' '.$neww.' '.$pmatch[4].' x*#!#*x'.$pmatch[5].$pmatch[6];
+												$pmid = str_replace($pmatch[0], $newpmid, $pmid);
+												unset($pmatch, $newpmid, $newx, $neww);
+											}
 											break;
 										}
 										case 'c': {
@@ -17686,12 +17687,14 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 											}
 											$currentxpos = $xmatches[1];
 											// justify block
-											$pmid = preg_replace_callback('/('.$xmatches[1].')[\s]('.$xmatches[2].')[\s]('.$xmatches[3].')[\s]('.$xmatches[4].')[\s]('.$xmatches[5].')[\s]('.$strpiece[1][0].')[\s](c)([\s]*)/x',
-												create_function('$matches', 'global $spacew;
-												$newx1 = sprintf("%F",(floatval($matches[1]) + $spacew));
-												$newx2 = sprintf("%F",(floatval($matches[3]) + $spacew));
-												$newx3 = sprintf("%F",(floatval($matches[5]) + $spacew));
-												return "".$newx1." ".$matches[2]." ".$newx2." ".$matches[4]." ".$newx3." ".$matches[6]." x*#!#*x".$matches[7].$matches[8];'), $pmid, 1);
+											if (preg_match('/('.$xmatches[1].')[\s]('.$xmatches[2].')[\s]('.$xmatches[3].')[\s]('.$xmatches[4].')[\s]('.$xmatches[5].')[\s]('.$strpiece[1][0].')[\s](c)([\s]*)/x', $pmid, $pmatch) == 1) {
+												$newx1 = sprintf('%F',(floatval($pmatch[1]) + $spacew));
+												$newx2 = sprintf('%F',(floatval($pmatch[3]) + $spacew));
+												$newx3 = sprintf('%F',(floatval($pmatch[5]) + $spacew));
+												$newpmid = $newx1.' '.$pmatch[2].' '.$newx2.' '.$pmatch[4].' '.$newx3.' '.$pmatch[6].' x*#!#*x'.$pmatch[7].$pmatch[8];
+												$pmid = str_replace($pmatch[0], $newpmid, $pmid);
+												unset($pmatch, $newpmid, $newx1, $newx2, $newx3);
+											}
 											break;
 										}
 									}
@@ -17734,15 +17737,18 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 										// word spacing is affected by stretching
 										$spacew /= ($this->font_stretching / 100);
 									}
-									$pmidtemp = $pmid;
 									// escape special characters
-									$pmidtemp = preg_replace('/[\\\][\(]/x', '\\#!#OP#!#', $pmidtemp);
-									$pmidtemp = preg_replace('/[\\\][\)]/x', '\\#!#CP#!#', $pmidtemp);
-									$pmid = preg_replace_callback("/\[\(([^\)]*)\)\]/x",
-												create_function('$matches', 'global $spacew;
-												$matches[1] = str_replace("#!#OP#!#", "(", $matches[1]);
-												$matches[1] = str_replace("#!#CP#!#", ")", $matches[1]);
-												return "[(".str_replace(chr(0).chr(32), ") ".sprintf("%F", $spacew)." (", $matches[1]).")]";'), $pmidtemp);
+									$pmid = preg_replace('/[\\\][\(]/x', '\\#!#OP#!#', $pmid);
+									$pmid = preg_replace('/[\\\][\)]/x', '\\#!#CP#!#', $pmid);
+									if (preg_match_all('/\[\(([^\)]*)\)\]/x', $pmid, $pamatch) > 0) {
+										foreach($pamatch[0] as $pk => $pmatch) {
+											$pmatch = str_replace('#!#OP#!#', '(', $pmatch);
+											$pmatch = str_replace('#!#CP#!#', ')', $pmatch);
+											$newpmid = '[('.str_replace(chr(0).chr(32), ') '.sprintf('%F', $spacew).' (', $pamatch[1][$pk]).')]';
+											$pmid = str_replace($pmatch, $newpmid, $pmid);
+										}
+										unset($pamatch);
+									}
 									if ($this->inxobj) {
 										// we are inside an XObject template
 										$this->xobjects[$this->xobjid]['outdata'] = $pstart."\n".$pmid."\n".$pend;
@@ -20856,22 +20862,24 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			}
 		}
 		// adjust javascript
-		$tmpjavascript = $this->javascript;
-		global $jfrompage, $jtopage;
 		$jfrompage = $frompage;
 		$jtopage = $topage;
-		$this->javascript = preg_replace_callback('/this\.addField\(\'([^\']*)\',\'([^\']*)\',([0-9]+)/',
-			create_function('$matches', 'global $jfrompage, $jtopage;
-			$pagenum = intval($matches[3]) + 1;
-			if (($pagenum >= $jtopage) AND ($pagenum < $jfrompage)) {
-				$newpage = ($pagenum + 1);
-			} elseif ($pagenum == $jfrompage) {
-				$newpage = $jtopage;
-			} else {
-				$newpage = $pagenum;
+		if (preg_match_all('/this\.addField\(\'([^\']*)\',\'([^\']*)\',([0-9]+)/', $this->javascript, $pamatch) > 0) {
+			foreach($pamatch[0] as $pk => $pmatch) {
+				$pagenum = intval($pamatch[3][$pk]) + 1;
+				if (($pagenum >= $jtopage) AND ($pagenum < $jfrompage)) {
+					$newpage = ($pagenum + 1);
+				} elseif ($pagenum == $jfrompage) {
+					$newpage = $jtopage;
+				} else {
+					$newpage = $pagenum;
+				}
+				--$newpage;
+				$newjs = "this.addField(\'".$pamatch[1][$pk]."\',\'".$pamatch[2][$pk]."\',".$newpage;
+				$this->javascript = str_replace($pmatch, $newjs, $this->javascript);
 			}
-			--$newpage;
-			return "this.addField(\'".$matches[1]."\',\'".$matches[2]."\',".$newpage."";'), $tmpjavascript);
+			unset($pamatch);
+		}
 		// return to last page
 		$this->lastPage(true);
 		return true;
@@ -21037,21 +21045,23 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			}
 		}
 		// adjust javascript
-		$tmpjavascript = $this->javascript;
-		global $jpage;
 		$jpage = $page;
-		$this->javascript = preg_replace_callback('/this\.addField\(\'([^\']*)\',\'([^\']*)\',([0-9]+)/',
-			create_function('$matches', 'global $jpage;
-			$pagenum = intval($matches[3]) + 1;
-			if ($pagenum >= $jpage) {
-				$newpage = ($pagenum - 1);
-			} elseif ($pagenum == $jpage) {
-				$newpage = 1;
-			} else {
-				$newpage = $pagenum;
+		if (preg_match_all('/this\.addField\(\'([^\']*)\',\'([^\']*)\',([0-9]+)/', $this->javascript, $pamatch) > 0) {
+			foreach($pamatch[0] as $pk => $pmatch) {
+				$pagenum = intval($pamatch[3][$pk]) + 1;
+				if ($pagenum >= $jpage) {
+					$newpage = ($pagenum - 1);
+				} elseif ($pagenum == $jpage) {
+					$newpage = 1;
+				} else {
+					$newpage = $pagenum;
+				}
+				--$newpage;
+				$newjs = "this.addField(\'".$pamatch[1][$pk]."\',\'".$pamatch[2][$pk]."\',".$newpage;
+				$this->javascript = str_replace($pmatch, $newjs, $this->javascript);
 			}
-			--$newpage;
-			return "this.addField(\'".$matches[1]."\',\'".$matches[2]."\',".$newpage."";'), $tmpjavascript);
+			unset($pamatch);
+		}
 		// return to last page
 		if ($this->numpages > 0) {
 			$this->lastPage(true);

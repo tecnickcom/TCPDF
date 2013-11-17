@@ -1,3 +1,6 @@
+6.0.046 (2013-11-17)
+	- preg_replace_callback functions were replaced to improve memory performances.
+
 6.0.045 (2013-11-17)
 	- Bug #862 "Parsing error on flate filter" was fixed.
 
