@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.046
+// Version     : 6.0.047
 // Begin       : 2002-08-03
-// Last Update : 2013-11-17
+// Last Update : 2013-11-19
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.046
+ * @version 6.0.047
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.046
+ * @version 6.0.047
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -23538,10 +23538,19 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			return;
 		}
 		if ($this->svgdefsmode AND !in_array($name, array('clipPath', 'linearGradient', 'radialGradient', 'stop'))) {
-			if (!isset($attribs['id'])) {
-				$attribs['id'] = 'DF_'.(count($this->svgdefs) + 1);
+			if (isset($attribs['id'])) {
+				$attribs['child_elements'] = array();
+				$this->svgdefs[$attribs['id']] = array('name' => $name, 'attribs' => $attribs);
+				return;
 			}
-			$this->svgdefs[$attribs['id']] = array('name' => $name, 'attribs' => $attribs);
+			if (end($this->svgdefs) !== FALSE) {
+				$last_svgdefs_id = key($this->svgdefs);
+				if (isset($this->svgdefs[$last_svgdefs_id]['attribs']['child_elements'])) {
+					$attribs['id'] = 'DF_'.(count($this->svgdefs) + 1);
+					$this->svgdefs[$last_svgdefs_id]['attribs']['child_elements'][$attribs['id']] = array('name' => $name, 'attribs' => $attribs);
+					return;
+				}
+			}
 			return;
 		}
 		$clipping = false;
@@ -23550,7 +23559,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			$clipping = true;
 		}
 		// get styling properties
-		$prev_svgstyle = $this->svgstyles[(count($this->svgstyles) - 1)]; // previous style
+		$prev_svgstyle = $this->svgstyles[max(0,(count($this->svgstyles) - 1))]; // previous style
 		$svgstyle = $this->svgstyles[0]; // set default style
 		if ($clipping AND !isset($attribs['fill']) AND (!isset($attribs['style']) OR (!preg_match('/[;\"\s]{1}fill[\s]*:[\s]*([^;\"]*)/si', $attribs['style'], $attrval)))) {
 			// default fill attribute for clipping
@@ -24040,7 +24049,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 							$attribs['y'] += $use['attribs']['y'];
 						}
 						$attribs = array_merge($use['attribs'], $attribs);
-						$this->startSVGElementHandler($parser, $use['name'], $attribs);
+						$this->startSVGElementHandler('use-tag', $use['name'], $attribs);
+						return;
 					}
 				}
 				break;
@@ -24049,6 +24059,18 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				break;
 			}
 		} // end of switch
+		// process child elements
+		if (!empty($attribs['child_elements'])) {
+			$child_elements = $attribs['child_elements'];
+			unset($attribs['child_elements']);
+			foreach($child_elements as $child_element) {
+				if (empty($child_element['attribs']['closing_tag'])) {
+					$this->startSVGElementHandler('child-tag', $child_element['name'], $child_element['attribs']);
+				} else {
+					$this->endSVGElementHandler('child-tag', $child_element['name']);
+				}
+			}
+		}
 	}
 
 	/**
@@ -24060,6 +24082,24 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @protected
 	 */
 	protected function endSVGElementHandler($parser, $name) {
+		if ($this->svgdefsmode AND !in_array($name, array('defs', 'clipPath', 'linearGradient', 'radialGradient', 'stop'))) {;
+			if (end($this->svgdefs) !== FALSE) {
+				$last_svgdefs_id = key($this->svgdefs);
+				if (isset($this->svgdefs[$last_svgdefs_id]['attribs']['child_elements'])) {
+					foreach($this->svgdefs[$last_svgdefs_id]['attribs']['child_elements'] as $child_element) {
+						if (isset($child_element['attribs']['id']) AND ($child_element['name'] == $name)) {
+							$this->svgdefs[$last_svgdefs_id]['attribs']['child_elements'][$child_element['attribs']['id'].'_CLOSE'] = array('name' => $name, 'attribs' => array('closing_tag' => TRUE));
+							return;
+						}
+					}
+					if ($this->svgdefs[$last_svgdefs_id]['name'] == $name) {
+						$this->svgdefs[$last_svgdefs_id]['attribs']['child_elements'][$last_svgdefs_id.'_CLOSE'] = array('name' => $name, 'attribs' => array('closing_tag' => TRUE));
+						return;
+					}
+				}
+			}
+			return;
+		}
 		switch($name) {
 			case 'defs': {
 				$this->svgdefsmode = false;
@@ -24122,7 +24162,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				$this->textstrokewidth = $textstrokewidth;
 				$this->svgtext = '';
 				$this->StopTransform();
-				array_pop($this->svgstyles);
+				if (!$this->svgdefsmode) {
+					array_pop($this->svgstyles);
+				}
 				break;
 			}
 			default: {
