@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.047
+// Version     : 6.0.048
 // Begin       : 2002-08-03
-// Last Update : 2013-11-19
+// Last Update : 2013-11-24
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -22540,6 +22540,17 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		if ($this->state != 2) {
 			 return;
 		}
+		// reseet SVG vars
+		$this->svggradients = array();
+		$this->svggradientid = 0;
+		$this->svgdefsmode = false;
+		$this->svgdefs = array();
+		$this->svgclipmode = false;
+		$this->svgclippaths = array();
+		$this->svgcliptm = array();
+		$this->svgclipid = 0;
+		$this->svgtext = '';
+		$this->svgtextmode = array();
 		if ($this->rasterize_vector_images AND ($w > 0) AND ($h > 0)) {
 			// convert SVG to raster image using GD or ImageMagick libraries
 			return $this->Image($file, $x, $y, $w, $h, 'SVG', $link, $align, true, 300, $palign, false, false, $border, false, false, false);
