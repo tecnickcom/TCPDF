@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.049
+// Version     : 6.0.050
 // Begin       : 2002-08-03
-// Last Update : 2013-11-27
+// Last Update : 2013-12-01
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.047
+ * @version 6.0.050
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.047
+ * @version 6.0.050
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -2404,12 +2404,21 @@ class TCPDF {
 	}
 
 	/**
+	 * Return the cell height
+	 * @param $fontsize (int) Font size in internal units
+	 * @public
+	 */
+	public function getCellHeight($fontsize) {
+		return round((($fontsize * $this->cell_height_ratio) + $this->cell_padding['T'] + $this->cell_padding['B']), 3);
+	}
+
+	/**
 	 * Reset the last cell height.
 	 * @public
 	 * @since 5.9.000 (2010-10-03)
 	 */
 	public function resetLastH() {
-		$this->lasth = ($this->FontSize * $this->cell_height_ratio) + $this->cell_padding['T'] + $this->cell_padding['B'];
+		$this->lasth = $this->getCellHeight($this->FontSize);
 	}
 
 	/**
@@ -3385,7 +3394,7 @@ class TCPDF {
 			} else {
 				$imgy = $this->y;
 			}
-			$cell_height = round(($this->cell_height_ratio * $headerfont[2]) / $this->k, 2);
+			$cell_height = $this->getCellHeight($headerfont[2] / $this->k);
 			// set starting margin for text data cell
 			if ($this->getRTL()) {
 				$header_x = $this->original_rMargin + ($headerdata['logo_width'] * 1.1);
@@ -4978,7 +4987,7 @@ class TCPDF {
 		$prev_cell_padding = $this->cell_padding;
 		$this->adjustCellPadding($border);
 		if (!$ignore_min_height) {
-			$min_cell_height = ($this->FontSize * $this->cell_height_ratio) + $this->cell_padding['T'] + $this->cell_padding['B'];
+			$min_cell_height = $this->getCellHeight($this->FontSize);
 			if ($h < $min_cell_height) {
 				$h = $min_cell_height;
 			}
@@ -5051,7 +5060,7 @@ class TCPDF {
 		$rs = ''; //string to be returned
 		$this->adjustCellPadding($border);
 		if (!$ignore_min_height) {
-			$min_cell_height = ($this->FontSize * $this->cell_height_ratio) + $this->cell_padding['T'] + $this->cell_padding['B'];
+			$min_cell_height = $this->getCellHeight($this->FontSize);
 			if ($h < $min_cell_height) {
 				$h = $min_cell_height;
 			}
@@ -6085,6 +6094,9 @@ class TCPDF {
 	 * @since 4.5.011
 	 */
 	public function getNumLines($txt, $w=0, $reseth=false, $autopadding=true, $cellpadding='', $border=0) {
+		if ($txt === NULL) {
+			return 0;
+		}
 		if ($txt === '') {
 			// empty string
 			return 1;
@@ -6115,13 +6127,23 @@ class TCPDF {
 		$length = count($chars);
 		$lastSeparator = -1;
 		for ($i = 0; $i < $length; ++$i) {
+			$c = $chars[$i];
 			$charWidth = $charsWidth[$i];
-			if (preg_match($this->re_spaces, TCPDF_FONTS::unichr($chars[$i], $this->isunicode))) {
+			if (($c != 160)
+					AND (($c == 173)
+						OR preg_match($this->re_spaces, TCPDF_FONTS::unichr($c, $this->isunicode))
+						OR (($c == 45)
+							AND ($i > 0) AND ($i < ($length - 1))
+							AND @preg_match('/[\p{L}]/'.$this->re_space['m'], TCPDF_FONTS::unichr($chars[($i - 1)], $this->isunicode))
+							AND @preg_match('/[\p{L}]/'.$this->re_space['m'], TCPDF_FONTS::unichr($chars[($i + 1)], $this->isunicode))
+						)
+					)
+				) {
 				$lastSeparator = $i;
 			}
-			if ((($sum + $charWidth) > $wmax) OR ($chars[$i] == 10)) {
+			if ((($sum + $charWidth) > $wmax) OR ($c == 10)) {
 				++$lines;
-				if ($chars[$i] == 10) {
+				if ($c == 10) {
 					$lastSeparator = -1;
 					$sum = 0;
 				} elseif ($lastSeparator != -1) {
@@ -6199,7 +6221,7 @@ class TCPDF {
 		}
 		$this->adjustCellPadding($border);
 		$lines = $this->getNumLines($txt, $w, $reseth, $autopadding, $cellpadding, $border);
-		$height = $lines * ($this->FontSize * $this->cell_height_ratio);
+		$height = $lines * $this->getCellHeight($this->FontSize);
 		if ($autopadding) {
 			// add top and bottom padding
 			$height += ($this->cell_padding['T'] + $this->cell_padding['B']);
@@ -6289,7 +6311,7 @@ class TCPDF {
 			return '';
 		}
 		// minimum row height
-		$row_height = max($h, $this->FontSize * $this->cell_height_ratio);
+		$row_height = max($h, $this->getCellHeight($this->FontSize));
 		$start_page = $this->page;
 		$i = 0; // character position
 		$j = 0; // current starting position
@@ -15269,7 +15291,7 @@ class TCPDF {
 				}
 			}
 		}
-		$text_height = ($this->cell_height_ratio * $fontsize / $this->k);
+		$text_height = $this->getCellHeight($fontsize / $this->k);
 		// height
 		if (($h === '') OR ($h <= 0)) {
 			// set default height
@@ -15280,7 +15302,7 @@ class TCPDF {
 			// try to reduce font or padding to fit barcode on available height
 			if ($text_height > $h) {
 				$fontsize = (($h * $this->k) / (4 * $this->cell_height_ratio));
-				$text_height = ($this->cell_height_ratio * $fontsize / $this->k);
+				$text_height = $this->getCellHeight($fontsize / $this->k);
 				$this->SetFont($style['font'], '', $fontsize);
 			}
 			if ($vpadding > 0) {
@@ -16524,7 +16546,7 @@ class TCPDF {
 						if (isset($dom[$key]['style']['letter-spacing'])) {
 							$dom[$key]['letter-spacing'] = $this->getCSSFontSpacing($dom[$key]['style']['letter-spacing'], $dom[$parentkey]['letter-spacing']);
 						}
-						// line-height
+						// line-height (internally is the cell height ratio)
 						if (isset($dom[$key]['style']['line-height'])) {
 							$lineheight = trim($dom[$key]['style']['line-height']);
 							switch ($lineheight) {
@@ -16533,11 +16555,18 @@ class TCPDF {
 									$dom[$key]['line-height'] = $dom[0]['line-height'];
 									break;
 								}
+								case 'inherit': {
+									$dom[$key]['line-height'] = $dom[$parentkey]['line-height'];
+								}
 								default: {
 									if (is_numeric($lineheight)) {
-										$lineheight = $lineheight * 100;
+										// convert to percentage of font height
+										$lineheight = ($lineheight * 100).'%';
 									}
 									$dom[$key]['line-height'] = $this->getHTMLUnitToUnits($lineheight, 1, '%', true);
+									if (substr($lineheight, -1) !== '%') {
+										$dom[$key]['line-height'] = (($dom[$key]['line-height'] - $this->cell_padding['T'] - $this->cell_padding['B']) / $dom[$key]['fontsize']);
+									}
 								}
 							}
 						}
@@ -17274,9 +17303,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 							$startliney = $this->y;
 							$this->newline = false;
 						}
-						$this->y += ((($curfontsize * $this->cell_height_ratio / $this->k) + $curfontascent - $curfontdescent) / 2) - $imgh;
+						$this->y += (($this->getCellHeight($curfontsize / $this->k) + $curfontascent - $curfontdescent) / 2) - $imgh;
 						$minstartliney = min($this->y, $minstartliney);
-						$maxbottomliney = ($startliney + ($this->FontSize * $this->cell_height_ratio));
+						$maxbottomliney = ($startliney + $this->getCellHeight($this->FontSize));
 					}
 				} elseif (isset($dom[$key]['fontname']) OR isset($dom[$key]['fontstyle']) OR isset($dom[$key]['fontsize']) OR isset($dom[$key]['line-height'])) {
 					// account for different font size
@@ -17347,10 +17376,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 									$current_line_align_data = array($key, $minstartliney, $maxbottomliney);
 									if (isset($line_align_data) AND (($line_align_data[0] == ($key - 1)) OR (($line_align_data[0] == ($key - 2)) AND (isset($dom[($key - 1)])) AND (preg_match('/^([\s]+)$/', $dom[($key - 1)]['value']) > 0)))) {
 										$minstartliney = min($this->y, $line_align_data[1]);
-										$maxbottomliney = max(($this->y + (($fontsize * $this->cell_height_ratio) / $this->k)), $line_align_data[2]);
+										$maxbottomliney = max(($this->y + $this->getCellHeight($fontsize / $this->k)), $line_align_data[2]);
 									} else {
 										$minstartliney = min($this->y, $minstartliney);
-										$maxbottomliney = max(($this->y + (($fontsize * $this->cell_height_ratio) / $this->k)), $maxbottomliney);
+										$maxbottomliney = max(($this->y + $this->getCellHeight($fontsize / $this->k)), $maxbottomliney);
 									}
 									$line_align_data = $current_line_align_data;
 								}
@@ -17814,7 +17843,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					$startliney -= (($this->FontSizePt / 0.7) / $this->k);
 				} else {
 					$minstartliney = $startliney;
-					$maxbottomliney = ($this->y + (($fontsize * $this->cell_height_ratio) / $this->k));
+					$maxbottomliney = ($this->y + $this->getCellHeight($fontsize / $this->k));
 				}
 				$startlinepage = $this->page;
 				if (isset($endlinepos) AND (!$pbrk)) {
@@ -18149,7 +18178,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					$this->SetFont($pfontname, $pfontstyle, $pfontsize);
 					$this->resetLastH();
 					$minstartliney = $this->y;
-					$maxbottomliney = ($startliney + ($this->FontSize * $this->cell_height_ratio));
+					$maxbottomliney = ($startliney + $this->getCellHeight($this->FontSize));
 					if (is_numeric($pfontsize) AND ($pfontsize > 0)) {
 						$this->putHtmlListBullet($this->listnum, $this->lispacer, $pfontsize);
 					}
@@ -18158,9 +18187,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					if (is_numeric($pfontsize) AND ($pfontsize > 0) AND is_numeric($curfontsize) AND ($curfontsize > 0) AND ($pfontsize != $curfontsize)) {
 						$pfontascent = $this->getFontAscent($pfontname, $pfontstyle, $pfontsize);
 						$pfontdescent = $this->getFontDescent($pfontname, $pfontstyle, $pfontsize);
-						$this->y += ((($pfontsize - $curfontsize) * $this->cell_height_ratio / $this->k) + $pfontascent - $curfontascent - $pfontdescent + $curfontdescent) / 2;
+						$this->y += ($this->getCellHeight(($pfontsize - $curfontsize) / $this->k) + $pfontascent - $curfontascent - $pfontdescent + $curfontdescent) / 2;
 						$minstartliney = min($this->y, $minstartliney);
-						$maxbottomliney = max(($this->y + (($pfontsize * $this->cell_height_ratio) / $this->k)), $maxbottomliney);
+						$maxbottomliney = max(($this->y + $this->getCellHeight($pfontsize / $this->k)), $maxbottomliney);
 					}
 				}
 				// text
@@ -18533,9 +18562,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			if (isset($this->tagvspaces[$tag['value']][0]['h']) AND ($this->tagvspaces[$tag['value']][0]['h'] >= 0)) {
 				$cur_h = $this->tagvspaces[$tag['value']][0]['h'];
 			} elseif (isset($tag['fontsize'])) {
-				$cur_h = ($tag['fontsize'] / $this->k) * $this->cell_height_ratio;
+				$cur_h = $this->getCellHeight($tag['fontsize'] / $this->k);
 			} else {
-				$cur_h = $this->FontSize * $this->cell_height_ratio;
+				$cur_h = $this->getCellHeight($this->FontSize);
 			}
 			if (isset($this->tagvspaces[$tag['value']][0]['n'])) {
 				$n = $this->tagvspaces[$tag['value']][0]['n'];
@@ -18551,9 +18580,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			}
 			if (($this->htmlvspace <= 0) AND ($n > 0)) {
 				if (isset($parent['fontsize'])) {
-					$hbz = (($parent['fontsize'] / $this->k) * $this->cell_height_ratio);
+					$hbz = $this->getCellHeight($tag['fontsize'] / $this->k);
 				} else {
-					$hbz = $this->FontSize * $this->cell_height_ratio;
+					$hbz = $this->getCellHeight($this->FontSize);
 				}
 			}
 			if (isset($dom[($key - 1)]) AND ($dom[($key - 1)]['value'] == 'table')) {
@@ -18905,7 +18934,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				if (isset($tag['attribute']['maxlength']) AND !TCPDF_STATIC::empty_string($tag['attribute']['maxlength'])) {
 					$opt['maxlen'] = intval($tag['attribute']['maxlength']);
 				}
-				$h = $this->FontSize * $this->cell_height_ratio;
+				$h = $this->getCellHeight($this->FontSize);
 				if (isset($tag['attribute']['size']) AND !TCPDF_STATIC::empty_string($tag['attribute']['size'])) {
 					$w = intval($tag['attribute']['size']) * $this->GetStringWidth(chr(32)) * 2;
 				} else {
@@ -19067,7 +19096,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					$w = 40;
 				}
 				if (isset($tag['attribute']['rows']) AND !TCPDF_STATIC::empty_string($tag['attribute']['rows'])) {
-					$h = intval($tag['attribute']['rows']) * $this->FontSize * $this->cell_height_ratio;
+					$h = intval($tag['attribute']['rows']) * $this->getCellHeight($this->FontSize);
 				} else {
 					$h = 10;
 				}
@@ -19076,7 +19105,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				break;
 			}
 			case 'select': {
-				$h = $this->FontSize * $this->cell_height_ratio;
+				$h = $this->getCellHeight($this->FontSize);
 				if (isset($tag['attribute']['size']) AND !TCPDF_STATIC::empty_string($tag['attribute']['size'])) {
 					$h *= ($tag['attribute']['size'] + 1);
 				}
@@ -19184,9 +19213,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			if (isset($this->tagvspaces[$tag['value']][1]['h']) AND ($this->tagvspaces[$tag['value']][1]['h'] >= 0)) {
 				$pre_h = $this->tagvspaces[$tag['value']][1]['h'];
 			} elseif (isset($parent['fontsize'])) {
-				$pre_h = (($parent['fontsize'] / $this->k) * $this->cell_height_ratio);
+				$pre_h = $this->getCellHeight($parent['fontsize'] / $this->k);
 			} else {
-				$pre_h = $this->FontSize * $this->cell_height_ratio;
+				$pre_h = $this->getCellHeight($this->FontSize);
 			}
 			if (isset($this->tagvspaces[$tag['value']][1]['n'])) {
 				$n = $this->tagvspaces[$tag['value']][1]['n'];
@@ -19201,7 +19230,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				$hb = ($n * $pre_h);
 			}
 			if ($maxbottomliney > $this->PageBreakTrigger) {
-				$hbz = ($this->FontSize * $this->cell_height_ratio);
+				$hbz = $this->getCellHeight($this->FontSize);
 			} elseif ($this->y < $maxbottomliney) {
 				$hbz = ($maxbottomliney - $this->y);
 			}
@@ -20308,7 +20337,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		if (!TCPDF_STATIC::empty_string($textitem)) {
 			// Check whether we need a new page or new column
 			$prev_y = $this->y;
-			$h = ($this->FontSize * $this->cell_height_ratio) + $this->cell_padding['T'] + $this->cell_padding['B'];
+			$h = $this->getCellHeight($this->FontSize);
 			if ($this->checkPageBreak($h) OR ($this->y < $prev_y)) {
 				$tmpx = $this->x;
 			}
@@ -21203,7 +21232,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			}
 			$this->SetTextColorArray($outline['c']);
 			// check for page break
-			$this->checkPageBreak((2 * $this->FontSize * $this->cell_height_ratio));
+			$this->checkPageBreak(2 * $this->getCellHeight($this->FontSize));
 			// set margins and X position
 			if (($this->page == $current_page) AND ($this->current_column == $current_column)) {
 				$this->lMargin = $lmargin;
@@ -22446,7 +22475,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			return array($x, $y);
 		}
 		if (empty($h)) {
-			$h = ($this->FontSize * $this->cell_height_ratio) + $this->cell_padding['T'] + $this->cell_padding['B'];
+			$h = $this->getCellHeight($this->FontSize);
 		}
 		// check for page break
 		if ($this->checkPageBreak($h, $y)) {

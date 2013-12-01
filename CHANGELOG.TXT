@@ -1,4 +1,8 @@
-6.0.049 (2013-11-27)
+6.0.050 (2013-12-01)
+	- The method getNumLines() was extended to support hyphenation.
+	- The CSS property line-height now supports non percentage values.
+
+6.0.050 (2013-11-27)
 	- A bug related to PNG images was fixed.
 
 6.0.048 (2013-11-24)
