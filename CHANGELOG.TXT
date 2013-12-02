@@ -1,3 +1,6 @@
+6.0.051 (2013-12-02)
+	- cbbox array values in addTTFfont() were converted to integers.
+
 6.0.050 (2013-12-01)
 	- The method getNumLines() was extended to support hyphenation.
 	- The CSS property line-height now supports non percentage values.

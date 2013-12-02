@@ -799,10 +799,10 @@ class TCPDF_FONTS {
 					}
 					if ($addcbbox AND isset($indexToLoc[$ctg[$cid]])) {
 						$offset = ($table['glyf']['offset'] + $indexToLoc[$ctg[$cid]]);
-						$xMin = round(TCPDF_STATIC::_getFWORD($font, $offset + 2)) * $urk;
-						$yMin = round(TCPDF_STATIC::_getFWORD($font, $offset + 4)) * $urk;
-						$xMax = round(TCPDF_STATIC::_getFWORD($font, $offset + 6)) * $urk;
-						$yMax = round(TCPDF_STATIC::_getFWORD($font, $offset + 8)) * $urk;
+						$xMin = round(TCPDF_STATIC::_getFWORD($font, $offset + 2) * $urk);
+						$yMin = round(TCPDF_STATIC::_getFWORD($font, $offset + 4) * $urk);
+						$xMax = round(TCPDF_STATIC::_getFWORD($font, $offset + 6) * $urk);
+						$yMax = round(TCPDF_STATIC::_getFWORD($font, $offset + 8) * $urk);
 						$fmetric['cbbox'] .= ','.$cid.'=>array('.$xMin.','.$yMin.','.$xMax.','.$yMax.')';
 					}
 				}
