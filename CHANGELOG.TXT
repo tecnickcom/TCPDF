@@ -1,3 +1,7 @@
+6.0.053 (2014-01-03)
+	- Bug #876 "Cell padding should not be multiplied with number of lines in getStringHeight" was fixed.
+	- Patch #68 "Empty img src attribute leads to access of uninitialized string offset" was applied.
+
 6.0.052 (2013-12-12)
 	- Bug #871 "Datamatrix coding" was fixed.
 

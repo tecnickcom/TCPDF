@@ -1,13 +1,13 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.052
+// Version     : 6.0.053
 // Begin       : 2002-08-03
-// Last Update : 2013-12-12
+// Last Update : 2014-01-03
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
-// Copyright (C) 2002-2013 Nicola Asuni - Tecnick.com LTD
+// Copyright (C) 2002-2014 Nicola Asuni - Tecnick.com LTD
 //
 // This file is part of TCPDF software library.
 //
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.052
+ * @version 6.0.053
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.052
+ * @version 6.0.053
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -2406,10 +2406,15 @@ class TCPDF {
 	/**
 	 * Return the cell height
 	 * @param $fontsize (int) Font size in internal units
+	 * @param $padding (boolean) If true add cell padding
 	 * @public
 	 */
-	public function getCellHeight($fontsize) {
-		return round((($fontsize * $this->cell_height_ratio) + $this->cell_padding['T'] + $this->cell_padding['B']), 3);
+	public function getCellHeight($fontsize, $padding=TRUE) {
+		$height = ($fontsize * $this->cell_height_ratio);
+		if ($padding) {
+			$height += ($this->cell_padding['T'] + $this->cell_padding['B']);
+		}
+		return round($height, 3);
 	}
 
 	/**
@@ -6221,11 +6226,7 @@ class TCPDF {
 		}
 		$this->adjustCellPadding($border);
 		$lines = $this->getNumLines($txt, $w, $reseth, $autopadding, $cellpadding, $border);
-		$height = $lines * $this->getCellHeight($this->FontSize);
-		if ($autopadding) {
-			// add top and bottom padding
-			$height += ($this->cell_padding['T'] + $this->cell_padding['B']);
-		}
+		$height = $this->getCellHeight(($lines * $this->FontSize), $autopadding);
 		$this->cell_padding = $prev_cell_padding;
 		$this->lasth = $prev_lasth;
 		return $height;
@@ -18670,7 +18671,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				break;
 			}
 			case 'img': {
-				if (isset($tag['attribute']['src'])) {
+				if (!empty($tag['attribute']['src'])) {
 					if ($tag['attribute']['src']{0} === '@') {
 						// data stream
 						$tag['attribute']['src'] = '@'.base64_decode(substr($tag['attribute']['src'], 1));

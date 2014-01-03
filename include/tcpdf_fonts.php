@@ -1,13 +1,13 @@
 <?php
 //============================================================+
 // File name   : tcpdf_fonts.php
-// Version     : 1.0.010
+// Version     : 1.0.011
 // Begin       : 2008-01-01
-// Last Update : 2013-11-10
+// Last Update : 2014-01-03
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
-// Copyright (C) 2008-2013 Nicola Asuni - Tecnick.com LTD
+// Copyright (C) 2008-2014 Nicola Asuni - Tecnick.com LTD
 //
 // This file is part of TCPDF software library.
 //
@@ -42,7 +42,7 @@
  * @class TCPDF_FONTS
  * Font methods for TCPDF library.
  * @package com.tecnick.tcpdf
- * @version 1.0.010
+ * @version 1.0.011
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF_FONTS {
@@ -1603,9 +1603,9 @@ class TCPDF_FONTS {
 	 */
 	public static function UTF8ArrayToUniArray($ta, $isunicode=true) {
 		if ($isunicode) {
-			return array_map(array('self', 'unichrUnicode'), $ta);
+			return array_map(array('TCPDF_FONTS', 'unichrUnicode'), $ta);
 		}
-		return array_map(array('self', 'unichrASCII'), $ta);
+		return array_map(array('TCPDF_FONTS', 'unichrASCII'), $ta);
 	}
 
 	/**
@@ -1882,7 +1882,7 @@ class TCPDF_FONTS {
 		if ($isunicode) {
 			// requires PCRE unicode support turned on
 			$chars = TCPDF_STATIC::pregSplit('//','u', $str, -1, PREG_SPLIT_NO_EMPTY);
-			$carr = array_map(array('self', 'uniord'), $chars);
+			$carr = array_map(array('TCPDF_FONTS', 'uniord'), $chars);
 		} else {
 			$chars = str_split($str);
 			$carr = array_map('ord', $chars);
