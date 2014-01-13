@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.053
+// Version     : 6.0.054
 // Begin       : 2002-08-03
-// Last Update : 2014-01-03
+// Last Update : 2014-01-13
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.053
+ * @version 6.0.054
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.053
+ * @version 6.0.054
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -6226,7 +6226,7 @@ class TCPDF {
 		}
 		$this->adjustCellPadding($border);
 		$lines = $this->getNumLines($txt, $w, $reseth, $autopadding, $cellpadding, $border);
-		$height = $this->getCellHeight(($lines * $this->FontSize), $autopadding);
+		$height = $lines * $this->getCellHeight($this->FontSize, $autopadding);
 		$this->cell_padding = $prev_cell_padding;
 		$this->lasth = $prev_lasth;
 		return $height;
@@ -17768,14 +17768,20 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 										$spacew /= ($this->font_stretching / 100);
 									}
 									// escape special characters
+									$pos = 0;
 									$pmid = preg_replace('/[\\\][\(]/x', '\\#!#OP#!#', $pmid);
 									$pmid = preg_replace('/[\\\][\)]/x', '\\#!#CP#!#', $pmid);
 									if (preg_match_all('/\[\(([^\)]*)\)\]/x', $pmid, $pamatch) > 0) {
 										foreach($pamatch[0] as $pk => $pmatch) {
-											$pmatch = str_replace('#!#OP#!#', '(', $pmatch);
-											$pmatch = str_replace('#!#CP#!#', ')', $pmatch);
-											$newpmid = '[('.str_replace(chr(0).chr(32), ') '.sprintf('%F', $spacew).' (', $pamatch[1][$pk]).')]';
-											$pmid = str_replace($pmatch, $newpmid, $pmid);
+											$replace = $pamatch[1][$pk];
+											$replace = str_replace('#!#OP#!#', '(', $replace);
+											$replace = str_replace('#!#CP#!#', ')', $replace);
+											$newpmid = '[('.str_replace(chr(0).chr(32), ') '.sprintf('%F', $spacew).' (', $replace).')]';
+											$pos = strpos($pmid, $pmatch, $pos);
+											if ($pos !== FALSE) {
+												$pmid = substr_replace($pmid, $newpmid, $pos, strlen($pmatch));
+											}
+											++$pos;
 										}
 										unset($pamatch);
 									}
