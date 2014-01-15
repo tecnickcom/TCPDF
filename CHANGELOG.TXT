@@ -1,3 +1,7 @@
+6.0.055 (2014-01-15)
+	- Bug #880 "Error detecting hX tags (h1,h2..)" was fixed
+	- Bug #879 "Thead on the second page inherits style of previous tr" was fixed
+
 6.0.054 (2014-01-13)
 	- Bug #877 "Parenteses causing corrupt text" was fixed.
 
