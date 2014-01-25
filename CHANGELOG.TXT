@@ -1,3 +1,8 @@
+6.0.056 (2014-01-25)
+	- The automatic chache folder selection now works also with some restricted hosting environments.
+	- CSS text-transform property is now supported (requires the multibyte string library for php) - see examle n. 061 (Thanks to Walter Ferraz).
+	- Bug #884 "Parsing error prev tag looking for" was fixed.
+
 6.0.055 (2014-01-15)
 	- Bug #880 "Error detecting hX tags (h1,h2..)" was fixed
 	- Bug #879 "Thead on the second page inherits style of previous tr" was fixed
