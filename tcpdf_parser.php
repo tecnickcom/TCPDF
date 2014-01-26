@@ -439,7 +439,6 @@ class TCPDF_PARSER {
 			foreach ($sdata as $k => $row) {
 				switch ($row[0]) {
 					case 0: { // (f) linked list of free objects
-						++$obj_num;
 						break;
 					}
 					case 1: { // (n) objects that are in use but are not compressed
@@ -450,7 +449,6 @@ class TCPDF_PARSER {
 							// store object offset position
 							$xref['xref'][$index] = $row[1];
 						}
-						++$obj_num;
 						break;
 					}
 					case 2: { // compressed objects
@@ -464,6 +462,7 @@ class TCPDF_PARSER {
 						break;
 					}
 				}
+				++$obj_num;
 			}
 		} // end decoding data
 		if (isset($prevxref)) {
