@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.057
+// Version     : 6.0.058
 // Begin       : 2002-08-03
-// Last Update : 2014-01-15
+// Last Update : 2014-01-31
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.057
+ * @version 6.0.058
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.057
+ * @version 6.0.058
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -24153,6 +24153,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				if (empty($child_element['attribs']['closing_tag'])) {
 					$this->startSVGElementHandler('child-tag', $child_element['name'], $child_element['attribs']);
 				} else {
+					if (isset($child_element['attribs']['content'])) {
+						$this->svgtext = $child_element['attribs']['content'];
+					}
 					$this->endSVGElementHandler('child-tag', $child_element['name']);
 				}
 			}
@@ -24174,12 +24177,12 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				if (isset($this->svgdefs[$last_svgdefs_id]['attribs']['child_elements'])) {
 					foreach($this->svgdefs[$last_svgdefs_id]['attribs']['child_elements'] as $child_element) {
 						if (isset($child_element['attribs']['id']) AND ($child_element['name'] == $name)) {
-							$this->svgdefs[$last_svgdefs_id]['attribs']['child_elements'][$child_element['attribs']['id'].'_CLOSE'] = array('name' => $name, 'attribs' => array('closing_tag' => TRUE));
+							$this->svgdefs[$last_svgdefs_id]['attribs']['child_elements'][$child_element['attribs']['id'].'_CLOSE'] = array('name' => $name, 'attribs' => array('closing_tag' => TRUE, 'content' => $this->svgtext));
 							return;
 						}
 					}
 					if ($this->svgdefs[$last_svgdefs_id]['name'] == $name) {
-						$this->svgdefs[$last_svgdefs_id]['attribs']['child_elements'][$last_svgdefs_id.'_CLOSE'] = array('name' => $name, 'attribs' => array('closing_tag' => TRUE));
+						$this->svgdefs[$last_svgdefs_id]['attribs']['child_elements'][$last_svgdefs_id.'_CLOSE'] = array('name' => $name, 'attribs' => array('closing_tag' => TRUE, 'content' => $this->svgtext));
 						return;
 					}
 				}
