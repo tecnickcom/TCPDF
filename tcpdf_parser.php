@@ -3,7 +3,7 @@
 // File name   : tcpdf_parser.php
 // Version     : 1.0.013
 // Begin       : 2011-05-23
-// Last Update : 2014-01-25
+// Last Update : 2014-02-16
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
 // -------------------------------------------------------------------
@@ -103,12 +103,16 @@ class TCPDF_PARSER {
 		if (empty($data)) {
 			$this->Error('Empty PDF data.');
 		}
-		// set configuration parameters
-		$this->setConfig($cfg);
+		// find the pdf header starting position
+		if (($trimpos = strpos($data, '%PDF-')) === FALSE) {
+			$this->Error('Invalid PDF data: missing %PDF header.');
+		}
 		// get PDF content string
-		$this->pdfdata = $data;
+		$this->pdfdata = substr($data, $trimpos);
 		// get length
 		$pdflen = strlen($this->pdfdata);
+		// set configuration parameters
+		$this->setConfig($cfg);
 		// get xref and trailer data
 		$this->xref = $this->getXrefData();
 		// parse all document objects
@@ -587,7 +591,9 @@ class TCPDF_PARSER {
 						// remove white space characters
 						$objval = strtr($matches[1], "\x09\x0a\x0c\x0d\x20", '');
 						$offset += strlen($matches[0]);
-					}
+					} elseif (($endpos = strpos($this->pdfdata, '>', $offset)) !== FALSE) {
+						$offset = $endpos + 1;
+                    }
 				}
 				break;
 			}

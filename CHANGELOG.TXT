@@ -1,3 +1,7 @@
+6.0.060 (2014-02-16)
+	- Bug #891 "Error on parsing hexa fields" was fixed.
+	- Bug #892 "Parsing pdf with trailing space at start" was fixed.
+
 6.0.059 (2014-02-03)
 	- SVG 'use' support was imporved.
 
