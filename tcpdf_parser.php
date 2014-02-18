@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf_parser.php
-// Version     : 1.0.013
+// Version     : 1.0.014
 // Begin       : 2011-05-23
-// Last Update : 2014-02-16
+// Last Update : 2014-02-18
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
 // -------------------------------------------------------------------
@@ -37,7 +37,7 @@
  * This is a PHP class for parsing PDF documents.<br>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 1.0.013
+ * @version 1.0.014
  */
 
 // include class for decoding filters
@@ -291,7 +291,11 @@ class TCPDF_PARSER {
 		} else {
 			$filltrailer = false;
 		}
+		if (!isset($xref['xref'])) {
+			$xref['xref'] = array();
+		}
 		$valid_crs = false;
+		$columns = 0;
 		$sarr = $xrefcrs[0][1];
 		foreach ($sarr as $k => $v) {
 			if (($v[0] == '/') AND ($v[1] == 'Type') AND (isset($sarr[($k +1)]) AND ($sarr[($k +1)][0] == '/') AND ($sarr[($k +1)][1] == 'XRef'))) {
@@ -326,6 +330,8 @@ class TCPDF_PARSER {
 					$xref['trailer']['root'] = $sarr[($k +1)][1];
 				} elseif (($v[0] == '/') AND ($v[1] == 'Info') AND (isset($sarr[($k +1)]) AND ($sarr[($k +1)][0] == 'objref'))) {
 					$xref['trailer']['info'] = $sarr[($k +1)][1];
+				} elseif (($v[0] == '/') AND ($v[1] == 'Encrypt') AND (isset($sarr[($k +1)]) AND ($sarr[($k +1)][0] == 'objref'))) {
+					$xref['trailer']['encrypt'] = $sarr[($k +1)][1];
 				} elseif (($v[0] == '/') AND ($v[1] == 'ID') AND (isset($sarr[($k +1)]))) {
 					$xref['trailer']['id'] = array();
 					$xref['trailer']['id'][0] = $sarr[($k +1)][1][0][1];
@@ -423,12 +429,14 @@ class TCPDF_PARSER {
 					// default type field
 					$sdata[$k][0] = 1;
 				}
-				$i = 0; // count bytes on the row
+				$i = 0; // count bytes in the row
 				// for every column
 				for ($c = 0; $c < 3; ++$c) {
 					// for every byte on the column
 					for ($b = 0; $b < $wb[$c]; ++$b) {
-						$sdata[$k][$c] += ($row[$i] << (($wb[$c] - 1 - $b) * 8));
+						if (isset($row[$i])) {
+							$sdata[$k][$c] += ($row[$i] << (($wb[$c] - 1 - $b) * 8));
+						}
 						++$i;
 					}
 				}
