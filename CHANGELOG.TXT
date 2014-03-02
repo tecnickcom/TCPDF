@@ -1,3 +1,6 @@
+6.0.062 (2014-03-02)
+	- The method startLayer() now accepts the NULL value for the $print parameter to not set the print layer option.
+
 6.0.061 (2014-02-18)
 	- Bug #893 "Parsing error on streamed xref for secured pdf" was fixed.
 

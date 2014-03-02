@@ -13658,7 +13658,9 @@ class TCPDF {
 			 $out = '<< /Type /OCG';
 			 $out .= ' /Name '.$this->_textstring($layer['name'], $this->pdflayers[$key]['objid']);
 			 $out .= ' /Usage <<';
-			 $out .= ' /Print <</PrintState /'.($layer['print']?'ON':'OFF').'>>';
+			 if (isset($layer['print']) AND ($layer['print'] !== NULL)) {
+				 $out .= ' /Print <</PrintState /'.($layer['print']?'ON':'OFF').'>>';
+			 }
 			 $out .= ' /View <</ViewState /'.($layer['view']?'ON':'OFF').'>>';
 			 $out .= ' >> >>';
 			 $out .= "\n".'endobj';
@@ -13669,7 +13671,7 @@ class TCPDF {
 	/**
 	 * Start a new pdf layer.
 	 * @param $name (string) Layer name (only a-z letters and numbers). Leave empty for automatic name.
-	 * @param $print (boolean) Set to true to print this layer.
+	 * @param $print (boolean|null) Set to TRUE to print this layer, FALSE to not print and NULL to not set this option
 	 * @param $view (boolean) Set to true to view this layer.
 	 * @public
 	 * @since 5.9.102 (2011-07-13)
