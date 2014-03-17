@@ -24149,7 +24149,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 							$attribs['style'] = str_replace(';;',';',';'.$use['attribs']['style'].$attribs['style']);
 						}
 						$attribs = array_merge($use['attribs'], $attribs);
-						$this->startSVGElementHandler('use-tag', $use['name'], $attribs);
+						$this->startSVGElementHandler($parser, $use['name'], $attribs);
 						return;
 					}
 				}
