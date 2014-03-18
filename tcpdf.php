@@ -1582,6 +1582,12 @@ class TCPDF {
 	protected $efnames = array();
 
 	/**
+	 * Depth of the svg tag, to keep track if the svg tag is a subtag or the root tag.
+	 * @protected
+	 */
+	protected $svg_tag_depth = 0;
+	
+	/**
 	 * Directory used for the last SVG image.
 	 * @protected
 	 * @since 5.0.000 (2010-05-05)
@@ -20216,6 +20222,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @since 4.4.004 (2008-12-10)
 	 */
 	protected function putHtmlListBullet($listdepth, $listtype='', $size=10) {
+		// disregard namespace
 		if ($this->state != 2) {
 			return;
 		}
@@ -23620,6 +23627,12 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @protected
 	 */
 	protected function startSVGElementHandler($parser, $name, $attribs, $ctm=array()) {
+		// disregard namespace
+		if(strstr($name, ':') !== false)
+		{
+			$parts = explode(':', $name);
+			$name = $parts[sizeof($parts) - 1];
+		}
 		// check if we are in clip mode
 		if ($this->svgclipmode) {
 			$this->svgclippaths[$this->svgclipid][] = array('name' => $name, 'attribs' => $attribs, 'tm' => $this->svgcliptm[$this->svgclipid]);
@@ -23717,7 +23730,90 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				break;
 			}
 			case 'svg': {
-				// start of SVG object
+				if(++$this->svg_tag_depth > 1)
+				{
+					// inner svg
+					array_push($this->svgstyles, $svgstyle);
+					$this->StartTransform();
+					$svgX = (isset($attribs['x'])?$attribs['x']:0);
+					$svgY = (isset($attribs['y'])?$attribs['y']:0);
+					$svgW = (isset($attribs['width'])?$attribs['width']:0);
+					$svgH = (isset($attribs['height'])?$attribs['height']:0);
+					
+					//set x, y position using transform matrix
+					$tm = TCPDF_STATIC::getTransformationMatrixProduct($tm, array( 1, 0, 0, 1, $svgX, $svgY));
+					$this->SVGTransform($tm);
+					
+					//set clipping for width and height, x and y are 0 since the positioning is handled in the transformation matrix
+					$x = $this->getHTMLUnitToUnits(0, 0, $this->svgunit, false);
+					$y = $this->getHTMLUnitToUnits(0, 0, $this->svgunit, false);
+					//TODO, fix inf width/height
+					$w = (isset($attribs['width'])?$this->getHTMLUnitToUnits($attribs['width'], 0, $this->svgunit, false):10000);
+					$h = (isset($attribs['height'])?$this->getHTMLUnitToUnits($attribs['height'], 0, $this->svgunit, false):10000);
+					//draw clipping rect
+					$this->Rect($x, $y, $w, $h, 'CNZ', array(), array());
+					
+					
+					//parse viewbox, calculate extra transformationmatrix
+					if (isset($attribs['viewBox'])) {
+						$tmp = array();
+						preg_match_all("/[0-9]+/", $attribs['viewBox'], $tmp);
+						$tmp=$tmp[0];
+						if(sizeof($tmp) == 4)
+						{
+							$vx = $tmp[0];
+							$vy = $tmp[1];
+							$vw = $tmp[2];
+							$vh = $tmp[3];
+							// get aspect ratio
+							$tmp = array();
+							$aspectX = 'xMid';
+							$aspectY = 'YMid';
+							$fit = 'meet';
+							if(isset($attribs['preserveAspectRatio'])){
+								if($attribs['preserveAspectRatio'] == 'none')
+								{
+									$fit = 'none';
+								}
+								else
+								{
+									preg_match_all('/[a-zA-Z]+/', $attribs['preserveAspectRatio'],$tmp);
+									$tmp = $tmp[0];
+									if(sizeof($tmp) == 2 && strlen($tmp[0]) == 8 && in_array($tmp[1], array('meet','slice','none')))
+									{
+										$aspectX = substr($tmp[0], 0, 4);
+										$aspectY = substr($tmp[0], 4, 4);
+										$fit = $tmp[1];
+									}
+								}
+							}
+							$wr = $svgW / $vw;
+							$hr = $svgH / $vh;
+							$ax = $ay = 0;
+							if(($fit == 'meet' && $hr < $wr) || ($fit == 'slice' && $hr > $wr))
+							{
+									if($aspectX == 'xMax')
+										$ax = $vw * ($wr / $hr) - $vw;
+									if($aspectX == 'xMid')
+										$ax = ($vw * ($wr / $hr) - $vw) / 2;
+									$wr = $hr;
+							}
+							elseif(($fit == 'meet' && $hr > $wr) || ($fit == 'slice' && $hr < $wr))
+							{
+									if($aspectY == 'YMax')
+										$ay = $vh * ($hr / $wr) - $vh;
+									if($aspectY == 'YMid')
+										$ay = ($vh * ($hr / $wr) - $vh) / 2;
+									$hr = $wr;
+							}
+							
+							$tm = TCPDF_STATIC::getTransformationMatrixProduct($tm, array(
+								$wr, 0, 0, $hr, -$svgX - ($vx - $ax) * $wr,-$svgY - ($vy - $ay) * $hr));
+							$this->SVGTransform($tm);
+						}
+					}
+					$this->setSVGStyles($svgstyle, $prev_svgstyle);
+				}
 				break;
 			}
 			case 'g': {
@@ -24122,7 +24218,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				$this->x = $x;
 				$this->y = $y;
 				break;
-			}
+		}
 			// use
 			case 'use': {
 				if (isset($attribs['xlink:href']) AND !empty($attribs['xlink:href'])) {
@@ -24149,7 +24245,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 							$attribs['style'] = str_replace(';;',';',';'.$use['attribs']['style'].$attribs['style']);
 						}
 						$attribs = array_merge($use['attribs'], $attribs);
-						$this->startSVGElementHandler($parser, $use['name'], $attribs);
+						 $this->startSVGElementHandler($parser, $use['name'], $attribs);
 						return;
 					}
 				}
@@ -24185,6 +24281,12 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @protected
 	 */
 	protected function endSVGElementHandler($parser, $name) {
+		//disregard namespace
+		if(strstr($name, ':') !== false)
+		{
+			$parts = explode(':', $name);
+			$name = $parts[sizeof($parts) - 1];
+		}
 		if ($this->svgdefsmode AND !in_array($name, array('defs', 'clipPath', 'linearGradient', 'radialGradient', 'stop'))) {;
 			if (end($this->svgdefs) !== FALSE) {
 				$last_svgdefs_id = key($this->svgdefs);
@@ -24217,6 +24319,15 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				// ungroup: remove last style from array
 				array_pop($this->svgstyles);
 				$this->StopTransform();
+				break;
+			}
+			case 'svg': {
+				// remove last style from array
+				if(--$this->svg_tag_depth > 0)
+				{
+					array_pop($this->svgstyles);
+					$this->StopTransform();
+				}
 				break;
 			}
 			case 'text':
