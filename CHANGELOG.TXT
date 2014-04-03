@@ -1,3 +1,6 @@
+6.0.063 (2014-04-03)
+	- Method TCPDF_IMAGES::_parsepng() was fixed to support transparency in Indexed images.
+
 6.0.062 (2014-03-02)
 	- The method startLayer() now accepts the NULL value for the $print parameter to not set the print layer option.
 

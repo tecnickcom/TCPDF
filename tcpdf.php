@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.061
+// Version     : 6.0.063
 // Begin       : 2002-08-03
-// Last Update : 2014-02-18
+// Last Update : 2014-04-03
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.061
+ * @version 6.0.063
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.061
+ * @version 6.0.063
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -10309,7 +10309,7 @@ class TCPDF {
 
 	/**
 	 * Set header font.
-	 * @param $font (array) font
+	 * @param $font (array) Array describing the basic font parameters: (family, style, size).
 	 * @public
 	 * @since 1.1
 	 */
@@ -10319,7 +10319,7 @@ class TCPDF {
 
 	/**
 	 * Get header font.
-	 * @return array()
+	 * @return array() Array describing the basic font parameters: (family, style, size).
 	 * @public
 	 * @since 4.0.012 (2008-07-24)
 	 */
@@ -10329,7 +10329,7 @@ class TCPDF {
 
 	/**
 	 * Set footer font.
-	 * @param $font (array) font
+	 * @param $font (array) Array describing the basic font parameters: (family, style, size).
 	 * @public
 	 * @since 1.1
 	 */
@@ -10339,7 +10339,7 @@ class TCPDF {
 
 	/**
 	 * Get Footer font.
-	 * @return array()
+	 * @return array() Array describing the basic font parameters: (family, style, size).
 	 * @public
 	 * @since 4.0.012 (2008-07-24)
 	 */
@@ -23726,8 +23726,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				$this->StartTransform();
 				$x = (isset($attribs['x'])?$attribs['x']:0);
 				$y = (isset($attribs['y'])?$attribs['y']:0);
-				$w = (isset($attribs['width'])?$attribs['width']:1);
-				$h = (isset($attribs['height'])?$attribs['height']:1);
+				$w = 1;//(isset($attribs['width'])?$attribs['width']:1);
+				$h = 1;//(isset($attribs['height'])?$attribs['height']:1);
 				$tm = TCPDF_STATIC::getTransformationMatrixProduct($tm, array($w, 0, 0, $h, $x, $y));
 				$this->SVGTransform($tm);
 				$this->setSVGStyles($svgstyle, $prev_svgstyle);
