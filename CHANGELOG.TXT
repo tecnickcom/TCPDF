@@ -1,3 +1,7 @@
+6.0.064 (2014-04-07)
+	- Header and Footer fonts are now set by default.
+	- Bug #904 "PDF corrupted" was fixed.
+
 6.0.063 (2014-04-03)
 	- Method TCPDF_IMAGES::_parsepng() was fixed to support transparency in Indexed images.
 
