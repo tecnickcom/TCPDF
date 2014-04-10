@@ -1,3 +1,6 @@
+6.0.065 (2014-04-10)
+	- Bug #905 "RGB percentage color bug in convertHTMLColorToDec()" was fixed.
+
 6.0.064 (2014-04-07)
 	- Header and Footer fonts are now set by default.
 	- Bug #904 "PDF corrupted" was fixed.
