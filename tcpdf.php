@@ -347,6 +347,12 @@ class TCPDF {
 	 */
 	protected $cached_files = array();
 
+        /**
+         * Array mapping inline img checksums to temp filenames
+         * @protected
+         */
+        protected $inline_img_chache = array();
+        
 	/**
 	 * Array of Annotations in pages.
 	 * @protected
@@ -6816,10 +6822,18 @@ class TCPDF {
 		$exurl = ''; // external streams
 		$imsize = FALSE;
 		// check if we are passing an image as file or string
+                $inlinehash = FALSE;
 		if ($file[0] === '@') {
 			// image from string
 			$imgdata = substr($file, 1);
-		} else { // image file
+                        $inlinehash = md5($imgdata);
+                        //check if this inline file has already been added, if so set filename to tmp file
+                        if(isset($this->inline_img_chache[$inlinehash])){
+                            $file = $this->inline_img_chache[$inlinehash];
+                            unset($imgdata);
+                        }
+		} 
+                if($file[0] !== '@'){ // image file
 			if ($file{0} === '*') {
 				// image as external stream
 				$file = substr($file, 1);
@@ -6842,6 +6856,11 @@ class TCPDF {
 			// copy image to cache
 			$original_file = $file;
 			$file = TCPDF_STATIC::getObjFilename('img');
+                        if($inlinehash !== FALSE)
+                        {
+                            //place file in inlinehash array
+                            $this->inline_img_chache[$inlinehash] = $file;
+                        }
 			$fp = fopen($file, 'w');
 			fwrite($fp, $imgdata);
 			fclose($fp);
@@ -19068,7 +19087,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						if (!isset($value)) {
 							$value = 'reset';
 						}
-						$w = $this->GetStringWidth($value) * 1.5;
+						$w = $this->GetStriangWidth($value) * 1.5;
 						$h *= 1.6;
 						$prop = array('lineWidth'=>1, 'borderStyle'=>'beveled', 'fillColor'=>array(196, 196, 196), 'strokeColor'=>array(255, 255, 255));
 						$this->Button($name, $w, $h, $value, array('S'=>'ResetForm'), $prop, $opt, '', '', false);
@@ -22856,6 +22875,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		// creates a new XML parser to be used by the other XML functions
 		$this->parser = xml_parser_create('UTF-8');
 		// the following function allows to use parser inside object
+		
 		xml_set_object($this->parser, $this);
 		// disable case-folding for this XML parser
 		xml_parser_set_option($this->parser, XML_OPTION_CASE_FOLDING, 0);
@@ -24245,7 +24265,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 							$attribs['style'] = str_replace(';;',';',';'.$use['attribs']['style'].$attribs['style']);
 						}
 						$attribs = array_merge($use['attribs'], $attribs);
-						 $this->startSVGElementHandler($parser, $use['name'], $attribs);
+						$this->startSVGElementHandler('use-tag', $use['name'], $attribs);
 						return;
 					}
 				}
