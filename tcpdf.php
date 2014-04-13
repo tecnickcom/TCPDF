@@ -19087,7 +19087,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						if (!isset($value)) {
 							$value = 'reset';
 						}
-						$w = $this->GetStriangWidth($value) * 1.5;
+						$w = $this->GetStringWidth($value) * 1.5;
 						$h *= 1.6;
 						$prop = array('lineWidth'=>1, 'borderStyle'=>'beveled', 'fillColor'=>array(196, 196, 196), 'strokeColor'=>array(255, 255, 255));
 						$this->Button($name, $w, $h, $value, array('S'=>'ResetForm'), $prop, $opt, '', '', false);
@@ -22875,7 +22875,6 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		// creates a new XML parser to be used by the other XML functions
 		$this->parser = xml_parser_create('UTF-8');
 		// the following function allows to use parser inside object
-		
 		xml_set_object($this->parser, $this);
 		// disable case-folding for this XML parser
 		xml_parser_set_option($this->parser, XML_OPTION_CASE_FOLDING, 0);
@@ -24265,7 +24264,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 							$attribs['style'] = str_replace(';;',';',';'.$use['attribs']['style'].$attribs['style']);
 						}
 						$attribs = array_merge($use['attribs'], $attribs);
-						$this->startSVGElementHandler('use-tag', $use['name'], $attribs);
+						 $this->startSVGElementHandler($parser, $use['name'], $attribs);
 						return;
 					}
 				}
