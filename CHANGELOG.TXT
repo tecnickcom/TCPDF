@@ -1,3 +1,6 @@
+6.0.066 (2014-04-20)
+	- Bug #908 "Linebreak is not considered when getting length of the next string" was fixed.
+
 6.0.065 (2014-04-10)
 	- Bug #905 "RGB percentage color bug in convertHTMLColorToDec()" was fixed.
 
