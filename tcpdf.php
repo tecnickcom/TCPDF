@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.066
+// Version     : 6.0.067
 // Begin       : 2002-08-03
-// Last Update : 2014-04-20
+// Last Update : 2014-04-21
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.066
+ * @version 6.0.067
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.066
+ * @version 6.0.067
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -9701,13 +9701,18 @@ class TCPDF {
 			$lyrobjs = '';
 			$lyrobjs_print = '';
 			$lyrobjs_view = '';
+			$lyrobjs_lock = '';
 			foreach ($this->pdflayers as $layer) {
-				$lyrobjs .= ' '.$layer['objid'].' 0 R';
+				$layer_obj_ref = ' '.$layer['objid'].' 0 R';
+				$lyrobjs .= $layer_obj_ref;
 				if ($layer['print']) {
-					$lyrobjs_print .= ' '.$layer['objid'].' 0 R';
+					$lyrobjs_print .= $layer_obj_ref;
 				}
 				if ($layer['view']) {
-					$lyrobjs_view .= ' '.$layer['objid'].' 0 R';
+					$lyrobjs_view .= $layer_obj_ref;
+				}
+				if ($layer['lock']) {
+					$lyrobjs_lock .= $layer_obj_ref;
 				}
 			}
 			$out .= ' /OCProperties << /OCGs ['.$lyrobjs.']';
@@ -9717,6 +9722,7 @@ class TCPDF {
 			$out .= ' /BaseState /ON';
 			$out .= ' /ON ['.$lyrobjs_print.']';
 			$out .= ' /OFF ['.$lyrobjs_view.']';
+			$out .= ' /Locked ['.$lyrobjs_lock.']';
 			$out .= ' /Intent /View';
 			$out .= ' /AS [';
 			$out .= ' << /Event /Print /OCGs ['.$lyrobjs.'] /Category [/Print] >>';
@@ -13664,7 +13670,7 @@ class TCPDF {
 			 $out .= ' /Name '.$this->_textstring($layer['name'], $this->pdflayers[$key]['objid']);
 			 $out .= ' /Usage <<';
 			 if (isset($layer['print']) AND ($layer['print'] !== NULL)) {
-				 $out .= ' /Print <</PrintState /'.($layer['print']?'ON':'OFF').'>>';
+				$out .= ' /Print <</PrintState /'.($layer['print']?'ON':'OFF').'>>';
 			 }
 			 $out .= ' /View <</ViewState /'.($layer['view']?'ON':'OFF').'>>';
 			 $out .= ' >> >>';
@@ -13678,10 +13684,11 @@ class TCPDF {
 	 * @param $name (string) Layer name (only a-z letters and numbers). Leave empty for automatic name.
 	 * @param $print (boolean|null) Set to TRUE to print this layer, FALSE to not print and NULL to not set this option
 	 * @param $view (boolean) Set to true to view this layer.
+	 * @param $lock (boolean) If true lock the layer
 	 * @public
 	 * @since 5.9.102 (2011-07-13)
 	 */
-	public function startLayer($name='', $print=true, $view=true) {
+	public function startLayer($name='', $print=true, $view=true, $lock=true) {
 		if ($this->state != 2) {
 			return;
 		}
@@ -13691,7 +13698,7 @@ class TCPDF {
 		} else {
 			$name = preg_replace('/[^a-zA-Z0-9_\-]/', '', $name);
 		}
-		$this->pdflayers[] = array('layer' => $layer, 'name' => $name, 'print' => $print, 'view' => $view);
+		$this->pdflayers[] = array('layer' => $layer, 'name' => $name, 'print' => $print, 'view' => $view, 'lock' => $lock);
 		$this->openMarkedContent = true;
 		$this->_out('/OC /'.$layer.' BDC');
 	}

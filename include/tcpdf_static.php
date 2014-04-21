@@ -55,7 +55,7 @@ class TCPDF_STATIC {
 	 * Current TCPDF version.
 	 * @private static
 	 */
-	private static $tcpdf_version = '6.0.066';
+	private static $tcpdf_version = '6.0.067';
 
 	/**
 	 * String alias for total number of pages.
@@ -2764,6 +2764,7 @@ class TCPDF_STATIC {
 	 * @public static
 	 */
 	public static function fileGetContents($file) {
+		//$file = html_entity_decode($file);
 		// array of possible alternative paths/URLs
 		$alt = array($file);
 		// replace URL relative path with full real server path
@@ -2800,6 +2801,10 @@ class TCPDF_STATIC {
 				$alt[] = $tmp;
 			}
 		}
+		if (isset($_SERVER['SCRIPT_URI'])) {
+			$urldata = @parse_url($_SERVER['SCRIPT_URI']);
+			$alt[] = $urldata['scheme'].'://'.$urldata['host'].(($file[0] == '/') ? '' : '/').$file;
+		}
 		foreach ($alt as $f) {
 			$ret = @file_get_contents($f);
 			if (($ret === FALSE)
@@ -2808,7 +2813,7 @@ class TCPDF_STATIC {
 				AND preg_match('%^(https?|ftp)://%', $f)) {
 				// try to get remote file data using cURL
 				$cs = curl_init(); // curl session
-				curl_setopt($cs, CURLOPT_URL, $file);
+				curl_setopt($cs, CURLOPT_URL, $f);
 				curl_setopt($cs, CURLOPT_BINARYTRANSFER, true);
 				curl_setopt($cs, CURLOPT_FAILONERROR, true);
 				curl_setopt($cs, CURLOPT_RETURNTRANSFER, true);
