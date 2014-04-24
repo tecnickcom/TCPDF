@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : datamatrix.php
-// Version     : 1.0.005
+// Version     : 1.0.006
 // Begin       : 2010-06-07
-// Last Update : 2014-04-22
+// Last Update : 2014-04-24
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -40,7 +40,7 @@
 *
 * @package com.tecnick.tcpdf
 * @author Nicola Asuni
-* @version 1.0.005
+* @version 1.0.006
 */
 
 // custom definitions
@@ -942,17 +942,17 @@ class Datamatrix {
 					}
 					// set field lenght
 					if ($field_lenght <= 249) {
-						$cw[] = $field_lenght;
+						$cw[] = $this->get255StateCodeword($field_lenght, ($cw_num + 1));
 						++$cw_num;
 					} else {
-						$cw[] = (floor($field_lenght / 250) + 249);
-						$cw[] = ($field_lenght % 250);
+						$cw[] = $this->get255StateCodeword((floor($field_lenght / 250) + 249), ($cw_num + 1));
+						$cw[] = $this->get255StateCodeword(($field_lenght % 250), ($cw_num + 2));
 						$cw_num += 2;
 					}
 					if (!empty($temp_cw)) {
 						// add B256 field
 						foreach ($temp_cw as $p => $cht) {
-							$cw[] = $this->get255StateCodeword($chr, ($cw_num + $p));
+							$cw[] = $this->get255StateCodeword($cht, ($cw_num + $p + 1));
 						}
 					}
 					break;
