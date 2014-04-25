@@ -3,7 +3,7 @@
 // File name   : pdf417.php
 // Version     : 1.0.005
 // Begin       : 2010-06-03
-// Last Update : 2013-09-17
+// Last Update : 2014-04-25
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -934,7 +934,7 @@ class PDF417 {
 						$sublen = strlen($code);
 					}
 					if ($sublen == 6) {
-						$t = bcmul(''.ord($code{0}), '1099511627776');
+						$t = bcmul(''.ord($code[0]), '1099511627776');
 						$t = bcadd($t, bcmul(''.ord($code{1}), '4294967296'));
 						$t = bcadd($t, bcmul(''.ord($code{2}), '16777216'));
 						$t = bcadd($t, bcmul(''.ord($code{3}), '65536'));

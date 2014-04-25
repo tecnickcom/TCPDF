@@ -3,7 +3,7 @@
 // File name   : tcpdf_colors.php
 // Version     : 1.0.004
 // Begin       : 2002-04-09
-// Last Update : 2014-04-10
+// Last Update : 2014-04-25
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -351,7 +351,7 @@ class TCPDF_COLORS {
 			}
 			return $returncolor;
 		}
-		if ($color{0} != '#') {
+		if ($color[0] != '#') {
 			// COLOR NAME
 			if (isset(self::$webcolor[$color])) {
 				// web color

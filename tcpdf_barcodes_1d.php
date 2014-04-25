@@ -3,7 +3,7 @@
 // File name   : tcpdf_barcodes_1d.php
 // Version     : 1.0.025
 // Begin       : 2008-06-09
-// Last Update : 2013-03-17
+// Last Update : 2014-04-25
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -1094,7 +1094,7 @@ class TCPDFBarcode {
 			}
 			case 'C': { // MODE C
 				$startid = 105;
-				if (ord($code{0}) == 241) {
+				if (ord($code[0]) == 241) {
 					$code_data[] = 102;
 					$code = substr($code, 1);
 					--$len;
@@ -1172,7 +1172,7 @@ class TCPDFBarcode {
 						}
 						case 'B': {
 							if ($key == 0) {
-								$tmpchr = ord($seq[1]{0});
+								$tmpchr = ord($seq[1][0]);
 								if (($seq[2] == 1) AND ($tmpchr >= 241) AND ($tmpchr <= 244) AND isset($sequence[($key + 1)]) AND ($sequence[($key + 1)][0] != 'B')) {
 									switch ($sequence[($key + 1)][0]) {
 										case 'A': {
@@ -1458,7 +1458,7 @@ class TCPDFBarcode {
 					$seq .= $codes['A'][$code{$i}];
 				}
 			} else {
-				$p = $parities[$code{0}];
+				$p = $parities[$code[0]];
 				for ($i = 1; $i < $half_len; ++$i) {
 					$seq .= $codes[$p[$i-1]][$code{$i}];
 				}
@@ -1504,7 +1504,7 @@ class TCPDFBarcode {
 		if ($len == 2) {
 			$r = $code % 4;
 		} elseif ($len == 5) {
-			$r = (3 * ($code{0} + $code{2} + $code{4})) + (9 * ($code{1} + $code{3}));
+			$r = (3 * ($code[0] + $code{2} + $code{4})) + (9 * ($code{1} + $code{3}));
 			$r %= 10;
 		} else {
 			return false;
@@ -1555,7 +1555,7 @@ class TCPDFBarcode {
 		);
 		$p = $parities[$len][$r];
 		$seq = '1011'; // left guard bar
-		$seq .= $codes[$p[0]][$code{0}];
+		$seq .= $codes[$p[0]][$code[0]];
 		for ($i = 1; $i < $len; ++$i) {
 			$seq .= '01'; // separator
 			$seq .= $codes[$p[$i]][$code{$i}];
@@ -2068,7 +2068,7 @@ class TCPDFBarcode {
 			}
 		}
 		$binary_code = bcmul($binary_code, 10);
-		$binary_code = bcadd($binary_code, $tracking_number{0});
+		$binary_code = bcadd($binary_code, $tracking_number[0]);
 		$binary_code = bcmul($binary_code, 5);
 		$binary_code = bcadd($binary_code, $tracking_number{1});
 		$binary_code .= substr($tracking_number, 2, 18);
