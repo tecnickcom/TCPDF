@@ -935,11 +935,11 @@ class PDF417 {
 					}
 					if ($sublen == 6) {
 						$t = bcmul(''.ord($code[0]), '1099511627776');
-						$t = bcadd($t, bcmul(''.ord($code{1}), '4294967296'));
-						$t = bcadd($t, bcmul(''.ord($code{2}), '16777216'));
-						$t = bcadd($t, bcmul(''.ord($code{3}), '65536'));
-						$t = bcadd($t, bcmul(''.ord($code{4}), '256'));
-						$t = bcadd($t, ''.ord($code{5}));
+						$t = bcadd($t, bcmul(''.ord($code[1]), '4294967296'));
+						$t = bcadd($t, bcmul(''.ord($code[2]), '16777216'));
+						$t = bcadd($t, bcmul(''.ord($code[3]), '65536'));
+						$t = bcadd($t, bcmul(''.ord($code[4]), '256'));
+						$t = bcadd($t, ''.ord($code[5]));
 						// tmp array for the 6 bytes block
 						$cw6 = array();
 						do {

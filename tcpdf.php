@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.071
+// Version     : 6.0.072
 // Begin       : 2002-08-03
-// Last Update : 2014-04-25
+// Last Update : 2014-04-27
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.071
+ * @version 6.0.072
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.071
+ * @version 6.0.072
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -6895,7 +6895,7 @@ class TCPDF {
 				// height difference
 				$hdiff = ($oldh - $h);
 				// vertical alignment
-				switch (strtoupper($fitbox{1})) {
+				switch (strtoupper($fitbox[1])) {
 					case 'T': {
 						break;
 					}

@@ -104,7 +104,7 @@ for ($i = 0; $i < 3; ++$i) {
 	$fitbox = $horizontal_alignments[$i].' ';
 	$x = 15;
 	for ($j = 0; $j < 3; ++$j) {
-		$fitbox{1} = $vertical_alignments[$j];
+		$fitbox[1] = $vertical_alignments[$j];
 		$pdf->Rect($x, $y, $w, $h, 'F', array(), array(128,255,128));
 		$pdf->Image('images/image_demo.jpg', $x, $y, $w, $h, 'JPG', '', '', false, 300, '', false, false, 0, $fitbox, false, false);
 		$x += 32; // new column
@@ -120,7 +120,7 @@ for ($i = 0; $i < 3; ++$i) {
 	$fitbox = $horizontal_alignments[$i].' ';
 	$x = 115;
 	for ($j = 0; $j < 3; ++$j) {
-		$fitbox{1} = $vertical_alignments[$j];
+		$fitbox[1] = $vertical_alignments[$j];
 		$pdf->Rect($x, $y, $w, $h, 'F', array(), array(128,255,255));
 		$pdf->Image('images/image_demo.jpg', $x, $y, $w, $h, 'JPG', '', '', false, 300, '', false, false, 0, $fitbox, false, false);
 		$x += 27; // new column

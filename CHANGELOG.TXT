@@ -1,3 +1,6 @@
+6.0.072 (2014-04-27)
+	- Deprecated curly braces substring syntax was replaced with square braces.
+
 6.0.071 (2014-04-25)
 	- Bug #911 "error with buffered png pics" was fixed.
 
