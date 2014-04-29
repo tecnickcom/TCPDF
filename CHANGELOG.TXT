@@ -1,3 +1,8 @@
+6.0.073 (2014-04-29)
+	- Bug #913 "Possible bug with line-height" was fixed.
+	- Bug #914 "MultiCell and FitCell" was fixed.
+	- Bug #915 "Problem with SVG Image using Radial Gradients" was fixed.
+
 6.0.072 (2014-04-27)
 	- Deprecated curly braces substring syntax was replaced with square braces.
 

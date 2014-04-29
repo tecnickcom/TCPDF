@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.072
+// Version     : 6.0.073
 // Begin       : 2002-08-03
-// Last Update : 2014-04-27
+// Last Update : 2014-04-29
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.072
+ * @version 6.0.073
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.072
+ * @version 6.0.073
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -5757,7 +5757,7 @@ class TCPDF {
 	 * @param $autopadding (boolean) if true, uses internal padding and automatically adjust it to account for line width.
 	 * @param $maxh (float) maximum height. It should be >= $h and less then remaining space to the bottom of the page, or 0 for disable this feature. This feature works only when $ishtml=false.
 	 * @param $valign (string) Vertical alignment of text (requires $maxh = $h > 0). Possible values are:<ul><li>T: TOP</li><li>M: middle</li><li>B: bottom</li></ul>. This feature works only when $ishtml=false and the cell must fit in a single page.
-	 * @param $fitcell (boolean) if true attempt to fit all the text within the cell by reducing the font size (do not work in HTML mode).
+	 * @param $fitcell (boolean) if true attempt to fit all the text within the cell by reducing the font size (do not work in HTML mode). $maxh must be greater than 0 and wqual to $h.
 	 * @return int Return the number of cells or 1 for html mode.
 	 * @public
 	 * @since 1.3
@@ -5838,6 +5838,11 @@ class TCPDF {
 			$nl = 1;
 		} else { // ******* Write simple text
 			$prev_FontSizePt = $this->FontSizePt;
+			if ($fitcell) {
+				// ajust height values
+				$tobottom = ($this->h - $this->y - $this->bMargin - $this->cell_padding['T'] - $this->cell_padding['B']);
+				$h = $maxh = max(min($h, $tobottom), min($maxh, $tobottom));
+			}
 			// vertical alignment
 			if ($maxh > 0) {
 				// get text height
@@ -5846,17 +5851,20 @@ class TCPDF {
 					// try to reduce font size to fit text on cell (use a quick search algorithm)
 					$fmin = 1;
 					$fmax = $this->FontSizePt;
-					$prev_text_height = $text_height;
-					$maxit = 100; // max number of iterations
+					$diff_epsilon = (1 / $this->k); // one point (min resolution)
+					$maxit = ($fmax - $fmin); // max number of iterations
 					while ($maxit > 0) {
 						$fmid = (($fmax + $fmin) / 2);
 						$this->SetFontSize($fmid, false);
 						$this->resetLastH();
 						$text_height = $this->getStringHeight($w, $txt, $reseth, $autopadding, $mc_padding, $border);
-						if (($text_height == $maxh) OR (($text_height < $maxh) AND ($fmin >= ($fmax - 0.01)))) {
-							break;
-						} elseif ($text_height < $maxh) {
-							$fmin = $fmid;
+						$diff = ($maxh - $text_height);
+						if ($diff >= 0) {
+							if ($diff < $diff_epsilon) {
+								break;
+							} else {
+								$fmin = $fmid;
+							}
 						} else {
 							$fmax = $fmid;
 						}
@@ -18639,7 +18647,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			}
 			if (($this->htmlvspace <= 0) AND ($n > 0)) {
 				if (isset($parent['fontsize'])) {
-					$hbz = $this->getCellHeight($tag['fontsize'] / $this->k);
+					$hbz = (($parent['fontsize'] / $this->k) * $this->cell_height_ratio);
 				} else {
 					$hbz = $this->getCellHeight($this->FontSize);
 				}
@@ -23055,6 +23063,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				$newgradient = $this->svggradients[$gradient['xref']];
 				$newgradient['coords'] = $gradient['coords'];
 				$newgradient['mode'] = $gradient['mode'];
+				$newgradient['type'] = $gradient['type'];
 				$newgradient['gradientUnits'] = $gradient['gradientUnits'];
 				if (isset($gradient['gradientTransform'])) {
 					$newgradient['gradientTransform'] = $gradient['gradientTransform'];
