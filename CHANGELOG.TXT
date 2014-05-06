@@ -1,3 +1,8 @@
+6.0.076 (2014-05-06)
+	- A bug in Datamatrix Base256 encoding was fixed.
+	- Merged fix for SVG use/clip-gradient.
+	- Now it is possible to prefix a page number in Link methods with the * character to avoid been changed when adding/deleting/moving pages (see example_045.php).
+
 6.0.075 (2014-05-05)
 	- Bug #917 "Using realtive Units like ex or em for images distort output in HTML mode" was fixed.
 

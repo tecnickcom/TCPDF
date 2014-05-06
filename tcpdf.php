@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.075
+// Version     : 6.0.076
 // Begin       : 2002-08-03
-// Last Update : 2014-05-05
+// Last Update : 2014-05-06
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.075
+ * @version 6.0.076
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.075
+ * @version 6.0.076
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -3148,22 +3148,22 @@ class TCPDF {
 			// adjust outlines
 			$tmpoutlines = $this->outlines;
 			foreach ($tmpoutlines as $key => $outline) {
-				if ($outline['p'] > $this->numpages) {
+				if (!$outline['f'] AND ($outline['p'] > $this->numpages)) {
 					$this->outlines[$key]['p'] = ($outline['p'] + 1);
 				}
 			}
 			// adjust dests
 			$tmpdests = $this->dests;
 			foreach ($tmpdests as $key => $dest) {
-				if ($dest['p'] > $this->numpages) {
+				if (!$dest['f'] AND ($dest['p'] > $this->numpages)) {
 					$this->dests[$key]['p'] = ($dest['p'] + 1);
 				}
 			}
 			// adjust links
 			$tmplinks = $this->links;
 			foreach ($tmplinks as $key => $link) {
-				if ($link[0] > $this->numpages) {
-					$this->links[$key][0] = ($link[0] + 1);
+				if (!$link['f'] AND ($link['p'] > $this->numpages)) {
+					$this->links[$key]['p'] = ($link['p'] + 1);
 				}
 			}
 		}
@@ -4696,9 +4696,9 @@ class TCPDF {
 	 * @see Cell(), Write(), Image(), Link(), SetLink()
 	 */
 	public function AddLink() {
-		//Create a new internal link
+		// create a new internal link
 		$n = count($this->links) + 1;
-		$this->links[$n] = array(0, 0);
+		$this->links[$n] = array('p' => 0, 'y' => 0, 'f' => false);
 		return $n;
 	}
 
@@ -4706,19 +4706,25 @@ class TCPDF {
 	 * Defines the page and position a link points to.
 	 * @param $link (int) The link identifier returned by AddLink()
 	 * @param $y (float) Ordinate of target position; -1 indicates the current position. The default value is 0 (top of page)
-	 * @param $page (int) Number of target page; -1 indicates the current page. This is the default value
+	 * @param $page (int) Number of target page; -1 indicates the current page (default value). If you prefix a page number with the * character, then this page will not be changed when adding/deleting/moving pages. 
 	 * @public
 	 * @since 1.5
 	 * @see AddLink()
 	 */
 	public function SetLink($link, $y=0, $page=-1) {
+		$fixed = false;
+		if (!empty($page) AND ($page[0] == '*')) {
+			$page = intval(substr($page, 1));
+			// this page number will not be changed when moving/add/deleting pages
+			$fixed = true;
+		}
+		if ($page < 0) {
+			$page = $this->page;
+		}
 		if ($y == -1) {
 			$y = $this->y;
 		}
-		if ($page == -1) {
-			$page = $this->page;
-		}
-		$this->links[$link] = array($page, $y);
+		$this->links[$link] = array('p' => $page, 'y' => $y, 'f' => $fixed);
 	}
 
 	/**
@@ -8398,8 +8404,8 @@ class TCPDF {
 							} elseif (isset($this->links[$pl['txt']])) {
 								// internal link ID
 								$l = $this->links[$pl['txt']];
-								if (isset($this->page_obj_id[($l[0])])) {
-									$annots .= sprintf(' /Dest [%u 0 R /XYZ 0 %F null]', $this->page_obj_id[($l[0])], ($this->pagedim[$l[0]]['h'] - ($l[1] * $this->k)));
+								if (isset($this->page_obj_id[($l['p'])])) {
+									$annots .= sprintf(' /Dest [%u 0 R /XYZ 0 %F null]', $this->page_obj_id[($l['p'])], ($this->pagedim[$l['p']]['h'] - ($l['y'] * $this->k)));
 								}
 							}
 							$hmodes = array('N', 'I', 'O', 'P');
@@ -10405,14 +10411,11 @@ class TCPDF {
 	 * @public
 	 */
 	public function addHtmlLink($url, $name, $fill=false, $firstline=false, $color='', $style=-1, $firstblock=false) {
-		if (isset($url[1]) AND ($url[0] == '#') AND is_numeric($url[1])) {
+		if (isset($url[1]) AND ($url[0] == '#')) {
 			// convert url to internal link
 			$lnkdata = explode(',', $url);
-			if (isset($lnkdata[0])) {
-				$page = intval(substr($lnkdata[0], 1));
-				if (empty($page) OR ($page <= 0)) {
-					$page = $this->page;
-				}
+			if (isset($lnkdata[0]) ) {
+				$page = substr($lnkdata[0], 1);
 				if (isset($lnkdata[1]) AND (strlen($lnkdata[1]) > 0)) {
 					$lnky = floatval($lnkdata[1]);
 				} else {
@@ -12234,7 +12237,7 @@ class TCPDF {
 	 * NOTE: destination names are unique, so only last entry will be saved.
 	 * @param $name (string) Destination name.
 	 * @param $y (float) Y position in user units of the destiantion on the selected page (default = -1 = current position; 0 = page start;).
-	 * @param $page (int) Target page number (leave empty for current page).
+	 * @param $page (int|string) Target page number (leave empty for current page). If you prefix a page number with the * character, then this page will not be changed when adding/deleting/moving pages.
 	 * @param $x (float) X position in user units of the destiantion on the selected page (default = -1 = current position;).
 	 * @return (string) Stripped named destination identifier or false in case of error.
 	 * @public
@@ -12261,13 +12264,19 @@ class TCPDF {
 		} elseif ($x > $this->w) {
 			$x = $this->w;
 		}
+		$fixed = false;
+		if (!empty($page) AND ($page[0] == '*')) {
+			$page = intval(substr($page, 1));
+			// this page number will not be changed when moving/add/deleting pages
+			$fixed = true;
+		}
 		if (empty($page)) {
 			$page = $this->PageNo();
 			if (empty($page)) {
 				return;
 			}
 		}
-		$this->dests[$name] = array('x' => $x, 'y' => $y, 'p' => $page);
+		$this->dests[$name] = array('x' => $x, 'y' => $y, 'p' => $page, 'f' => $fixed);
 		return $name;
 	}
 
@@ -12307,7 +12316,7 @@ class TCPDF {
 	 * @param $txt (string) Bookmark description.
 	 * @param $level (int) Bookmark level (minimum value is 0).
 	 * @param $y (float) Y position in user units of the bookmark on the selected page (default = -1 = current position; 0 = page start;).
-	 * @param $page (int) Target page number (leave empty for current page).
+	 * @param $page (int|string) Target page number (leave empty for current page). If you prefix a page number with the * character, then this page will not be changed when adding/deleting/moving pages.
 	 * @param $style (string) Font style: B = Bold, I = Italic, BI = Bold + Italic.
 	 * @param $color (array) RGB color array (values from 0 to 255).
 	 * @param $x (float) X position in user units of the bookmark on the selected page (default = -1 = current position;).
@@ -12323,7 +12332,7 @@ class TCPDF {
 	 * @param $txt (string) Bookmark description.
 	 * @param $level (int) Bookmark level (minimum value is 0).
 	 * @param $y (float) Y position in user units of the bookmark on the selected page (default = -1 = current position; 0 = page start;).
-	 * @param $page (int) Target page number (leave empty for current page).
+	 * @param $page (int|string) Target page number (leave empty for current page). If you prefix a page number with the * character, then this page will not be changed when adding/deleting/moving pages.
 	 * @param $style (string) Font style: B = Bold, I = Italic, BI = Bold + Italic.
 	 * @param $color (array) RGB color array (values from 0 to 255).
 	 * @param $x (float) X position in user units of the bookmark on the selected page (default = -1 = current position;).
@@ -12358,13 +12367,19 @@ class TCPDF {
 		} elseif ($x > $this->w) {
 			$x = $this->w;
 		}
+		$fixed = false;
+		if (!empty($page) AND ($page[0] == '*')) {
+			$page = intval(substr($page, 1));
+			// this page number will not be changed when moving/add/deleting pages
+			$fixed = true;
+		}
 		if (empty($page)) {
 			$page = $this->PageNo();
 			if (empty($page)) {
 				return;
 			}
 		}
-		$this->outlines[] = array('t' => $txt, 'l' => $level, 'x' => $x, 'y' => $y, 'p' => $page, 's' => strtoupper($style), 'c' => $color, 'u' => $link);
+		$this->outlines[] = array('t' => $txt, 'l' => $level, 'x' => $x, 'y' => $y, 'p' => $page, 'f' => $fixed, 's' => strtoupper($style), 'c' => $color, 'u' => $link);
 	}
 
 	/**
@@ -12468,8 +12483,8 @@ class TCPDF {
 				} elseif (isset($this->links[$o['u']])) {
 					// internal link ID
 					$l = $this->links[$o['u']];
-					if (isset($this->page_obj_id[($l[0])])) {
-						$out .= sprintf(' /Dest [%u 0 R /XYZ 0 %F null]', $this->page_obj_id[($l[0])], ($this->pagedim[$l[0]]['h'] - ($l[1] * $this->k)));
+					if (isset($this->page_obj_id[($l['p'])])) {
+						$out .= sprintf(' /Dest [%u 0 R /XYZ 0 %F null]', $this->page_obj_id[($l['p'])], ($this->pagedim[$l['p']]['h'] - ($l['y'] * $this->k)));
 					}
 				}
 			} elseif (isset($this->page_obj_id[($o['p'])])) {
@@ -17364,7 +17379,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 							$startliney = $this->y;
 							$this->newline = false;
 						}
-						$this->y += ($this->getCellHeight($curfontsize / $this->k) - ($curfontdescent * $this->cell_height_ratio) - $imgh); // DEBUG
+						$this->y += ($this->getCellHeight($curfontsize / $this->k) - ($curfontdescent * $this->cell_height_ratio) - $imgh);
 						$minstartliney = min($this->y, $minstartliney);
 						$maxbottomliney = ($startliney + $this->getCellHeight($curfontsize / $this->k));
 					}
@@ -20950,28 +20965,34 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		// adjust outlines
 		$tmpoutlines = $this->outlines;
 		foreach ($tmpoutlines as $key => $outline) {
-			if (($outline['p'] >= $topage) AND ($outline['p'] < $frompage)) {
-				$this->outlines[$key]['p'] = ($outline['p'] + 1);
-			} elseif ($outline['p'] == $frompage) {
-				$this->outlines[$key]['p'] = $topage;
+			if (!$outline['f']) {
+				if (($outline['p'] >= $topage) AND ($outline['p'] < $frompage)) {
+					$this->outlines[$key]['p'] = ($outline['p'] + 1);
+				} elseif ($outline['p'] == $frompage) {
+					$this->outlines[$key]['p'] = $topage;
+				}
 			}
 		}
 		// adjust dests
 		$tmpdests = $this->dests;
 		foreach ($tmpdests as $key => $dest) {
-			if (($dest['p'] >= $topage) AND ($dest['p'] < $frompage)) {
-				$this->dests[$key]['p'] = ($dest['p'] + 1);
-			} elseif ($dest['p'] == $frompage) {
-				$this->dests[$key]['p'] = $topage;
+			if (!$dest['f']) {
+				if (($dest['p'] >= $topage) AND ($dest['p'] < $frompage)) {
+					$this->dests[$key]['p'] = ($dest['p'] + 1);
+				} elseif ($dest['p'] == $frompage) {
+					$this->dests[$key]['p'] = $topage;
+				}
 			}
 		}
 		// adjust links
 		$tmplinks = $this->links;
 		foreach ($tmplinks as $key => $link) {
-			if (($link[0] >= $topage) AND ($link[0] < $frompage)) {
-				$this->links[$key][0] = ($link[0] + 1);
-			} elseif ($link[0] == $frompage) {
-				$this->links[$key][0] = $topage;
+			if (!$link['f']) {
+				if (($link['p'] >= $topage) AND ($link['p'] < $frompage)) {
+					$this->links[$key]['p'] = ($link['p'] + 1);
+				} elseif ($link['p'] == $frompage) {
+					$this->links[$key]['p'] = $topage;
+				}
 			}
 		}
 		// adjust javascript
@@ -21133,28 +21154,34 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		// adjust outlines
 		$tmpoutlines = $this->outlines;
 		foreach ($tmpoutlines as $key => $outline) {
-			if ($outline['p'] > $page) {
-				$this->outlines[$key]['p'] = $outline['p'] - 1;
-			} elseif ($outline['p'] == $page) {
-				unset($this->outlines[$key]);
+			if (!$outline['f']) {
+				if ($outline['p'] > $page) {
+					$this->outlines[$key]['p'] = $outline['p'] - 1;
+				} elseif ($outline['p'] == $page) {
+					unset($this->outlines[$key]);
+				}
 			}
 		}
 		// adjust dests
 		$tmpdests = $this->dests;
 		foreach ($tmpdests as $key => $dest) {
-			if ($dest['p'] > $page) {
-				$this->dests[$key]['p'] = $dest['p'] - 1;
-			} elseif ($dest['p'] == $page) {
-				unset($this->dests[$key]);
+			if (!$dest['f']) {
+				if ($dest['p'] > $page) {
+					$this->dests[$key]['p'] = $dest['p'] - 1;
+				} elseif ($dest['p'] == $page) {
+					unset($this->dests[$key]);
+				}
 			}
 		}
 		// adjust links
 		$tmplinks = $this->links;
 		foreach ($tmplinks as $key => $link) {
-			if ($link[0] > $page) {
-				$this->links[$key][0] = $link[0] - 1;
-			} elseif ($link[0] == $page) {
-				unset($this->links[$key]);
+			if (!$link['f']) {
+				if ($link['p'] > $page) {
+					$this->links[$key]['p'] = $link['p'] - 1;
+				} elseif ($link['p'] == $page) {
+					unset($this->links[$key]);
+				}
 			}
 		}
 		// adjust javascript
@@ -21234,14 +21261,14 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$tmpoutlines = $this->outlines;
 		foreach ($tmpoutlines as $key => $outline) {
 			if ($outline['p'] == $page) {
-				$this->outlines[] = array('t' => $outline['t'], 'l' => $outline['l'], 'x' => $outline['x'], 'y' => $outline['y'], 'p' => $this->page, 's' => $outline['s'], 'c' => $outline['c']);
+				$this->outlines[] = array('t' => $outline['t'], 'l' => $outline['l'], 'x' => $outline['x'], 'y' => $outline['y'], 'p' => $this->page, 'f' => $outline['f'], 's' => $outline['s'], 'c' => $outline['c']);
 			}
 		}
 		// copy links
 		$tmplinks = $this->links;
 		foreach ($tmplinks as $key => $link) {
-			if ($link[0] == $page) {
-				$this->links[] = array($this->page, $link[1]);
+			if ($link['p'] == $page) {
+				$this->links[] = array('p' => $this->page, 'y' => $link['y'], 'f' => $link['f']);
 			}
 		}
 		// return to last page
@@ -24185,7 +24212,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 							$attribs['style'] = str_replace(';;',';',';'.$use['attribs']['style'].$attribs['style']);
 						}
 						$attribs = array_merge($use['attribs'], $attribs);
-						$this->startSVGElementHandler('use-tag', $use['name'], $attribs);
+						$this->startSVGElementHandler($parser, $use['name'], $attribs);
 						return;
 					}
 				}

@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : datamatrix.php
-// Version     : 1.0.006
+// Version     : 1.0.007
 // Begin       : 2010-06-07
-// Last Update : 2014-04-24
+// Last Update : 2014-05-06
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -40,7 +40,7 @@
 *
 * @package com.tecnick.tcpdf
 * @author Nicola Asuni
-* @version 1.0.006
+* @version 1.0.007
 */
 
 // custom definitions
@@ -277,6 +277,9 @@ class Datamatrix {
 				}
 			}
 		}
+
+		echo implode(' ', $cw)."\n";// DEBUG
+		
 		// add error correction codewords
 		$cw = $this->getErrorCorrection($cw, $params[13], $params[14], $params[15]);
 		// initialize empty arrays
@@ -929,8 +932,6 @@ class Datamatrix {
 						if ($newenc != $enc) {
 							// 1. If the look-ahead test (starting at step J) indicates another mode, switch to that mode.
 							$enc = $newenc;
-							$cw[] = $this->getSwitchEncodingCodeword($enc);
-							++$cw_num;
 							break; // exit from B256 mode
 						} else {
 							// 2. Otherwise, process the next character in Base 256 encodation.
