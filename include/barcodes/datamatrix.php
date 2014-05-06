@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : datamatrix.php
-// Version     : 1.0.007
+// Version     : 1.0.008
 // Begin       : 2010-06-07
 // Last Update : 2014-05-06
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
@@ -40,7 +40,7 @@
 *
 * @package com.tecnick.tcpdf
 * @author Nicola Asuni
-* @version 1.0.007
+* @version 1.0.008
 */
 
 // custom definitions
@@ -277,9 +277,6 @@ class Datamatrix {
 				}
 			}
 		}
-
-		echo implode(' ', $cw)."\n";// DEBUG
-		
 		// add error correction codewords
 		$cw = $this->getErrorCorrection($cw, $params[13], $params[14], $params[15]);
 		// initialize empty arrays
@@ -835,6 +832,8 @@ class Datamatrix {
 							$cw[] = ($chr + 1);
 							++$cw_num;
 							$pos = $epos;
+							$enc = ENC_ASCII;
+							$this->last_enc = $enc;
 						} elseif (($cwr == 2) AND ($p == 1)) {
 							// c. If two symbol characters remain and only one C40 value (data character) remains to be encoded
 							$c1 = array_shift($temp_cw);
@@ -843,6 +842,8 @@ class Datamatrix {
 							$cw[] = ($chr + 1);
 							$cw_num += 2;
 							$pos = $epos;
+							$enc = ENC_ASCII;
+							$this->last_enc = $enc;
 						} elseif (($cwr == 2) AND ($p == 2)) {
 							// b. If two symbol characters remain and two C40 values remain to be encoded
 							$c1 = array_shift($temp_cw);
@@ -853,10 +854,13 @@ class Datamatrix {
 							$cw[] = ($tmp % 256);
 							$cw_num += 2;
 							$pos = $epos;
+							$enc = ENC_ASCII;
+							$this->last_enc = $enc;
 						} else {
 							// switch to ASCII encoding
 							if ($enc != ENC_ASCII) {
 								$enc = ENC_ASCII;
+								$this->last_enc = $enc;
 								$cw[] = $this->getSwitchEncodingCodeword($enc);
 								++$cw_num;
 								$pos = ($epos - $p);
