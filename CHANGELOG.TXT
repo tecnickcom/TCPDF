@@ -1,3 +1,7 @@
+6.0.078 (2014-05-12)
+	- A warning issue in addTTFfont() method was fixed.
+	- Fonts were updated to include cbbox metrics.
+
 6.0.077 (2014-05-06)
 	- A Datamatrix barcode bug was fixed.
 
