@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.078
+// Version     : 6.0.079
 // Begin       : 2002-08-03
-// Last Update : 2014-05-06
+// Last Update : 2014-05-19
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.078
+ * @version 6.0.079
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.078
+ * @version 6.0.079
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -6861,6 +6861,9 @@ class TCPDF {
 			$original_file = $file;
 			$file = TCPDF_STATIC::getObjFilename('img');
 			$fp = fopen($file, 'w');
+			if (!$fp) {
+				$this->Error('Unable to write file: '.$file);
+			}
 			fwrite($fp, $imgdata);
 			fclose($fp);
 			unset($imgdata);
@@ -9713,17 +9716,13 @@ class TCPDF {
 		//$out .= ' /PieceInfo <<>>';
 		if (!empty($this->pdflayers)) {
 			$lyrobjs = '';
-			$lyrobjs_print = '';
-			$lyrobjs_view = '';
+			$lyrobjs_off = '';
 			$lyrobjs_lock = '';
 			foreach ($this->pdflayers as $layer) {
 				$layer_obj_ref = ' '.$layer['objid'].' 0 R';
 				$lyrobjs .= $layer_obj_ref;
-				if ($layer['print']) {
-					$lyrobjs_print .= $layer_obj_ref;
-				}
-				if ($layer['view']) {
-					$lyrobjs_view .= $layer_obj_ref;
+				if ($layer['view'] === false) {
+					$lyrobjs_off .= $layer_obj_ref;
 				}
 				if ($layer['lock']) {
 					$lyrobjs_lock .= $layer_obj_ref;
@@ -9734,8 +9733,7 @@ class TCPDF {
 			$out .= ' /Name '.$this->_textstring('Layers', $oid);
 			$out .= ' /Creator '.$this->_textstring('TCPDF', $oid);
 			$out .= ' /BaseState /ON';
-			$out .= ' /ON ['.$lyrobjs_print.']';
-			$out .= ' /OFF ['.$lyrobjs_view.']';
+			$out .= ' /OFF ['.$lyrobjs_off.']';
 			$out .= ' /Locked ['.$lyrobjs_lock.']';
 			$out .= ' /Intent /View';
 			$out .= ' /AS [';
@@ -21995,7 +21993,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		if (isset($dictionary[$word_string])) {
 			return TCPDF_FONTS::UTF8StringToArray($dictionary[$word_string], $this->isunicode, $this->CurrentFont);
 		}
-		// suround word with '_' characters
+		// surround word with '_' characters
 		$tmpword = array_merge(array(95), $word, array(95));
 		$tmpnumchars = $numchars + 2;
 		$maxpos = $tmpnumchars - $charmin;
@@ -22055,6 +22053,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$word = array(); // last word
 		$txtarr = array(); // text to be returned
 		$intag = false; // true if we are inside an HTML tag
+		$skip = false; // true to skip hyphenation
 		if (!is_array($patterns)) {
 			$patterns = TCPDF_STATIC::getHyphenPatternsFromTEX($patterns);
 		}
@@ -22062,7 +22061,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$unichars = TCPDF_FONTS::UTF8StringToArray($text, $this->isunicode, $this->CurrentFont);
 		// for each char
 		foreach ($unichars as $char) {
-			if ((!$intag) AND TCPDF_FONT_DATA::$uni_type[$char] == 'L') {
+			if ((!$intag) AND (!$skip) AND TCPDF_FONT_DATA::$uni_type[$char] == 'L') {
 				// letter character
 				$word[] = $char;
 			} else {
@@ -22079,6 +22078,16 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				} elseif ($intag AND (chr($char) == '>')) {
 					// end of HTML tag
 					$intag = false;
+					// check for style tag
+					if (empty(array_diff(array_slice($txtarr, -6, 5), array(115, 116, 121, 108, 101)))) { // = 'style'
+						if (empty(array_diff(array_slice($txtarr, -7, 1), array(47)))) { // '/' = 47
+							// closing style tag
+							$skip = false;
+						} else {
+							// opening style tag
+							$skip = true;
+						}
+					}
 				}
 			}
 		}

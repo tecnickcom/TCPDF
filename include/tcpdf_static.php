@@ -55,7 +55,7 @@ class TCPDF_STATIC {
 	 * Current TCPDF version.
 	 * @private static
 	 */
-	private static $tcpdf_version = '6.0.078';
+	private static $tcpdf_version = '6.0.079';
 
 	/**
 	 * String alias for total number of pages.
@@ -1569,7 +1569,7 @@ class TCPDF_STATIC {
 		$length = strlen($name);
 		for ($i = 0; $i < $length; ++$i) {
 			$chr = $name[$i];
-			if (preg_match('/[0-9a-zA-Z]/', $chr) == 1) {
+			if (preg_match('/[0-9a-zA-Z#_=-]/', $chr) == 1) {
 				$escname .= $chr;
 			} else {
 				$escname .= sprintf('#%02X', ord($chr));

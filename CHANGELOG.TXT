@@ -1,3 +1,9 @@
+6.0.079 (2014-05-19)
+	- Patch item #69 "Named destinations, HTML internal and external links" was merged.
+	- Bug item #920 "hyphenateText() should not hyphenate the content of style-tags in HTML mode" was fixed.
+	- Image method now trigs an error in case the cache is now writeable.
+	- Fixed issue with layer default status.
+
 6.0.078 (2014-05-12)
 	- A warning issue in addTTFfont() method was fixed.
 	- Fonts were updated to include cbbox metrics.
