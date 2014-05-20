@@ -1,3 +1,8 @@
+6.0.080 (2014-05-20)
+	- Bug item #921 "Fatal error in hyphenateText() function" was fixed.
+	- Bug item #923 "Automatic Hyphenation error" was fixed.
+	- Patch #70 "Augument TCPDFBarcode classes with ability to return raw png image data" was applied.
+
 6.0.079 (2014-05-19)
 	- Patch item #69 "Named destinations, HTML internal and external links" was merged.
 	- Bug item #920 "hyphenateText() should not hyphenate the content of style-tags in HTML mode" was fixed.
