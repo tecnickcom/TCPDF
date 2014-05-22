@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.080
+// Version     : 6.0.081
 // Begin       : 2002-08-03
-// Last Update : 2014-05-20
+// Last Update : 2014-05-22
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.080
+ * @version 6.0.081
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.080
+ * @version 6.0.081
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -8401,8 +8401,20 @@ class TCPDF {
 									$jsa = 'var D=event.target.doc;var MyData=D.dataObjects;for (var i in MyData) if (MyData[i].path=="'.$filename.'") D.exportDataObject( { cName : MyData[i].name, nLaunch : 2});';
 									$annots .= ' /A << /S /JavaScript /JS '.$this->_textstring($jsa, $annot_obj_id).'>>';
 								} else {
-									// external URI link
-									$annots .= ' /A <</S /URI /URI '.$this->_datastring($this->unhtmlentities($pl['txt']), $annot_obj_id).'>>';
+									$parsedUrl = parse_url($pl['txt']);
+									if (empty($parsedUrl['scheme']) AND (strtolower(substr($parsedUrl['path'], -4)) == '.pdf')) {
+										// relative link to a PDF file
+										$dest = '[0 /Fit]'; // default page 0
+										if (!empty($parsedUrl['fragment'])) {
+											// check for named destination
+											$tmp = explode('=', $parsedUrl['fragment']);
+											$dest = '('.((count($tmp) == 2) ? $tmp[1] : $tmp[0]).')';
+										}
+										$annots .= ' /A <</S /GoToR /D '.$dest.' /F '.$this->_datastring($this->unhtmlentities($parsedUrl['path']), $annot_obj_id).' /NewWindow true>>';
+									} else {
+										// external URI link
+										$annots .= ' /A <</S /URI /URI '.$this->_datastring($this->unhtmlentities($pl['txt']), $annot_obj_id).'>>';
+									}
 								}
 							} elseif (isset($this->links[$pl['txt']])) {
 								// internal link ID
@@ -18442,6 +18454,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					// restore previous values
 					foreach ($this_method_vars as $vkey => $vval) {
 						$$vkey = $vval;
+					}
+					if (!empty($dom[$key]['thead'])) {
+						$this->inthead = true;
 					}
 					// add a page (or trig AcceptPageBreak() for multicolumn mode)
 					$pre_y = $this->y;

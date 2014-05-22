@@ -1,3 +1,7 @@
+6.0.081 (2014-05-22)
+	- Bug item #922 "writehtml tables thead repeating" was fixed.
+	- Patch #71 "External and internal links, local and remote" wa applied.
+
 6.0.080 (2014-05-20)
 	- Bug item #921 "Fatal error in hyphenateText() function" was fixed.
 	- Bug item #923 "Automatic Hyphenation error" was fixed.
