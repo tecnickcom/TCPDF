@@ -1,3 +1,7 @@
+6.0.082 (2014-05-23)
+	- Bug item #926 "test statement instead of assignment used in tcpdf_fonts.php" was fixed.
+	- Bug item #925 "924 transparent images bug" was fixed.
+
 6.0.081 (2014-05-22)
 	- Bug item #922 "writehtml tables thead repeating" was fixed.
 	- Patch #71 "External and internal links, local and remote" wa applied.

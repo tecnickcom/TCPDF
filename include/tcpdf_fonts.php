@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf_fonts.php
-// Version     : 1.0.012
+// Version     : 1.0.013
 // Begin       : 2008-01-01
-// Last Update : 2014-05-12
+// Last Update : 2014-05-23
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -42,7 +42,7 @@
  * @class TCPDF_FONTS
  * Font methods for TCPDF library.
  * @package com.tecnick.tcpdf
- * @version 1.0.012
+ * @version 1.0.013
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF_FONTS {
@@ -810,7 +810,7 @@ class TCPDF_FONTS {
 			}
 		} // end of true type
 		if (($fmetric['type'] == 'TrueTypeUnicode') AND (count($ctg) == 256)) {
-			$fmetric['type'] == 'TrueType';
+			$fmetric['type'] = 'TrueType';
 		}
 		// ---------- create php font file ----------
 		$pfile = '<'.'?'.'php'."\n";

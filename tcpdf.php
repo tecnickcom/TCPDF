@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.081
+// Version     : 6.0.082
 // Begin       : 2002-08-03
-// Last Update : 2014-05-22
+// Last Update : 2014-05-23
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.081
+ * @version 6.0.082
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.081
+ * @version 6.0.082
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -9191,10 +9191,30 @@ class TCPDF {
 				if (isset($info['trns']) AND is_array($info['trns'])) {
 					$trns = '';
 					$count_info = count($info['trns']);
-					for ($i=0; $i < $count_info; ++$i) {
-						$trns .= $info['trns'][$i].' '.$info['trns'][$i].' ';
+					if ($info['cs'] == 'Indexed') {
+						$maxval =(pow(2, $info['bpc']) - 1);
+						for ($i = 0; $i < $count_info; ++$i) {
+							if (($info['trns'][$i] != 0) AND ($info['trns'][$i] != $maxval)) {
+								// this is not a binary type mask @TODO: create a SMask
+								$trns = '';
+								break;
+							} elseif (empty($trns) AND ($info['trns'][$i] == 0)) {
+								// store the first fully transparent value
+								$trns .= $i.' '.$i.' ';
+							}
+						}
+					} else {
+						// grayscale or RGB
+						for ($i = 0; $i < $count_info; ++$i) {
+							if ($info['trns'][$i] == 0) {
+								$trns .= $info['trns'][$i].' '.$info['trns'][$i].' ';
+							}
+						}
 					}
-					$out .= ' /Mask ['.$trns.']';
+					// Colour Key Masking
+					if (!empty($trns)) {
+						$out .= ' /Mask ['.$trns.']';
+					}
 				}
 				$stream = $this->_getrawstream($info['data']);
 				$out .= ' /Length '.strlen($stream).' >>';
