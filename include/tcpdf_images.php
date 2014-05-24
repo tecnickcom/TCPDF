@@ -319,7 +319,7 @@ class TCPDF_IMAGES {
 			} elseif ($type == 'iCCP') {
 				// skip profile name
 				$len = 0;
-				while ((ord(fread($f, 1)) != 0) AND ($len < 79)) {
+				while ((ord(fread($f, 1)) != 0) AND ($len < 80)) {
 					++$len;
 				}
 				// get compression method
