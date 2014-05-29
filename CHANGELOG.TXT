@@ -1,3 +1,6 @@
+6.0.083 (2014-05-29)
+	- Bug item #928 "setHtmlVSpace with HR element" was fixed.
+
 6.0.082 (2014-05-23)
 	- Bug item #926 "test statement instead of assignment used in tcpdf_fonts.php" was fixed.
 	- Bug item #925 "924 transparent images bug" was fixed.
