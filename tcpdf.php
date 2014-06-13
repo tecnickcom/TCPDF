@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.083
+// Version     : 6.0.084
 // Begin       : 2002-08-03
 // Last Update : 2014-05-29
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.083
+ * @version 6.0.084
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.083
+ * @version 6.0.084
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -2036,35 +2036,35 @@ class TCPDF {
 
 	/**
 	 * Change the format of the current page
-	 * @param $format (mixed) The format used for pages. It can be either: one of the string values specified at getPageSizeFromFormat() documentation or an array of two numners (width, height) or an array containing the following measures and options:<ul>
+	 * @param $format (mixed) The format used for pages. It can be either: one of the string values specified at getPageSizeFromFormat() documentation or an array of two numbers (width, height) or an array containing the following measures and options:<ul>
 	 * <li>['format'] = page format name (one of the above);</li>
 	 * <li>['Rotate'] : The number of degrees by which the page shall be rotated clockwise when displayed or printed. The value shall be a multiple of 90.</li>
 	 * <li>['PZ'] : The page's preferred zoom (magnification) factor.</li>
 	 * <li>['MediaBox'] : the boundaries of the physical medium on which the page shall be displayed or printed:</li>
-	 * <li>['MediaBox']['llx'] : lower-left x coordinate in points</li>
-	 * <li>['MediaBox']['lly'] : lower-left y coordinate in points</li>
-	 * <li>['MediaBox']['urx'] : upper-right x coordinate in points</li>
-	 * <li>['MediaBox']['ury'] : upper-right y coordinate in points</li>
+	 * <li>['MediaBox']['llx'] : lower-left x coordinate</li>
+	 * <li>['MediaBox']['lly'] : lower-left y coordinate</li>
+	 * <li>['MediaBox']['urx'] : upper-right x coordinate</li>
+	 * <li>['MediaBox']['ury'] : upper-right y coordinate</li>
 	 * <li>['CropBox'] : the visible region of default user space:</li>
-	 * <li>['CropBox']['llx'] : lower-left x coordinate in points</li>
-	 * <li>['CropBox']['lly'] : lower-left y coordinate in points</li>
-	 * <li>['CropBox']['urx'] : upper-right x coordinate in points</li>
-	 * <li>['CropBox']['ury'] : upper-right y coordinate in points</li>
+	 * <li>['CropBox']['llx'] : lower-left x coordinate</li>
+	 * <li>['CropBox']['lly'] : lower-left y coordinate</li>
+	 * <li>['CropBox']['urx'] : upper-right x coordinate</li>
+	 * <li>['CropBox']['ury'] : upper-right y coordinate</li>
 	 * <li>['BleedBox'] : the region to which the contents of the page shall be clipped when output in a production environment:</li>
-	 * <li>['BleedBox']['llx'] : lower-left x coordinate in points</li>
-	 * <li>['BleedBox']['lly'] : lower-left y coordinate in points</li>
-	 * <li>['BleedBox']['urx'] : upper-right x coordinate in points</li>
-	 * <li>['BleedBox']['ury'] : upper-right y coordinate in points</li>
+	 * <li>['BleedBox']['llx'] : lower-left x coordinate</li>
+	 * <li>['BleedBox']['lly'] : lower-left y coordinate</li>
+	 * <li>['BleedBox']['urx'] : upper-right x coordinate</li>
+	 * <li>['BleedBox']['ury'] : upper-right y coordinate</li>
 	 * <li>['TrimBox'] : the intended dimensions of the finished page after trimming:</li>
-	 * <li>['TrimBox']['llx'] : lower-left x coordinate in points</li>
-	 * <li>['TrimBox']['lly'] : lower-left y coordinate in points</li>
-	 * <li>['TrimBox']['urx'] : upper-right x coordinate in points</li>
-	 * <li>['TrimBox']['ury'] : upper-right y coordinate in points</li>
+	 * <li>['TrimBox']['llx'] : lower-left x coordinate</li>
+	 * <li>['TrimBox']['lly'] : lower-left y coordinate</li>
+	 * <li>['TrimBox']['urx'] : upper-right x coordinate</li>
+	 * <li>['TrimBox']['ury'] : upper-right y coordinate</li>
 	 * <li>['ArtBox'] : the extent of the page's meaningful content:</li>
-	 * <li>['ArtBox']['llx'] : lower-left x coordinate in points</li>
-	 * <li>['ArtBox']['lly'] : lower-left y coordinate in points</li>
-	 * <li>['ArtBox']['urx'] : upper-right x coordinate in points</li>
-	 * <li>['ArtBox']['ury'] : upper-right y coordinate in points</li>
+	 * <li>['ArtBox']['llx'] : lower-left x coordinate</li>
+	 * <li>['ArtBox']['lly'] : lower-left y coordinate</li>
+	 * <li>['ArtBox']['urx'] : upper-right x coordinate</li>
+	 * <li>['ArtBox']['ury'] : upper-right y coordinate</li>
 	 * <li>['BoxColorInfo'] :specify the colours and other visual characteristics that should be used in displaying guidelines on the screen for each of the possible page boundaries other than the MediaBox:</li>
 	 * <li>['BoxColorInfo'][BOXTYPE]['C'] : an array of three numbers in the range 0-255, representing the components in the DeviceRGB colour space.</li>
 	 * <li>['BoxColorInfo'][BOXTYPE]['W'] : the guideline width in default user units</li>
@@ -5858,7 +5858,7 @@ class TCPDF {
 					$fmin = 1;
 					$fmax = $this->FontSizePt;
 					$diff_epsilon = (1 / $this->k); // one point (min resolution)
-					$maxit = ($fmax - $fmin); // max number of iterations
+					$maxit = (2 * intval($fmax)); // max number of iterations
 					while ($maxit > 0) {
 						$fmid = (($fmax + $fmin) / 2);
 						$this->SetFontSize($fmid, false);
@@ -5868,15 +5868,17 @@ class TCPDF {
 						if ($diff >= 0) {
 							if ($diff < $diff_epsilon) {
 								break;
-							} else {
-								$fmin = $fmid;
 							}
+							$fmin = $fmid;
 						} else {
 							$fmax = $fmid;
 						}
 						--$maxit;
 					}
-					$this->SetFontSize($this->FontSizePt);
+					if ($maxit <= 0) {
+						$fmid = $fmin;
+					}
+					$this->SetFontSize($fmid);
 				}
 				if ($text_height < $maxh) {
 					if ($valign == 'M') {

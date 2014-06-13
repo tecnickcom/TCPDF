@@ -1,3 +1,7 @@
+6.0.084 (2014-06-13)
+	- A bug related to MultiCell fitcell feature was fixed.
+	- Bug item #931 "Documentation error for setPageFormat()" was fixed.
+
 6.0.083 (2014-05-29)
 	- Bug item #928 "setHtmlVSpace with HR element" was fixed.
 
