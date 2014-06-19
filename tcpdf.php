@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.084
+// Version     : 6.0.085
 // Begin       : 2002-08-03
-// Last Update : 2014-05-29
+// Last Update : 2014-06-19
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.084
+ * @version 6.0.085
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.084
+ * @version 6.0.085
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -1289,6 +1289,20 @@ class TCPDF {
 	protected $empty_signature_appearance = array();
 
 	/**
+	 * Boolean flag to enable document timestamping with TSA.
+	 * @protected
+	 * @since 6.0.085 (2014-06-19)
+	 */
+	protected $tsa_timestamp = false;
+
+	/**
+	 * Timestamping data.
+	 * @protected
+	 * @since 6.0.085 (2014-06-19)
+	 */
+	protected $tsa_data = array();
+
+	/**
 	 * Regular expression used to find blank characters (required for word-wrapping).
 	 * @protected
 	 * @since 4.6.006 (2009-04-28)
@@ -1932,8 +1946,13 @@ class TCPDF {
 		$this->bgcolor = array('R' => 255, 'G' => 255, 'B' => 255);
 		$this->extgstates = array();
 		$this->setTextShadow();
-		// user's rights
+		// signature
 		$this->sign = false;
+		$this->tsa_timestamp = false;
+		$this->tsa_data = array();
+		$this->signature_appearance = array('page' => 1, 'rect' => '0 0 0 0', 'name' => 'Signature');
+		$this->empty_signature_appearance = array();
+		// user's rights
 		$this->ur['enabled'] = false;
 		$this->ur['document'] = '/FullSave';
 		$this->ur['annots'] = '/Create/Delete/Modify/Copy/Import/Export';
@@ -1941,8 +1960,6 @@ class TCPDF {
 		$this->ur['signature'] = '/Modify';
 		$this->ur['ef'] = '/Create/Delete/Modify/Import';
 		$this->ur['formex'] = '';
-		$this->signature_appearance = array('page' => 1, 'rect' => '0 0 0 0', 'name' => 'Signature');
-		$this->empty_signature_appearance = array();
 		// set default JPEG quality
 		$this->jpeg_quality = 75;
 		// initialize some settings
@@ -6346,6 +6363,7 @@ class TCPDF {
 		$i = 0; // character position
 		$j = 0; // current starting position
 		$sep = -1; // position of the last blank space
+		$prevsep = $sep; // previous separator
 		$shy = false; // true if the last blank is a soft hypen (SHY)
 		$l = 0; // current string length
 		$nl = 0; //number of lines
@@ -6405,6 +6423,7 @@ class TCPDF {
 				$j = $i + 1;
 				$l = 0;
 				$sep = -1;
+				$prevsep = $sep;
 				$shy = false;
 				// account for margin changes
 				if ((($this->y + $this->lasth) > $this->PageBreakTrigger) AND ($this->inPageBody())) {
@@ -6436,6 +6455,7 @@ class TCPDF {
 					)
 				) {
 					// update last blank space position
+					$prevsep = $sep;
 					$sep = $i;
 					// check if is a SHY
 					if (($c == 173) OR ($c == 45)) {
@@ -6459,7 +6479,10 @@ class TCPDF {
 				} else {
 					$l += $this->GetCharWidth($c);
 				}
-				if (($l > $wmax) OR (($c == 173) AND (($l + $tmp_shy_replacement_width) > $wmax)) ) {
+				if (($l > $wmax) OR (($c == 173) AND (($l + $tmp_shy_replacement_width) >= $wmax))) {
+					if (($c == 173) AND (($l + $tmp_shy_replacement_width) > $wmax)) {
+						$sep = $prevsep;
+					}
 					// we have reached the end of column
 					if ($sep == -1) {
 						// check if the line was already started
@@ -7614,6 +7637,8 @@ class TCPDF {
 			unset($tmparr);
 			// decode signature
 			$signature = base64_decode(trim($signature));
+			// add TSA timestamp to signature
+			$signature = $this->applyTSA($signature);
 			// convert signature to hex
 			$signature = current(unpack('H*', $signature));
 			$signature = str_pad($signature, $this->signature_max_length, '0');
@@ -7771,19 +7796,22 @@ class TCPDF {
 			}
 			unset($this->cached_files);
 		}
+		$preserve = array(
+			'internal_encoding',
+			'state',
+			'bufferlen',
+			'buffer',
+			'diskcache',
+			'cached_files',
+			'sign',
+			'signature_data',
+			'signature_max_length',
+			'byterange_string',
+			'tsa_timestamp',
+			'tsa_data'
+		);
 		foreach (array_keys(get_object_vars($this)) as $val) {
-			if ($destroyall OR (
-				($val != 'internal_encoding')
-				AND ($val != 'state')
-				AND ($val != 'bufferlen')
-				AND ($val != 'buffer')
-				AND ($val != 'diskcache')
-				AND ($val != 'cached_files')
-				AND ($val != 'sign')
-				AND ($val != 'signature_data')
-				AND ($val != 'signature_max_length')
-				AND ($val != 'byterange_string')
-				)) {
+			if ($destroyall OR !in_array($val, $preserve)) {
 				if ((!$preserve_objcopy OR ($val != 'objcopy')) AND isset($this->$val)) {
 					unset($this->$val);
 				}
@@ -7958,7 +7986,9 @@ class TCPDF {
 			$out = '<<';
 			$out .= ' /Type /Page';
 			$out .= ' /Parent 1 0 R';
-			$out .= ' /LastModified '.$this->_datestring(0, $this->doc_modification_timestamp);
+			if (empty($this->signature_data['approval']) OR ($this->signature_data['approval'] != 'A')) {
+				$out .= ' /LastModified '.$this->_datestring(0, $this->doc_modification_timestamp);
+			}
 			$out .= ' /Resources 2 0 R';
 			foreach ($this->page_boxes as $box) {
 				$out .= ' /'.$box;
@@ -9804,7 +9834,9 @@ class TCPDF {
 			}
 			$out .= ' /Fields ['.$objrefs.']';
 			// It's better to turn off this value and set the appearance stream for each annotation (/AP) to avoid conflicts with signature fields.
-			$out .= ' /NeedAppearances false';
+			if (empty($this->signature_data['approval']) OR ($this->signature_data['approval'] != 'A')) {
+				$out .= ' /NeedAppearances false';
+			}
 			if ($this->sign AND isset($this->signature_data['cert_type'])) {
 				if ($this->signature_data['cert_type'] > 0) {
 					$out .= ' /SigFlags 3';
@@ -9827,7 +9859,8 @@ class TCPDF {
 			//$out .= ' /XFA ';
 			$out .= ' >>';
 			// signatures
-			if ($this->sign AND isset($this->signature_data['cert_type'])) {
+			if ($this->sign AND isset($this->signature_data['cert_type']) 
+				AND (empty($this->signature_data['approval']) OR ($this->signature_data['approval'] != 'A'))) {
 				if ($this->signature_data['cert_type'] > 0) {
 					$out .= ' /Perms << /DocMDP '.($this->sig_obj_id + 1).' 0 R >>';
 				} else {
@@ -13370,46 +13403,48 @@ class TCPDF {
 		$out .= ' /SubFilter /adbe.pkcs7.detached';
 		$out .= ' '.TCPDF_STATIC::$byterange_string;
 		$out .= ' /Contents<'.str_repeat('0', $this->signature_max_length).'>';
-		$out .= ' /Reference ['; // array of signature reference dictionaries
-		$out .= ' << /Type /SigRef';
-		if ($this->signature_data['cert_type'] > 0) {
-			$out .= ' /TransformMethod /DocMDP';
-			$out .= ' /TransformParams <<';
-			$out .= ' /Type /TransformParams';
-			$out .= ' /P '.$this->signature_data['cert_type'];
-			$out .= ' /V /1.2';
-		} else {
-			$out .= ' /TransformMethod /UR3';
-			$out .= ' /TransformParams <<';
-			$out .= ' /Type /TransformParams';
-			$out .= ' /V /2.2';
-			if (!TCPDF_STATIC::empty_string($this->ur['document'])) {
-				$out .= ' /Document['.$this->ur['document'].']';
+		if (empty($this->signature_data['approval']) OR ($this->signature_data['approval'] != 'A')) {
+			$out .= ' /Reference ['; // array of signature reference dictionaries
+			$out .= ' << /Type /SigRef';
+			if ($this->signature_data['cert_type'] > 0) {
+				$out .= ' /TransformMethod /DocMDP';
+				$out .= ' /TransformParams <<';
+				$out .= ' /Type /TransformParams';
+				$out .= ' /P '.$this->signature_data['cert_type'];
+				$out .= ' /V /1.2';
+			} else {
+				$out .= ' /TransformMethod /UR3';
+				$out .= ' /TransformParams <<';
+				$out .= ' /Type /TransformParams';
+				$out .= ' /V /2.2';
+				if (!TCPDF_STATIC::empty_string($this->ur['document'])) {
+					$out .= ' /Document['.$this->ur['document'].']';
+				}
+				if (!TCPDF_STATIC::empty_string($this->ur['form'])) {
+					$out .= ' /Form['.$this->ur['form'].']';
+				}
+				if (!TCPDF_STATIC::empty_string($this->ur['signature'])) {
+					$out .= ' /Signature['.$this->ur['signature'].']';
+				}
+				if (!TCPDF_STATIC::empty_string($this->ur['annots'])) {
+					$out .= ' /Annots['.$this->ur['annots'].']';
+				}
+				if (!TCPDF_STATIC::empty_string($this->ur['ef'])) {
+					$out .= ' /EF['.$this->ur['ef'].']';
+				}
+				if (!TCPDF_STATIC::empty_string($this->ur['formex'])) {
+					$out .= ' /FormEX['.$this->ur['formex'].']';
+				}
 			}
-			if (!TCPDF_STATIC::empty_string($this->ur['form'])) {
-				$out .= ' /Form['.$this->ur['form'].']';
-			}
-			if (!TCPDF_STATIC::empty_string($this->ur['signature'])) {
-				$out .= ' /Signature['.$this->ur['signature'].']';
-			}
-			if (!TCPDF_STATIC::empty_string($this->ur['annots'])) {
-				$out .= ' /Annots['.$this->ur['annots'].']';
-			}
-			if (!TCPDF_STATIC::empty_string($this->ur['ef'])) {
-				$out .= ' /EF['.$this->ur['ef'].']';
-			}
-			if (!TCPDF_STATIC::empty_string($this->ur['formex'])) {
-				$out .= ' /FormEX['.$this->ur['formex'].']';
-			}
+			$out .= ' >>'; // close TransformParams
+			// optional digest data (values must be calculated and replaced later)
+			//$out .= ' /Data ********** 0 R';
+			//$out .= ' /DigestMethod/MD5';
+			//$out .= ' /DigestLocation[********** 34]';
+			//$out .= ' /DigestValue<********************************>';
+			$out .= ' >>';
+			$out .= ' ]'; // end of reference
 		}
-		$out .= ' >>'; // close TransformParams
-		// optional digest data (values must be calculated and replaced later)
-		//$out .= ' /Data ********** 0 R';
-		//$out .= ' /DigestMethod/MD5';
-		//$out .= ' /DigestLocation[********** 34]';
-		//$out .= ' /DigestValue<********************************>';
-		$out .= ' >>';
-		$out .= ' ]'; // end of reference
 		if (isset($this->signature_data['info']['Name']) AND !TCPDF_STATIC::empty_string($this->signature_data['info']['Name'])) {
 			$out .= ' /Name '.$this->_textstring($this->signature_data['info']['Name'], $sigobjid);
 		}
@@ -13477,11 +13512,12 @@ class TCPDF {
 	 * @param $extracerts (string) specifies the name of a file containing a bunch of extra certificates to include in the signature which can for example be used to help the recipient to verify the certificate that you used.
 	 * @param $cert_type (int) The access permissions granted for this document. Valid values shall be: 1 = No changes to the document shall be permitted; any change to the document shall invalidate the signature; 2 = Permitted changes shall be filling in forms, instantiating page templates, and signing; other changes shall invalidate the signature; 3 = Permitted changes shall be the same as for 2, as well as annotation creation, deletion, and modification; other changes shall invalidate the signature.
 	 * @param $info (array) array of option information: Name, Location, Reason, ContactInfo.
+	 * @param $approval (string) Enable approval signature eg. for PDF incremental update
 	 * @public
 	 * @author Nicola Asuni
 	 * @since 4.6.005 (2009-04-24)
 	 */
-	public function setSignature($signing_cert='', $private_key='', $private_key_password='', $extracerts='', $cert_type=2, $info=array()) {
+	public function setSignature($signing_cert='', $private_key='', $private_key_password='', $extracerts='', $cert_type=2, $info=array(), $approval='') {
 		// to create self-signed signature: openssl req -x509 -nodes -days 365000 -newkey rsa:1024 -keyout tcpdf.crt -out tcpdf.crt
 		// to export crt to p12: openssl pkcs12 -export -in tcpdf.crt -out tcpdf.p12
 		// to convert pfx certificate to pem: openssl
@@ -13503,6 +13539,7 @@ class TCPDF {
 		$this->signature_data['extracerts'] = $extracerts;
 		$this->signature_data['cert_type'] = $cert_type;
 		$this->signature_data['info'] = $info;
+		$this->signature_data['approval'] = $approval;
 	}
 
 	/**
@@ -13569,6 +13606,54 @@ class TCPDF {
 		$d = $h * $this->k;
 		$sigapp['rect'] = sprintf('%F %F %F %F', $a, $b, ($a + $c), ($b + $d));
 		return $sigapp;
+	}
+
+	/**
+	 * Enable document timestamping (requires the OpenSSL Library).
+	 * The trusted timestamping improve document security that means that no one should be able to change the document once it has been recorded.
+	 * Use with digital signature only!
+	 * @param $tsa_host (string) Time Stamping Authority (TSA) server (prefixed with 'https://')
+	 * @param $tsa_username (string) Specifies the username for TSA authorization (optional) OR specifies the TSA authorization PEM file (see: example_66.php, optional)
+	 * @param $tsa_password (string) Specifies the password for TSA authorization (optional)
+	 * @param $tsa_cert (string) Specifies the location of TSA certificate for authorization (optional for cURL)
+	 * @public
+	 * @author Richard Stockinger
+	 * @since 6.0.085 (2014-06-16)
+	 */
+	public function setTimeStamp($tsa_host='', $tsa_username='', $tsa_password='', $tsa_cert='') {
+		$this->tsa_data = array();
+		if (!function_exists('curl_init')) {
+			$this->Error('Please enable cURL PHP extension!');
+		}
+		if (strlen($tsa_host) == 0) {
+			$this->Error('Please specify the host of Time Stamping Authority (TSA)!');
+		}
+		$this->tsa_data['tsa_host'] = $tsa_host;
+		if (is_file($tsa_username)) {
+			$this->tsa_data['tsa_auth'] = $tsa_username;
+		} else {
+			$this->tsa_data['tsa_username'] = $tsa_username;
+		}
+		$this->tsa_data['tsa_password'] = $tsa_password;
+		$this->tsa_data['tsa_cert'] = $tsa_cert;
+		$this->tsa_timestamp = true;
+	}
+
+	/**
+	 * NOT YET IMPLEMENTED
+	 * Request TSA for a timestamp
+	 * @param $signature (string) Digital signature as binary string
+	 * @return (string) Timestamped digital signature
+	 * @protected
+	 * @author Richard Stockinger
+	 * @since 6.0.085 (2014-06-16)
+	 */
+	protected function applyTSA($signature) {
+		if (!$this->tsa_timestamp) {
+			return $signature;
+		}
+		//@TODO: implement this feature
+		return $signature;
 	}
 
 	/**
@@ -17724,22 +17809,25 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 										$spacew = ($spacewidth * $ns);
 									}
 									$offset = $strpiece[2][1] + strlen($strpiece[2][0]);
-									$epsposbeg = strpos($pmid, 'q'.$this->epsmarker, $offset);
-									$epsposend = strpos($pmid, $this->epsmarker.'Q', $offset) + strlen($this->epsmarker.'Q');
-									if ((($epsposbeg > 0) AND ($epsposend > 0) AND ($offset > $epsposbeg) AND ($offset < $epsposend))
-										OR (($epsposbeg === false) AND ($epsposend > 0) AND ($offset < $epsposend))) {
-										// shift EPS images
-										$trx = sprintf('1 0 0 1 %F 0 cm', $spacew);
-										$epsposbeg = strpos($pmid, 'q'.$this->epsmarker, ($prev_epsposbeg - 6));
-										$pmid_b = substr($pmid, 0, $epsposbeg);
-										$pmid_m = substr($pmid, $epsposbeg, ($epsposend - $epsposbeg));
-										$pmid_e = substr($pmid, $epsposend);
-										$pmid = $pmid_b."\nq\n".$trx."\n".$pmid_m."\nQ\n".$pmid_e;
-										$offset = $epsposend;
-										continue;
-
+									$epsposend = strpos($pmid, $this->epsmarker.'Q', $offset);				
+									if ($epsposend !== null) {
+										$epsposend += strlen($this->epsmarker.'Q');
+										$epsposbeg = strpos($pmid, 'q'.$this->epsmarker, $offset);
+										if ($epsposbeg === null) {
+											$epsposbeg = strpos($pmid, 'q'.$this->epsmarker, ($prev_epsposbeg - 6));
+											$prev_epsposbeg = $epsposbeg;
+										}
+										if (($epsposbeg > 0) AND ($epsposend > 0) AND ($offset > $epsposbeg) AND ($offset < $epsposend)) {
+											// shift EPS images
+											$trx = sprintf('1 0 0 1 %F 0 cm', $spacew);
+											$pmid_b = substr($pmid, 0, $epsposbeg);
+											$pmid_m = substr($pmid, $epsposbeg, ($epsposend - $epsposbeg));
+											$pmid_e = substr($pmid, $epsposend);
+											$pmid = $pmid_b."\nq\n".$trx."\n".$pmid_m."\nQ\n".$pmid_e;
+											$offset = $epsposend;
+											continue;
+										}
 									}
-									$prev_epsposbeg = $epsposbeg;
 									$currentxpos = 0;
 									// shift blocks of code
 									switch ($strpiece[2][0]) {

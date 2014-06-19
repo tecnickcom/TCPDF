@@ -109,7 +109,7 @@ List example:
 	<dd>White cold drink</dd>
 </dl>
 <div style="text-align:center">IMAGES<br />
-<img src="images/logo_example.png" alt="test alt attribute" width="100" height="100" border="0" /><img src="images/tiger.ai" alt="test alt attribute" width="100" height="100" border="0" /><img src="images/logo_example.jpg" alt="test alt attribute" width="100" height="100" border="0" />
+<img src="images/logo_example.png" alt="test alt attribute" width="100" height="100" border="0" /><img src="images/tcpdf_box.svg" alt="test alt attribute" width="100" height="100" border="0" /><img src="images/logo_example.jpg" alt="test alt attribute" width="100" height="100" border="0" />
 </div>';
 
 // output the HTML content

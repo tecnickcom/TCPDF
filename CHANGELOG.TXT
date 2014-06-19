@@ -1,3 +1,8 @@
+6.0.085 (2014-06-19)
+	- Some example images were replaced.
+	- A race condition bug was fixed.
+	- Bug item #938 "Hyphenation-dash extends outside of cell" was fixed.
+
 6.0.084 (2014-06-13)
 	- A bug related to MultiCell fitcell feature was fixed.
 	- Bug item #931 "Documentation error for setPageFormat()" was fixed.
