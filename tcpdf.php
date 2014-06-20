@@ -6365,6 +6365,7 @@ class TCPDF {
 		$sep = -1; // position of the last blank space
 		$prevsep = $sep; // previous separator
 		$shy = false; // true if the last blank is a soft hypen (SHY)
+		$prevshy = $shy; // previous shy mode
 		$l = 0; // current string length
 		$nl = 0; //number of lines
 		$linebreak = false;
@@ -6459,6 +6460,7 @@ class TCPDF {
 					$sep = $i;
 					// check if is a SHY
 					if (($c == 173) OR ($c == 45)) {
+						$prevshy = $shy;
 						$shy = true;
 						if ($pc == 45) {
 							$tmp_shy_replacement_width = 0;
@@ -6482,6 +6484,7 @@ class TCPDF {
 				if (($l > $wmax) OR (($c == 173) AND (($l + $tmp_shy_replacement_width) >= $wmax))) {
 					if (($c == 173) AND (($l + $tmp_shy_replacement_width) > $wmax)) {
 						$sep = $prevsep;
+						$shy = $prevshy;
 					}
 					// we have reached the end of column
 					if ($sep == -1) {
