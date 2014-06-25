@@ -1,3 +1,6 @@
+6.0.087 (2014-06-25)
+	- A bug affecting fitcell option in Multicell was fixed.
+
 6.0.086 (2014-06-20)
 	- Bug item #938 "Hyphenation-dash extends outside of cell" was fixed (collateral effect).
 

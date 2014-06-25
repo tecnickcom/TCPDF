@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.085
+// Version     : 6.0.087
 // Begin       : 2002-08-03
 // Last Update : 2014-06-19
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.085
+ * @version 6.0.087
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.085
+ * @version 6.0.087
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -1291,14 +1291,14 @@ class TCPDF {
 	/**
 	 * Boolean flag to enable document timestamping with TSA.
 	 * @protected
-	 * @since 6.0.085 (2014-06-19)
+	 * @since 6.0.087 (2014-06-19)
 	 */
 	protected $tsa_timestamp = false;
 
 	/**
 	 * Timestamping data.
 	 * @protected
-	 * @since 6.0.085 (2014-06-19)
+	 * @since 6.0.087 (2014-06-19)
 	 */
 	protected $tsa_data = array();
 
@@ -5870,20 +5870,20 @@ class TCPDF {
 			if ($maxh > 0) {
 				// get text height
 				$text_height = $this->getStringHeight($w, $txt, $reseth, $autopadding, $mc_padding, $border);
-				if ($fitcell) {
+				if ($fitcell AND ($text_height > $maxh) AND ($this->FontSizePt > 1)) {
 					// try to reduce font size to fit text on cell (use a quick search algorithm)
 					$fmin = 1;
 					$fmax = $this->FontSizePt;
 					$diff_epsilon = (1 / $this->k); // one point (min resolution)
-					$maxit = (2 * intval($fmax)); // max number of iterations
-					while ($maxit > 0) {
+					$maxit = (2 * min(100, max(10, intval($fmax)))); // max number of iterations
+					while ($maxit >= 0) {
 						$fmid = (($fmax + $fmin) / 2);
 						$this->SetFontSize($fmid, false);
 						$this->resetLastH();
 						$text_height = $this->getStringHeight($w, $txt, $reseth, $autopadding, $mc_padding, $border);
 						$diff = ($maxh - $text_height);
 						if ($diff >= 0) {
-							if ($diff < $diff_epsilon) {
+							if ($diff <= $diff_epsilon) {
 								break;
 							}
 							$fmin = $fmid;
@@ -5892,10 +5892,15 @@ class TCPDF {
 						}
 						--$maxit;
 					}
-					if ($maxit <= 0) {
-						$fmid = $fmin;
+					if ($maxit < 0) {
+						// premature exit, we get the minimum font value to fit the cell
+						$this->SetFontSize($fmin);
+						$this->resetLastH();
+						$text_height = $this->getStringHeight($w, $txt, $reseth, $autopadding, $mc_padding, $border);
+					} else {
+						$this->SetFontSize($fmid);
+						$this->resetLastH();
 					}
-					$this->SetFontSize($fmid);
 				}
 				if ($text_height < $maxh) {
 					if ($valign == 'M') {
@@ -13621,7 +13626,7 @@ class TCPDF {
 	 * @param $tsa_cert (string) Specifies the location of TSA certificate for authorization (optional for cURL)
 	 * @public
 	 * @author Richard Stockinger
-	 * @since 6.0.085 (2014-06-16)
+	 * @since 6.0.087 (2014-06-16)
 	 */
 	public function setTimeStamp($tsa_host='', $tsa_username='', $tsa_password='', $tsa_cert='') {
 		$this->tsa_data = array();
@@ -13649,7 +13654,7 @@ class TCPDF {
 	 * @return (string) Timestamped digital signature
 	 * @protected
 	 * @author Richard Stockinger
-	 * @since 6.0.085 (2014-06-16)
+	 * @since 6.0.087 (2014-06-16)
 	 */
 	protected function applyTSA($signature) {
 		if (!$this->tsa_timestamp) {
