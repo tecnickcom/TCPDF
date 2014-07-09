@@ -1,3 +1,7 @@
+6.0.088 (2014-07-09)
+	- Bug item #946 "Case sensitive type check causes broken match for SVG" was fixed.
+	- Bug item #945 "Imagick load doesn't account for passed data string " was fixed.
+
 6.0.087 (2014-06-25)
 	- A bug affecting fitcell option in Multicell was fixed.
 
