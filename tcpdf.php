@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.088
+// Version     : 6.0.089
 // Begin       : 2002-08-03
-// Last Update : 2014-07-09
+// Last Update : 2014-07-16
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.088
+ * @version 6.0.089
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.088
+ * @version 6.0.089
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -1291,14 +1291,14 @@ class TCPDF {
 	/**
 	 * Boolean flag to enable document timestamping with TSA.
 	 * @protected
-	 * @since 6.0.088 (2014-06-19)
+	 * @since 6.0.089 (2014-06-19)
 	 */
 	protected $tsa_timestamp = false;
 
 	/**
 	 * Timestamping data.
 	 * @protected
-	 * @since 6.0.088 (2014-06-19)
+	 * @since 6.0.089 (2014-06-19)
 	 */
 	protected $tsa_data = array();
 
@@ -13631,7 +13631,7 @@ class TCPDF {
 	 * @param $tsa_cert (string) Specifies the location of TSA certificate for authorization (optional for cURL)
 	 * @public
 	 * @author Richard Stockinger
-	 * @since 6.0.088 (2014-06-16)
+	 * @since 6.0.089 (2014-06-16)
 	 */
 	public function setTimeStamp($tsa_host='', $tsa_username='', $tsa_password='', $tsa_cert='') {
 		$this->tsa_data = array();
@@ -13659,7 +13659,7 @@ class TCPDF {
 	 * @return (string) Timestamped digital signature
 	 * @protected
 	 * @author Richard Stockinger
-	 * @since 6.0.088 (2014-06-16)
+	 * @since 6.0.089 (2014-06-16)
 	 */
 	protected function applyTSA($signature) {
 		if (!$this->tsa_timestamp) {
@@ -19580,7 +19580,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						// update row-spanned cells
 						if (isset($dom[($dom[$key]['parent'])]['rowspans'])) {
 							foreach ($dom[($dom[$key]['parent'])]['rowspans'] as $k => $trwsp) {
-								if (($trwsp['trid'] == $trkey) AND ($trwsp['mrowspan'] > 1) AND ($trwsp['endpage'] == $dom[$prevtrkey]['endpage'])) {
+								if (($trwsp['trid'] == $prevtrkey) AND ($trwsp['mrowspan'] >= 0) AND ($trwsp['endpage'] == $dom[$prevtrkey]['endpage'])) {
 									$dom[($dom[$key]['parent'])]['rowspans'][$k]['endy'] = $pgendy;
 									$dom[($dom[$key]['parent'])]['rowspans'][$k]['mrowspan'] = -1;
 								}
