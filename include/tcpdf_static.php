@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf_static.php
-// Version     : 1.0.002
+// Version     : 1.0.003
 // Begin       : 2002-08-03
-// Last Update : 2014-04-25
+// Last Update : 2014-08-08
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -38,7 +38,7 @@
  * This is a PHP class that contains static methods for the TCPDF class.<br>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 1.0.002
+ * @version 1.0.003
  */
 
 /**
@@ -46,7 +46,7 @@
  * Static methods used by the TCPDF class.
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 1.0.002
+ * @version 1.0.003
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF_STATIC {
@@ -55,7 +55,7 @@ class TCPDF_STATIC {
 	 * Current TCPDF version.
 	 * @private static
 	 */
-	private static $tcpdf_version = '6.0.089';
+	private static $tcpdf_version = '6.0.090';
 
 	/**
 	 * String alias for total number of pages.
@@ -1098,7 +1098,7 @@ class TCPDF_STATIC {
 	 * @public static
 	 */
 	public static function getObjFilename($type='tmp') {
-		return tempnam(K_PATH_CACHE, '__tcpdf_'.$type.'_'.md5(getmypid().uniqid('', true).rand().microtime(true)).'_');
+		return tempnam(K_PATH_CACHE, '__tcpdf_'.$type.'_'.md5(uniqid('', true).rand().microtime(true)).'_');
 	}
 
 	/**
@@ -1358,7 +1358,6 @@ class TCPDF_STATIC {
 		}
 		$seed .= uniqid('', true);
 		$seed .= rand();
-		$seed .= getmypid();
 		$seed .= __FILE__;
 		if (isset($_SERVER['REMOTE_ADDR'])) {
 			$seed .= $_SERVER['REMOTE_ADDR'];

@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.089
+// Version     : 6.0.090
 // Begin       : 2002-08-03
-// Last Update : 2014-07-16
+// Last Update : 2014-08-08
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.089
+ * @version 6.0.090
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.089
+ * @version 6.0.090
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -1291,14 +1291,14 @@ class TCPDF {
 	/**
 	 * Boolean flag to enable document timestamping with TSA.
 	 * @protected
-	 * @since 6.0.089 (2014-06-19)
+	 * @since 6.0.085 (2014-06-19)
 	 */
 	protected $tsa_timestamp = false;
 
 	/**
 	 * Timestamping data.
 	 * @protected
-	 * @since 6.0.089 (2014-06-19)
+	 * @since 6.0.085 (2014-06-19)
 	 */
 	protected $tsa_data = array();
 
@@ -13631,7 +13631,7 @@ class TCPDF {
 	 * @param $tsa_cert (string) Specifies the location of TSA certificate for authorization (optional for cURL)
 	 * @public
 	 * @author Richard Stockinger
-	 * @since 6.0.089 (2014-06-16)
+	 * @since 6.0.090 (2014-06-16)
 	 */
 	public function setTimeStamp($tsa_host='', $tsa_username='', $tsa_password='', $tsa_cert='') {
 		$this->tsa_data = array();
@@ -13659,7 +13659,7 @@ class TCPDF {
 	 * @return (string) Timestamped digital signature
 	 * @protected
 	 * @author Richard Stockinger
-	 * @since 6.0.089 (2014-06-16)
+	 * @since 6.0.090 (2014-06-16)
 	 */
 	protected function applyTSA($signature) {
 		if (!$this->tsa_timestamp) {
@@ -19523,11 +19523,22 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						}
 					}
 				}
+				$prev_page = $this->page;
 				$this->setPage($dom[($dom[$key]['parent'])]['endpage']);
 				if ($this->num_columns > 1) {
-					$this->selectColumn($dom[($dom[$key]['parent'])]['endcolumn']);
+					if ((($this->current_column == 0) AND ($dom[($dom[$key]['parent'])]['endcolumn'] == ($this->num_columns - 1)))
+						OR (($this->current_column == $dom[($dom[$key]['parent'])]['endcolumn']) AND ($prev_page < $this->page))) {
+						// page jump
+						$this->selectColumn(0);
+						$dom[($dom[$key]['parent'])]['endcolumn'] = 0;
+						$dom[($dom[$key]['parent'])]['endy'] = $this->y;
+					} else {
+						$this->selectColumn($dom[($dom[$key]['parent'])]['endcolumn']);
+						$this->y = $dom[($dom[$key]['parent'])]['endy'];
+					}
+				} else {
+					$this->y = $dom[($dom[$key]['parent'])]['endy'];
 				}
-				$this->y = $dom[($dom[$key]['parent'])]['endy'];
 				if (isset($dom[$table_el]['attribute']['cellspacing'])) {
 					$this->y += $this->getHTMLUnitToUnits($dom[$table_el]['attribute']['cellspacing'], 1, 'px');
 				} elseif (isset($dom[$table_el]['border-spacing'])) {
@@ -22371,6 +22382,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		// find first valid font name
 		foreach ($fontslist as $font) {
 			// replace font variations
+			$font = preg_replace('/regular$/', '', $font);
 			$font = preg_replace('/italic$/', 'I', $font);
 			$font = preg_replace('/oblique$/', 'I', $font);
 			$font = preg_replace('/bold([I]?)$/', 'B\\1', $font);
@@ -23376,6 +23388,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		if ($svgstyle['stroke'] != 'none') {
 			if ($svgstyle['stroke-opacity'] != 1) {
 				$this->setAlpha($svgstyle['stroke-opacity'], 'Normal', $this->alpha['ca'], false);
+			} elseif (preg_match('/rgba\(\d+%?,\s*\d+%?,\s*\d+%?,\s*(\d+(?:\.\d+)?)\)/i', $svgstyle['stroke'], $rgba_matches)) {
+				$this->setAlpha($rgba_matches[1], 'Normal', $this->alpha['ca'], false);
 			}
 			$stroke_style = array(
 				'color' => TCPDF_COLORS::convertHTMLColorToDec($svgstyle['stroke'], $this->spot_colors),

@@ -1,3 +1,9 @@
+6.0.090 (2014-08-08)
+	- Starting from this version TCPDF is also available in GitHub at https://github.com/tecnickcom/TCPDF
+	- Function getmypid() was removed for better compatibility with shared hosting environments.
+	- Support for pulling SVG stroke opacity value from RGBa color was mergeg [adf006].
+	- Bug item #951 "HTML Table within TCPDF columns doesnt flow correctly on page break ..." was fixed. 
+
 6.0.089 (2014-07-16)
 	- Bug item #948 "bottom line of rowspan cell not work correctly" was fixed.
 
