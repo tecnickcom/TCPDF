@@ -232,6 +232,13 @@ if (!defined('K_TCPDF_THROW_EXCEPTION_ERROR')) {
 	define('K_TCPDF_THROW_EXCEPTION_ERROR', false);
 }
 
+if (!defined('K_TIMEZONE')) {
+	define('K_TIMEZONE', 'UTC');
+}
+
+// set the chosen timezone
+date_default_timezone_set(K_TIMEZONE);
+
 //============================================================+
 // END OF FILE
 //============================================================+
