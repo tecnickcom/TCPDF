@@ -217,6 +217,12 @@ define('K_TCPDF_CALLS_IN_HTML', true);
  */
 define('K_TCPDF_THROW_EXCEPTION_ERROR', false);
 
+/**
+ * default timezone for datetime functions to avoid warnings
+ * @see http://php.net/manual/function.date-default-timezone-set.php
+ */
+define('K_TIMEZONE', 'UTC');
+
 //============================================================+
 // END OF FILE
 //============================================================+
