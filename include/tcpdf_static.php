@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf_static.php
-// Version     : 1.0.003
+// Version     : 1.0.004
 // Begin       : 2002-08-03
-// Last Update : 2014-08-08
+// Last Update : 2014-09-02
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -38,7 +38,7 @@
  * This is a PHP class that contains static methods for the TCPDF class.<br>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 1.0.003
+ * @version 1.0.004
  */
 
 /**
@@ -46,7 +46,7 @@
  * Static methods used by the TCPDF class.
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 1.0.003
+ * @version 1.0.004
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF_STATIC {
@@ -55,7 +55,7 @@ class TCPDF_STATIC {
 	 * Current TCPDF version.
 	 * @private static
 	 */
-	private static $tcpdf_version = '6.0.092';
+	private static $tcpdf_version = '6.0.093';
 
 	/**
 	 * String alias for total number of pages.
@@ -2450,13 +2450,23 @@ class TCPDF_STATIC {
 
 	/**
 	 * Serialize an array of parameters to be used with TCPDF tag in HTML code.
-	 * @param $pararray (array) parameters array
-	 * @return sting containing serialized data
+	 * @param $data (array) parameters array
+	 * @return string containing serialized data
 	 * @since 4.9.006 (2010-04-02)
 	 * @public static
 	 */
-	public static function serializeTCPDFtagParameters($pararray) {
-		return urlencode(serialize($pararray));
+	public static function serializeTCPDFtagParameters($data) {
+		return urlencode(json_encode($data));
+	}
+
+	/**
+	 * Unserialize parameters to be used with TCPDF tag in HTML code.
+	 * @param $data (string) serialized data
+	 * @return array containing unserialized data
+	 * @public static
+	 */
+	public static function unserializeTCPDFtagParameters($data) {
+		return json_decode(urldecode($data), true);
 	}
 
 	/**

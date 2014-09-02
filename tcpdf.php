@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.092
+// Version     : 6.0.093
 // Begin       : 2002-08-03
-// Last Update : 2014-09-01
+// Last Update : 2014-09-02
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.092
+ * @version 6.0.093
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.092
+ * @version 6.0.093
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -1848,6 +1848,9 @@ class TCPDF {
 			$this->internal_encoding = mb_internal_encoding();
 			mb_internal_encoding('ASCII');
 		}
+		// set file ID for trailer
+		$serformat = (is_array($format) ? json_encode($format) : $format);
+		$this->file_id = md5(TCPDF_STATIC::getRandomSeed('TCPDF'.$orientation.$unit.$serformat.$encoding));
 		$this->font_obj_ids = array();
 		$this->page_obj_id = array();
 		$this->form_obj_id = array();
@@ -1982,9 +1985,6 @@ class TCPDF {
 			$this->setSpacesRE('/[^\S\xa0]/');
 		}
 		$this->default_form_prop = array('lineWidth'=>1, 'borderStyle'=>'solid', 'fillColor'=>array(255, 255, 255), 'strokeColor'=>array(128, 128, 128));
-		// set file ID for trailer
-		$serformat = (is_array($format) ? serialize($format) : $format);
-		$this->file_id = md5(TCPDF_STATIC::getRandomSeed('TCPDF'.$orientation.$unit.$serformat.$encoding));
 		// set document creation and modification timestamp
 		$this->doc_creation_timestamp = time();
 		$this->doc_modification_timestamp = $this->doc_creation_timestamp;
@@ -16372,7 +16372,7 @@ class TCPDF {
 		$matches = array();
 		if (preg_match_all('/<cssarray>([^\<]*)<\/cssarray>/isU', $html, $matches) > 0) {
 			if (isset($matches[1][0])) {
-				$css = array_merge($css, unserialize($this->unhtmlentities($matches[1][0])));
+				$css = array_merge($css, json_decode($this->unhtmlentities($matches[1][0]), true));
 			}
 			$html = preg_replace('/<cssarray>(.*?)<\/cssarray>/isU', '', $html);
 		}
@@ -16414,7 +16414,7 @@ class TCPDF {
 			}
 		}
 		// create a special tag to contain the CSS array (used for table content)
-		$csstagarray = '<cssarray>'.htmlentities(serialize($css)).'</cssarray>';
+		$csstagarray = '<cssarray>'.htmlentities(json_encode($css)).'</cssarray>';
 		// remove head and style blocks
 		$html = preg_replace('/<head([^\>]*)>(.*?)<\/head>/siU', '', $html);
 		$html = preg_replace('/<style([^\>]*)>([^\<]*)<\/style>/isU', '', $html);
@@ -19393,7 +19393,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						$tcpdf_method = $tag['attribute']['method'];
 						if (method_exists($this, $tcpdf_method)) {
 							if (isset($tag['attribute']['params']) AND (!empty($tag['attribute']['params']))) {
-								$params = unserialize(urldecode($tag['attribute']['params']));
+								$params = TCPDF_STATIC::unserializeTCPDFtagParameters($tag['attribute']['params']);
 								call_user_func_array(array($this, $tcpdf_method), $params);
 							} else {
 								$this->$tcpdf_method();
@@ -20766,10 +20766,11 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @param $filename (string) file name
 	 * @param $data (mixed) data to write on file
 	 * @param $append (boolean) if true append data, false replace.
+	 * @param $serialize (boolean) if true serialize data.
 	 * @since 4.5.000 (2008-12-31)
 	 * @protected
 	 */
-	protected function writeDiskCache($filename, $data, $append=false) {
+	protected function writeDiskCache($filename, $data, $append=false, $serialize=false) {
 		if ($append) {
 			$fmode = 'ab+';
 		} else {
@@ -20778,10 +20779,12 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$f = @fopen($filename, $fmode);
 		if (!$f) {
 			$this->Error('Unable to write cache file: '.$filename);
-		} else {
-			fwrite($f, $data);
-			fclose($f);
 		}
+		if ($serialize) {
+			$data = $this->file_id.serialize($data);
+		}
+		fwrite($f, $data);
+		fclose($f);
 		// update file length (needed for transactions)
 		if (!isset($this->cache_file_length['_'.$filename])) {
 			$this->cache_file_length['_'.$filename] = strlen($data);
@@ -20793,12 +20796,23 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	/**
 	 * Read data from a temporary file on filesystem.
 	 * @param $filename (string) file name
+	 * @param $unserialize (boolean) if true unserialize data.
 	 * @return mixed retrieved data
 	 * @since 4.5.000 (2008-12-31)
 	 * @protected
 	 */
-	protected function readDiskCache($filename) {
-		return file_get_contents($filename);
+	protected function readDiskCache($filename, $unserialize=false) {
+		$data = file_get_contents($filename);
+		if ($data === FALSE) {
+			$this->Error('Unable to read the file: '.$filename);
+		}
+		if ($unserialize) {
+			if (substr($data, 0, 32) != $this->file_id) {
+				$this->Error('Invalid cache file: '.$filename);
+			}
+			$data = unserialize(substr($data, 32));
+		}
+		return $data;
 	}
 
 	/**
@@ -20813,7 +20827,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			if (!isset($this->buffer) OR TCPDF_STATIC::empty_string($this->buffer)) {
 				$this->buffer = TCPDF_STATIC::getObjFilename('buf');
 			}
-			$this->writeDiskCache($this->buffer, $data, true);
+			$this->writeDiskCache($this->buffer, $data, true, false);
 		} else {
 			$this->buffer .= $data;
 		}
@@ -20831,7 +20845,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			if (!isset($this->buffer) OR TCPDF_STATIC::empty_string($this->buffer)) {
 				$this->buffer = TCPDF_STATIC::getObjFilename('buf');
 			}
-			$this->writeDiskCache($this->buffer, $data, false);
+			$this->writeDiskCache($this->buffer, $data, false, false);
 		} else {
 			$this->buffer = $data;
 		}
@@ -20845,7 +20859,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 */
 	protected function getBuffer() {
 		if ($this->diskcache) {
-			return $this->readDiskCache($this->buffer);
+			return $this->readDiskCache($this->buffer, false);
 		} else {
 			return $this->buffer;
 		}
@@ -20864,7 +20878,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			if (!isset($this->pages[$page])) {
 				$this->pages[$page] = TCPDF_STATIC::getObjFilename('page');
 			}
-			$this->writeDiskCache($this->pages[$page], $data, $append);
+			$this->writeDiskCache($this->pages[$page], $data, $append, false);
 		} else {
 			if ($append) {
 				$this->pages[$page] .= $data;
@@ -20888,7 +20902,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 */
 	protected function getPageBuffer($page) {
 		if ($this->diskcache) {
-			return $this->readDiskCache($this->pages[$page]);
+			return $this->readDiskCache($this->pages[$page], false);
 		} elseif (isset($this->pages[$page])) {
 			return $this->pages[$page];
 		}
@@ -20913,7 +20927,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			if (!isset($this->images[$image])) {
 				$this->images[$image] = TCPDF_STATIC::getObjFilename('img');
 			}
-			$this->writeDiskCache($this->images[$image], serialize($data));
+			$this->writeDiskCache($this->images[$image], $data, false, true);
 		} else {
 			$this->images[$image] = $data;
 		}
@@ -20935,7 +20949,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		if ($this->diskcache) {
 			$tmpimg = $this->getImageBuffer($image);
 			$tmpimg[$key] = $data;
-			$this->writeDiskCache($this->images[$image], serialize($tmpimg));
+			$this->writeDiskCache($this->images[$image], $tmpimg, false, true);
 		} else {
 			$this->images[$image][$key] = $data;
 		}
@@ -20950,7 +20964,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 */
 	protected function getImageBuffer($image) {
 		if ($this->diskcache AND isset($this->images[$image])) {
-			return unserialize($this->readDiskCache($this->images[$image]));
+			return $this->readDiskCache($this->images[$image], true);
 		} elseif (isset($this->images[$image])) {
 			return $this->images[$image];
 		}
@@ -20969,7 +20983,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			if (!isset($this->fonts[$font])) {
 				$this->fonts[$font] = TCPDF_STATIC::getObjFilename('font');
 			}
-			$this->writeDiskCache($this->fonts[$font], serialize($data));
+			$this->writeDiskCache($this->fonts[$font], $data, false, true);
 		} else {
 			$this->fonts[$font] = $data;
 		}
@@ -20997,7 +21011,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		if ($this->diskcache) {
 			$tmpfont = $this->getFontBuffer($font);
 			$tmpfont[$key] = $data;
-			$this->writeDiskCache($this->fonts[$font], serialize($tmpfont));
+			$this->writeDiskCache($this->fonts[$font], $tmpfont, false, true);
 		} else {
 			$this->fonts[$font][$key] = $data;
 		}
@@ -21012,7 +21026,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 */
 	protected function getFontBuffer($font) {
 		if ($this->diskcache AND isset($this->fonts[$font])) {
-			return unserialize($this->readDiskCache($this->fonts[$font]));
+			return $this->readDiskCache($this->fonts[$font], true);
 		} elseif (isset($this->fonts[$font])) {
 			return $this->fonts[$font];
 		}

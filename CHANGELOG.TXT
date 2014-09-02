@@ -1,3 +1,7 @@
+6.0.093 (2014-09-02)
+	- Security fix: some serialize/unserialize methods were replaced with json_encode/json_decode to avoid a potential object injection with user supplied content. Thanks to ownCloud Inc. for reporting this issue.
+	- K_TIMEZONE constant was added to the default configuration to supress date-time warnings.
+
 6.0.092 (2014-09-01)
 	- Bug item #956 "Monospaced fonts are not alignd at the baseline" was fixed.
 	- Bug item #964 "Problem when changing font size" was fixed.
