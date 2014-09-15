@@ -4475,7 +4475,7 @@ class TCPDF {
 	 * @see AddFont(), SetFontSize()
 	 */
 	public function SetFont($family, $style='', $size=null, $fontfile='', $subset='default', $out=true) {
-		//Select a font; size given in points
+        //Select a font; size given in points
 		if ($size === null) {
 			$size = $this->FontSizePt;
 		}
@@ -22445,6 +22445,19 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				return $font;
 			}
 		}
+		
+		/**
+		 * This maps the normalized name to fonts.
+		 * The map is based on Inkscape
+		 */
+			
+		$map = [
+			'kozukaminchopror' => 'kozminproregular',
+			'arialunicodems' => 'cid0cs'
+		];
+		if (isset($map[$fontfamily])) {
+			return $map[$fontfamily];
+		}
 		// return current font as default
 		return $this->CurrentFont['fontkey'];
 	}
@@ -24461,10 +24474,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			case 'tspan': {
 				// only basic support - advanced features must be implemented
 				$this->svgtextmode['invisible'] = $invisible;
-				if ($invisible) {
+                if ($invisible) {
 					break;
 				}
-				array_push($this->svgstyles, $svgstyle);
+                array_push($this->svgstyles, $svgstyle);
 				if (isset($attribs['x'])) {
 					$x = $this->getHTMLUnitToUnits($attribs['x'], 0, $this->svgunit, false);
 				} elseif ($name == 'tspan') {
@@ -24633,7 +24646,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				}
 				// print text
 				$text = $this->svgtext;
-				//$text = $this->stringTrim($text);
+                //$text = $this->stringTrim($text);
 				$textlen = $this->GetStringWidth($text);
 				if ($this->svgtextmode['text-anchor'] != 'start') {
 					// check if string is RTL text
@@ -24653,13 +24666,13 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				}
 				$textrendermode = $this->textrendermode;
 				$textstrokewidth = $this->textstrokewidth;
-				$this->setTextRenderingMode($this->svgtextmode['stroke'], true, false);
+                $this->setTextRenderingMode($this->svgtextmode['stroke'], true, false);
 				if ($name == 'text') {
 					// store current coordinates
 					$tmpx = $this->x;
 					$tmpy = $this->y;
 				}
-				$this->Cell($textlen, 0, $text, 0, 0, '', false, '', 0, false, 'L', 'T');
+                $this->Cell($textlen, 0, $text, 0, 0, '', false, '', 0, false, 'L', 'T');
 				if ($name == 'text') {
 					// restore coordinates
 					$this->x = $tmpx;
