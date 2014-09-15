@@ -78,6 +78,11 @@ $pdf->Bookmark('Chapter 1', 0, 0, '', 'B', array(0,64,128));
 // print a line using Cell()
 $pdf->Cell(0, 10, 'Chapter 1', 0, 1, 'L');
 
+// Create a fixed link to the first page using the * character
+$index_link = $pdf->AddLink();
+$pdf->SetLink($index_link, 0, '*1');
+$pdf->Cell(0, 10, 'Link to INDEX', 0, 1, 'R', false, $index_link);
+
 $pdf->AddPage();
 $pdf->Bookmark('Paragraph 1.1', 1, 0, '', '', array(128,0,0));
 $pdf->Cell(0, 10, 'Paragraph 1.1', 0, 1, 'L');
@@ -93,6 +98,11 @@ $pdf->Cell(0, 10, 'Sub-Paragraph 1.2.1', 0, 1, 'L');
 $pdf->AddPage();
 $pdf->Bookmark('Paragraph 1.3', 1, 0, '', '', array(128,0,0));
 $pdf->Cell(0, 10, 'Paragraph 1.3', 0, 1, 'L');
+
+// fixed link to the first page using the * character
+$html = '<a href="#*1" style="color:blue;">link to INDEX (page 1)</a>';
+$pdf->writeHTML($html, true, false, true, false, '');
+
 
 // add some pages and bookmarks
 for ($i = 2; $i < 12; $i++) {
@@ -123,7 +133,7 @@ $pdf->endTOCPage();
 // ---------------------------------------------------------
 
 //Close and output PDF document
-$pdf->Output('example_045.pdf', 'D');
+$pdf->Output('example_045.pdf', 'I');
 
 //============================================================+
 // END OF FILE

@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_032.php
 // Begin       : 2008-06-09
-// Last Update : 2013-05-14
+// Last Update : 2013-06-19
 //
 // Description : Example 032 for TCPDF class
 //               EPS/AI image
@@ -71,17 +71,15 @@ $pdf->SetFont('helvetica', '', 12);
 
 $pdf->AddPage();
 
-$pdf->Write(0, 'Example of ImageEPS() method for AI and EPS images');
+$html = <<<EOD
+Example of ImageEPS() method for AI and EPS images<br />
+NOTE: <i>Please use SVG format for a better vector support</i>.
+EOD;
 
-$pdf->ImageEps($file='images/tiger.ai', $x=10, $y=50, $w=190, $h=190, $link='', $useBoundingBox=true, $align='', $palign='', $border=0, $fitonpage=false);
+// Print text using writeHTMLCell()
+$pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
 
-$pdf->AddPage();
-
-$pdf->ImageEps('images/bug.eps', 0, 25, 0, 240, "http://www.tcpdf.org", true, 'T', 'C');
-
-$pdf->AddPage();
-
-$pdf->ImageEps('images/pelican.ai', 15, 70, 180);
+$pdf->ImageEps('images/tcpdf_box.ai', 10, 40, 150, '', 'http://www.tcpdf.org', true, '', '', 0, false);
 
 // ---------------------------------------------------------
 

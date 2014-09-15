@@ -218,7 +218,7 @@ class TCPDF_IMAGES {
 		if (count($icc) > 0) {
 			ksort($icc);
 			$icc = implode('', $icc);
-			if ((ord($icc{36}) != 0x61) OR (ord($icc{37}) != 0x63) OR (ord($icc{38}) != 0x73) OR (ord($icc{39}) != 0x70)) {
+			if ((ord($icc[36]) != 0x61) OR (ord($icc[37]) != 0x63) OR (ord($icc[38]) != 0x73) OR (ord($icc[39]) != 0x70)) {
 				// invalid ICC profile
 				$icc = false;
 			}
@@ -300,9 +300,9 @@ class TCPDF_IMAGES {
 				// read transparency info
 				$t = TCPDF_STATIC::rfread($f, $n);
 				if ($ct == 0) { // DeviceGray
-					$trns = array(ord($t{1}));
+					$trns = array(ord($t[1]));
 				} elseif ($ct == 2) { // DeviceRGB
-					$trns = array(ord($t{1}), ord($t{3}), ord($t{5}));
+					$trns = array(ord($t[1]), ord($t[3]), ord($t[5]));
 				} else { // Indexed
 					if ($n > 0) {
 						$trns = array();
@@ -319,11 +319,9 @@ class TCPDF_IMAGES {
 			} elseif ($type == 'iCCP') {
 				// skip profile name
 				$len = 0;
-				while ((ord(fread($f, 1)) > 0) AND ($len < 80)) {
+				while ((ord(fread($f, 1)) != 0) AND ($len < 80)) {
 					++$len;
 				}
-				// skip null separator
-				fread($f, 1);
 				// get compression method
 				if (ord(fread($f, 1)) != 0) {
 					// Unknown filter method
