@@ -347,11 +347,11 @@ class TCPDF {
 	 */
 	protected $cached_files = array();
 
-        /**
-         * Array mapping inline img checksums to temp filenames
-         * @protected
-         */
-        protected $inline_img_chache = array();
+    /**
+     * Array mapping inline img checksums to temp filenames
+     * @protected
+     */
+    protected $inline_img_cache = array();
         
 	/**
 	 * Array of Annotations in pages.
@@ -6878,12 +6878,13 @@ class TCPDF {
 		if ($file[0] === '@') {
 			// image from string
 			$imgdata = substr($file, 1);
-            $inlinehash = md5($imgdata);
-            //check if this inline file has already been added, if so set filename to tmp file
-            if(isset($this->inline_img_chache[$inlinehash])){
-                $file = $this->inline_img_chache[$inlinehash];
-                unset($imgdata);
-            }
+//            $inlinehash = md5($imgdata);
+//            //check if this inline file has already been added, if so set filename to tmp file
+//            if(isset($this->inline_img_cache[$inlinehash]) && is_file($this->inline_img_cache[$inlinehash])){
+//                $file = $this->inline_img_cache[$inlinehash];
+//
+//                unset($imgdata);
+//            }
 		} else { // image file
 			if ($file[0] === '*') {
 				// image as external stream
@@ -6900,7 +6901,7 @@ class TCPDF {
 			}
 			if (($imsize = @getimagesize($file)) === FALSE) {
 				if (in_array($file, $this->imagekeys)) {
-					// get existing image data
+                    // get existing image data
 					$info = $this->getImageBuffer($file);
 					$imsize = array($info['w'], $info['h']);				
 				} elseif (strpos($file, '__tcpdf_img') === FALSE) {
@@ -6912,27 +6913,28 @@ class TCPDF {
 			// copy image to cache
 			$original_file = $file;
 			$file = TCPDF_STATIC::getObjFilename('img');
-                        if($inlinehash !== FALSE)
-                        {
-                            //place file in inlinehash array
-                            $this->inline_img_chache[$inlinehash] = $file;
-                        }
-			$fp = fopen($file, 'w');
+            
+            //place file in inlinehash array
+            $this->inline_img_cache[md5($imgdata)] = $file;
+
+            $fp = fopen($file, 'w');
 			if (!$fp) {
 				$this->Error('Unable to write file: '.$file);
 			}
 			fwrite($fp, $imgdata);
 			fclose($fp);
+            
 			unset($imgdata);
-			$imsize = @getimagesize($file);
+			$imsize = getimagesize($file);
+
 			if ($imsize === FALSE) {
-				unlink($file);
+                unlink($file);
 				$file = $original_file;
 			} else {
-				$this->cached_files[] = $file;
+                $this->cached_files[] = $file;
 			}
 		}
-		if ($imsize === FALSE) {
+        if ($imsize === FALSE) {
 			if (($w > 0) AND ($h > 0)) {
 				// get measures from specified data
 				$pw = $this->getHTMLUnitToUnits($w, 0, $this->pdfunit, true) * $this->imgscale * $this->k;
@@ -6942,9 +6944,9 @@ class TCPDF {
 				$this->Error('[Image] Unable to get the size of the image: '.$file);
 			}
 		}
-		// file hash
+        // file hash
 		$filehash = md5($this->file_id.$file);
-		// get original image width and height in pixels
+        // get original image width and height in pixels
 		list($pixw, $pixh) = $imsize;
 		// calculate image width and height on document
 		if (($w <= 0) AND ($h <= 0)) {
@@ -7032,8 +7034,8 @@ class TCPDF {
 		if (in_array($file, $this->imagekeys)) {
 			$newimage = false;
 			// get existing image data
-			$info = $this->getImageBuffer($file);
-			if (strpos($file, '__tcpdf_imgmask_') === FALSE) {
+            $info = $this->getImageBuffer($file);
+            if (strpos($file, '__tcpdf_imgmask_') === FALSE) {
 				// check if the newer image is larger
 				$oldsize = ($info['w'] * $info['h']);
 				if ((($oldsize < $newsize) AND ($resize)) OR (($oldsize < $pixsize) AND (!$resize))) {
