@@ -1,3 +1,6 @@
+6.0.095 (2014-10-02)
+	- Bug item #979 "New Timezone option overwriting current timezone" was fixed.
+
 6.0.094 (2014-09-30)
 	- Bug item #978 "Variable Undefined: $cborder" was fixed.
 
