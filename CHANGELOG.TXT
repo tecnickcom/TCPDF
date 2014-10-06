@@ -1,3 +1,7 @@
+6.0.096 (2014-10-06)
+	- Bug item #982 "Display style is not inherited in SVG" was fixed.
+	- Bug item #984 "Double quote url in CSS" was fixed.
+
 6.0.095 (2014-10-02)
 	- Bug item #979 "New Timezone option overwriting current timezone" was fixed.
 
