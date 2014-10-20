@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.096
+// Version     : 6.0.097
 // Begin       : 2002-08-03
-// Last Update : 2014-10-06
+// Last Update : 2014-10-20
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.096
+ * @version 6.0.097
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.096
+ * @version 6.0.097
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -7411,10 +7411,9 @@ class TCPDF {
 			$this->x = $this->lMargin + $cellpadding;
 		}
 		if (is_string($h)) {
-			$this->y += $this->lasth;
-		} else {
-			$this->y += $h;
+			$h = $this->lasth;
 		}
+		$this->y += $h;
 		$this->newline = true;
 	}
 
@@ -22150,10 +22149,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * Returns an array of chars containing soft hyphens.
 	 * @param $word (array) array of chars
 	 * @param $patterns (array) Array of hypenation patterns.
-	 * @param $dictionary (array) Array of words to be returned without applying the hyphenation algoritm.
+	 * @param $dictionary (array) Array of words to be returned without applying the hyphenation algorithm.
 	 * @param $leftmin (int) Minimum number of character to leave on the left of the word without applying the hyphens.
 	 * @param $rightmin (int) Minimum number of character to leave on the right of the word without applying the hyphens.
-	 * @param $charmin (int) Minimum word length to apply the hyphenation algoritm.
+	 * @param $charmin (int) Minimum word length to apply the hyphenation algorithm.
 	 * @param $charmax (int) Maximum length of broken piece of word.
 	 * @return array text with soft hyphens
 	 * @author Nicola Asuni
@@ -22184,10 +22183,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		// surround word with '_' characters
 		$tmpword = array_merge(array(46), $word, array(46));
 		$tmpnumchars = $numchars + 2;
-		$maxpos = $tmpnumchars - $charmin;
+		$maxpos = $tmpnumchars - 1;
 		for ($pos = 0; $pos < $maxpos; ++$pos) {
 			$imax = min(($tmpnumchars - $pos), $charmax);
-			for ($i = $charmin; $i <= $imax; ++$i) {
+			for ($i = 1; $i <= $imax; ++$i) {
 				$subword = strtolower(TCPDF_FONTS::UTF8ArrSubString($tmpword, $pos, ($pos + $i), $this->isunicode));
 				if (isset($patterns[$subword])) {
 					$pattern = TCPDF_FONTS::UTF8StringToArray($patterns[$subword], $this->isunicode, $this->CurrentFont);
@@ -22230,10 +22229,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * Returns text with soft hyphens.
 	 * @param $text (string) text to process
 	 * @param $patterns (mixed) Array of hypenation patterns or a TEX file containing hypenation patterns. TEX patterns can be downloaded from http://www.ctan.org/tex-archive/language/hyph-utf8/tex/generic/hyph-utf8/patterns/
-	 * @param $dictionary (array) Array of words to be returned without applying the hyphenation algoritm.
+	 * @param $dictionary (array) Array of words to be returned without applying the hyphenation algorithm.
 	 * @param $leftmin (int) Minimum number of character to leave on the left of the word without applying the hyphens.
 	 * @param $rightmin (int) Minimum number of character to leave on the right of the word without applying the hyphens.
-	 * @param $charmin (int) Minimum word length to apply the hyphenation algoritm.
+	 * @param $charmin (int) Minimum word length to apply the hyphenation algorithm.
 	 * @param $charmax (int) Maximum length of broken piece of word.
 	 * @return array text with soft hyphens
 	 * @author Nicola Asuni
