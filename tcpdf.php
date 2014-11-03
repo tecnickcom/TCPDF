@@ -6879,7 +6879,12 @@ class TCPDF {
 					$file = $tfile;
 				}
 			}
-			if (($imsize = @getimagesize($file)) === FALSE) {
+			
+			$imsize = false;
+			if (@file_exists($file)){
+				$imsize = getimagesize($file);
+			}
+			if($imsize === false){
 				if (in_array($file, $this->imagekeys)) {
 					// get existing image data
 					$info = $this->getImageBuffer($file);
