@@ -1,3 +1,7 @@
+6.0.098 (2014-11-08)
+	- Bug item #996 "getCharBBox($char) returns incorrect results for TTF glyphs without outlines" was fixed.
+	- Bug item #991 "Text problem with SVG" was fixed (only the font style part).
+
 6.0.097 (2014-10-20)
 	- Bug item #988 "hyphenateText - charmin parameter not work" was fixed.
 	- New 1D barcode method to print pre-formatted IMB - Intelligent Mail Barcode - Onecode - USPS-B-3200.
