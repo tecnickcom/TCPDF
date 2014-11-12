@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf_fonts.php
-// Version     : 1.0.013
+// Version     : 1.0.014
 // Begin       : 2008-01-01
-// Last Update : 2014-05-23
+// Last Update : 2014-11-08
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -42,7 +42,7 @@
  * @class TCPDF_FONTS
  * Font methods for TCPDF library.
  * @package com.tecnick.tcpdf
- * @version 1.0.013
+ * @version 1.0.014
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF_FONTS {
@@ -435,6 +435,10 @@ class TCPDF_FONTS {
 				$tot_num_glyphs = floor($table['loca']['length'] / 2); // numGlyphs + 1
 				for ($i = 0; $i < $tot_num_glyphs; ++$i) {
 					$indexToLoc[$i] = TCPDF_STATIC::_getUSHORT($font, $offset) * 2;
+					if (isset($indexToLoc[($i - 1)]) && ($indexToLoc[$i] == $indexToLoc[($i - 1)])) {
+						// the last glyph didn't have an outline
+						unset($indexToLoc[($i - 1)]);
+					}
 					$offset += 2;
 				}
 			} else {
@@ -442,6 +446,10 @@ class TCPDF_FONTS {
 				$tot_num_glyphs = floor($table['loca']['length'] / 4); // numGlyphs + 1
 				for ($i = 0; $i < $tot_num_glyphs; ++$i) {
 					$indexToLoc[$i] = TCPDF_STATIC::_getULONG($font, $offset);
+					if (isset($indexToLoc[($i - 1)]) && ($indexToLoc[$i] == $indexToLoc[($i - 1)])) {
+						// the last glyph didn't have an outline
+						unset($indexToLoc[($i - 1)]);
+					}
 					$offset += 4;
 				}
 			}

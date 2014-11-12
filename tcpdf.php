@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.093
+// Version     : 6.0.098
 // Begin       : 2002-08-03
-// Last Update : 2014-09-02
+// Last Update : 2014-11-08
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -11,7 +11,7 @@
 //
 // This file is part of TCPDF software library.
 //
-// TCPDF is free software: you can ioredistribute it and/or modify it
+// TCPDF is free software: you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.093
+ * @version 6.0.098
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.093
+ * @version 6.0.098
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -4592,8 +4592,14 @@ class TCPDF {
 	 * @since 5.9.186 (2012-09-13)
 	 */
 	public function getCharBBox($char) {
-		if (isset($this->CurrentFont['cbbox'][$char])) {
-			return array_map(array($this,'getAbsFontMeasure'), $this->CurrentFont['cbbox'][intval($char)]);
+		$c = intval($char);
+		if (isset($this->CurrentFont['cw'][$c])) {
+			// glyph is defined ... use zero width & height for glyphs without outlines
+			$result = array(0,0,0,0);
+			if (isset($this->CurrentFont['cbbox'][$c])) {
+				$result = $this->CurrentFont['cbbox'][$c];
+			}
+			return array_map(array($this,'getAbsFontMeasure'), $result);
 		}
 		return false;
 	}
@@ -7437,10 +7443,9 @@ class TCPDF {
 			$this->x = $this->lMargin + $cellpadding;
 		}
 		if (is_string($h)) {
-			$this->y += $this->lasth;
-		} else {
-			$this->y += $h;
+			$h = $this->lasth;
 		}
+		$this->y += $h;
 		$this->newline = true;
 	}
 
@@ -18213,7 +18218,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 							$cellh = 0;
 						}
 						if (isset($dom[$key]['content'])) {
-							$cell_content = stripslashes($dom[$key]['content']);
+							$cell_content = $dom[$key]['content'];
 						} else {
 							$cell_content = '&nbsp;';
 						}
@@ -19794,7 +19799,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 									$ccode .= $this->getCellCode($w, $h, '', $cborder, 1, '', $fill, '', 0, true)."\n";
 								} // end for each column
 							}
-							if ($cborder OR $fill) {
+							if (!empty($cborder) OR !empty($fill)) {
 								$offsetlen = strlen($ccode);
 								// draw border and fill
 								if ($this->inxobj) {
@@ -22177,10 +22182,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * Returns an array of chars containing soft hyphens.
 	 * @param $word (array) array of chars
 	 * @param $patterns (array) Array of hypenation patterns.
-	 * @param $dictionary (array) Array of words to be returned without applying the hyphenation algoritm.
+	 * @param $dictionary (array) Array of words to be returned without applying the hyphenation algorithm.
 	 * @param $leftmin (int) Minimum number of character to leave on the left of the word without applying the hyphens.
 	 * @param $rightmin (int) Minimum number of character to leave on the right of the word without applying the hyphens.
-	 * @param $charmin (int) Minimum word length to apply the hyphenation algoritm.
+	 * @param $charmin (int) Minimum word length to apply the hyphenation algorithm.
 	 * @param $charmax (int) Maximum length of broken piece of word.
 	 * @return array text with soft hyphens
 	 * @author Nicola Asuni
@@ -22211,10 +22216,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		// surround word with '_' characters
 		$tmpword = array_merge(array(46), $word, array(46));
 		$tmpnumchars = $numchars + 2;
-		$maxpos = $tmpnumchars - $charmin;
+		$maxpos = $tmpnumchars - 1;
 		for ($pos = 0; $pos < $maxpos; ++$pos) {
 			$imax = min(($tmpnumchars - $pos), $charmax);
-			for ($i = $charmin; $i <= $imax; ++$i) {
+			for ($i = 1; $i <= $imax; ++$i) {
 				$subword = strtolower(TCPDF_FONTS::UTF8ArrSubString($tmpword, $pos, ($pos + $i), $this->isunicode));
 				if (isset($patterns[$subword])) {
 					$pattern = TCPDF_FONTS::UTF8StringToArray($patterns[$subword], $this->isunicode, $this->CurrentFont);
@@ -22257,10 +22262,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * Returns text with soft hyphens.
 	 * @param $text (string) text to process
 	 * @param $patterns (mixed) Array of hypenation patterns or a TEX file containing hypenation patterns. TEX patterns can be downloaded from http://www.ctan.org/tex-archive/language/hyph-utf8/tex/generic/hyph-utf8/patterns/
-	 * @param $dictionary (array) Array of words to be returned without applying the hyphenation algoritm.
+	 * @param $dictionary (array) Array of words to be returned without applying the hyphenation algorithm.
 	 * @param $leftmin (int) Minimum number of character to leave on the left of the word without applying the hyphens.
 	 * @param $rightmin (int) Minimum number of character to leave on the right of the word without applying the hyphens.
-	 * @param $charmin (int) Minimum word length to apply the hyphenation algoritm.
+	 * @param $charmin (int) Minimum word length to apply the hyphenation algorithm.
 	 * @param $charmax (int) Maximum length of broken piece of word.
 	 * @return array text with soft hyphens
 	 * @author Nicola Asuni
@@ -23528,6 +23533,14 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				$font_style .= 'B';
 				break;
 			}
+			case 'normal': {
+				if ((substr($font_family, -1) == 'I') AND (substr($font_family, -2, 1) == 'B')) {
+					$font_family = substr($font_family, 0, -2).'I';
+				} elseif (substr($font_family, -1) == 'B') {
+					$font_family = substr($font_family, 0, -1);
+				}
+				break;
+			}
 		}
 		switch ($svgstyle['text-decoration']) {
 			case 'underline': {
@@ -24474,6 +24487,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			// text
 			case 'text':
 			case 'tspan': {
+				if (isset($this->svgtextmode['text-anchor']) AND !empty($this->svgtext)) {
+					// @TODO: unsupported feature
+				}
 				// only basic support - advanced features must be implemented
 				$this->svgtextmode['invisible'] = $invisible;
                 if ($invisible) {
@@ -24674,7 +24690,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					$tmpx = $this->x;
 					$tmpy = $this->y;
 				}
-                $this->Cell($textlen, 0, $text, 0, 0, '', false, '', 0, false, 'L', 'T');
+				// print the text
+				$this->Cell($textlen, 0, $text, 0, 0, '', false, '', 0, false, 'L', 'T');
 				if ($name == 'text') {
 					// restore coordinates
 					$this->x = $tmpx;

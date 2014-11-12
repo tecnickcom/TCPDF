@@ -1,3 +1,21 @@
+6.0.098 (2014-11-08)
+	- Bug item #996 "getCharBBox($char) returns incorrect results for TTF glyphs without outlines" was fixed.
+	- Bug item #991 "Text problem with SVG" was fixed (only the font style part).
+
+6.0.097 (2014-10-20)
+	- Bug item #988 "hyphenateText - charmin parameter not work" was fixed.
+	- New 1D barcode method to print pre-formatted IMB - Intelligent Mail Barcode - Onecode - USPS-B-3200.
+
+6.0.096 (2014-10-06)
+	- Bug item #982 "Display style is not inherited in SVG" was fixed.
+	- Bug item #984 "Double quote url in CSS" was fixed.
+
+6.0.095 (2014-10-02)
+	- Bug item #979 "New Timezone option overwriting current timezone" was fixed.
+
+6.0.094 (2014-09-30)
+	- Bug item #978 "Variable Undefined: $cborder" was fixed.
+
 6.0.093 (2014-09-02)
 	- Security fix: some serialize/unserialize methods were replaced with json_encode/json_decode to avoid a potential object injection with user supplied content. Thanks to ownCloud Inc. for reporting this issue.
 	- K_TIMEZONE constant was added to the default configuration to supress date-time warnings.
