@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf_images.php
-// Version     : 1.0.003
+// Version     : 1.0.005
 // Begin       : 2002-08-03
-// Last Update : 2014-10-06
+// Last Update : 2014-11-15
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -38,7 +38,7 @@
  * This is a PHP class that contains static image methods for the TCPDF class.<br>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 1.0.004
+ * @version 1.0.005
  */
 
 /**
@@ -46,7 +46,7 @@
  * Static image methods used by the TCPDF class.
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 1.0.004
+ * @version 1.0.005
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF_IMAGES {
@@ -97,11 +97,12 @@ class TCPDF_IMAGES {
 	 * @public static
 	 */
 	public static function setGDImageTransparency($new_image, $image) {
+		// default transparency color (white)
+		$tcol = array('red' => 255, 'green' => 255, 'blue' => 255);
 		// transparency index
 		$tid = imagecolortransparent($image);
-		// default transparency color
-		$tcol = array('red' => 255, 'green' => 255, 'blue' => 255);
-		if ($tid >= 0) {
+		$palletsize = imagecolorstotal($image);
+		if (($tid >= 0) AND ($tid < $palletsize)) {
 			// get the colors for the transparency index
 			$tcol = imagecolorsforindex($image, $tid);
 		}
