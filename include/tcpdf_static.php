@@ -521,7 +521,8 @@ class TCPDF_STATIC {
 			case 'C11': {$pf = array(   56.693,   79.370); break;}
 			case 'C12': {$pf = array(   39.685,   56.693); break;}
 			case 'C76': {$pf = array(  229.606,  459.213); break;}
-			case 'DL' : {$pf = array(  311.811,  623.622); break;}
+            case 'DL' : {$pf = array(  280.630,  595.276); break;}
+            case 'DLE' : {$pf = array( 311.811,  623.622); break;}
 			// SIS 014711 E Series
 			case 'E0' : {$pf = array( 2491.654, 3517.795); break;}
 			case 'E1' : {$pf = array( 1757.480, 2491.654); break;}
