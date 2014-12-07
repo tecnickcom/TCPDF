@@ -116,23 +116,22 @@ class TCPDF_IMAGES {
 	 * Convert the loaded image to a PNG and then return a structure for the PDF creator.
 	 * This function requires GD library and write access to the directory defined on K_PATH_CACHE constant.
 	 * @param $image (image) Image object.
+	 * @param $tempfile (string) Temporary file name.
 	 * return image PNG image object.
 	 * @since 4.9.016 (2010-04-20)
 	 * @public static
 	 */
-	public static function _toPNG($image) {
-		// set temporary image file name
-		$tempname = TCPDF_STATIC::getObjFilename('img');
+	public static function _toPNG($image, $tempfile) {
 		// turn off interlaced mode
 		imageinterlace($image, 0);
 		// create temporary PNG image
-		imagepng($image, $tempname);
+		imagepng($image, $tempfile);
 		// remove image from memory
 		imagedestroy($image);
 		// get PNG image data
-		$retvars = self::_parsepng($tempname);
+		$retvars = self::_parsepng($tempfile);
 		// tidy up by removing temporary image
-		unlink($tempname);
+		unlink($tempfile);
 		return $retvars;
 	}
 
@@ -141,16 +140,16 @@ class TCPDF_IMAGES {
 	 * This function requires GD library and write access to the directory defined on K_PATH_CACHE constant.
 	 * @param $image (image) Image object.
 	 * @param $quality (int) JPEG quality.
+	 * @param $tempfile (string) Temporary file name.
 	 * return image JPEG image object.
 	 * @public static
 	 */
-	public static function _toJPEG($image, $quality) {
-		$tempname = TCPDF_STATIC::getObjFilename('img');
-		imagejpeg($image, $tempname, $quality);
+	public static function _toJPEG($image, $quality, $tempfile) {
+		imagejpeg($image, $tempfile, $quality);
 		imagedestroy($image);
-		$retvars = self::_parsejpeg($tempname);
+		$retvars = self::_parsejpeg($tempfile);
 		// tidy up by removing temporary image
-		unlink($tempname);
+		unlink($tempfile);
 		return $retvars;
 	}
 

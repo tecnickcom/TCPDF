@@ -1,3 +1,9 @@
+6.1.0 (2014-12-07)
+	- The method TCPDF_STATIC::getRandomSeed() was improved.
+	- The disk caching feature was removed.
+	- Bug #1003 "Backslashes become duplicated in table, using WriteHTML" was fixed.
+	- Bug #1002 "SVG radialGradient within non-square Rect" was fixed.
+
 6.0.099 (2014-11-15)
 	- Added basic support for nested SVG images (adapted PR from SamMousa).
 	- A bug related to setGDImageTransparency() was fixed (thanks to Maarten Boerema).

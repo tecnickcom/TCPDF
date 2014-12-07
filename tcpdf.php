@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.0.099
+// Version     : 6.1.0
 // Begin       : 2002-08-03
-// Last Update : 2014-11-15
+// Last Update : 2014-12-07
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.0.099
+ * @version 6.1.0
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.0.099
+ * @version 6.1.0
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -346,12 +346,6 @@ class TCPDF {
 	 * @protected
 	 */
 	protected $svg_tag_depth = 0;
-
-	/**
-	 * Array of cached files.
-	 * @protected
-	 */
-	protected $cached_files = array();
 
 	/**
 	 * Array of Annotations in pages.
@@ -1190,13 +1184,6 @@ class TCPDF {
 	protected $bufferlen = 0;
 
 	/**
-	 * If true enables disk caching.
-	 * @protected
-	 * @since 4.5.000 (2008-12-31)
-	 */
-	protected $diskcache = false;
-
-	/**
 	 * Counts the number of fonts.
 	 * @protected
 	 * @since 4.5.000 (2009-01-02)
@@ -1843,7 +1830,7 @@ class TCPDF {
 	 * @param $format (mixed) The format used for pages. It can be either: one of the string values specified at getPageSizeFromFormat() or an array of parameters specified at setPageFormat().
 	 * @param $unicode (boolean) TRUE means that the input text is unicode (default = true)
 	 * @param $encoding (string) Charset encoding (used only when converting back html entities); default is UTF-8.
-	 * @param $diskcache (boolean) If TRUE reduce the RAM memory usage by caching temporary data on filesystem (slower).
+	 * @param $diskcache (boolean) DEPRECATED FEATURE
 	 * @param $pdfa (boolean) If TRUE set the document to PDF/A mode.
 	 * @public
 	 * @see getPageSizeFromFormat(), setPageFormat()
@@ -1863,8 +1850,6 @@ class TCPDF {
 		// set pdf/a mode
 		$this->pdfa_mode = $pdfa;
 		$this->force_srgb = false;
-		// set disk caching
-		$this->diskcache = $diskcache ? true : false;
 		// set language direction
 		$this->rtl = false;
 		$this->tmprtl = false;
@@ -1998,6 +1983,9 @@ class TCPDF {
 		$this->default_graphic_vars = $this->getGraphicVars();
 		$this->header_xobj_autoreset = false;
 		$this->custom_xmp = '';
+		// Call cleanup method after script execution finishes or exit() is called.
+		// NOTE: This will not be executed if the process is killed with a SIGTERM or SIGKILL signal.
+		register_shutdown_function(array($this, '_destroyAll'));
 	}
 
 	/**
@@ -2010,8 +1998,8 @@ class TCPDF {
 		if (isset($this->internal_encoding) AND !empty($this->internal_encoding)) {
 			mb_internal_encoding($this->internal_encoding);
 		}
-		// unset all class variables
-		$this->_destroy(true);
+		// cleanup
+		$this->_destroyAll();
 	}
 
 	/**
@@ -6895,8 +6883,8 @@ class TCPDF {
 				if (in_array($file, $this->imagekeys)) {
 					// get existing image data
 					$info = $this->getImageBuffer($file);
-					$imsize = array($info['w'], $info['h']);				
-				} elseif (strpos($file, '__tcpdf_img') === FALSE) {
+					$imsize = array($info['w'], $info['h']);
+				} elseif (strpos($file, '__tcpdf_'.$this->file_id.'_img') === FALSE) {
 					$imgdata = TCPDF_STATIC::fileGetContents($file);
 				}
 			}
@@ -6904,7 +6892,7 @@ class TCPDF {
 		if (!empty($imgdata)) {
 			// copy image to cache
 			$original_file = $file;
-			$file = TCPDF_STATIC::getObjFilename('img');
+			$file = TCPDF_STATIC::getObjFilename('img', $this->file_id);
 			$fp = fopen($file, 'w');
 			if (!$fp) {
 				$this->Error('Unable to write file: '.$file);
@@ -6916,8 +6904,6 @@ class TCPDF {
 			if ($imsize === FALSE) {
 				unlink($file);
 				$file = $original_file;
-			} else {
-				$this->cached_files[] = $file;
 			}
 		}
 		if ($imsize === FALSE) {
@@ -6931,7 +6917,7 @@ class TCPDF {
 			}
 		}
 		// file hash
-		$filehash = md5($this->file_id.$file);
+		$filehash = md5($file);
 		// get original image width and height in pixels
 		list($pixw, $pixh) = $imsize;
 		// calculate image width and height on document
@@ -7021,18 +7007,18 @@ class TCPDF {
 			$newimage = false;
 			// get existing image data
 			$info = $this->getImageBuffer($file);
-			if (strpos($file, '__tcpdf_imgmask_') === FALSE) {
+			if (strpos($file, '__tcpdf_'.$this->file_id.'_imgmask_') === FALSE) {
 				// check if the newer image is larger
 				$oldsize = ($info['w'] * $info['h']);
 				if ((($oldsize < $newsize) AND ($resize)) OR (($oldsize < $pixsize) AND (!$resize))) {
 					$newimage = true;
 				}
 			}
-		} elseif (($ismask === false) AND ($imgmask === false) AND (strpos($file, '__tcpdf_imgmask_') === FALSE)) {
+		} elseif (($ismask === false) AND ($imgmask === false) AND (strpos($file, '__tcpdf_'.$this->file_id.'_imgmask_') === FALSE)) {
 			// create temp image file (without alpha channel)
-			$tempfile_plain = K_PATH_CACHE.'__tcpdf_imgmask_plain_'.$filehash;
+			$tempfile_plain = K_PATH_CACHE.'__tcpdf_'.$this->file_id.'_imgmask_plain_'.$filehash;
 			// create temp alpha file
-			$tempfile_alpha = K_PATH_CACHE.'__tcpdf_imgmask_alpha_'.$filehash;
+			$tempfile_alpha = K_PATH_CACHE.'__tcpdf_'.$this->file_id.'_imgmask_alpha_'.$filehash;
 			// check for cached images
 			if (in_array($tempfile_plain, $this->imagekeys)) {
 				// get existing image data
@@ -7068,7 +7054,7 @@ class TCPDF {
 			if ((method_exists('TCPDF_IMAGES', $mtd)) AND (!($resize AND (function_exists($gdfunction) OR extension_loaded('imagick'))))) {
 				// TCPDF image functions
 				$info = TCPDF_IMAGES::$mtd($file);
-				if (($ismask === false) AND ($imgmask === false) AND (strpos($file, '__tcpdf_imgmask_') === FALSE)
+				if (($ismask === false) AND ($imgmask === false) AND (strpos($file, '__tcpdf_'.$this->file_id.'_imgmask_') === FALSE)
 					AND (($info === 'pngalpha') OR (isset($info['trns']) AND !empty($info['trns'])))) {
 					return $this->ImagePngAlpha($file, $x, $y, $pixw, $pixh, $w, $h, 'PNG', $link, $align, $resize, $dpi, $palign, $filehash);
 				}
@@ -7087,9 +7073,9 @@ class TCPDF {
 							$img = $imgr;
 						}
 						if (($type == 'gif') OR ($type == 'png')) {
-							$info = TCPDF_IMAGES::_toPNG($img);
+							$info = TCPDF_IMAGES::_toPNG($img, TCPDF_STATIC::getObjFilename('img', $this->file_id));
 						} else {
-							$info = TCPDF_IMAGES::_toJPEG($img, $this->jpeg_quality);
+							$info = TCPDF_IMAGES::_toJPEG($img, $this->jpeg_quality, TCPDF_STATIC::getObjFilename('img', $this->file_id));
 						}
 					}
 				} catch(Exception $e) {
@@ -7148,7 +7134,7 @@ class TCPDF {
 					}
 					$img->setCompressionQuality($this->jpeg_quality);
 					$img->setImageFormat('jpeg');
-					$tempname = TCPDF_STATIC::getObjFilename('img');
+					$tempname = TCPDF_STATIC::getObjFilename('img', $this->file_id);
 					$img->writeImage($tempname);
 					$info = TCPDF_IMAGES::_parsejpeg($tempname);
 					unlink($tempname);
@@ -7284,12 +7270,12 @@ class TCPDF {
 	protected function ImagePngAlpha($file, $x, $y, $wpx, $hpx, $w, $h, $type, $link, $align, $resize, $dpi, $palign, $filehash='') {
 		// create temp images
 		if (empty($filehash)) {
-			$filehash = md5($this->file_id.$file);
+			$filehash = md5($file);
 		}
 		// create temp image file (without alpha channel)
-		$tempfile_plain = K_PATH_CACHE.'__tcpdf_imgmask_plain_'.$filehash;
+		$tempfile_plain = K_PATH_CACHE.'__tcpdf_'.$this->file_id.'_imgmask_plain_'.$filehash;
 		// create temp alpha file
-		$tempfile_alpha = K_PATH_CACHE.'__tcpdf_imgmask_alpha_'.$filehash;
+		$tempfile_alpha = K_PATH_CACHE.'__tcpdf_'.$this->file_id.'_imgmask_alpha_'.$filehash;
 		$parsed = false;
 		$parse_error = '';
 		// ImageMagick extension
@@ -7366,9 +7352,6 @@ class TCPDF {
 		$imgmask = $this->Image($tempfile_alpha, $x, $y, $w, $h, 'PNG', '', '', $resize, $dpi, '', true, false);
 		// embed image, masked with previously embedded mask
 		$this->Image($tempfile_plain, $x, $y, $w, $h, $type, $link, $align, $resize, $dpi, $palign, false, $imgmask);
-		// remove temp files
-		unlink($tempfile_alpha);
-		unlink($tempfile_plain);
 	}
 
 	/**
@@ -7614,12 +7597,6 @@ class TCPDF {
 			$pdfdoc = $this->getBuffer();
 			// remove last newline
 			$pdfdoc = substr($pdfdoc, 0, -1);
-			// Remove the original buffer
-			if (isset($this->diskcache) AND $this->diskcache) {
-				// remove buffer file from cache
-				unlink($this->buffer);
-			}
-			unset($this->buffer);
 			// remove filler space
 			$byterange_string_len = strlen(TCPDF_STATIC::$byterange_string);
 			// define the ByteRange
@@ -7634,7 +7611,7 @@ class TCPDF {
 			$byterange .= str_repeat(' ', ($byterange_string_len - strlen($byterange)));
 			$pdfdoc = str_replace(TCPDF_STATIC::$byterange_string, $byterange, $pdfdoc);
 			// write the document to a temporary folder
-			$tempdoc = TCPDF_STATIC::getObjFilename('doc');
+			$tempdoc = TCPDF_STATIC::getObjFilename('doc', $this->file_id);
 			$f = fopen($tempdoc, 'wb');
 			if (!$f) {
 				$this->Error('Unable to create temporary file: '.$tempdoc);
@@ -7643,22 +7620,19 @@ class TCPDF {
 			fwrite($f, $pdfdoc, $pdfdoc_length);
 			fclose($f);
 			// get digital signature via openssl library
-			$tempsign = TCPDF_STATIC::getObjFilename('sig');
+			$tempsign = TCPDF_STATIC::getObjFilename('sig', $this->file_id);
 			if (empty($this->signature_data['extracerts'])) {
 				openssl_pkcs7_sign($tempdoc, $tempsign, $this->signature_data['signcert'], array($this->signature_data['privkey'], $this->signature_data['password']), array(), PKCS7_BINARY | PKCS7_DETACHED);
 			} else {
 				openssl_pkcs7_sign($tempdoc, $tempsign, $this->signature_data['signcert'], array($this->signature_data['privkey'], $this->signature_data['password']), array(), PKCS7_BINARY | PKCS7_DETACHED, $this->signature_data['extracerts']);
 			}
-			unlink($tempdoc);
 			// read signature
 			$signature = file_get_contents($tempsign);
-			unlink($tempsign);
 			// extract signature
 			$signature = substr($signature, $pdfdoc_length);
 			$signature = substr($signature, (strpos($signature, "%%EOF\n\n------") + 13));
 			$tmparr = explode("\n\n", $signature);
 			$signature = $tmparr[1];
-			unset($tmparr);
 			// decode signature
 			$signature = base64_decode(trim($signature));
 			// add TSA timestamp to signature
@@ -7666,8 +7640,6 @@ class TCPDF {
 			// convert signature to hex
 			$signature = current(unpack('H*', $signature));
 			$signature = str_pad($signature, $this->signature_max_length, '0');
-			// disable disk caching
-			$this->diskcache = false;
 			// Add signature to the document
 			$this->buffer = substr($pdfdoc, 0, $byte_range[1]).'<'.$signature.'>'.substr($pdfdoc, $byte_range[1]);
 			$this->bufferlen = strlen($this->buffer);
@@ -7729,16 +7701,12 @@ class TCPDF {
 			case 'FI':
 			case 'FD': {
 				// save PDF to a local file
-				if ($this->diskcache) {
-					copy($this->buffer, $name);
-				} else {
-					$f = fopen($name, 'wb');
-					if (!$f) {
-						$this->Error('Unable to create output file: '.$name);
-					}
-					fwrite($f, $this->getBuffer(), $this->bufferlen);
-					fclose($f);
+				$f = fopen($name, 'wb');
+				if (!$f) {
+					$this->Error('Unable to create output file: '.$name);
 				}
+				fwrite($f, $this->getBuffer(), $this->bufferlen);
+				fclose($f);
 				if ($dest == 'FI') {
 					// send headers to browser
 					header('Content-Type: application/pdf');
@@ -7798,6 +7766,13 @@ class TCPDF {
 		}
 		return '';
 	}
+	/**
+	 * Destroy all objects and delete temp files.
+	 * @protected
+	 */
+	protected function _destroyAll() {
+		$this->_destroy(true);
+	}
 
 	/**
 	 * Unset all class variables except the following critical variables.
@@ -7807,25 +7782,16 @@ class TCPDF {
 	 * @since 4.5.016 (2009-02-24)
 	 */
 	public function _destroy($destroyall=false, $preserve_objcopy=false) {
-		if ($destroyall AND isset($this->diskcache) AND $this->diskcache AND (!$preserve_objcopy) AND (!TCPDF_STATIC::empty_string($this->buffer))) {
-			// remove buffer file from cache
-			unlink($this->buffer);
-		}
-		if ($destroyall AND !empty($this->cached_files)) {
-			// remove cached files
-			foreach ($this->cached_files as $cachefile) {
-				if (is_file($cachefile)) {
-					unlink($cachefile);
-				}
-			}
-			unset($this->cached_files);
+		if ($destroyall AND !$preserve_objcopy) {
+			// remove all temporary files
+			array_map('unlink', glob(K_PATH_CACHE.'__tcpdf_'.$this->file_id.'_*'));
 		}
 		$preserve = array(
+			'file_id',
 			'internal_encoding',
 			'state',
 			'bufferlen',
 			'buffer',
-			'diskcache',
 			'cached_files',
 			'sign',
 			'signature_data',
@@ -7836,7 +7802,7 @@ class TCPDF {
 		);
 		foreach (array_keys(get_object_vars($this)) as $val) {
 			if ($destroyall OR !in_array($val, $preserve)) {
-				if ((!$preserve_objcopy OR ($val != 'objcopy')) AND isset($this->$val)) {
+				if ((!$preserve_objcopy OR ($val != 'objcopy')) AND ($val != 'file_id') AND isset($this->$val)) {
 					unset($this->$val);
 				}
 			}
@@ -8093,10 +8059,6 @@ class TCPDF {
 			$this->_newobj();
 			$p = $this->_getrawstream($p);
 			$this->_out('<<'.$filter.'/Length '.strlen($p).'>> stream'."\n".$p."\n".'endstream'."\n".'endobj');
-			if ($this->diskcache) {
-				// remove temporary files
-				unlink($this->pages[$n]);
-			}
 		}
 		//Pages root
 		$out = $this->_getobj(1)."\n";
@@ -10072,17 +10034,6 @@ class TCPDF {
 		$this->_out($o);
 		$this->_out('%%EOF');
 		$this->state = 3; // end-of-doc
-		if ($this->diskcache) {
-			// remove temporary files used for images
-			foreach ($this->imagekeys as $key) {
-				// remove temporary files
-				unlink($this->images[$key]);
-			}
-			foreach ($this->fontkeys as $key) {
-				// remove temporary files
-				unlink($this->fonts[$key]);
-			}
-		}
 	}
 
 	/**
@@ -10916,7 +10867,7 @@ class TCPDF {
 				// envelope data
 				$envelope = $seed.$pkpermissions;
 				// write the envelope data to a temporary file
-				$tempkeyfile = TCPDF_STATIC::getObjFilename('key');
+				$tempkeyfile = TCPDF_STATIC::getObjFilename('key', $this->file_id);
 				$f = fopen($tempkeyfile, 'wb');
 				if (!$f) {
 					$this->Error('Unable to create temporary key file: '.$tempkeyfile);
@@ -10924,14 +10875,12 @@ class TCPDF {
 				$envelope_length = strlen($envelope);
 				fwrite($f, $envelope, $envelope_length);
 				fclose($f);
-				$tempencfile = TCPDF_STATIC::getObjFilename('enc');
+				$tempencfile = TCPDF_STATIC::getObjFilename('enc', $this->file_id);
 				if (!openssl_pkcs7_encrypt($tempkeyfile, $tempencfile, $pubkey['c'], array(), PKCS7_BINARY | PKCS7_DETACHED)) {
 					$this->Error('Unable to encrypt the file: '.$tempkeyfile);
 				}
-				unlink($tempkeyfile);
 				// read encryption signature
 				$signature = file_get_contents($tempencfile, false, null, $envelope_length);
-				unlink($tempencfile);
 				// extract signature
 				$signature = substr($signature, strpos($signature, 'Content-Disposition'));
 				$tmparr = explode("\n\n", $signature);
@@ -16612,7 +16561,7 @@ class TCPDF {
 					if (($dom[$key]['value'] == 'td') OR ($dom[$key]['value'] == 'th')) {
 						$dom[($dom[$key]['parent'])]['content'] = $csstagarray;
 						for ($i = ($dom[$key]['parent'] + 1); $i < $key; ++$i) {
-							$dom[($dom[$key]['parent'])]['content'] .= $a[$dom[$i]['elkey']];
+							$dom[($dom[$key]['parent'])]['content'] .= stripslashes($a[$dom[$i]['elkey']]);
 						}
 						$key = $i;
 						// mark nested tables
@@ -20773,60 +20722,6 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	}
 
 	/**
-	 * Writes data to a temporary file on filesystem.
-	 * @param $filename (string) file name
-	 * @param $data (mixed) data to write on file
-	 * @param $append (boolean) if true append data, false replace.
-	 * @param $serialize (boolean) if true serialize data.
-	 * @since 4.5.000 (2008-12-31)
-	 * @protected
-	 */
-	protected function writeDiskCache($filename, $data, $append=false, $serialize=false) {
-		if ($append) {
-			$fmode = 'ab+';
-		} else {
-			$fmode = 'wb+';
-		}
-		$f = @fopen($filename, $fmode);
-		if (!$f) {
-			$this->Error('Unable to write cache file: '.$filename);
-		}
-		if ($serialize) {
-			$data = $this->file_id.serialize($data);
-		}
-		fwrite($f, $data);
-		fclose($f);
-		// update file length (needed for transactions)
-		if (!isset($this->cache_file_length['_'.$filename])) {
-			$this->cache_file_length['_'.$filename] = strlen($data);
-		} else {
-			$this->cache_file_length['_'.$filename] += strlen($data);
-		}
-	}
-
-	/**
-	 * Read data from a temporary file on filesystem.
-	 * @param $filename (string) file name
-	 * @param $unserialize (boolean) if true unserialize data.
-	 * @return mixed retrieved data
-	 * @since 4.5.000 (2008-12-31)
-	 * @protected
-	 */
-	protected function readDiskCache($filename, $unserialize=false) {
-		$data = file_get_contents($filename);
-		if ($data === FALSE) {
-			$this->Error('Unable to read the file: '.$filename);
-		}
-		if ($unserialize) {
-			if (substr($data, 0, 32) != $this->file_id) {
-				$this->Error('Invalid cache file: '.$filename);
-			}
-			$data = unserialize(substr($data, 32));
-		}
-		return $data;
-	}
-
-	/**
 	 * Set buffer content (always append data).
 	 * @param $data (string) data
 	 * @protected
@@ -20834,14 +20729,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 */
 	protected function setBuffer($data) {
 		$this->bufferlen += strlen($data);
-		if ($this->diskcache) {
-			if (!isset($this->buffer) OR TCPDF_STATIC::empty_string($this->buffer)) {
-				$this->buffer = TCPDF_STATIC::getObjFilename('buf');
-			}
-			$this->writeDiskCache($this->buffer, $data, true, false);
-		} else {
-			$this->buffer .= $data;
-		}
+		$this->buffer .= $data;
 	}
 
 	/**
@@ -20852,14 +20740,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 */
 	protected function replaceBuffer($data) {
 		$this->bufferlen = strlen($data);
-		if ($this->diskcache) {
-			if (!isset($this->buffer) OR TCPDF_STATIC::empty_string($this->buffer)) {
-				$this->buffer = TCPDF_STATIC::getObjFilename('buf');
-			}
-			$this->writeDiskCache($this->buffer, $data, false, false);
-		} else {
-			$this->buffer = $data;
-		}
+		$this->buffer = $data;
 	}
 
 	/**
@@ -20869,11 +20750,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @since 4.5.000 (2009-01-02)
 	 */
 	protected function getBuffer() {
-		if ($this->diskcache) {
-			return $this->readDiskCache($this->buffer, false);
-		} else {
-			return $this->buffer;
-		}
+		return $this->buffer;
 	}
 
 	/**
@@ -20885,17 +20762,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @since 4.5.000 (2008-12-31)
 	 */
 	protected function setPageBuffer($page, $data, $append=false) {
-		if ($this->diskcache) {
-			if (!isset($this->pages[$page])) {
-				$this->pages[$page] = TCPDF_STATIC::getObjFilename('page');
-			}
-			$this->writeDiskCache($this->pages[$page], $data, $append, false);
+		if ($append) {
+			$this->pages[$page] .= $data;
 		} else {
-			if ($append) {
-				$this->pages[$page] .= $data;
-			} else {
-				$this->pages[$page] = $data;
-			}
+			$this->pages[$page] = $data;
 		}
 		if ($append AND isset($this->pagelen[$page])) {
 			$this->pagelen[$page] += strlen($data);
@@ -20912,9 +20782,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @since 4.5.000 (2008-12-31)
 	 */
 	protected function getPageBuffer($page) {
-		if ($this->diskcache) {
-			return $this->readDiskCache($this->pages[$page], false);
-		} elseif (isset($this->pages[$page])) {
+		if (isset($this->pages[$page])) {
 			return $this->pages[$page];
 		}
 		return false;
@@ -20934,14 +20802,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			$data['i'] = $this->numimages;
 			++$this->numimages;
 		}
-		if ($this->diskcache) {
-			if (!isset($this->images[$image])) {
-				$this->images[$image] = TCPDF_STATIC::getObjFilename('img');
-			}
-			$this->writeDiskCache($this->images[$image], $data, false, true);
-		} else {
-			$this->images[$image] = $data;
-		}
+		$this->images[$image] = $data;
 		return $data['i'];
 	}
 
@@ -20957,13 +20818,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		if (!isset($this->images[$image])) {
 			$this->setImageBuffer($image, array());
 		}
-		if ($this->diskcache) {
-			$tmpimg = $this->getImageBuffer($image);
-			$tmpimg[$key] = $data;
-			$this->writeDiskCache($this->images[$image], $tmpimg, false, true);
-		} else {
-			$this->images[$image][$key] = $data;
-		}
+		$this->images[$image][$key] = $data;
 	}
 
 	/**
@@ -20974,9 +20829,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @since 4.5.000 (2008-12-31)
 	 */
 	protected function getImageBuffer($image) {
-		if ($this->diskcache AND isset($this->images[$image])) {
-			return $this->readDiskCache($this->images[$image], true);
-		} elseif (isset($this->images[$image])) {
+		if (isset($this->images[$image])) {
 			return $this->images[$image];
 		}
 		return false;
@@ -20990,14 +20843,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @since 4.5.000 (2009-01-02)
 	 */
 	protected function setFontBuffer($font, $data) {
-		if ($this->diskcache) {
-			if (!isset($this->fonts[$font])) {
-				$this->fonts[$font] = TCPDF_STATIC::getObjFilename('font');
-			}
-			$this->writeDiskCache($this->fonts[$font], $data, false, true);
-		} else {
-			$this->fonts[$font] = $data;
-		}
+		$this->fonts[$font] = $data;
 		if (!in_array($font, $this->fontkeys)) {
 			$this->fontkeys[] = $font;
 			// store object ID for current font
@@ -21019,13 +20865,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		if (!isset($this->fonts[$font])) {
 			$this->setFontBuffer($font, array());
 		}
-		if ($this->diskcache) {
-			$tmpfont = $this->getFontBuffer($font);
-			$tmpfont[$key] = $data;
-			$this->writeDiskCache($this->fonts[$font], $tmpfont, false, true);
-		} else {
-			$this->fonts[$font][$key] = $data;
-		}
+		$this->fonts[$font][$key] = $data;
 	}
 
 	/**
@@ -21036,9 +20876,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @since 4.5.000 (2009-01-02)
 	 */
 	protected function getFontBuffer($font) {
-		if ($this->diskcache AND isset($this->fonts[$font])) {
-			return $this->readDiskCache($this->fonts[$font], true);
-		} elseif (isset($this->fonts[$font])) {
+		if (isset($this->fonts[$font])) {
 			return $this->fonts[$font];
 		}
 		return false;
@@ -21866,15 +21704,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 */
 	public function rollbackTransaction($self=false) {
 		if (isset($this->objcopy)) {
-			if (isset($this->objcopy->diskcache) AND $this->objcopy->diskcache) {
-				// truncate files to previous values
-				foreach ($this->objcopy->cache_file_length as $file => $length) {
-					$file = substr($file, 1);
-					$handle = fopen($file, 'r+');
-					ftruncate($handle, $length);
-				}
-			}
-			$this->_destroy(true, true);
+			$this->_destroy(true, true); // DEBUG
 			if ($self) {
 				$objvars = get_object_vars($this->objcopy);
 				foreach ($objvars as $key => $value) {
@@ -23396,6 +23226,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			if ($gradient['type'] == 3) {
 				// circular gradient
 				$cy -= ($gradient['coords'][1] * ($w + $h));
+				$h = $w = max($w, $h);
 			} else {
 				$cy -= $h;
 			}
