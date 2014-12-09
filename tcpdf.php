@@ -1985,7 +1985,7 @@ class TCPDF {
 		$this->custom_xmp = '';
 		// Call cleanup method after script execution finishes or exit() is called.
 		// NOTE: This will not be executed if the process is killed with a SIGTERM or SIGKILL signal.
-		register_shutdown_function(array($this, '_destroyAll'));
+		register_shutdown_function(array($this, '_destroy'), true);
 	}
 
 	/**
