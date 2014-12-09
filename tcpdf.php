@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.1.0
+// Version     : 6.1.1
 // Begin       : 2002-08-03
 // Last Update : 2014-12-07
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.1.0
+ * @version 6.1.1
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.1.0
+ * @version 6.1.1
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -1985,7 +1985,7 @@ class TCPDF {
 		$this->custom_xmp = '';
 		// Call cleanup method after script execution finishes or exit() is called.
 		// NOTE: This will not be executed if the process is killed with a SIGTERM or SIGKILL signal.
-		register_shutdown_function(array($this, '_destroyAll'));
+		register_shutdown_function(array($this, '_destroy'), true);
 	}
 
 	/**
@@ -1999,7 +1999,7 @@ class TCPDF {
 			mb_internal_encoding($this->internal_encoding);
 		}
 		// cleanup
-		$this->_destroyAll();
+		$this->_destroy(true);
 	}
 
 	/**
@@ -7765,13 +7765,6 @@ class TCPDF {
 			}
 		}
 		return '';
-	}
-	/**
-	 * Destroy all objects and delete temp files.
-	 * @protected
-	 */
-	protected function _destroyAll() {
-		$this->_destroy(true);
 	}
 
 	/**

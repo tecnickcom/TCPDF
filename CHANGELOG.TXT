@@ -1,5 +1,8 @@
 6.1.0 (2014-12-07)
 	- The method TCPDF_STATIC::getRandomSeed() was improved.
+
+6.1.0 (2014-12-07)
+	- The method TCPDF_STATIC::getRandomSeed() was improved.
 	- The disk caching feature was removed.
 	- Bug #1003 "Backslashes become duplicated in table, using WriteHTML" was fixed.
 	- Bug #1002 "SVG radialGradient within non-square Rect" was fixed.
