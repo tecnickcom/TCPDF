@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf_autoconfig.php
-// Version     : 1.0.000
+// Version     : 1.1.0
 // Begin       : 2013-05-16
-// Last Update : 2014-09-02
+// Last Update : 2014-12-10
 // Authors     : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -37,7 +37,7 @@
  * @file
  * Try to automatically configure some TCPDF constants if not defined.
  * @package com.tecnick.tcpdf
- * @version 1.0.000
+ * @version 1.1.0
  */
 
 // DOCUMENT_ROOT fix for IIS Webserver
@@ -225,7 +225,7 @@ if (!defined('K_THAI_TOPCHARS')) {
 }
 
 if (!defined('K_TCPDF_CALLS_IN_HTML')) {
-	define('K_TCPDF_CALLS_IN_HTML', true);
+	define('K_TCPDF_CALLS_IN_HTML', false);
 }
 
 if (!defined('K_TCPDF_THROW_EXCEPTION_ERROR')) {

@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.1.1
+// Version     : 6.2.0
 // Begin       : 2002-08-03
-// Last Update : 2014-12-07
+// Last Update : 2014-12-10
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.1.1
+ * @version 6.2.0
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.1.1
+ * @version 6.2.0
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -4156,38 +4156,6 @@ class TCPDF {
 	}
 
 	/**
-	 * Returns the unicode caracter specified by the value
-	 * @param $c (int) UTF-8 value
-	 * @return Returns the specified character.
-	 * @since 2.3.000 (2008-03-05)
-	 * @public
-	 * @deprecated
-	 */
-	public function unichr($c) {
-		return TCPDF_FONTS::unichr($c, $this->isunicode);
-	}
-
-	/**
-	 * Convert and add the selected TrueType or Type1 font to the fonts folder (that must be writeable).
-	 * @param $fontfile (string) Font file (full path).
-	 * @param $fonttype (string) Font type. Leave empty for autodetect mode. Valid values are: TrueTypeUnicode, TrueType, Type1, CID0JP = CID-0 Japanese, CID0KR = CID-0 Korean, CID0CS = CID-0 Chinese Simplified, CID0CT = CID-0 Chinese Traditional.
-	 * @param $enc (string) Name of the encoding table to use. Leave empty for default mode. Omit this parameter for TrueType Unicode and symbolic fonts like Symbol or ZapfDingBats.
-	 * @param $flags (int) Unsigned 32-bit integer containing flags specifying various characteristics of the font (PDF32000:2008 - 9.8.2 Font Descriptor Flags): +1 for fixed font; +4 for symbol or +32 for non-symbol; +64 for italic. Fixed and Italic mode are generally autodetected so you have to set it to 32 = non-symbolic font (default) or 4 = symbolic font.
-	 * @param $outpath (string) Output path for generated font files (must be writeable by the web server). Leave empty for default font folder.
-	 * @param $platid (int) Platform ID for CMAP table to extract (when building a Unicode font for Windows this value should be 3, for Macintosh should be 1).
-	 * @param $encid (int) Encoding ID for CMAP table to extract (when building a Unicode font for Windows this value should be 1, for Macintosh should be 0). When Platform ID is 3, legal values for Encoding ID are: 0=Symbol, 1=Unicode, 2=ShiftJIS, 3=PRC, 4=Big5, 5=Wansung, 6=Johab, 7=Reserved, 8=Reserved, 9=Reserved, 10=UCS-4.
-	 * @param $addcbbox (boolean) If true includes the character bounding box information on the php font file.
-	 * @return (string) TCPDF font name.
-	 * @author Nicola Asuni
-	 * @since 5.9.123 (2010-09-30)
-	 * @public
-	 * @deprecated
-	 */
-	public function addTTFfont($fontfile, $fonttype='', $enc='', $flags=32, $outpath='', $platid=3, $encid=1, $addcbbox=false) {
-		return TCPDF_FONTS::addTTFfont($fontfile, $fonttype, $enc, $flags, $outpath, $platid, $encid, $addcbbox);
-	}
-
-	/**
 	 * Imports a TrueType, Type1, core, or CID0 font and makes it available.
 	 * It is necessary to generate a font definition file first (read /fonts/utils/README.TXT).
 	 * The definition file (and the font file itself when embedding) must be present either in the current directory or in the one indicated by K_PATH_FONTS if the constant is defined. If it could not be found, the error "Could not include font definition file" is generated.
@@ -6893,7 +6861,7 @@ class TCPDF {
 			// copy image to cache
 			$original_file = $file;
 			$file = TCPDF_STATIC::getObjFilename('img', $this->file_id);
-			$fp = fopen($file, 'w');
+			$fp = TCPDF_STATIC::fopenLocal($file, 'w');
 			if (!$fp) {
 				$this->Error('Unable to write file: '.$file);
 			}
@@ -7612,7 +7580,7 @@ class TCPDF {
 			$pdfdoc = str_replace(TCPDF_STATIC::$byterange_string, $byterange, $pdfdoc);
 			// write the document to a temporary folder
 			$tempdoc = TCPDF_STATIC::getObjFilename('doc', $this->file_id);
-			$f = fopen($tempdoc, 'wb');
+			$f = TCPDF_STATIC::fopenLocal($tempdoc, 'wb');
 			if (!$f) {
 				$this->Error('Unable to create temporary file: '.$tempdoc);
 			}
@@ -7701,7 +7669,7 @@ class TCPDF {
 			case 'FI':
 			case 'FD': {
 				// save PDF to a local file
-				$f = fopen($name, 'wb');
+				$f = TCPDF_STATIC::fopenLocal($name, 'wb');
 				if (!$f) {
 					$this->Error('Unable to create output file: '.$name);
 				}
@@ -8062,18 +8030,6 @@ class TCPDF {
 		$out .= ' ] /Count '.$num_pages.' >>';
 		$out .= "\n".'endobj';
 		$this->_out($out);
-	}
-
-	/**
-	 * Output references to page annotations
-	 * @param $n (int) page number
-	 * @protected
-	 * @author Nicola Asuni
-	 * @since 4.7.000 (2008-08-29)
-	 * @deprecated
-	 */
-	protected function _putannotsrefs($n) {
-		$this->_out($this->_getannotsrefs($n));
 	}
 
 	/**
@@ -10280,26 +10236,6 @@ class TCPDF {
 	}
 
 	/**
-	 * THIS METHOD IS DEPRECATED
-	 * Format a text string
-	 * @param $s (string) string to escape.
-	 * @return string escaped string.
-	 * @protected
-	 * @deprecated
-	 */
-	protected function _escapetext($s) {
-		if ($this->isunicode) {
-			if (($this->CurrentFont['type'] == 'core') OR ($this->CurrentFont['type'] == 'TrueType') OR ($this->CurrentFont['type'] == 'Type1')) {
-				$s = TCPDF_FONTS::UTF8ToLatin1($s, $this->isunicode, $this->CurrentFont);
-			} else {
-				//Convert string to UTF-16BE and reverse RTL language
-				$s = TCPDF_FONTS::utf8StrRev($s, false, $this->tmprtl, $this->isunicode, $this->CurrentFont);
-			}
-		}
-		return TCPDF_STATIC::_escape($s);
-	}
-
-	/**
 	 * get raw output stream.
 	 * @param $s (string) string to output.
 	 * @param $n (int) object reference for encryption mode
@@ -10313,28 +10249,6 @@ class TCPDF {
 			$n = $this->n;
 		}
 		return $this->_encrypt_data($n, $s);
-	}
-
-	/**
-	 * Format output stream (DEPRECATED).
-	 * @param $s (string) string to output.
-	 * @param $n (int) object reference for encryption mode
-	 * @protected
-	 * @deprecated
-	 */
-	protected function _getstream($s, $n=0) {
-		return 'stream'."\n".$this->_getrawstream($s, $n)."\n".'endstream';
-	}
-
-	/**
-	 * Output a stream (DEPRECATED).
-	 * @param $s (string) string to output.
-	 * @param $n (int) object reference for encryption mode
-	 * @protected
-	 * @deprecated
-	 */
-	protected function _putstream($s, $n=0) {
-		$this->_out($this->_getstream($s, $n));
 	}
 
 	/**
@@ -10861,7 +10775,7 @@ class TCPDF {
 				$envelope = $seed.$pkpermissions;
 				// write the envelope data to a temporary file
 				$tempkeyfile = TCPDF_STATIC::getObjFilename('key', $this->file_id);
-				$f = fopen($tempkeyfile, 'wb');
+				$f = TCPDF_STATIC::fopenLocal($tempkeyfile, 'wb');
 				if (!$f) {
 					$this->Error('Unable to create temporary key file: '.$tempkeyfile);
 				}
@@ -17115,15 +17029,39 @@ class TCPDF {
 	}
 
 	/**
-	 * Serialize an array of parameters to be used with TCPDF tag in HTML code.
-	 * @param $pararray (array) parameters array
-	 * @return sting containing serialized data
-	 * @since 4.9.006 (2010-04-02)
-	 * @public
-	 * @deprecated
+	 * Return an hash code used to ensure that the serialized data has been generated by this TCPDF instance.
+	 * @param $data (string) serialized data
+	 * @return string
+	 * @public static
 	 */
-	public function serializeTCPDFtagParameters($pararray) {
-		return TCPDF_STATIC::serializeTCPDFtagParameters($pararray);
+	protected function getHashForTCPDFtagParams($data) {
+		return md5(strlen($data).$this->file_id.$data);
+	}
+
+	/**
+	 * Serialize an array of parameters to be used with TCPDF tag in HTML code.
+	 * @param $data (array) parameters array
+	 * @return string containing serialized data
+	 * @public static
+	 */
+	public function serializeTCPDFtagParameters($data) {
+		$encoded = urlencode(json_encode($data));
+		return $this->getHashForTCPDFtagParams($encoded).$encoded;
+	}
+
+	/**
+	 * Unserialize parameters to be used with TCPDF tag in HTML code.
+	 * @param $data (string) serialized data
+	 * @return array containing unserialized data
+	 * @protected static
+	 */
+	protected function unserializeTCPDFtagParameters($data) {
+		$hash = substr($data, 0, 32);
+		$encoded = substr($data, 32);
+		if ($hash != $this->getHashForTCPDFtagParams($encoded)) {
+			$this->Error('Invalid parameters');
+		}
+		return json_decode(urldecode($encoded), true);
 	}
 
 	/**
@@ -19346,7 +19284,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						$tcpdf_method = $tag['attribute']['method'];
 						if (method_exists($this, $tcpdf_method)) {
 							if (isset($tag['attribute']['params']) AND (!empty($tag['attribute']['params']))) {
-								$params = TCPDF_STATIC::unserializeTCPDFtagParameters($tag['attribute']['params']);
+								$params = $this->unserializeTCPDFtagParameters($tag['attribute']['params']);
 								call_user_func_array(array($this, $tcpdf_method), $params);
 							} else {
 								$this->$tcpdf_method();
@@ -21697,7 +21635,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 */
 	public function rollbackTransaction($self=false) {
 		if (isset($this->objcopy)) {
-			$this->_destroy(true, true); // DEBUG
+			$this->_destroy(true, true);
 			if ($self) {
 				$objvars = get_object_vars($this->objcopy);
 				foreach ($objvars as $key => $value) {

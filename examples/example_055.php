@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : example_055.php
 // Begin       : 2009-10-21
-// Last Update : 2013-05-14
+// Last Update : 2014-12-10
 //
 // Description : Example 055 for TCPDF class
 //               Display all characters available on core fonts.
@@ -96,7 +96,7 @@ foreach($core_fonts as $font) {
 		if (($i > 0) AND (($i % 16) == 0)) {
 			$pdf->Ln();
 		}
-		$pdf->Cell(11.25, 11.25, $pdf->unichr($i), 1, 0, 'C', false, '', 0, false, 'T', 'M');
+		$pdf->Cell(11.25, 11.25, TCPDF_FONTS::unichr($i), 1, 0, 'C', false, '', 0, false, 'T', 'M');
 	}
 
 	$pdf->Ln(20);
