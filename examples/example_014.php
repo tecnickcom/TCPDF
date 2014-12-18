@@ -130,7 +130,7 @@ $pdf->Cell(35, 5, 'Newsletter:');
 $pdf->CheckBox('newsletter', 5, true, array(), array(), 'OK');
 
 $pdf->Ln(10);
-// Adress
+// Address
 $pdf->Cell(35, 5, 'Address:');
 $pdf->TextField('address', 60, 18, array('multiline'=>true, 'lineWidth'=>0, 'borderStyle'=>'none'), array('v'=>'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', 'dv'=>'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'));
 $pdf->Ln(19);

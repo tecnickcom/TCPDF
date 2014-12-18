@@ -87,7 +87,7 @@ Unicode Data for SHY:
 */
 
 /*
-// You can autmatically add SOFT HYPHENS to your text using
+// You can automatically add SOFT HYPHENS to your text using
 // the hyphenateText() method, but this requires either an
 // hyphenation pattern array of a hyphenation pattern TEX file.
 // You can download hyphenation TEX patterns from:

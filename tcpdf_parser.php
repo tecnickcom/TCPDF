@@ -209,7 +209,7 @@ class TCPDF_PARSER {
 	 * @since 1.0.000 (2011-06-20)
 	 */
 	protected function decodeXref($startxref, $xref=array()) {
-		$startxref += 4; // 4 is the lenght of the word 'xref'
+		$startxref += 4; // 4 is the length of the word 'xref'
 		// skip initial white space chars: \x00 null (NUL), \x09 horizontal tab (HT), \x0A line feed (LF), \x0C form feed (FF), \x0D carriage return (CR), \x20 space (SP)
 		$offset = $startxref + strspn($this->pdfdata, "\x00\x09\x0a\x0c\x0d\x20", $startxref);
 		// initialize object number
@@ -394,7 +394,7 @@ class TCPDF_PARSER {
 							$pb = abs($p - $row_up);
 							$pc = abs($p - $row_upleft);
 							$pmin = min($pa, $pb, $pc);
-							// return minumum distance
+							// return minimum distance
 							switch ($pmin) {
 								case $pa: {
 									$ddata[$k][$j] = (($row[$i] + $row_left) & 0xff);
@@ -737,7 +737,7 @@ class TCPDF_PARSER {
 	 * @since 1.0.000 (2011-06-22)
 	 */
 	protected function decodeStream($sdic, $stream) {
-		// get stream lenght and filters
+		// get stream length and filters
 		$slength = strlen($stream);
 		if ($slength <= 0) {
 			return array('', array());
@@ -746,7 +746,7 @@ class TCPDF_PARSER {
 		foreach ($sdic as $k => $v) {
 			if ($v[0] == '/') {
 				if (($v[1] == 'Length') AND (isset($sdic[($k + 1)])) AND ($sdic[($k + 1)][0] == 'numeric')) {
-					// get declared stream lenght
+					// get declared stream length
 					$declength = intval($sdic[($k + 1)][1]);
 					if ($declength < $slength) {
 						$stream = substr($stream, 0, $declength);

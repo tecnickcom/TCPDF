@@ -55,7 +55,7 @@ class TCPDF_STATIC {
 	 * Current TCPDF version.
 	 * @private static
 	 */
-	private static $tcpdf_version = '6.1.2';
+	private static $tcpdf_version = '6.2.2';
 
 	/**
 	 * String alias for total number of pages.
@@ -844,7 +844,7 @@ class TCPDF_STATIC {
 	}
 
 	/**
-	 * Ouput input data and compress it if possible.
+	 * Output input data and compress it if possible.
 	 * @param $data (string) Data to output.
 	 * @param $length (int) Data length in bytes.
 	 * @since 5.9.086
@@ -1145,7 +1145,7 @@ class TCPDF_STATIC {
 	}
 
 	/**
-	 * Return the premission code used on encryption (P value).
+	 * Return the permission code used on encryption (P value).
 	 * @param $permissions (Array) the set of permissions (specify the ones you want to block).
 	 * @param $mode (int) encryption strength: 0 = RC4 40 bit; 1 = RC4 128 bit; 2 = AES 128 bit; 3 = AES 256 bit.
 	 * @since 5.0.005 (2010-05-12)

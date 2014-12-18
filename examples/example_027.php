@@ -209,14 +209,14 @@ $pdf->write1DBarcode('04210000526', 'UPCE', '', '', '', 18, 0.4, $style, 'N');
 // add a page ----------
 $pdf->AddPage();
 
-// 5-Digits UPC-Based Extention
-$pdf->Cell(0, 0, '5-Digits UPC-Based Extention', 0, 1);
+// 5-Digits UPC-Based Extension
+$pdf->Cell(0, 0, '5-Digits UPC-Based Extension', 0, 1);
 $pdf->write1DBarcode('51234', 'EAN5', '', '', '', 18, 0.4, $style, 'N');
 
 $pdf->Ln();
 
-// 2-Digits UPC-Based Extention
-$pdf->Cell(0, 0, '2-Digits UPC-Based Extention', 0, 1);
+// 2-Digits UPC-Based Extension
+$pdf->Cell(0, 0, '2-Digits UPC-Based Extension', 0, 1);
 $pdf->write1DBarcode('34', 'EAN2', '', '', '', 18, 0.4, $style, 'N');
 
 $pdf->Ln();
