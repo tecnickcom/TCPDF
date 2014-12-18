@@ -1,3 +1,7 @@
+6.2.1 (2014-12-18)
+	- The constant K_TCPDF_THROW_EXCEPTION_ERROR is now set to false in the default configuration file.
+	- An issue with the _destroy() method was fixed.
+
 6.2.0 (2014-12-10)
 	- Bug #1005 "Security Report, LFI posting internal files externally abusing default parameter" was fixed.
 	- Static methods serializeTCPDFtagParameters() and unserializeTCPDFtagParameters() were moved as non static to the main TCPDF class (see changes in example n. 49).

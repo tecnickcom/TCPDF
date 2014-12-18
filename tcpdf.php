@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.2.0
+// Version     : 6.2.1
 // Begin       : 2002-08-03
-// Last Update : 2014-12-10
+// Last Update : 2014-12-18
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.2.0
+ * @version 6.2.1
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.2.0
+ * @version 6.2.1
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF {
@@ -7745,7 +7745,10 @@ class TCPDF {
 	public function _destroy($destroyall=false, $preserve_objcopy=false) {
 		if ($destroyall AND !$preserve_objcopy) {
 			// remove all temporary files
-			array_map('unlink', glob(K_PATH_CACHE.'__tcpdf_'.$this->file_id.'_*'));
+			$tmpfiles = glob(K_PATH_CACHE.'__tcpdf_'.$this->file_id.'_*');
+			if (!empty($tmpfiles)) {
+				array_map('unlink', $tmpfiles);
+			}
 		}
 		$preserve = array(
 			'file_id',
