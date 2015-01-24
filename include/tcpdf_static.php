@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf_static.php
-// Version     : 1.1.1
+// Version     : 1.1.2
 // Begin       : 2002-08-03
-// Last Update : 2015-01-08
+// Last Update : 2015-01-24
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -38,7 +38,7 @@
  * This is a PHP class that contains static methods for the TCPDF class.<br>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 1.1.1
+ * @version 1.1.2
  */
 
 /**
@@ -55,7 +55,7 @@ class TCPDF_STATIC {
 	 * Current TCPDF version.
 	 * @private static
 	 */
-	private static $tcpdf_version = '6.2.3';
+	private static $tcpdf_version = '6.2.5';
 
 	/**
 	 * String alias for total number of pages.
@@ -2435,7 +2435,7 @@ class TCPDF_STATIC {
 		if (strpos($filename, '://') === false) {
 			$filename = 'file://'.$filename;
 		} elseif (strpos($filename, 'file://') !== 0) {
-			$this->Error('Unsupported file protocol');
+			return false;
 		}
 		return fopen($filename, $mode);
 	}

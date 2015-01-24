@@ -1,13 +1,13 @@
 <?php
 //============================================================+
 // File name   : tcpdf_parser.php
-// Version     : 1.0.014
+// Version     : 1.0.15
 // Begin       : 2011-05-23
-// Last Update : 2014-02-18
+// Last Update : 2015-01-24
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3
 // -------------------------------------------------------------------
-// Copyright (C) 2011-2014 Nicola Asuni - Tecnick.com LTD
+// Copyright (C) 2011-2015 Nicola Asuni - Tecnick.com LTD
 //
 // This file is part of TCPDF software library.
 //
@@ -37,7 +37,7 @@
  * This is a PHP class for parsing PDF documents.<br>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 1.0.014
+ * @version 1.0.15
  */
 
 // include class for decoding filters
@@ -48,7 +48,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_filters.php');
  * This is a PHP class for parsing PDF documents.<br>
  * @package com.tecnick.tcpdf
  * @brief This is a PHP class for parsing PDF documents..
- * @version 1.0.010
+ * @version 1.0.15
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF_PARSER {
@@ -690,7 +690,8 @@ class TCPDF_PARSER {
 		$objdata = array();
 		$i = 0; // object main index
 		do {
-			// get element
+			$oldoffset = $offset;
+                        // get element
 			$element = $this->getRawObject($offset);
 			$offset = $element[2];
 			// decode stream using stream's dictionary information
@@ -699,7 +700,7 @@ class TCPDF_PARSER {
 			}
 			$objdata[$i] = $element;
 			++$i;
-		} while ($element[0] != 'endobj');
+		} while (($element[0] != 'endobj') AND ($offset != $oldoffset));
 		// remove closing delimiter
 		array_pop($objdata);
 		// return raw object content
