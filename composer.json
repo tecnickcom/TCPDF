@@ -6,6 +6,7 @@
 	"description": "TCPDF is a PHP class for generating PDF documents and barcodes.",
 	"keywords": ["PDF","tcpdf","PDFD32000-2008","qrcode","datamatrix","pdf417","barcodes"],
 	"license": "LGPLv3",
+	"minimum-stability": "dev"
 	"authors": [
 	{
 		"name": "Nicola Asuni",
