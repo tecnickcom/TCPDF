@@ -19427,8 +19427,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				$prev_page = $this->page;
 				$this->setPage($dom[($dom[$key]['parent'])]['endpage']);
 				if ($this->num_columns > 1) {
-					if ((($this->current_column == 0) AND ($dom[($dom[$key]['parent'])]['endcolumn'] == ($this->num_columns - 1)))
-						OR (($this->current_column == $dom[($dom[$key]['parent'])]['endcolumn']) AND ($prev_page < $this->page))) {
+					if (((($this->current_column == 0) AND ($dom[($dom[$key]['parent'])]['endcolumn'] == ($this->num_columns - 1)) AND ($prev_page < $this->page))
+						OR (($this->current_column == $dom[($dom[$key]['parent'])]['endcolumn']))) AND ($prev_page < $this->page)) {
 						// page jump
 						$this->selectColumn(0);
 						$dom[($dom[$key]['parent'])]['endcolumn'] = 0;
