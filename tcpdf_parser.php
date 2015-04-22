@@ -297,6 +297,11 @@ class TCPDF_PARSER {
 		$valid_crs = false;
 		$columns = 0;
 		$sarr = $xrefcrs[0][1];
+
+                if (!is_array($sarr)) {
+                    $sarr = array();
+                }
+
 		foreach ($sarr as $k => $v) {
 			if (($v[0] == '/') AND ($v[1] == 'Type') AND (isset($sarr[($k +1)]) AND ($sarr[($k +1)][0] == '/') AND ($sarr[($k +1)][1] == 'XRef'))) {
 				$valid_crs = true;
