@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf_static.php
-// Version     : 1.1.2
+// Version     : 1.1.3
 // Begin       : 2002-08-03
-// Last Update : 2015-01-24
+// Last Update : 2015-04-28
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -55,7 +55,7 @@ class TCPDF_STATIC {
 	 * Current TCPDF version.
 	 * @private static
 	 */
-	private static $tcpdf_version = '6.2.6';
+	private static $tcpdf_version = '6.2.7';
 
 	/**
 	 * String alias for total number of pages.
@@ -2434,7 +2434,7 @@ class TCPDF_STATIC {
 	public static function fopenLocal($filename, $mode) {
 		if (strpos($filename, '://') === false) {
 			$filename = 'file://'.$filename;
-		} elseif (strpos($filename, 'file://') !== 0) {
+		} elseif (stream_is_local($filename) !== true) {
 			return false;
 		}
 		return fopen($filename, $mode);

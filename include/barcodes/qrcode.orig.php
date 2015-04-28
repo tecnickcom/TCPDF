@@ -720,7 +720,6 @@ class QRcode {
 	protected function encodeMask($mask) {
 		$spec = array(0, 0, 0, 0, 0);
 		$this->datacode = $this->getByteStream($this->items);
-
 		if (is_null($this->datacode)) {
 			return NULL;
 		}
