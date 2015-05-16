@@ -160,6 +160,7 @@ class TCPDF_IMAGES {
 	 * @public static
 	 */
 	public static function _parsejpeg($file) {
+		$file = str_replace(' ', '%20', $file);
 		$a = getimagesize($file);
 		if (empty($a)) {
 			//Missing or incorrect image file
