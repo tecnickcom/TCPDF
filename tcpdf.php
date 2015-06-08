@@ -18649,7 +18649,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$this->lispacer = $prev_lispacer;
 		if ($ln AND (!($cell AND ($dom[$key-1]['value'] == 'table')))) {
 			$this->Ln($this->lasth);
-			if ($this->y < $maxbottomliney) {
+			if ($this->y < $maxbottomliney && $startlinepage == $this->page) {
 				$this->y = $maxbottomliney;
 			}
 		}
