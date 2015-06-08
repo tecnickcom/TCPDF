@@ -10362,7 +10362,7 @@ class TCPDF {
 	 * @public
 	 */
 	public function addHtmlLink($url, $name, $fill=false, $firstline=false, $color='', $style=-1, $firstblock=false) {
-		if (isset($url[1]) AND ($url[0] == '#')) {
+		if (isset($url[1]) AND ($url[0] == '#') AND is_numeric($url[1])) {
 			// convert url to internal link
 			$lnkdata = explode(',', $url);
 			if (isset($lnkdata[0]) ) {
@@ -18649,7 +18649,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$this->lispacer = $prev_lispacer;
 		if ($ln AND (!($cell AND ($dom[$key-1]['value'] == 'table')))) {
 			$this->Ln($this->lasth);
-			if ($this->y < $maxbottomliney) {
+			if ($this->y < $maxbottomliney AND $startlinepage == $this->page) {
 				$this->y = $maxbottomliney;
 			}
 		}
