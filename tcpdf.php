@@ -7026,6 +7026,7 @@ class TCPDF {
 					AND (($info === 'pngalpha') OR (isset($info['trns']) AND !empty($info['trns'])))) {
 					return $this->ImagePngAlpha($file, $x, $y, $pixw, $pixh, $w, $h, 'PNG', $link, $align, $resize, $dpi, $palign, $filehash);
 				}
+				$info = false;
 			}
 			if (($info === false) AND function_exists($gdfunction)) {
 				try {
