@@ -1078,7 +1078,7 @@ class TCPDF_STATIC {
 
 	/**
 	 * Returns the input text exrypted using AES algorithm and the specified key.
-	 * This method requires mcrypt.
+	 * This method requires openssl or mcrypt. Text is padded to 16bytes blocks
 	 * @param $key (string) encryption key
 	 * @param $text (String) input text to be encrypted
 	 * @return String encrypted text
@@ -1098,6 +1098,27 @@ class TCPDF_STATIC {
 		$iv = mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC), MCRYPT_RAND);
 		$text = mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $key, $text, MCRYPT_MODE_CBC, $iv);
 		$text = $iv.$text;
+		return $text;
+	}
+
+	/**
+	 * Returns the input text exrypted using AES algorithm and the specified key.
+	 * This method requires openssl or mcrypt. Text is not padded
+	 * @param $key (string) encryption key
+	 * @param $text (String) input text to be encrypted
+	 * @return String encrypted text
+	 * @author Nicola Asuni
+	 * @since TODO
+	 * @public static
+	 */
+	public static function _AESnopad($key, $text) {
+		if (extension_loaded('openssl')) {
+			$iv = str_repeat("\x00", openssl_cipher_iv_length('aes-256-cbc'));
+			$text = openssl_encrypt($text, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
+			return substr($text, 0, -16);
+		}
+		$iv = str_repeat("\x00", mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC));
+		$text = mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $key, $text, MCRYPT_MODE_CBC, $iv);
 		return $text;
 	}
 

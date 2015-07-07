@@ -10633,14 +10633,7 @@ class TCPDF {
 	 */
 	protected function _UEvalue() {
 		$hashkey = hash('sha256', $this->encryptdata['user_password'].$this->encryptdata['UKS'], true);
-		if (extension_loaded('openssl')) {
-			$iv = str_repeat("\x00", openssl_cipher_iv_length('aes-256-cbc'));
-			$ret = openssl_encrypt($this->encryptdata['key'], 'aes-256-cbc', $hashkey, OPENSSL_RAW_DATA, $iv);
-			$ret = substr($ret, 0, -16);
-			return $ret;
-		}
-		$iv = str_repeat("\x00", mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC));
-		return mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $hashkey, $this->encryptdata['key'], MCRYPT_MODE_CBC, $iv);
+		return TCPDF_STATIC::_AESnopad($hashkey, $this->encryptdata['key']);
 	}
 
 	/**
@@ -10690,14 +10683,7 @@ class TCPDF {
 	 */
 	protected function _OEvalue() {
 		$hashkey = hash('sha256', $this->encryptdata['owner_password'].$this->encryptdata['OKS'].$this->encryptdata['U'], true);
-		if (extension_loaded('openssl')) {
-			$iv = str_repeat("\x00", openssl_cipher_iv_length('aes-256-cbc'));
-			$ret = openssl_encrypt($this->encryptdata['key'], 'aes-256-cbc', $hashkey, OPENSSL_RAW_DATA, $iv);
-			$ret = substr($ret, 0, -16);
-			return $ret;
-		}
-		$iv = str_repeat("\x00", mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC));
-		return mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $hashkey, $this->encryptdata['key'], MCRYPT_MODE_CBC, $iv);
+		return TCPDF_STATIC::_AESnopad($hashkey, $this->encryptdata['key']);
 	}
 
 	/**
@@ -10752,14 +10738,7 @@ class TCPDF {
 				}
 				$perms .= 'adb'; // bytes 9-11
 				$perms .= 'nick'; // bytes 12-15
-				if (extension_loaded('openssl')) {
-					$iv = str_repeat("\x00", openssl_cipher_iv_length('aes-256-cbc'));
-					$this->encryptdata['perms'] = openssl_encrypt($perms, 'aes-256-cbc', $this->encryptdata['key'], OPENSSL_RAW_DATA, $iv);
-					$this->encryptdata['perms'] = substr($this->encryptdata['perms'], 0, -16);
-				} else {
-					$iv = str_repeat("\x00", mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_ECB));
-					$this->encryptdata['perms'] = mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $this->encryptdata['key'], $perms, MCRYPT_MODE_ECB, $iv);
-				}
+				$this->encryptdata['perms'] = TCPDF_STATIC::_AESnopad($this->encryptdata['key'], $perms);
 			} else { // RC4-40, RC4-128, AES-128
 				// Pad passwords
 				$this->encryptdata['user_password'] = substr($this->encryptdata['user_password'].TCPDF_STATIC::$enc_padding, 0, 32);
