@@ -1,5 +1,6 @@
-6.2.9 (2015-06-18)
-	- 
+6.2.10 (2015-07-28)
+	- Minor mod to PNG parsing.
+	- Make dependency on mcrypt optional.
 
 6.2.8 (2015-04-29)
 	- Removed unwanted file.

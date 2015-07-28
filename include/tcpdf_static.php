@@ -55,7 +55,7 @@ class TCPDF_STATIC {
 	 * Current TCPDF version.
 	 * @private static
 	 */
-	private static $tcpdf_version = '6.2.9';
+	private static $tcpdf_version = '6.2.10';
 
 	/**
 	 * String alias for total number of pages.
@@ -1024,7 +1024,7 @@ class TCPDF_STATIC {
 			return false;
 		}
 		$rest = ($length - strlen($data));
-		if ($rest > 0) {
+		if (($rest > 0) && !feof($handle)) {
 			$data .= self::rfread($handle, $rest);
 		}
 		return $data;
@@ -1078,7 +1078,7 @@ class TCPDF_STATIC {
 
 	/**
 	 * Returns the input text exrypted using AES algorithm and the specified key.
-	 * This method requires mcrypt.
+	 * This method requires openssl or mcrypt. Text is padded to 16bytes blocks
 	 * @param $key (string) encryption key
 	 * @param $text (String) input text to be encrypted
 	 * @return String encrypted text
@@ -1090,9 +1090,35 @@ class TCPDF_STATIC {
 		// padding (RFC 2898, PKCS #5: Password-Based Cryptography Specification Version 2.0)
 		$padding = 16 - (strlen($text) % 16);
 		$text .= str_repeat(chr($padding), $padding);
+		if (extension_loaded('openssl')) {
+			$iv = openssl_random_pseudo_bytes (openssl_cipher_iv_length('aes-256-cbc'));
+			$text = openssl_encrypt($text, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
+			return $iv.substr($text, 0, -16);
+		}
 		$iv = mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC), MCRYPT_RAND);
 		$text = mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $key, $text, MCRYPT_MODE_CBC, $iv);
 		$text = $iv.$text;
+		return $text;
+	}
+
+	/**
+	 * Returns the input text exrypted using AES algorithm and the specified key.
+	 * This method requires openssl or mcrypt. Text is not padded
+	 * @param $key (string) encryption key
+	 * @param $text (String) input text to be encrypted
+	 * @return String encrypted text
+	 * @author Nicola Asuni
+	 * @since TODO
+	 * @public static
+	 */
+	public static function _AESnopad($key, $text) {
+		if (extension_loaded('openssl')) {
+			$iv = str_repeat("\x00", openssl_cipher_iv_length('aes-256-cbc'));
+			$text = openssl_encrypt($text, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
+			return substr($text, 0, -16);
+		}
+		$iv = str_repeat("\x00", mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC));
+		$text = mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $key, $text, MCRYPT_MODE_CBC, $iv);
 		return $text;
 	}
 
