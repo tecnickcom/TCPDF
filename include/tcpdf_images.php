@@ -289,8 +289,8 @@ class TCPDF_IMAGES {
 		$trns = '';
 		$data = '';
 		$icc = false;
+		$n = TCPDF_STATIC::_freadint($f);
 		do {
-			$n = TCPDF_STATIC::_freadint($f);
 			$type = fread($f, 4);
 			if ($type == 'PLTE') {
 				// read palette
@@ -338,6 +338,7 @@ class TCPDF_IMAGES {
 			} else {
 				TCPDF_STATIC::rfread($f, $n + 4);
 			}
+			$n = TCPDF_STATIC::_freadint($f);
 		} while ($n);
 		if (($colspace == 'Indexed') AND (empty($pal))) {
 			// Missing palette
