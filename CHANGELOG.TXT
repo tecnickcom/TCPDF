@@ -1,3 +1,7 @@
+6.2.11 (2015-08-02)
+	- Bug #1070 "PNG regression in 6.2.9 (they appear as their alpha channel)" was fixed.
+	- Bug #1069 "Encoded SRC URLs in <img> tags don't work anymore" was fixed.
+
 6.2.10 (2015-07-28)
 	- Minor mod to PNG parsing.
 	- Make dependency on mcrypt optional.

@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.2.9
+// Version     : 6.2.11
 // Begin       : 2002-08-03
 // Last Update : 2015-06-18
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
@@ -7026,7 +7026,6 @@ class TCPDF {
 					AND (($info === 'pngalpha') OR (isset($info['trns']) AND !empty($info['trns'])))) {
 					return $this->ImagePngAlpha($file, $x, $y, $pixw, $pixh, $w, $h, 'PNG', $link, $align, $resize, $dpi, $palign, $filehash);
 				}
-				$info = false;
 			}
 			if (($info === false) AND function_exists($gdfunction)) {
 				try {
