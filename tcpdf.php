@@ -6258,7 +6258,7 @@ class TCPDF {
 	 * @param $link (mixed) URL or identifier returned by AddLink()
 	 * @param $fill (boolean) Indicates if the cell background must be painted (true) or transparent (false).
 	 * @param $align (string) Allows to center or align the text. Possible values are:<ul><li>L or empty string: left align (default value)</li><li>C: center</li><li>R: right align</li><li>J: justify</li></ul>
-	 * @param $ln (boolean) if true set cursor at the bottom of the line, otherwise set cursor at the top of the line.
+	 * @param $ln (int) Indicates where the current position should go after the call. Possible values are:<ul><li>0: to the right (or left for RTL languages)</li><li>1: to the beginning of the next line</li><li>2: below</li></ul> Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value: 0.
 	 * @param $stretch (int) font stretch mode: <ul><li>0 = disabled</li><li>1 = horizontal scaling only if text is larger than cell width</li><li>2 = forced horizontal scaling to fit cell width</li><li>3 = character spacing only if text is larger than cell width</li><li>4 = forced character spacing to fit cell width</li></ul> General font stretching and scaling values will be preserved when possible.
 	 * @param $firstline (boolean) if true prints only the first line and return the remaining string.
 	 * @param $firstblock (boolean) if true the string is the starting of a line.
@@ -6269,7 +6269,7 @@ class TCPDF {
 	 * @public
 	 * @since 1.5
 	 */
-	public function Write($h, $txt, $link='', $fill=false, $align='', $ln=false, $stretch=0, $firstline=false, $firstblock=false, $maxh=0, $wadj=0, $margin='') {
+	public function Write($h, $txt, $link='', $fill=false, $align='', $ln=0, $stretch=0, $firstline=false, $firstblock=false, $maxh=0, $wadj=0, $margin='') {
 		// check page for no-write regions and adapt page margins if necessary
 		list($this->x, $this->y) = $this->checkPageRegions($h, $this->x, $this->y);
 		if (strlen($txt) == 0) {
