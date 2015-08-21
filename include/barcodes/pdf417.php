@@ -648,7 +648,7 @@ class PDF417 {
 		$pstart = str_repeat('0', QUIETH).$this->start_pattern;
 		$pstop = $this->stop_pattern.str_repeat('0', QUIETH);
 		$barcode_array['num_rows'] = ($rows * ROWHEIGHT) + (2 * QUIETV);
-		$barcode_array['num_cols'] = (($cols + 2) * 17) + 35 + (2 * QUIETH);
+		$barcode_array['num_cols'] = (($cols + 2) * 17) + strlen($this->start_pattern) + strlen($this->stop_pattern) + (2 * QUIETH);
 		$barcode_array['bcode'] = array();
 		// build rows for vertical quiet zone
 		if (QUIETV > 0) {
