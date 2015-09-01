@@ -6847,15 +6847,19 @@ class TCPDF {
 					$file = $tfile;
 				}
 			}
-			if (($imsize = @getimagesize($file)) === FALSE) {
-				if (in_array($file, $this->imagekeys)) {
-					// get existing image data
-					$info = $this->getImageBuffer($file);
-					$imsize = array($info['w'], $info['h']);
-				} elseif (strpos($file, '__tcpdf_'.$this->file_id.'_img') === FALSE) {
-					$imgdata = TCPDF_STATIC::fileGetContents($file);
-				}
+			
+			if (in_array($file, $this->imagekeys)) {
+			    // get existing image data
+			    $info = $this->getImageBuffer($file);
+			    $imsize = array($info['w'], $info['h']);
+			} else{
+			    $imsize = @getimagesize($file);
+			    
+			    if($imsize === false){
+			        $imgdata = TCPDF_STATIC::fileGetContents($file);
+			    }
 			}
+
 		}
 		if (!empty($imgdata)) {
 			// copy image to cache
