@@ -942,12 +942,12 @@ class PDF417 {
 						$t = bcadd($t, ''.ord($code[5]));
 						// tmp array for the 6 bytes block
 						$cw6 = array();
-						do {
+						for ($i = 0; $i <= 5; $i++) {
 							$d = bcmod($t, '900');
-							$t = bcdiv($t, '900');
+							$t = bcdiv(bcsub($t, $d), '900');
 							// prepend the value to the beginning of the array
 							array_unshift($cw6, $d);
-						} while ($t != '0');
+						}
 						// append the result array at the end
 						$cw = array_merge($cw, $cw6);
 					} else {
