@@ -87,6 +87,13 @@ class TCPDF_PARSER {
 		'ignore_missing_filter_decoders' => true,
 	);
 
+	/**
+     	 * Store the processed offsets
+     	 *
+     	 * @var array
+     	 */
+    	protected $mrkoff = array();
+
 // -----------------------------------------------------------------------------
 
 	/**
@@ -167,6 +174,11 @@ class TCPDF_PARSER {
 	 * @since 1.0.000 (2011-05-24)
 	 */
 	protected function getXrefData($offset=0, $xref=array()) {
+		if (in_array($offset, $this->mrkoff)) {
+			$this->Error('LOOP: this XRef offset has been already processed');
+		}
+		$this->mrkoff[] = $offset;
+	
 		if ($offset == 0) {
 			// find last startxref
 			if (preg_match_all('/[\r\n]startxref[\s]*[\r\n]+([0-9]+)[\s]*[\r\n]+%%EOF/i', $this->pdfdata, $matches, PREG_SET_ORDER, $offset) == 0) {
@@ -174,9 +186,9 @@ class TCPDF_PARSER {
 			}
 			$matches = array_pop($matches);
 			$startxref = $matches[1];
-		} elseif (strpos($this->pdfdata, 'xref', $offset) == $offset) {
+		} elseif (($pos = strpos($this->pdfdata, 'xref', $offset)) <= ($offset + 4)) {		
 			// Already pointing at the xref table
-			$startxref = $offset;
+			$startxref = $pos;
 		} elseif (preg_match('/([0-9]+[\s][0-9]+[\s]obj)/i', $this->pdfdata, $matches, PREG_OFFSET_CAPTURE, $offset)) {
 			// Cross-Reference Stream object
 			$startxref = $offset;
