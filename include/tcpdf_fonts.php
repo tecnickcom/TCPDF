@@ -1996,6 +1996,13 @@ class TCPDF_FONTS {
 	 */
 	public static function UTF8StringToArray($str, $isunicode=true, &$currentfont) {
 		if ($isunicode) {
+			static $hasNormalizerSupport = null;
+			if (null === $hasNormalizerSupport) {
+				$hasNormalizerSupport = function_exists('normalizer_normalize') && ("\xC3\x85" === normalizer_normalize("A\xCC\x8A"));
+			}
+			if ($hasNormalizerSupport) {
+				$str = normalizer_normalize($str);
+			}
 			// requires PCRE unicode support turned on
 			$chars = TCPDF_STATIC::pregSplit('//','u', $str, -1, PREG_SPLIT_NO_EMPTY);
 			$carr = array_map(array('TCPDF_FONTS', 'uniord'), $chars);
