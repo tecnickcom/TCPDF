@@ -19950,6 +19950,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		}
 		if (!$border AND !$fill) {
 			// nothing to draw
+
+			// reset lasth to original value
+			$this->lasth = $prev_lasth;
+
 			return;
 		}
 		if (isset($tag['attribute']['cellspacing'])) {
@@ -19976,6 +19980,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			$w = ($xmax - $tag['borderposition']['x']);
 		}
 		if ($w <= 0) {
+
+			// reset lasth to original value
+			$this->lasth = $prev_lasth;
+
 			return;
 		}
 		$w += $cellspacing['H'];
