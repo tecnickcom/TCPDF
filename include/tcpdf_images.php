@@ -168,7 +168,7 @@ class TCPDF_IMAGES {
 				$file = $tfile;
 			}
 		}
-		$a = getimagesize($file);
+		$a = @getimagesize($file);
 		if (empty($a)) {
 			//Missing or incorrect image file
 			return false;
