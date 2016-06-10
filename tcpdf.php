@@ -23193,7 +23193,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				'color' => TCPDF_COLORS::convertHTMLColorToDec($svgstyle['stroke'], $this->spot_colors),
 				'width' => $this->getHTMLUnitToUnits($svgstyle['stroke-width'], 0, $this->svgunit, false),
 				'cap' => $svgstyle['stroke-linecap'],
-				'join' => $svgstyle['stroke-linejoin']
+				'join' => $svgstyle['stroke-linejoin'],
+				'dash' => 0
 				);
 			if (isset($svgstyle['stroke-dasharray']) AND !empty($svgstyle['stroke-dasharray']) AND ($svgstyle['stroke-dasharray'] != 'none')) {
 				$stroke_style['dash'] = $svgstyle['stroke-dasharray'];
