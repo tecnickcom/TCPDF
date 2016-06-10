@@ -23760,6 +23760,13 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				}
 			}
 		}
+		// Override previous svgstyles with latest value where available on the current element
+		// TODO: check all style attributes, not just inheritable ones
+		foreach (TCPDF_IMAGES::$svginheritprop as $attrib) {
+		  if (isset($attribs[$attrib])) {
+		    $svgstyle[$attrib] = $attribs[$attrib];
+		  }
+		}
 		// transformation matrix
 		if (!empty($ctm)) {
 			$tm = $ctm;
