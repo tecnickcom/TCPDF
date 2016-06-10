@@ -11346,7 +11346,7 @@ class TCPDF {
 					if ($i) {
 						$dash_string .= ' ';
 					}
-					$dash_string .= sprintf('%F', $v);
+					$dash_string .= sprintf('%F', ($v / $this->k));
 				}
 			}
 			if (!isset($style['phase']) OR !$style['dash']) {
