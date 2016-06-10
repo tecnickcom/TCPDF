@@ -22906,10 +22906,14 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		// sets the character data handler function for the XML parser
 		xml_set_character_data_handler($this->parser, 'segSVGContentHandler');
 		// start parsing an XML document
-		if (!xml_parse($this->parser, $svgdata)) {
-			$error_message = sprintf('SVG Error: %s at line %d', xml_error_string(xml_get_error_code($this->parser)), xml_get_current_line_number($this->parser));
-			$this->Error($error_message);
+		$fh = fopen($file, 'r');
+		while ($svgdata = fread($fh, 1024 * 1024)) {
+		  if (!xml_parse($this->parser, $svgdata, feof($fh))) {
+		    $error_message = sprintf('SVG Error: %s at line %d', xml_error_string(xml_get_error_code($this->parser)), xml_get_current_line_number($this->parser));
+		    $this->Error($error_message);
+		  }
 		}
+		fclose($fh);
 		// free this XML parser
 		xml_parser_free($this->parser);
 		// restore previous graphic state
