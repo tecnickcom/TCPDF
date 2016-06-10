@@ -23792,11 +23792,11 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			}
 			case 'svg': {
 				// start of SVG object
+				array_push($this->svgstyles, $svgstyle);
 				if(++$this->svg_tag_depth <= 1) {
 					break;
 				}
 				// inner SVG
-				array_push($this->svgstyles, $svgstyle);
 				$this->StartTransform();
 				$svgX = (isset($attribs['x'])?$attribs['x']:0);
 				$svgY = (isset($attribs['y'])?$attribs['y']:0);
