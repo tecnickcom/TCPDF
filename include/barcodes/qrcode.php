@@ -1920,7 +1920,7 @@ class QRcode {
 				}
 			}
 			$l = $this->lengthIndicator($item['mode'], $version);
-			$m = 1 << $l;
+			$m = $l < 0 ? 0 : 1 << $l;
 			$num = (int)(($item['size'] + $m - 1) / $m);
 			$bits += $num * (4 + $l);
 		}
@@ -2138,7 +2138,7 @@ class QRcode {
 	 */
 	 protected function newFromNum($bits, $num) {
 		$bstream = $this->allocate($bits);
-		$mask = 1 << ($bits - 1);
+	    $mask = ($bits - 1) < 0 ? 0 : 1 << ($bits - 1);
 		for ($i=0; $i<$bits; ++$i) {
 			if ($num & $mask) {
 				$bstream[$i] = 1;
@@ -2368,7 +2368,7 @@ class QRcode {
 			$l = 2;
 		}
 		$bits = $this->lengthTableBits[$mode][$l];
-		$words = (1 << $bits) - 1;
+		$words = $bits < 0 ? -1 : (1 << $bits) - 1;
 		if ($mode == QR_MODE_KJ) {
 			$words *= 2; // the number of bytes is required
 		}
@@ -2744,25 +2744,26 @@ class QRcode {
 	protected function init_rs_char($symsize, $gfpoly, $fcr, $prim, $nroots, $pad) {
 		// Based on Reed solomon encoder by Phil Karn, KA9Q (GNU-LGPLv2)
 		$rs = null;
+		$shiftedSymsize = $symsize < 0 ? 0 : 1 << $symsize;
 		// Check parameter ranges
 		if (($symsize < 0) OR ($symsize > 8)) {
 			return $rs;
 		}
-		if (($fcr < 0) OR ($fcr >= (1<<$symsize))) {
+		if (($fcr < 0) OR ($fcr >= ($shiftedSymsize))) {
 			return $rs;
 		}
-		if (($prim <= 0) OR ($prim >= (1<<$symsize))) {
+		if (($prim <= 0) OR ($prim >= ($shiftedSymsize))) {
 			return $rs;
 		}
-		if (($nroots < 0) OR ($nroots >= (1<<$symsize))) {
+		if (($nroots < 0) OR ($nroots >= ($shiftedSymsize))) {
 			return $rs;
 		}
-		if (($pad < 0) OR ($pad >= ((1<<$symsize) -1 - $nroots))) {
+		if (($pad < 0) OR ($pad >= (($shiftedSymsize) -1 - $nroots))) {
 			return $rs;
 		}
 		$rs = array();
 		$rs['mm'] = $symsize;
-		$rs['nn'] = (1 << $symsize) - 1;
+		$rs['nn'] = ($shiftedSymsize) - 1;
 		$rs['pad'] = $pad;
 		$rs['alpha_to'] = array_fill(0, ($rs['nn'] + 1), 0);
 		$rs['index_of'] = array_fill(0, ($rs['nn'] + 1), 0);
@@ -2777,7 +2778,7 @@ class QRcode {
 			$rs['index_of'][$sr] = $i;
 			$rs['alpha_to'][$i] = $sr;
 			$sr <<= 1;
-			if ($sr & (1 << $symsize)) {
+			if ($sr & ($shiftedSymsize)) {
 				$sr ^= $gfpoly;
 			}
 			$sr &= $rs['nn'];

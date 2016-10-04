@@ -588,7 +588,7 @@ class PDF417 {
 		// set error correction level
 		$ecl = $this->getErrorCorrectionLevel($ecl, $numcw);
 		// number of codewords for error correction
-		$errsize = (2 << $ecl);
+		$errsize = $ecl < 0 ? 0 : 2 << $ecl;
 		// calculate number of columns (number of codewords per row) and rows
 		$nce = ($numcw + $errsize + 1);
 		$cols = round((sqrt(4761 + (68 * $aspectratio * ROWHEIGHT * $nce)) - 69) / 34);
@@ -744,7 +744,7 @@ class PDF417 {
 		$maxecl = 8; // starting error level
 		$maxerrsize = (928 - $numcw); // available codewords for error
 		while ($maxecl > 0) {
-			$errsize = (2 << $ecl);
+			$errsize = $ecl < 0 ? 0 : 2 << $ecl;
 			if ($maxerrsize >= $errsize) {
 				break;
 			}
@@ -781,7 +781,7 @@ class PDF417 {
 		// get error correction coefficients
 		$ecc = $this->rsfactors[$ecl];
 		// number of error correction factors
-		$eclsize = (2 << $ecl);
+		$eclsize = $ecl < 0 ? 0 : 2 << $ecl;
 		// maximum index for $rsfactors[$ecl]
 		$eclmaxid = ($eclsize - 1);
 		// initialize array of error correction codewords

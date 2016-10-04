@@ -8607,7 +8607,7 @@ class TCPDF {
 									// array of bit settings
 									$flag = 0;
 									foreach($pl['opt']['ff'] as $val) {
-										$flag += 1 << ($val - 1);
+										$flag += ($val - 1) < 0 ? 0 : 1 << ($val - 1);
 									}
 								} else {
 									$flag = intval($pl['opt']['ff']);
