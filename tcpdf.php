@@ -19749,7 +19749,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				break;
 			}
 			case 'a': {
-				$this->HREF = '';
+				$this->HREF = array();
 				break;
 			}
 			case 'sup': {
