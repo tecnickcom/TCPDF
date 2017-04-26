@@ -1779,6 +1779,13 @@ class TCPDF {
 	protected $custom_xmp = '';
 
 	/**
+	 * Custom document properties inside the XMP data
+	 * @protected
+	 * @var array
+	 */
+	protected $custom_properties = [];
+
+	/**
 	 * Overprint mode array.
 	 * (Check the "Entries in a Graphics State Parameter Dictionary" on PDF 32000-1:2008).
 	 * @protected
@@ -9478,6 +9485,11 @@ class TCPDF {
 		$out .= ' /Producer '.$this->_textstring(TCPDF_STATIC::getTCPDFProducer(), $oid);
 		// The date and time the document was created, in human-readable form
 		$out .= ' /CreationDate '.$this->_datestring(0, $this->doc_creation_timestamp);
+
+		foreach ($this->custom_properties as $key => $value) {
+			$out .= ' /' . $key . $this->_textstring($value, $oid);
+		}
+
 		// The date and time the document was most recently modified, in human-readable form
 		$out .= ' /ModDate '.$this->_datestring(0, $this->doc_modification_timestamp);
 		// A name object indicating whether the document has been modified to include trapping information
@@ -9497,6 +9509,33 @@ class TCPDF {
 	 */
 	public function setExtraXMP($xmp) {
 		$this->custom_xmp = $xmp;
+	}
+
+	/**
+	 * Set Custom Properties inside the XMP data
+	 * Properties can be set as key => value pairs
+	 * @param string $key
+	 * @param string $value
+	 */
+	public function addCustomProperty($key, $value) {
+		$this->custom_properties[$key] = $value;
+	}
+
+	/**
+	 * Create the correct XMP structures from the custom properties
+	 * @return string
+	 */
+	protected function serializeCustomPropertiesForXMP() {
+
+		$custom = "\t\t<rdf:Description rdf:about=\"\" xmlns:pdfx=\"http://ns.adobe.com/pdfx/1.3/\">\n";
+
+		foreach ($this->custom_properties as $key => $value) {
+			$custom .= "\t\t\t<pdfx:{$key}>$value</pdfx:{$key}>\n";
+		}
+
+		$custom .= "\t\t</rdf:Description>";
+
+		return $custom;
 	}
 
 	/**
@@ -9566,6 +9605,7 @@ class TCPDF {
 		$xmp .= "\t\t\t".'<xmpMM:DocumentID>'.$uuid.'</xmpMM:DocumentID>'."\n";
 		$xmp .= "\t\t\t".'<xmpMM:InstanceID>'.$uuid.'</xmpMM:InstanceID>'."\n";
 		$xmp .= "\t\t".'</rdf:Description>'."\n";
+		$xmp .= $this->serializeCustomPropertiesForXMP() . "\n";
 		if ($this->pdfa_mode) {
 			$xmp .= "\t\t".'<rdf:Description rdf:about="" xmlns:pdfaid="http://www.aiim.org/pdfa/ns/id/">'."\n";
 			$xmp .= "\t\t\t".'<pdfaid:part>1</pdfaid:part>'."\n";
