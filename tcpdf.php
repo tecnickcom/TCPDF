@@ -6021,7 +6021,9 @@ class TCPDF {
 				} // end for each column
 			} else { // middle page
 				for ($column = 0; $column < $this->num_columns; ++$column) { // for each column
-					$this->selectColumn($column);
+					if ($column != $this->current_column) {
+						$this->selectColumn($column);
+					}
 					if ($this->rtl) {
 						$this->x -= $mc_margin['R'];
 					} else {
