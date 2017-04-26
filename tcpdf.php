@@ -8358,7 +8358,7 @@ class TCPDF {
 							break;
 						}
 						case 'link': {
-							if (is_string($pl['txt'])) {
+							if (is_string($pl['txt']) && !empty($pl['txt'])) {
 								if ($pl['txt'][0] == '#') {
 									// internal destination
 									$annots .= ' /Dest /'.TCPDF_STATIC::encodeNameObject(substr($pl['txt'], 1));
