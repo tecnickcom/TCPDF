@@ -1541,16 +1541,28 @@ class TCPDF_FONTS {
 	 * @public static
 	 */
 	public static function getFontFullPath($file, $fontdir=false) {
-		$fontfile = '';
-		// search files on various directories
-		if (($fontdir !== false) AND @file_exists($fontdir.$file)) {
-			$fontfile = $fontdir.$file;
-		} elseif (@file_exists(self::_getfontpath().$file)) {
-			$fontfile = self::_getfontpath().$file;
-		} elseif (@file_exists($file)) {
-			$fontfile = $file;
+		// Look for both the original file name and the lowercased variant
+		$alternatives = [
+			$file,
+			strtolower($file)
+		];
+
+		foreach ($alternatives as $alternative) {
+			// search files on various directories
+			if (($fontdir !== false) AND @file_exists($fontdir.$alternative)) {
+				return $fontdir.$alternative;
+			}
+
+			if (@file_exists(self::_getfontpath().$alternative)) {
+				return self::_getfontpath() . $alternative;
+			}
+
+			if (@file_exists($alternative)) {
+				return $alternative;
+			}
 		}
-		return $fontfile;
+
+		return '';
 	}
 
 

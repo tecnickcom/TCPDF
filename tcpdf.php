@@ -8994,7 +8994,7 @@ class TCPDF {
 			// Embed CIDToGIDMap
 			// A specification of the mapping from CIDs to glyph indices
 			// search and get CTG font file to embedd
-			$ctgfile = strtolower($font['ctg']);
+			$ctgfile = $font['ctg'];
 			// search and get ctg font file to embedd
 			$fontfile = TCPDF_FONTS::getFontFullPath($ctgfile, $fontdir);
 			if (TCPDF_STATIC::empty_string($fontfile)) {
