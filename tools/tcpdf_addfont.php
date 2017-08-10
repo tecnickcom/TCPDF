@@ -1,4 +1,4 @@
-#!/usr/bin/php -q
+#!/usr/bin/env php
 <?php
 //============================================================+
 // File name   : tcpdf_addfont.php
