@@ -1910,7 +1910,7 @@ class TCPDF_STATIC {
 		    && !preg_match('%^//%', $file)
 		) {
 		    $urldata = @parse_url($_SERVER['SCRIPT_URI']);
-		    return $urldata['scheme'].'://'.$urldata['host'].(($file[0] == '/') ? '' : '/').$file;
+		    $alt[] = $urldata['scheme'].'://'.$urldata['host'].(($file[0] == '/') ? '' : '/').$file;
 		}
 		//
 		$alt = array_unique($alt);
