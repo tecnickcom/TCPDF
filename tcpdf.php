@@ -21314,7 +21314,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				$alignnum = 'R';
 			}
 			if ($outline['l'] == 0) {
-				$this->SetFont($fontfamily, $outline['s'].'B', $fontsize);
+				$this->SetFont($fontfamily, $outline['s'], $fontsize);
 			} else {
 				$this->SetFont($fontfamily, $outline['s'], $fontsize - $outline['l']);
 			}
