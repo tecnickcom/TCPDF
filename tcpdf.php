@@ -17176,10 +17176,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		if ($cell) {
 			if ($this->rtl) {
 				$this->x -= $this->cell_padding['R'];
-				$this->lMargin += $this->cell_padding['R'];
+				$this->lMargin += $this->cell_padding['L'];
 			} else {
 				$this->x += $this->cell_padding['L'];
-				$this->rMargin += $this->cell_padding['L'];
+				$this->rMargin += $this->cell_padding['R'];
 			}
 		}
 		if ($this->customlistindent >= 0) {
