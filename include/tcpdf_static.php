@@ -2443,6 +2443,8 @@ class TCPDF_STATIC {
 		'FR_COURONNE'            => array( 1020.472,  1303.937), // = (  360 x 460  ) mm  = ( 14.17 x 18.11 ) in
 		'FR_TELLIERE'            => array(  963.780,  1247.244), // = (  340 x 440  ) mm  = ( 13.39 x 17.32 ) in
 		'FR_POT'                 => array(  878.740,  1133.858), // = (  310 x 400  ) mm  = ( 12.20 x 15.75 ) in
+		// - Japanese Sizes
+		'JP_POSTCARD'         =>     array( 283.465, 419.528 ),  // = (  100 x 148  ) mm  = (  3.93 x  5.83 ) in
 	);
 
 
