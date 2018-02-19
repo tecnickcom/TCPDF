@@ -10863,14 +10863,11 @@ class TCPDF {
 			$this->encryptdata['StrF'] = 'StdCF';
 		}
 		if ($mode > 1) { // AES
-			if (!extension_loaded('openssl') && !extension_loaded('mcrypt')) {
-				$this->Error('AES encryption requires openssl or mcrypt extension (http://www.php.net/manual/en/mcrypt.requirements.php).');
+			if (!extension_loaded('openssl')) {
+				$this->Error('AES encryption requires openssl extension.');
 			}
 			if (extension_loaded('openssl') && !in_array('aes-256-cbc', openssl_get_cipher_methods())) {
 				$this->Error('AES encryption requires openssl/aes-256-cbc cypher.');
-			}
-			if (extension_loaded('mcrypt') && mcrypt_get_cipher_name(MCRYPT_RIJNDAEL_128) === false) {
-				$this->Error('AES encryption requires MCRYPT_RIJNDAEL_128 cypher.');
 			}
 			if (($mode == 3) AND !function_exists('hash')) {
 				// the Hash extension requires no external libraries and is enabled by default as of PHP 5.1.2.
