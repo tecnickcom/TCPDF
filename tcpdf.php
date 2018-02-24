@@ -15192,7 +15192,7 @@ class TCPDF {
 	 * @since 3.1.000 (2008-06-09)
 	 * @public
 	 */
-	public function write1DBarcode($code, $type, $x='', $y='', $w='', $h='', $xres='', $style=[], $align='') {
+	public function write1DBarcode($code, $type, $x='', $y='', $w='', $h='', $xres='', $style=array(), $align='') {
 		if (TCPDF_STATIC::empty_string(trim($code))) {
 			return;
 		}
