@@ -512,6 +512,12 @@ class TCPDF {
 	protected $creator = '';
 
 	/**
+	 * Document producer.
+	 * @protected
+	 */
+	protected $producer = '';
+
+	/**
 	 * Starting page number.
 	 * @protected
 	 */
@@ -1979,6 +1985,8 @@ class TCPDF {
 		// set document creation and modification timestamp
 		$this->doc_creation_timestamp = time();
 		$this->doc_modification_timestamp = $this->doc_creation_timestamp;
+		// default producer
+		$this->producer = TCPDF_STATIC::getTCPDFProducer();
 		// get default graphic vars
 		$this->default_graphic_vars = $this->getGraphicVars();
 		$this->header_xobj_autoreset = false;
@@ -2910,6 +2918,17 @@ class TCPDF {
 	 */
 	public function SetCreator($creator) {
 		$this->creator = $creator;
+	}
+
+	/**
+	 * Defines the producer of the document. This is typically the name of the application that converts or modifies the PDF.
+	 * @param $producer (string) The name of the producer.
+	 * @public
+	 * @since 6.2.18
+	 * @see SetCreator()
+	 */
+	public function SetProducer($producer) {
+		$this->producer = $producer;
 	}
 
 	/**
@@ -9474,10 +9493,12 @@ class TCPDF {
 			// If the document was converted to PDF from another format, the name of the conforming product that created the original document from which it was converted.
 			$out .= ' /Creator '.$this->_textstring($this->creator, $oid);
 		}
+		if (!TCPDF_STATIC::empty_string($this->producer)) {
+			// The name of the product that converted/modified the original document.
+			$out .= ' /Producer '.$this->_textstring($this->producer, $oid);
+		}
 		// restore previous isunicode value
 		$this->isunicode = $prev_isunicode;
-		// default producer
-		$out .= ' /Producer '.$this->_textstring(TCPDF_STATIC::getTCPDFProducer(), $oid);
 		// The date and time the document was created, in human-readable form
 		$out .= ' /CreationDate '.$this->_datestring(0, $this->doc_creation_timestamp);
 		// The date and time the document was most recently modified, in human-readable form
@@ -9561,7 +9582,7 @@ class TCPDF {
 		$xmp .= "\t\t".'</rdf:Description>'."\n";
 		$xmp .= "\t\t".'<rdf:Description rdf:about="" xmlns:pdf="http://ns.adobe.com/pdf/1.3/">'."\n";
 		$xmp .= "\t\t\t".'<pdf:Keywords>'.TCPDF_STATIC::_escapeXML($this->keywords).'</pdf:Keywords>'."\n";
-		$xmp .= "\t\t\t".'<pdf:Producer>'.TCPDF_STATIC::_escapeXML(TCPDF_STATIC::getTCPDFProducer()).'</pdf:Producer>'."\n";
+		$xmp .= "\t\t\t".'<pdf:Producer>'.TCPDF_STATIC::_escapeXML($this->producer).'</pdf:Producer>'."\n";
 		$xmp .= "\t\t".'</rdf:Description>'."\n";
 		$xmp .= "\t\t".'<rdf:Description rdf:about="" xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/">'."\n";
 		$uuid = 'uuid:'.substr($this->file_id, 0, 8).'-'.substr($this->file_id, 8, 4).'-'.substr($this->file_id, 12, 4).'-'.substr($this->file_id, 16, 4).'-'.substr($this->file_id, 20, 12);
