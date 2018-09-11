@@ -6845,7 +6845,7 @@ class TCPDF {
 				if ($wrapper === 'http' || $wrapper === 'https') {
 					continue;
 				}
-				if (strpos($file, $wrapper.'://') === 0) {
+				if (stripos($file, $wrapper.'://') === 0) {
 					$this->Error('Stream wrappers in file paths are not supported');
 				}
 			}
