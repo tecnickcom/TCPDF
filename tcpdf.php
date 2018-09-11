@@ -6840,6 +6840,11 @@ class TCPDF {
 			// image from string
 			$imgdata = substr($file, 1);
 		} else { // image file
+			if ($file[0] === '*') {
+				// image as external stream
+				$file = substr($file, 1);
+				$exurl = $file;
+			}
 			$wrappers = stream_get_wrappers();
 			foreach ($wrappers as $wrapper) {
 				if ($wrapper === 'http' || $wrapper === 'https') {
@@ -6848,11 +6853,6 @@ class TCPDF {
 				if (stripos($file, $wrapper.'://') === 0) {
 					$this->Error('Stream wrappers in file paths are not supported');
 				}
-			}
-			if ($file[0] === '*') {
-				// image as external stream
-				$file = substr($file, 1);
-				$exurl = $file;
 			}
 			// check if is a local file
 			if (!@file_exists($file)) {
