@@ -130,6 +130,9 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * @brief PHP class for generating PDF documents without requiring external extensions.
  * @version 6.2.18
  * @author Nicola Asuni - info@tecnick.com
+ * @IgnoreAnnotation("protected")
+ * @IgnoreAnnotation("public")
+ * @IgnoreAnnotation("pre")
  */
 class TCPDF {
 
