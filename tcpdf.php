@@ -4453,6 +4453,7 @@ class TCPDF {
 	 * @see SetFont()
 	 */
 	public function SetFontSize($size, $out=true) {
+		$size = (float)$size;
 		// font size in points
 		$this->FontSizePt = $size;
 		// font size in user units
