@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.2.21
+// Version     : 6.2.22
 // Begin       : 2002-08-03
 // Last Update : 2018-09-14
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.2.21
+ * @version 6.2.22
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.2.21
+ * @version 6.2.22
  * @author Nicola Asuni - info@tecnick.com
  * @IgnoreAnnotation("protected")
  * @IgnoreAnnotation("public")
@@ -6845,13 +6845,9 @@ class TCPDF {
 				$file = substr($file, 1);
 				$exurl = $file;
 			}
-			// check if is a local file
+			// check if file exist and it is valid
 			if (!@TCPDF_STATIC::file_exists($file)) {
-				// try to encode spaces on filename
-				$tfile = str_replace(' ', '%20', $file);
-				if (@TCPDF_STATIC::file_exists($tfile)) {
-					$file = $tfile;
-				}
+				return false;
 			}
 			if (($imsize = @getimagesize($file)) === FALSE) {
 				if (in_array($file, $this->imagekeys)) {

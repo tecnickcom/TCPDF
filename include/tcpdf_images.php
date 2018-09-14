@@ -162,11 +162,7 @@ class TCPDF_IMAGES {
 	public static function _parsejpeg($file) {
 		// check if is a local file
 		if (!@TCPDF_STATIC::file_exists($file)) {
-			// try to encode spaces on filename
-			$tfile = str_replace(' ', '%20', $file);
-			if (@TCPDF_STATIC::file_exists($tfile)) {
-				$file = $tfile;
-			}
+			return false;
 		}
 		$a = getimagesize($file);
 		if (empty($a)) {
