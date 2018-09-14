@@ -1994,10 +1994,6 @@ class TCPDF {
 	 * @since 1.53.0.TC016
 	 */
 	public function __destruct() {
-		// restore internal encoding
-		if (isset($this->internal_encoding) AND !empty($this->internal_encoding)) {
-			mb_internal_encoding($this->internal_encoding);
-		}
 		// cleanup
 		$this->_destroy(true);
 	}
@@ -7751,6 +7747,10 @@ class TCPDF {
 	 * @since 4.5.016 (2009-02-24)
 	 */
 	public function _destroy($destroyall=false, $preserve_objcopy=false) {
+		// restore internal encoding
+		if (isset($this->internal_encoding) AND !empty($this->internal_encoding)) {
+			mb_internal_encoding($this->internal_encoding);
+		}
 		if ($destroyall AND !$preserve_objcopy) {
 			// remove all temporary files
 			$tmpfiles = glob(K_PATH_CACHE.'__tcpdf_'.$this->file_id.'_*');
