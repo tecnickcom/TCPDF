@@ -1760,6 +1760,12 @@ class TCPDF {
 	 */
 	protected $pdfa_mode = false;
 
+    /**
+     * If true set the document to PDF/X mode.
+     * @protected
+     */
+    protected $pdfx_mode = false;
+
 	/**
 	 * Document creation date-time
 	 * @protected
@@ -1834,11 +1840,11 @@ class TCPDF {
 	 * @param $unicode (boolean) TRUE means that the input text is unicode (default = true)
 	 * @param $encoding (string) Charset encoding (used only when converting back html entities); default is UTF-8.
 	 * @param $diskcache (boolean) DEPRECATED FEATURE
-	 * @param $pdfa (boolean) If TRUE set the document to PDF/A mode.
+	 * @param $pdfa (string) If pdfa set the document to PDF/A mode, if pdfx set the document to PDF/X mode or none.
 	 * @public
 	 * @see getPageSizeFromFormat(), setPageFormat()
 	 */
-	public function __construct($orientation='P', $unit='mm', $format='A4', $unicode=true, $encoding='UTF-8', $diskcache=false, $pdfa=false) {
+	public function __construct($orientation='P', $unit='mm', $format='A4', $unicode=true, $encoding='UTF-8', $diskcache=false, $pdfmode='none') {
 		/* Set internal character encoding to ASCII */
 		if (function_exists('mb_internal_encoding') AND mb_internal_encoding()) {
 			$this->internal_encoding = mb_internal_encoding();
@@ -1851,7 +1857,8 @@ class TCPDF {
 		$this->page_obj_id = array();
 		$this->form_obj_id = array();
 		// set pdf/a mode
-		$this->pdfa_mode = $pdfa;
+		$this->pdfa_mode = $pdfmode == 'pdfa' ? true : false;
+		$this->pdfx_mode = $pdfmode == 'pdfx' ? true : false;
 		$this->force_srgb = false;
 		// set language direction
 		$this->rtl = false;
@@ -1934,7 +1941,7 @@ class TCPDF {
 		$this->SetCompression();
 		// set default PDF version number
 		$this->setPDFVersion();
-		$this->tcpdflink = true;
+		$this->tcpdflink = $this->pdfx_mode ? false : true;
 		$this->encoding = $encoding;
 		$this->HREF = array();
 		$this->getFontsList();
@@ -1986,6 +1993,9 @@ class TCPDF {
 		$this->default_graphic_vars = $this->getGraphicVars();
 		$this->header_xobj_autoreset = false;
 		$this->custom_xmp = '';
+		if ($this->pdfx_mode) {
+			$this->setPageBoxTypes(array('MediaBox', 'CropBox', 'BleedBox', 'TrimBox'));
+		}
 		// Call cleanup method after script execution finishes or exit() is called.
 		// NOTE: This will not be executed if the process is killed with a SIGTERM or SIGKILL signal.
 		register_shutdown_function(array($this, '_destroy'), true);
@@ -8000,7 +8010,7 @@ class TCPDF {
 			}
 			$out .= ' /Contents '.($this->n + 1).' 0 R';
 			$out .= ' /Rotate '.$this->pagedim[$n]['Rotate'];
-			if (!$this->pdfa_mode) {
+			if (!$this->pdfa_mode AND !$this->pdfx_mode) {
 				$out .= ' /Group << /Type /Group /S /Transparency /CS /DeviceRGB >>';
 			}
 			if (isset($this->pagedim[$n]['trans']) AND !empty($this->pagedim[$n]['trans'])) {
@@ -9309,7 +9319,7 @@ class TCPDF {
 					$out .= ' >>';
 				}
 				$out .= ' >>'; //end resources
-				if (isset($data['group']) AND ($data['group'] !== false)) {
+				if (isset($data['group']) AND ($data['group'] !== false) AND !$this->pdfx_mode) {
 					// set transparency group
 					$out .= ' /Group << /Type /Group /S /Transparency';
 					if (is_array($data['group'])) {
@@ -9466,6 +9476,9 @@ class TCPDF {
 		$prev_isunicode = $this->isunicode;
 		if ($this->docinfounicode) {
 			$this->isunicode = true;
+		}
+		if ($this->pdfx_mode) {
+			$out .= ' /GTS_PDFXVersion (PDF/X-3:2002)';
 		}
 		if (!TCPDF_STATIC::empty_string($this->title)) {
 			// The document's title.
@@ -9735,6 +9748,15 @@ class TCPDF {
 			$out .= ' /RegistryName '.$this->_textstring('http://www.color.org', $oid);
 			$out .= ' /Info '.$this->_textstring('sRGB IEC61966-2.1', $oid);
 			$out .= ' /DestOutputProfile '.$iccobj.' 0 R';
+			$out .= ' >>]';
+		}
+		if ($this->pdfx_mode) {
+			$out .= ' /OutputIntents [ <<';
+			$out .= ' /Info (none)';
+			$out .= ' /Type /OutputIntent';
+			$out .= ' /S /GTS_PDFX';
+			$out .= ' /OutputConditionIdentifier (OFCOM_PO_P1_F60_95)';
+			$out .= ' /RegistryName (http://www.color.org/)';
 			$out .= ' >>]';
 		}
 		//$out .= ' /PieceInfo <<>>';
@@ -14740,7 +14762,9 @@ class TCPDF {
 				$out .= ' /Length '.strlen($stream);
 				$rect = sprintf('%F %F', $this->wPt, $this->hPt);
 				$out .= ' /BBox [0 0 '.$rect.']';
-				$out .= ' /Group << /Type /Group /S /Transparency /CS /DeviceGray >>';
+				if (!$this->pdfx_mode) {
+					$out .= ' /Group << /Type /Group /S /Transparency /CS /DeviceGray >>';
+				}
 				$out .= ' /Resources <<';
 				$out .= ' /ExtGState << /a0 << /ca 1 /CA 1 >> >>';
 				$out .= ' /Pattern << /p'.$idgs.' '.$this->gradients[$idgs]['pattern'].' 0 R >>';
