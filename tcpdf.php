@@ -6842,6 +6842,15 @@ class TCPDF {
 				$file = substr($file, 1);
 				$exurl = $file;
 			}
+			$wrappers = stream_get_wrappers();
+			foreach ($wrappers as $wrapper) {
+				if ($wrapper === 'http' || $wrapper === 'https') {
+					continue;
+				}
+				if (stripos($file, $wrapper.'://') === 0) {
+					$this->Error('Stream wrappers in file paths are not supported');
+				}
+			}
 			// check if is a local file
 			if (!@file_exists($file)) {
 				// try to encode spaces on filename
