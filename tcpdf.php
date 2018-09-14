@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.2.19
+// Version     : 6.2.20
 // Begin       : 2002-08-03
 // Last Update : 2018-09-14
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.2.19
+ * @version 6.2.20
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.2.19
+ * @version 6.2.20
  * @author Nicola Asuni - info@tecnick.com
  * @IgnoreAnnotation("protected")
  * @IgnoreAnnotation("public")
@@ -4256,7 +4256,7 @@ class TCPDF {
 		// true when the font style variation is missing
 		$missing_style = false;
 		// search and include font file
-		if (TCPDF_STATIC::empty_string($fontfile) OR (!@file_exists($fontfile))) {
+		if (TCPDF_STATIC::empty_string($fontfile) OR (!@TCPDF_STATIC::file_exists($fontfile))) {
 			// build a standard filenames for specified font
 			$tmp_fontfile = str_replace(' ', '', $family).strtolower($style).'.php';
 			$fontfile = TCPDF_FONTS::getFontFullPath($tmp_fontfile, $fontdir);
@@ -4268,7 +4268,7 @@ class TCPDF {
 			}
 		}
 		// include font file
-		if (!TCPDF_STATIC::empty_string($fontfile) AND (@file_exists($fontfile))) {
+		if (!TCPDF_STATIC::empty_string($fontfile) AND (@TCPDF_STATIC::file_exists($fontfile))) {
 			include($fontfile);
 		} else {
 			$this->Error('Could not include font definition file: '.$family.'');
@@ -4809,19 +4809,19 @@ class TCPDF {
 		$this->PageAnnots[$page][] = array('n' => ++$this->n, 'x' => $x, 'y' => $y, 'w' => $w, 'h' => $h, 'txt' => $text, 'opt' => $opt, 'numspaces' => $spaces);
 		if (!$this->pdfa_mode) {
 			if ((($opt['Subtype'] == 'FileAttachment') OR ($opt['Subtype'] == 'Sound')) AND (!TCPDF_STATIC::empty_string($opt['FS']))
-				AND (@file_exists($opt['FS']) OR TCPDF_STATIC::isValidURL($opt['FS']))
+				AND (@TCPDF_STATIC::file_exists($opt['FS']) OR TCPDF_STATIC::isValidURL($opt['FS']))
 				AND (!isset($this->embeddedfiles[basename($opt['FS'])]))) {
 				$this->embeddedfiles[basename($opt['FS'])] = array('f' => ++$this->n, 'n' => ++$this->n, 'file' => $opt['FS']);
 			}
 		}
 		// Add widgets annotation's icons
-		if (isset($opt['mk']['i']) AND @file_exists($opt['mk']['i'])) {
+		if (isset($opt['mk']['i']) AND @TCPDF_STATIC::file_exists($opt['mk']['i'])) {
 			$this->Image($opt['mk']['i'], '', '', 10, 10, '', '', '', false, 300, '', false, false, 0, false, true);
 		}
-		if (isset($opt['mk']['ri']) AND @file_exists($opt['mk']['ri'])) {
+		if (isset($opt['mk']['ri']) AND @TCPDF_STATIC::file_exists($opt['mk']['ri'])) {
 			$this->Image($opt['mk']['ri'], '', '', 0, 0, '', '', '', false, 300, '', false, false, 0, false, true);
 		}
-		if (isset($opt['mk']['ix']) AND @file_exists($opt['mk']['ix'])) {
+		if (isset($opt['mk']['ix']) AND @TCPDF_STATIC::file_exists($opt['mk']['ix'])) {
 			$this->Image($opt['mk']['ix'], '', '', 0, 0, '', '', '', false, 300, '', false, false, 0, false, true);
 		}
 	}
@@ -6845,20 +6845,11 @@ class TCPDF {
 				$file = substr($file, 1);
 				$exurl = $file;
 			}
-			$wrappers = stream_get_wrappers();
-			foreach ($wrappers as $wrapper) {
-				if ($wrapper === 'http' || $wrapper === 'https') {
-					continue;
-				}
-				if (stripos($file, $wrapper.'://') === 0) {
-					$this->Error('Stream wrappers in file paths are not supported');
-				}
-			}
 			// check if is a local file
-			if (!@file_exists($file)) {
+			if (!@TCPDF_STATIC::file_exists($file)) {
 				// try to encode spaces on filename
 				$tfile = str_replace(' ', '%20', $file);
-				if (@file_exists($tfile)) {
+				if (@TCPDF_STATIC::file_exists($tfile)) {
 					$file = $tfile;
 				}
 			}
