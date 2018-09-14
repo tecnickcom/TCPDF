@@ -55,7 +55,7 @@ class TCPDF_STATIC {
 	 * Current TCPDF version.
 	 * @private static
 	 */
-	private static $tcpdf_version = '6.2.20';
+	private static $tcpdf_version = '6.2.21';
 
 	/**
 	 * String alias for total number of pages.
@@ -1773,39 +1773,6 @@ class TCPDF_STATIC {
 		}
 		return $angle;
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// ====================================================================================================================
-// REIMPLEMENTED
-// ====================================================================================================================
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	/**
 	 * Split string by a regular expression.
