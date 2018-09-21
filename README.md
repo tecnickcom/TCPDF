@@ -1,4 +1,5 @@
 # TCPDF
+<<<<<<< HEAD
 *PHP PDF Library*
 
 [![Donate via PayPal](https://img.shields.io/badge/donate-paypal-87ceeb.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&currency_code=GBP&business=paypal@tecnick.com&item_name=donation%20for%20TCPDF%20project)
@@ -82,3 +83,9 @@ https://packages.debian.org/source/stable/icc-profiles-free
 ## Developer(s) Contact
 
 * Nicola Asuni <info@tecnick.com>
+=======
+
+For the OLD DEPRECATED version of TCPDF, please check the "master" or "OLDv6" branch of this repository.
+
+The new TCPDF version has been moved to https://github.com/tecnickcom/tc-lib-pdf but it is still under development (INCOMPLETE).
+>>>>>>> 58d7550f1f77a22c7623e7d9e6f2b7f297167443
