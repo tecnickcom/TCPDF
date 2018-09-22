@@ -1,4 +1,7 @@
-6.2.20
+6.2.23
+	- Simplify file_exists function.
+
+6.2.22
 	- Fix for security vulnerability: Using the phar:// wrapper it was possible to trigger the unserialization of user provided data.
 
 6.2.19

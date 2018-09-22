@@ -55,7 +55,7 @@ class TCPDF_STATIC {
 	 * Current TCPDF version.
 	 * @private static
 	 */
-	private static $tcpdf_version = '6.2.22';
+	private static $tcpdf_version = '6.2.23';
 
 	/**
 	 * String alias for total number of pages.
@@ -1830,20 +1830,8 @@ class TCPDF_STATIC {
 	 * @public static
 	 */
 	public static function file_exists($filename) {
-		if (strpos($filename, '://') > 0) {
-			$wrappers = stream_get_wrappers();
-			foreach ($wrappers as $wrapper) {
-				if (($wrapper === 'http') || ($wrapper === 'https')) {
-					continue;
-				}
-				if (stripos($filename, $wrapper.'://') === 0) {
-					return false;
-				}
-			}
-		}
-		if (!@file_exists($filename)) {
-			// try to encode spaces on filename
-			$filename = str_replace(' ', '%20', $filename);
+		if (strpos($filename, '://') && (preg_match('|^https?://|', $filename) !== 1)) {
+			return false;
 		}
 		return @file_exists($filename);
 	}
