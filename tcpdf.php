@@ -6845,7 +6845,11 @@ class TCPDF {
 				$exurl = $file;
 			}
 			// check if file exist and it is valid
-			if (!@TCPDF_STATIC::file_exists($file)) {
+			if (!@TCPDF_STATIC::file_exists($file)
+                && false === \strpos($file, 'http://')
+                && false === \strpos($file, 'https://')
+            ) {
+			    // no local file and no url
 				return false;
 			}
 			if (($imsize = @getimagesize($file)) === FALSE) {
