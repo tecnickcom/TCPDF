@@ -5769,10 +5769,9 @@ class TCPDF {
 			$this->resetLastH();
 		}
 		if (!TCPDF_STATIC::empty_string($y)) {
-			$this->SetY($y);
-		} else {
-			$y = $this->GetY();
+			$this->SetY($y); // set y in order to convert negative y values to positive ones
 		}
+		$y = $this->GetY();
 		$resth = 0;
 		if (($h > 0) AND $this->inPageBody() AND (($y + $h + $mc_margin['T'] + $mc_margin['B']) > $this->PageBreakTrigger)) {
 			// spit cell in more pages/columns
