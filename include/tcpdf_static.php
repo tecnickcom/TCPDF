@@ -55,7 +55,7 @@ class TCPDF_STATIC {
 	 * Current TCPDF version.
 	 * @private static
 	 */
-	private static $tcpdf_version = '6.2.24';
+	private static $tcpdf_version = '6.2.25';
 
 	/**
 	 * String alias for total number of pages.
@@ -1855,14 +1855,13 @@ class TCPDF_STATIC {
 	 * @public static
 	 */
 	public static function file_exists($filename) {
-		$httpmode = (preg_match('|^https?://|', $filename) == 1);
-		if (!$httpmode && strpos($filename, '://')) {
+		if (preg_match('|^https?://|', $filename) == 1) {
+			return self::url_exists($filename);
+		}
+		if (strpos($filename, '://')) {
 			return false; // only support http and https wrappers for security reasons
 		}
-		if (@file_exists($filename) || ($httpmode && self::url_exists($filename))) {
-			return true;
-		}
-		return false;
+		return @file_exists($filename);
 	}
 
 	/**

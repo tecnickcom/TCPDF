@@ -1,7 +1,7 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.2.24
+// Version     : 6.2.25
 // Begin       : 2002-08-03
 // Last Update : 2018-09-14
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.2.24
+ * @version 6.2.25
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.2.24
+ * @version 6.2.25
  * @author Nicola Asuni - info@tecnick.com
  * @IgnoreAnnotation("protected")
  * @IgnoreAnnotation("public")
@@ -18817,100 +18817,122 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				break;
 			}
 			case 'img': {
-				if (!empty($tag['attribute']['src'])) {
-					if ($tag['attribute']['src'][0] === '@') {
-						// data stream
-						$tag['attribute']['src'] = '@'.base64_decode(substr($tag['attribute']['src'], 1));
-						$type = '';
-					} else {
-						// get image type
-						$type = TCPDF_IMAGES::getImageFileType($tag['attribute']['src']);
-					}
-					if (!isset($tag['width'])) {
-						$tag['width'] = 0;
-					}
-					if (!isset($tag['height'])) {
-						$tag['height'] = 0;
-					}
-					//if (!isset($tag['attribute']['align'])) {
-						// the only alignment supported is "bottom"
-						// further development is required for other modes.
-						$tag['attribute']['align'] = 'bottom';
-					//}
-					switch($tag['attribute']['align']) {
-						case 'top': {
-							$align = 'T';
-							break;
-						}
-						case 'middle': {
-							$align = 'M';
-							break;
-						}
-						case 'bottom': {
-							$align = 'B';
-							break;
-						}
-						default: {
-							$align = 'B';
-							break;
-						}
-					}
-					$prevy = $this->y;
-					$xpos = $this->x;
-					$imglink = '';
-					if (isset($this->HREF['url']) AND !TCPDF_STATIC::empty_string($this->HREF['url'])) {
-						$imglink = $this->HREF['url'];
-						if ($imglink[0] == '#') {
-							// convert url to internal link
-							$lnkdata = explode(',', $imglink);
-							if (isset($lnkdata[0])) {
-								$page = intval(substr($lnkdata[0], 1));
-								if (empty($page) OR ($page <= 0)) {
-									$page = $this->page;
-								}
-								if (isset($lnkdata[1]) AND (strlen($lnkdata[1]) > 0)) {
-									$lnky = floatval($lnkdata[1]);
-								} else {
-									$lnky = 0;
-								}
-								$imglink = $this->AddLink();
-								$this->SetLink($imglink, $lnky, $page);
+				if (empty($tag['attribute']['src'])) {
+					break;
+				}
+				$imgsrc = $tag['attribute']['src'];
+				if ($imgsrc[0] === '@') {
+					// data stream
+					$imgsrc = '@'.base64_decode(substr($imgsrc, 1));
+					$type = '';
+				} else {
+					if (($imgsrc[0] === '/') AND !empty($_SERVER['DOCUMENT_ROOT']) AND ($_SERVER['DOCUMENT_ROOT'] != '/')) {
+						// fix image path
+						$findroot = strpos($imgsrc, $_SERVER['DOCUMENT_ROOT']);
+						if (($findroot === false) OR ($findroot > 1)) {
+							if (substr($_SERVER['DOCUMENT_ROOT'], -1) == '/') {
+								$imgsrc = substr($_SERVER['DOCUMENT_ROOT'], 0, -1).$imgsrc;
+							} else {
+								$imgsrc = $_SERVER['DOCUMENT_ROOT'].$imgsrc;
 							}
 						}
-					}
-					$border = 0;
-					if (isset($tag['border']) AND !empty($tag['border'])) {
-						// currently only support 1 (frame) or a combination of 'LTRB'
-						$border = $tag['border'];
-					}
-					$iw = '';
-					if (isset($tag['width'])) {
-						$iw = $this->getHTMLUnitToUnits($tag['width'], ($tag['fontsize'] / $this->k), 'px', false);
-					}
-					$ih = '';
-					if (isset($tag['height'])) {
-						$ih = $this->getHTMLUnitToUnits($tag['height'], ($tag['fontsize'] / $this->k), 'px', false);
-					}
-					if (($type == 'eps') OR ($type == 'ai')) {
-						$this->ImageEps($tag['attribute']['src'], $xpos, $this->y, $iw, $ih, $imglink, true, $align, '', $border, true);
-					} elseif ($type == 'svg') {
-						$this->ImageSVG($tag['attribute']['src'], $xpos, $this->y, $iw, $ih, $imglink, $align, '', $border, true);
-					} else {
-						$this->Image($tag['attribute']['src'], $xpos, $this->y, $iw, $ih, '', $imglink, $align, false, 300, '', false, false, $border, false, false, true);
-					}
-					switch($align) {
-						case 'T': {
-							$this->y = $prevy;
-							break;
+						$imgsrc = urldecode($imgsrc);
+						$testscrtype = @parse_url($imgsrc);
+						if (empty($testscrtype['query'])) {
+							// convert URL to server path
+							$imgsrc = str_replace(K_PATH_URL, K_PATH_MAIN, $imgsrc);
+						} elseif (preg_match('|^https?://|', $imgsrc) !== 1) {
+							// convert URL to server path
+							$imgsrc = str_replace(K_PATH_MAIN, K_PATH_URL, $imgsrc);
 						}
-						case 'M': {
-							$this->y = (($this->img_rb_y + $prevy - ($this->getCellHeight($tag['fontsize'] / $this->k))) / 2);
-							break;
+					}
+					// get image type
+					$type = TCPDF_IMAGES::getImageFileType($imgsrc);
+				}
+				if (!isset($tag['width'])) {
+					$tag['width'] = 0;
+				}
+				if (!isset($tag['height'])) {
+					$tag['height'] = 0;
+				}
+				//if (!isset($tag['attribute']['align'])) {
+					// the only alignment supported is "bottom"
+					// further development is required for other modes.
+					$tag['attribute']['align'] = 'bottom';
+				//}
+				switch($tag['attribute']['align']) {
+					case 'top': {
+						$align = 'T';
+						break;
+					}
+					case 'middle': {
+						$align = 'M';
+						break;
+					}
+					case 'bottom': {
+						$align = 'B';
+						break;
+					}
+					default: {
+						$align = 'B';
+						break;
+					}
+				}
+				$prevy = $this->y;
+				$xpos = $this->x;
+				$imglink = '';
+				if (isset($this->HREF['url']) AND !TCPDF_STATIC::empty_string($this->HREF['url'])) {
+					$imglink = $this->HREF['url'];
+					if ($imglink[0] == '#') {
+						// convert url to internal link
+						$lnkdata = explode(',', $imglink);
+						if (isset($lnkdata[0])) {
+							$page = intval(substr($lnkdata[0], 1));
+							if (empty($page) OR ($page <= 0)) {
+								$page = $this->page;
+							}
+							if (isset($lnkdata[1]) AND (strlen($lnkdata[1]) > 0)) {
+								$lnky = floatval($lnkdata[1]);
+							} else {
+								$lnky = 0;
+							}
+							$imglink = $this->AddLink();
+							$this->SetLink($imglink, $lnky, $page);
 						}
-						case 'B': {
-							$this->y = $this->img_rb_y - ($this->getCellHeight($tag['fontsize'] / $this->k) - ($this->getFontDescent($tag['fontname'], $tag['fontstyle'], $tag['fontsize']) * $this->cell_height_ratio));
-							break;
-						}
+					}
+				}
+				$border = 0;
+				if (isset($tag['border']) AND !empty($tag['border'])) {
+					// currently only support 1 (frame) or a combination of 'LTRB'
+					$border = $tag['border'];
+				}
+				$iw = '';
+				if (isset($tag['width'])) {
+					$iw = $this->getHTMLUnitToUnits($tag['width'], ($tag['fontsize'] / $this->k), 'px', false);
+				}
+				$ih = '';
+				if (isset($tag['height'])) {
+					$ih = $this->getHTMLUnitToUnits($tag['height'], ($tag['fontsize'] / $this->k), 'px', false);
+				}
+				if (($type == 'eps') OR ($type == 'ai')) {
+					$this->ImageEps($imgsrc, $xpos, $this->y, $iw, $ih, $imglink, true, $align, '', $border, true);
+				} elseif ($type == 'svg') {
+					$this->ImageSVG($imgsrc, $xpos, $this->y, $iw, $ih, $imglink, $align, '', $border, true);
+				} else {
+					$this->Image($imgsrc, $xpos, $this->y, $iw, $ih, '', $imglink, $align, false, 300, '', false, false, $border, false, false, true);
+				}
+				switch($align) {
+					case 'T': {
+						$this->y = $prevy;
+						break;
+					}
+					case 'M': {
+						$this->y = (($this->img_rb_y + $prevy - ($this->getCellHeight($tag['fontsize'] / $this->k))) / 2);
+						break;
+					}
+					case 'B': {
+						$this->y = $this->img_rb_y - ($this->getCellHeight($tag['fontsize'] / $this->k) - ($this->getFontDescent($tag['fontname'], $tag['fontstyle'], $tag['fontsize']) * $this->cell_height_ratio));
+						break;
 					}
 				}
 				break;
@@ -24206,9 +24228,12 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						}
 						$img = urldecode($img);
 						$testscrtype = @parse_url($img);
-						if (!isset($testscrtype['query']) OR empty($testscrtype['query'])) {
+						if (empty($testscrtype['query'])) {
 							// convert URL to server path
 							$img = str_replace(K_PATH_URL, K_PATH_MAIN, $img);
+						} elseif (preg_match('|^https?://|', $img) !== 1) {
+							// convert server path to URL
+							$img = str_replace(K_PATH_MAIN, K_PATH_URL, $img);
 						}
 					}
 					// get image type
