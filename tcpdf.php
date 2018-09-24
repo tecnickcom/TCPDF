@@ -7558,6 +7558,8 @@ class TCPDF {
 		}
 		$dest = strtoupper($dest);
 		if ($dest[0] != 'F') {
+			$name = explode("/", $name);
+			$name = $name[count($name) - 1];
 			$name = preg_replace('/[\s]+/', '_', $name);
 			$name = preg_replace('/[^a-zA-Z0-9_\.-]/', '', $name);
 		}
