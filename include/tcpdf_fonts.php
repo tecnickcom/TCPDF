@@ -2006,7 +2006,7 @@ class TCPDF_FONTS {
 		if (is_array($currentfont['subsetchars']) && is_array($carr))
 			$currentfont['subsetchars'] += array_fill_keys($carr, true);
 		else
-			array_merge($currentfont['subsetchars'], $carr);
+			$currentfont['subsetchars'] = array_merge($currentfont['subsetchars'], $carr);
 		return $carr;
 	}
 
