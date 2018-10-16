@@ -2003,10 +2003,11 @@ class TCPDF_FONTS {
 			$chars = str_split($str);
 			$carr = array_map('ord', $chars);
 		}
-		if (is_array($currentfont['subsetchars']) && is_array($carr))
+		if (is_array($currentfont['subsetchars']) && is_array($carr)) {
 			$currentfont['subsetchars'] += array_fill_keys($carr, true);
-		else
+		} else {
 			$currentfont['subsetchars'] = array_merge($currentfont['subsetchars'], $carr);
+		}
 		return $carr;
 	}
 
