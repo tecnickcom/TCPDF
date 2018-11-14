@@ -344,12 +344,22 @@ class TCPDF_PARSER {
 		}
 		// decode data
 		if ($valid_crs AND isset($xrefcrs[1][3][0])) {
+			// use sum of widths if no column value set
+			if (!$columns AND isset($wb)) {
+				$columns = array_sum($wb);
+			}
 			// number of bytes in a row
-			$rowlen = ($columns + 1);
+			$rowlen = ($columns + (isset($predictor) ? 1 : 0));
 			// convert the stream into an array of integers
 			$sdata = unpack('C*', $xrefcrs[1][3][0]);
 			// split the rows
 			$sdata = array_chunk($sdata, $rowlen);
+			// fill first column if no predictor set
+			if (!isset($predictor)) {
+				foreach ($sdata as $k => &$row) {
+					array_unshift($row, 0);
+				}
+			}
 			// initialize decoded array
 			$ddata = array();
 			// initialize first row with zeros
