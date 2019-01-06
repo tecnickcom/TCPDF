@@ -9994,6 +9994,9 @@ class TCPDF {
 		$this->_out($o);
 		$this->_out('%%EOF');
 		$this->state = 3; // end-of-doc
+		foreach($this->imagekeys as $file) {
+			unlink($file);
+		}
 	}
 
 	/**
