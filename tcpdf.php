@@ -1570,6 +1570,13 @@ class TCPDF {
 	 */
 	protected $pdflayers = array();
 
+    /**
+     * String
+     * @protected
+     * @since 5.9.102 (2019-01-25)
+     */
+    protected $documentRoot = array();
+
 	/**
 	 * A dictionary of names and corresponding destinations (Dests key on document Catalog).
 	 * @protected
@@ -1834,11 +1841,12 @@ class TCPDF {
 	 * @param $unicode (boolean) TRUE means that the input text is unicode (default = true)
 	 * @param $encoding (string) Charset encoding (used only when converting back html entities); default is UTF-8.
 	 * @param $diskcache (boolean) DEPRECATED FEATURE
-	 * @param $pdfa (boolean) If TRUE set the document to PDF/A mode.
+     * @param $pdfa (boolean) If TRUE set the document to PDF/A mode.
+     * @param $documentRoot (string) Path where the images are saved. Default to $_SERVER['DOCUMENT_ROOT'].
 	 * @public
 	 * @see getPageSizeFromFormat(), setPageFormat()
 	 */
-	public function __construct($orientation='P', $unit='mm', $format='A4', $unicode=true, $encoding='UTF-8', $diskcache=false, $pdfa=false) {
+	public function __construct($orientation='P', $unit='mm', $format='A4', $unicode=true, $encoding='UTF-8', $diskcache=false, $pdfa=false, $documentRoot = null) {
 		/* Set internal character encoding to ASCII */
 		if (function_exists('mb_internal_encoding') AND mb_internal_encoding()) {
 			$this->internal_encoding = mb_internal_encoding();
@@ -1886,6 +1894,7 @@ class TCPDF {
 		$this->TextColor = '0 g';
 		$this->ColorFlag = false;
 		$this->pdflayers = array();
+		$this->documentRoot = isset($documentRoot) ? $documentRoot : $_SERVER['DOCUMENT_ROOT'];
 		// encryption values
 		$this->encrypted = false;
 		$this->last_enc_key = '';
@@ -18826,14 +18835,14 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					$imgsrc = '@'.base64_decode(substr($imgsrc, 1));
 					$type = '';
 				} else {
-					if (($imgsrc[0] === '/') AND !empty($_SERVER['DOCUMENT_ROOT']) AND ($_SERVER['DOCUMENT_ROOT'] != '/')) {
+					if (($imgsrc[0] === '/') AND !empty($this->documentRoot) AND ($this->documentRoot != '/')) {
 						// fix image path
-						$findroot = strpos($imgsrc, $_SERVER['DOCUMENT_ROOT']);
+						$findroot = strpos($imgsrc, $this->documentRoot);
 						if (($findroot === false) OR ($findroot > 1)) {
-							if (substr($_SERVER['DOCUMENT_ROOT'], -1) == '/') {
-								$imgsrc = substr($_SERVER['DOCUMENT_ROOT'], 0, -1).$imgsrc;
+							if (substr($this->documentRoot, -1) == '/') {
+								$imgsrc = substr($this->documentRoot, 0, -1).$imgsrc;
 							} else {
-								$imgsrc = $_SERVER['DOCUMENT_ROOT'].$imgsrc;
+								$imgsrc = $this->documentRoot.$imgsrc;
 							}
 						}
 						$imgsrc = urldecode($imgsrc);
@@ -24216,13 +24225,13 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 							// replace relative path with full server path
 							$img = $this->svgdir.'/'.$img;
 						}
-						if (($img[0] == '/') AND !empty($_SERVER['DOCUMENT_ROOT']) AND ($_SERVER['DOCUMENT_ROOT'] != '/')) {
-							$findroot = strpos($img, $_SERVER['DOCUMENT_ROOT']);
+						if (($img[0] == '/') AND !empty($this->documentRoot) AND ($this->documentRoot != '/')) {
+							$findroot = strpos($img, $this->documentRoot);
 							if (($findroot === false) OR ($findroot > 1)) {
-								if (substr($_SERVER['DOCUMENT_ROOT'], -1) == '/') {
-									$img = substr($_SERVER['DOCUMENT_ROOT'], 0, -1).$img;
+								if (substr($this->documentRoot, -1) == '/') {
+									$img = substr($this->documentRoot, 0, -1).$img;
 								} else {
-									$img = $_SERVER['DOCUMENT_ROOT'].$img;
+									$img = $this->documentRoot.$img;
 								}
 							}
 						}
