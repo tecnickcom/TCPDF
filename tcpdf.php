@@ -1575,7 +1575,7 @@ class TCPDF {
      * @protected
      * @since 5.9.102 (2019-01-25)
      */
-    protected $documentRoot = array();
+    protected $documentRoot;
 
 	/**
 	 * A dictionary of names and corresponding destinations (Dests key on document Catalog).
