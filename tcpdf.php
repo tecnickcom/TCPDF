@@ -4863,7 +4863,10 @@ class TCPDF {
 					$this->efnames[$filename] = $filedata['f'].' 0 R';
 					// embedded file specification object
 					$out = $this->_getobj($filedata['f'])."\n";
-					$out .= '<</Type /Filespec /F '.$this->_datastring($filename, $filedata['f']).' /EF <</F '.$filedata['n'].' 0 R>> >>';
+					$out .= '<</Type /Filespec /F '.$this->_datastring($filename, $filedata['f']);
+					$out .= ' /UF '.$this->_datastring($filename, $filedata['f']);
+					$out .= ' /AFRelationship /Source';
+					$out .= ' /EF <</F '.$filedata['n'].' 0 R>> >>';
 					$out .= "\n".'endobj';
 					$this->_out($out);
 					// embedded file object
