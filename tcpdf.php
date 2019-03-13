@@ -4875,6 +4875,11 @@ class TCPDF {
 						$data = gzcompress($data);
 						$filter = ' /Filter /FlateDecode';
 					}
+
+					if ($this->pdfa_version == 3) {
+						$filter = ' /Subtype /text#2Fxml';
+					}
+
 					$stream = $this->_getrawstream($data, $filedata['n']);
 					$out = $this->_getobj($filedata['n'])."\n";
 					$out .= '<< /Type /EmbeddedFile'.$filter.' /Length '.strlen($stream).' /Params <</Size '.$rawsize.'>> >>';
