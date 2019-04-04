@@ -8380,7 +8380,7 @@ class TCPDF {
 									$annots .= ' /A << /S /JavaScript /JS '.$this->_textstring($jsa, $annot_obj_id).'>>';
 								} else {
 									$parsedUrl = parse_url($pl['txt']);
-									if (empty($parsedUrl['scheme']) AND (strtolower(substr($parsedUrl['path'], -4)) == '.pdf')) {
+									if (empty($parsedUrl['scheme']) AND (!empty($parsedUrl['path']) && strtolower(substr($parsedUrl['path'], -4)) == '.pdf')) {
 										// relative link to a PDF file
 										$dest = '[0 /Fit]'; // default page 0
 										if (!empty($parsedUrl['fragment'])) {
