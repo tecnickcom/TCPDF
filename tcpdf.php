@@ -7546,7 +7546,7 @@ class TCPDF {
 	 * @since 1.0
 	 * @see Close()
 	 */
-	public function Output($name='doc.pdf', $dest='I') {
+	public function Output($name='doc.pdf', $dest='I', $multibyte=false) {
 		//Output PDF to some destination
 		//Finish document if necessary
 		if ($this->state < 3) {
@@ -7559,7 +7559,9 @@ class TCPDF {
 		$dest = strtoupper($dest);
 		if ($dest[0] != 'F') {
 			$name = preg_replace('/[\s]+/', '_', $name);
-			$name = preg_replace('/[^a-zA-Z0-9_\.-]/', '', $name);
+			if($multibyte === false){
+				$name = preg_replace('/[^a-zA-Z0-9_\.-]/', '', $name);
+			}
 		}
 		if ($this->sign) {
 			// *** apply digital signature to the document ***
