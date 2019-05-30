@@ -6844,10 +6844,6 @@ class TCPDF {
 				$file = substr($file, 1);
 				$exurl = $file;
 			}
-			// check if file exist and it is valid
-			if (!@TCPDF_STATIC::file_exists($file)) {
-				return false;
-			}
 			if (($imsize = @getimagesize($file)) === FALSE) {
 				if (in_array($file, $this->imagekeys)) {
 					// get existing image data
