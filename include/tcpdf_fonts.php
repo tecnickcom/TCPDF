@@ -1800,7 +1800,7 @@ class TCPDF_FONTS {
 		}
 		$string = '';
 		for ($i = $start; $i < $end; ++$i) {
-			$string .= self::unichr($strarr[$i], $unicode);
+			$string .= self::unichr((int) $strarr[$i], $unicode);
 		}
 		return $string;
 	}
