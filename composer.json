@@ -3,7 +3,6 @@
   "replace": {
     "tecnickcom/tcpdf": "self.version"
   },
-  "version": "6.2.26",
   "homepage": "https://github.com/combodo-itop-libs/TCPDF",
   "type": "library",
   "description": "TCPDF fork adding requirements for iTop: Specific fonts.",
