@@ -1818,6 +1818,12 @@ class TCPDF {
 	 */
 	protected $gdgammacache = array();
 
+	/**
+	 * If _destroyed() has already been called or not
+	 * @protected
+	 */
+	protected $destroyed = false;
+
 	//------------------------------------------------------------
 	// METHODS
 	//------------------------------------------------------------
@@ -7745,6 +7751,10 @@ class TCPDF {
 	 * @since 4.5.016 (2009-02-24)
 	 */
 	public function _destroy($destroyall=false, $preserve_objcopy=false) {
+		if ($this->destroyed) {
+			// we should not destroy the object a second time to avoid deleting all the temporary files
+			return;
+		}
 		// restore internal encoding
 		if (isset($this->internal_encoding) AND !empty($this->internal_encoding)) {
 			mb_internal_encoding($this->internal_encoding);
@@ -7777,6 +7787,7 @@ class TCPDF {
 				}
 			}
 		}
+		$this->destroyed = true;
 	}
 
 	/**
@@ -21671,12 +21682,15 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	public function rollbackTransaction($self=false) {
 		if (isset($this->objcopy)) {
 			$this->_destroy(true, true);
+			$objCopy = $this->objcopy;
 			if ($self) {
 				$objvars = get_object_vars($this->objcopy);
 				foreach ($objvars as $key => $value) {
 					$this->$key = $value;
 				}
 			}
+			// we have to manually destroy the old copy, to avoid a call to __destruct() when we leave this function
+			$objCopy->_destroy(true, true);
 			return $this->objcopy;
 		}
 		return $this;
