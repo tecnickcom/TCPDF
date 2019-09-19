@@ -7737,6 +7737,7 @@ class TCPDF {
 		return '';
 	}
 
+	protected static $cleaned_ids = array();
 	/**
 	 * Unset all class variables except the following critical variables.
 	 * @param $destroyall (boolean) if true destroys all class variables, otherwise preserves critical variables.
@@ -7749,11 +7750,19 @@ class TCPDF {
 		if (isset($this->internal_encoding) AND !empty($this->internal_encoding)) {
 			mb_internal_encoding($this->internal_encoding);
 		}
+		if (isset(self::$cleaned_ids[$this->file_id])) {
+			$destroyall = false;
+		}
 		if ($destroyall AND !$preserve_objcopy) {
+			self::$cleaned_ids[$this->file_id] = true;
 			// remove all temporary files
-			$tmpfiles = glob(K_PATH_CACHE.'__tcpdf_'.$this->file_id.'_*');
-			if (!empty($tmpfiles)) {
-				array_map('unlink', $tmpfiles);
+			if ($handle = opendir(K_PATH_CACHE)) {
+				while ( false !== ( $file_name = readdir( $handle ) ) ) {
+					if (strpos($file_name, '__tcpdf_'.$this->file_id.'_') === 0) {
+						unlink(K_PATH_CACHE.$file_name);
+					}
+				}
+				closedir($handle);
 			}
 		}
 		$preserve = array(
