@@ -1929,7 +1929,7 @@ class TCPDF_STATIC {
 				continue;
 			}
 			$ret = @file_get_contents($path);
-			if ($ret !== false) {
+			if ( $ret != false ) {
 			    return $ret;
 			}
 			// try to use CURL for URLs
