@@ -1761,6 +1761,13 @@ class TCPDF {
 	protected $pdfa_mode = false;
 
 	/**
+	 * version of PDF/A mode (1 - 3).
+	 * @protected
+	 * @since 6.2.26 (2019-03-12)
+	 */
+	protected $pdfa_version = 1;
+
+	/**
 	 * Document creation date-time
 	 * @protected
 	 * @since 5.9.152 (2012-03-22)
@@ -1834,7 +1841,7 @@ class TCPDF {
 	 * @param $unicode (boolean) TRUE means that the input text is unicode (default = true)
 	 * @param $encoding (string) Charset encoding (used only when converting back html entities); default is UTF-8.
 	 * @param $diskcache (boolean) DEPRECATED FEATURE
-	 * @param $pdfa (boolean) If TRUE set the document to PDF/A mode.
+	 * @param $pdfa (integer) If not false, set the document to PDF/A mode and the good version (1 or 3).
 	 * @public
 	 * @see getPageSizeFromFormat(), setPageFormat()
 	 */
@@ -1850,8 +1857,14 @@ class TCPDF {
 		$this->font_obj_ids = array();
 		$this->page_obj_id = array();
 		$this->form_obj_id = array();
+
 		// set pdf/a mode
-		$this->pdfa_mode = $pdfa;
+		if ($pdfa != false) {
+			$this->pdfa_mode = true;
+			$this->pdfa_version = $pdfa;  // 1 or 3
+		} else
+			$this->pdfa_mode = false;
+
 		$this->force_srgb = false;
 		// set language direction
 		$this->rtl = false;
@@ -2828,10 +2841,13 @@ class TCPDF {
 	 * @since 1.4
 	 */
 	public function SetCompression($compress=true) {
+		$this->compress = false;
 		if (function_exists('gzcompress')) {
-			$this->compress = $compress ? true : false;
-		} else {
-			$this->compress = false;
+			if ($compress) {
+				if ( !$this->pdfa_mode) {
+					$this->compress = true;
+				}
+			}
 		}
 	}
 
@@ -4807,7 +4823,7 @@ class TCPDF {
 			$this->PageAnnots[$page] = array();
 		}
 		$this->PageAnnots[$page][] = array('n' => ++$this->n, 'x' => $x, 'y' => $y, 'w' => $w, 'h' => $h, 'txt' => $text, 'opt' => $opt, 'numspaces' => $spaces);
-		if (!$this->pdfa_mode) {
+		if (!$this->pdfa_mode || ($this->pdfa_mode && $this->pdfa_version == 3)) {
 			if ((($opt['Subtype'] == 'FileAttachment') OR ($opt['Subtype'] == 'Sound')) AND (!TCPDF_STATIC::empty_string($opt['FS']))
 				AND (@TCPDF_STATIC::file_exists($opt['FS']) OR TCPDF_STATIC::isValidURL($opt['FS']))
 				AND (!isset($this->embeddedfiles[basename($opt['FS'])]))) {
@@ -4833,8 +4849,8 @@ class TCPDF {
 	 * @see Annotation()
 	 */
 	protected function _putEmbeddedFiles() {
-		if ($this->pdfa_mode) {
-			// embedded files are not allowed in PDF/A mode
+		if ($this->pdfa_mode && $this->pdfa_version != 3)  {
+			// embedded files are not allowed in PDF/A mode version 1 and 2
 			return;
 		}
 		reset($this->embeddedfiles);
@@ -4847,7 +4863,10 @@ class TCPDF {
 					$this->efnames[$filename] = $filedata['f'].' 0 R';
 					// embedded file specification object
 					$out = $this->_getobj($filedata['f'])."\n";
-					$out .= '<</Type /Filespec /F '.$this->_datastring($filename, $filedata['f']).' /EF <</F '.$filedata['n'].' 0 R>> >>';
+					$out .= '<</Type /Filespec /F '.$this->_datastring($filename, $filedata['f']);
+					$out .= ' /UF '.$this->_datastring($filename, $filedata['f']);
+					$out .= ' /AFRelationship /Source';
+					$out .= ' /EF <</F '.$filedata['n'].' 0 R>> >>';
 					$out .= "\n".'endobj';
 					$this->_out($out);
 					// embedded file object
@@ -4856,6 +4875,11 @@ class TCPDF {
 						$data = gzcompress($data);
 						$filter = ' /Filter /FlateDecode';
 					}
+
+					if ($this->pdfa_version == 3) {
+						$filter = ' /Subtype /text#2Fxml';
+					}
+
 					$stream = $this->_getrawstream($data, $filedata['n']);
 					$out = $this->_getobj($filedata['n'])."\n";
 					$out .= '<< /Type /EmbeddedFile'.$filter.' /Length '.strlen($stream).' /Params <</Size '.$rawsize.'>> >>';
@@ -8496,8 +8520,8 @@ class TCPDF {
 							break;
 						}
 						case 'fileattachment': {
-							if ($this->pdfa_mode) {
-								// embedded files are not allowed in PDF/A mode
+							if ($this->pdfa_mode && $this->pdfa_version != 3) {
+								// embedded files are not allowed in PDF/A mode version 1 and 2
 								break;
 							}
 							if (!isset($pl['opt']['fs'])) {
@@ -9578,7 +9602,7 @@ class TCPDF {
 		$xmp .= "\t\t".'</rdf:Description>'."\n";
 		if ($this->pdfa_mode) {
 			$xmp .= "\t\t".'<rdf:Description rdf:about="" xmlns:pdfaid="http://www.aiim.org/pdfa/ns/id/">'."\n";
-			$xmp .= "\t\t\t".'<pdfaid:part>1</pdfaid:part>'."\n";
+			$xmp .= "\t\t\t".'<pdfaid:part>'.$this->pdfa_version.'</pdfaid:part>'."\n";
 			$xmp .= "\t\t\t".'<pdfaid:conformance>B</pdfaid:conformance>'."\n";
 			$xmp .= "\t\t".'</rdf:Description>'."\n";
 		}
@@ -13997,7 +14021,7 @@ class TCPDF {
 	 * @since 3.1.000 (2008-06-09)
 	 */
 	public function setPDFVersion($version='1.7') {
-		if ($this->pdfa_mode) {
+		if ($this->pdfa_mode && $this->pdfa_version == 1 ) {
 			// PDF/A mode
 			$this->PDFVersion = '1.4';
 		} else {
