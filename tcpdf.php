@@ -685,6 +685,12 @@ class TCPDF {
 	 */
 	protected $footer_line_color = array(0,0,0);
 
+    /**
+	 * Text for footer (string).
+	 * @protected
+	 */
+	protected $footer_text = '';
+
 	/**
 	 * Text shadow data array.
 	 * @since 5.9.174 (2012-07-25)
@@ -3290,11 +3296,13 @@ class TCPDF {
 	 * Set footer data.
 	 * @param $tc (array) RGB array color for text.
 	 * @param $lc (array) RGB array color for line.
+	 * @param $t (string) text.
 	 * @public
 	 */
-	public function setFooterData($tc=array(0,0,0), $lc=array(0,0,0)) {
+	public function setFooterData($tc=array(0,0,0), $lc=array(0,0,0), $t = '') {
 		$this->footer_text_color = $tc;
 		$this->footer_line_color = $lc;
+		$this->footer_text = $t;
 	}
 
 	/**
@@ -3525,9 +3533,17 @@ class TCPDF {
 		if ($this->getRTL()) {
 			$this->SetX($this->original_rMargin);
 			$this->Cell(0, 0, $pagenumtxt, 'T', 0, 'L');
+			if($this->footer_text) {
+				$this->SetX($this->original_lMargin);
+				$this->Cell(0, 0, $this->footer_text, 'T', 0, 'R');
+			}
 		} else {
 			$this->SetX($this->original_lMargin);
 			$this->Cell(0, 0, $this->getAliasRightShift().$pagenumtxt, 'T', 0, 'R');
+			if($this->footer_text) {
+				$this->SetX($this->original_rMargin);
+				$this->Cell(0, 0, $this->footer_text, 'T', 0, 'L');
+			}
 		}
 	}
 
