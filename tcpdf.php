@@ -7791,14 +7791,14 @@ class TCPDF {
 			if ($handle = opendir(K_PATH_CACHE)) {
 				while ( false !== ( $file_name = readdir( $handle ) ) ) {
 					if (strpos($file_name, '__tcpdf_'.$this->file_id.'_') === 0) {
-						@unlink(K_PATH_CACHE.$file_name);
+						unlink(K_PATH_CACHE.$file_name);
 					}
 				}
 				closedir($handle);
 			}
 			if (isset($this->imagekeys)) {
 				foreach($this->imagekeys as $file) {
-					@unlink($file);
+					if(is_file($file)) unlink($file);
 				}
 			}
 		}
