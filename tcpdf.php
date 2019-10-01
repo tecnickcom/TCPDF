@@ -7798,7 +7798,7 @@ class TCPDF {
 			}
 			if (isset($this->imagekeys)) {
 				foreach($this->imagekeys as $file) {
-					if(is_file($file)) unlink($file);
+					if(substr($file, 0 , 5) === '/tmp/' && is_file($file)) unlink($file);
 				}
 			}
 		}
