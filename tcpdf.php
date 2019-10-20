@@ -7796,10 +7796,8 @@ class TCPDF {
 				}
 				closedir($handle);
 			}
-			if (isset($this->imagekeys)) {
-				foreach($this->imagekeys as $file) {
-					unlink($file);
-				}
+			foreach($this->imagekeys as $file) {
+				unlink($file);
 			}
 		}
 		$preserve = array(
@@ -7809,6 +7807,7 @@ class TCPDF {
 			'bufferlen',
 			'buffer',
 			'cached_files',
+			'imagekeys',
 			'sign',
 			'signature_data',
 			'signature_max_length',
