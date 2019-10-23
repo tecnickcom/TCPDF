@@ -3565,6 +3565,7 @@ class TCPDF {
 		$this->_out("\n");
 		if ($this->print_footer) {
 			$this->setGraphicVars($this->default_graphic_vars);
+			$this->PageBreakTrigger = $this->h;
 			$this->current_column = 0;
 			$this->num_columns = 1;
 			$temp_thead = $this->thead;
@@ -3596,6 +3597,7 @@ class TCPDF {
 		}
 		// restore graphic settings
 		$this->setGraphicVars($gvars);
+		$this->PageBreakTrigger = $gvars['PageBreakTrigger'];
 		$this->current_column = $gvars['current_column'];
 		$this->num_columns = $gvars['num_columns'];
 		// calculate footer length
