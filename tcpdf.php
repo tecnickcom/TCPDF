@@ -18912,26 +18912,30 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				if (!isset($tag['height'])) {
 					$tag['height'] = 0;
 				}
-				//if (!isset($tag['attribute']['align'])) {
+				if (!isset($tag['attribute']['align'])) {
 					// the only alignment supported is "bottom"
 					// further development is required for other modes.
 					$tag['attribute']['align'] = 'bottom';
-				//}
+				}
 				switch($tag['attribute']['align']) {
 					case 'top': {
 						$align = 'T';
+						$deltay = $tag['fontsize']/4;
 						break;
 					}
 					case 'middle': {
 						$align = 'M';
+						$deltay = $tag['fontsize']/4;
 						break;
 					}
 					case 'bottom': {
 						$align = 'B';
+						$deltay = 0;
 						break;
 					}
 					default: {
 						$align = 'B';
+						$deltay = 0;
 						break;
 					}
 				}
@@ -18972,19 +18976,19 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					$ih = $this->getHTMLUnitToUnits($tag['height'], ($tag['fontsize'] / $this->k), 'px', false);
 				}
 				if (($type == 'eps') OR ($type == 'ai')) {
-					$this->ImageEps($imgsrc, $xpos, $this->y, $iw, $ih, $imglink, true, $align, '', $border, true);
+					$this->ImageEps($imgsrc, $xpos, $this->y+$deltay, $iw, $ih, $imglink, true, $align, '', $border, true);
 				} elseif ($type == 'svg') {
-					$this->ImageSVG($imgsrc, $xpos, $this->y, $iw, $ih, $imglink, $align, '', $border, true);
+					$this->ImageSVG($imgsrc, $xpos, $this->y+$deltay, $iw, $ih, $imglink, $align, '', $border, true);
 				} else {
-					$this->Image($imgsrc, $xpos, $this->y, $iw, $ih, '', $imglink, $align, false, 300, '', false, false, $border, false, false, true);
+					$this->Image($imgsrc, $xpos, $this->y+$deltay, $iw, $ih, '', $imglink, $align, false, 300, '', false, false, $border, false, false, true);
 				}
 				switch($align) {
 					case 'T': {
-						$this->y = $prevy;
+						$this->y = $prevy + $deltay;
 						break;
 					}
 					case 'M': {
-						$this->y = (($this->img_rb_y + $prevy - ($this->getCellHeight($tag['fontsize'] / $this->k))) / 2);
+						$this->y = (($this->img_rb_y + $prevy - ($this->getCellHeight($tag['fontsize'] / $this->k))) / 2) + $deltay/2;
 						break;
 					}
 					case 'B': {
