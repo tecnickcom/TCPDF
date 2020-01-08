@@ -4722,7 +4722,7 @@ class TCPDF {
 	 */
 	public function SetLink($link, $y=0, $page=-1) {
 		$fixed = false;
-		if (!empty($page) AND ($page[0] == '*')) {
+		if (!empty($page) AND (substr($page, 0, 1) == '*')) {
 			$page = intval(substr($page, 1));
 			// this page number will not be changed when moving/add/deleting pages
 			$fixed = true;
@@ -12279,7 +12279,7 @@ class TCPDF {
 			$x = $this->w;
 		}
 		$fixed = false;
-		if (!empty($page) AND ($page[0] == '*')) {
+		if (!empty($page) AND (substr($page, 0, 1) == '*')) {
 			$page = intval(substr($page, 1));
 			// this page number will not be changed when moving/add/deleting pages
 			$fixed = true;
@@ -12382,7 +12382,7 @@ class TCPDF {
 			$x = $this->w;
 		}
 		$fixed = false;
-		if (!empty($page) AND ($page[0] == '*')) {
+		if (!empty($page) AND (substr($page, 0, 1) == '*')) {
 			$page = intval(substr($page, 1));
 			// this page number will not be changed when moving/add/deleting pages
 			$fixed = true;
