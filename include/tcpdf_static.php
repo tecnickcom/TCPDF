@@ -1856,7 +1856,7 @@ class TCPDF_STATIC {
 	 * @since 6.3.3 (2019-11-01)
 	 * @public static
 	 */
-	public function encodeUrlQuery($url) {
+	public static function encodeUrlQuery($url) {
 		$urlData = parse_url($url);
 		if (isset($urlData['query']) && $urlData['query']) {
 			$urlQueryData = [];
