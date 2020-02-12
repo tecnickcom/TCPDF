@@ -13,7 +13,7 @@
     "pdf417",
     "barcodes"
   ],
-  "license": "LGPL-3.0-or-later",
+  "license": "LGPL-3.0-only",
   "authors": [
     {
       "name": "Nicola Asuni",
