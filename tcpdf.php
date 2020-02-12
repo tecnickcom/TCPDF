@@ -7785,8 +7785,10 @@ class TCPDF {
 				}
 				closedir($handle);
 			}
-			foreach($this->imagekeys as $file) {
-				unlink($file);
+			if (isset($this->imagekeys)) {
+				foreach($this->imagekeys as $file) {
+					unlink($file);
+				}
 			}
 		}
 		$preserve = array(
