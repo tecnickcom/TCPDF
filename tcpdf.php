@@ -12382,7 +12382,7 @@ class TCPDF {
 			$x = $this->w;
 		}
 		$fixed = false;
-		if (!empty($page) AND (substr($page, 0, 1) == '*')) {
+		if ((string)$page && (((string)$page)[0] == '*')) {
 			$page = intval(substr($page, 1));
 			// this page number will not be changed when moving/add/deleting pages
 			$fixed = true;
