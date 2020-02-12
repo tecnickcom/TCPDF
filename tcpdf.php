@@ -7165,31 +7165,20 @@ class TCPDF {
 			$info['i'] = $this->setImageBuffer($file, $info);
 		}
 		// set alignment
+		$this->img_rb_x = $x + $w;
 		$this->img_rb_y = $y + $h;
+
 		// set alignment
-		if ($this->rtl) {
-			if ($palign == 'L') {
-				$ximg = $this->lMargin;
-			} elseif ($palign == 'C') {
-				$ximg = ($this->w + $this->lMargin - $this->rMargin - $w) / 2;
-			} elseif ($palign == 'R') {
-				$ximg = $this->w - $this->rMargin - $w;
-			} else {
-				$ximg = $x - $w;
-			}
-			$this->img_rb_x = $ximg;
+		if ($palign == 'L') {
+			$ximg = $this->lMargin;
+		} elseif ($palign == 'C') {
+			$ximg = ($this->w + $this->lMargin - $this->rMargin - $w) / 2;
+		} elseif ($palign == 'R') {
+			$ximg = $this->w - $this->rMargin - $w;
 		} else {
-			if ($palign == 'L') {
-				$ximg = $this->lMargin;
-			} elseif ($palign == 'C') {
-				$ximg = ($this->w + $this->lMargin - $this->rMargin - $w) / 2;
-			} elseif ($palign == 'R') {
-				$ximg = $this->w - $this->rMargin - $w;
-			} else {
-				$ximg = $x;
-			}
-			$this->img_rb_x = $ximg + $w;
+			$ximg = $x;
 		}
+		
 		if ($ismask OR $hidden) {
 			// image is not displayed
 			return $info['i'];
