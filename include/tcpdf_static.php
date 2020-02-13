@@ -1808,8 +1808,8 @@ class TCPDF_STATIC {
 	/**
 	 * Wrapper to use fopen only with local files
 	 * @param filename (string) Name of the file to open
-	 * @param $mode (string) 
-	 * @return Returns a file pointer resource on success, or FALSE on error.  
+	 * @param $mode (string)
+	 * @return Returns a file pointer resource on success, or FALSE on error.
 	 * @public static
 	 */
 	public static function fopenLocal($filename, $mode) {
@@ -1872,13 +1872,16 @@ class TCPDF_STATIC {
 	 * Wrapper for file_exists.
 	 * Checks whether a file or directory exists.
 	 * Only allows some protocols and local files.
-	 * @param filename (string) Path to the file or directory. 
-	 * @return Returns TRUE if the file or directory specified by filename exists; FALSE otherwise.  
+	 * @param filename (string) Path to the file or directory.
+	 * @return Returns TRUE if the file or directory specified by filename exists; FALSE otherwise.
 	 * @public static
 	 */
 	public static function file_exists($filename) {
 		if (preg_match('|^https?://|', $filename) == 1) {
 			return self::url_exists($filename);
+		}
+		if(stripos($filename,'data:')===0) { //File exists if base64 data.
+    	return true;
 		}
 		if (strpos($filename, '://')) {
 			return false; // only support http and https wrappers for security reasons
@@ -1890,7 +1893,7 @@ class TCPDF_STATIC {
 	 * Reads entire file into a string.
 	 * The file can be also an URL.
 	 * @param $file (string) Name of the file or URL to read.
-	 * @return The function returns the read data or FALSE on failure. 
+	 * @return The function returns the read data or FALSE on failure.
 	 * @author Nicola Asuni
 	 * @since 6.0.025
 	 * @public static
@@ -2120,7 +2123,7 @@ class TCPDF_STATIC {
 		return $a['i'];
 	}
 
-	
+
 	/**
 	 * Array of page formats
 	 * measures are calculated in this way: (inches * 72) or (millimeters * 72 / 25.4)
