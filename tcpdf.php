@@ -5396,6 +5396,9 @@ class TCPDF {
 				$s .= 'q '.$this->TextColor.' ';
 			}
 			// rendering mode
+			if (!isset($this->textstrokewidth) || !is_numeric($this->textstrokewidth)) {  // mike, 19/02/20, was getting FALSE in $this->textstrokewidth
+				$this->textstrokewidth = 0; 
+			}
 			$s .= sprintf('BT %d Tr %F w ET ', $this->textrendermode, ($this->textstrokewidth * $this->k));
 			// count number of spaces
 			$ns = substr_count($txt, chr(32));
