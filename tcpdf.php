@@ -6903,7 +6903,9 @@ class TCPDF {
 			unset($imgdata);
 			$imsize = @getimagesize($file);
 			if ($imsize === FALSE) {
-				unlink($file);
+				if( file_exists($file) ){
+					@unlink($file);
+				}
 				$file = $original_file;
 			}
 		}
@@ -7138,7 +7140,9 @@ class TCPDF {
 					$tempname = TCPDF_STATIC::getObjFilename('img', $this->file_id);
 					$img->writeImage($tempname);
 					$info = TCPDF_IMAGES::_parsejpeg($tempname);
-					unlink($tempname);
+					if( file_exists($tempname) ){
+						@unlink($tempname);
+					}
 					$img->destroy();
 				} catch(Exception $e) {
 					$info = false;
@@ -7780,7 +7784,9 @@ class TCPDF {
 			if ($handle = @opendir(K_PATH_CACHE)) {
 				while ( false !== ( $file_name = readdir( $handle ) ) ) {
 					if (strpos($file_name, '__tcpdf_'.$this->file_id.'_') === 0) {
-						unlink(K_PATH_CACHE.$file_name);
+						if( file_exists(K_PATH_CACHE.$file_name) ){
+							@unlink(K_PATH_CACHE.$file_name);
+						}
 					}
 				}
 				closedir($handle);
@@ -7788,7 +7794,9 @@ class TCPDF {
 			if (isset($this->imagekeys)) {
 				foreach($this->imagekeys as $file) {
 					if (strpos($file, K_PATH_CACHE) === 0) {
-						@unlink($file);
+						if( file_exists($file) ){
+							@unlink($file);
+						}
 					}
 				}
 			}
