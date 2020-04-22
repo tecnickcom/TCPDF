@@ -9992,7 +9992,7 @@ class TCPDF {
 				$out .= ' /P '.$this->page_obj_id[($esa['page'])].' 0 R'; // link to signature appearance page
 				$out .= ' /F 4';
 				$out .= ' /FT /Sig';
-				$signame = $esa['name'].sprintf(' [%03d]', ($key + 1));
+				$signame = $this->getUniqueEmptySignatureAppearanceName($esa['name'], $key);
 				$out .= ' /T '.$this->_textstring($signame, $esa['objid']);
 				$out .= ' /Ff 0';
 				$out .= ' >>';
@@ -10054,6 +10054,25 @@ class TCPDF {
 		$this->_out($o);
 		$this->_out('%%EOF');
 		$this->state = 3; // end-of-doc
+	}
+
+	/**
+     * Add an index after the name in case of duplicates. Example : "SignatureDebtor" -> "SignatureDebtor [001]"
+     * If the name is already unique, keep as it. Example : "SignatureDebtor" -> "SignatureDebtor"
+     *
+	 * @param string $name
+	 * @param int $key
+	 *
+	 * @return string
+	 */
+	protected function getUniqueEmptySignatureAppearanceName($name, $key) {
+		$counts = array_count_values(array_column($this->empty_signature_appearance, 'name'));
+
+		if (isset($counts[$name]) && $counts[$name] > 1) {
+			return $name.sprintf(' [%03d]', $key + 1);
+		}
+
+		return $name;
 	}
 
 	/**
