@@ -9992,8 +9992,7 @@ class TCPDF {
 				$out .= ' /P '.$this->page_obj_id[($esa['page'])].' 0 R'; // link to signature appearance page
 				$out .= ' /F 4';
 				$out .= ' /FT /Sig';
-				$signame = $esa['name'].sprintf(' [%03d]', ($key + 1));
-				$out .= ' /T '.$this->_textstring($signame, $esa['objid']);
+				$out .= ' /T '.$this->_textstring($esa['name'], $esa['objid']);
 				$out .= ' /Ff 0';
 				$out .= ' >>';
 				$out .= "\n".'endobj';
@@ -13524,7 +13523,15 @@ class TCPDF {
 	 */
 	public function addEmptySignatureAppearance($x=0, $y=0, $w=0, $h=0, $page=-1, $name='') {
 		++$this->n;
-		$this->empty_signature_appearance[] = array('objid' => $this->n) + $this->getSignatureAppearanceArray($x, $y, $w, $h, $page, $name);
+
+        $emptySignatureAppearance = array('objid' => $this->n) + $this->getSignatureAppearanceArray($x, $y, $w, $h, $page, $name);
+
+        // signature appearance name must be unique
+        if (false !== array_search($emptySignatureAppearance['name'], array_column($this->empty_signature_appearance, 'name'))) {
+            $emptySignatureAppearance['name'] = $emptySignatureAppearance['name'].sprintf(' [%03d]', count($this->empty_signature_appearance));
+        }
+
+        $this->empty_signature_appearance[] = $emptySignatureAppearance;
 	}
 
 	/**
