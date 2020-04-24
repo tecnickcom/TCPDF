@@ -7789,7 +7789,7 @@ class TCPDF {
 				foreach($this->imagekeys as $file) {
 					if (strpos($file, K_PATH_CACHE) === 0) {
 					    if( file_exists($file)) {
-                            @unlink($file);
+					        @unlink($file);
                         }
 					}
 				}
