@@ -9859,7 +9859,7 @@ class TCPDF {
 				}
 				$out .= ' >> >>';
 			}
-			$font = $this->getFontBuffer('helvetica');
+			$font = $this->getFontBuffer(defined('PDF_FONT_NAME_MAIN')?PDF_FONT_NAME_MAIN:'helvetica');
 			$out .= ' /DA (/F'.$font['i'].' 0 Tf 0 g)';
 			$out .= ' /Q '.(($this->rtl)?'2':'0');
 			//$out .= ' /XFA ';
