@@ -1931,6 +1931,9 @@ class TCPDFBarcode {
 				}
 			}
 			$check %= 11;
+			if ($check == 10) {
+				$check = '-';
+			}
 			$code .= $check;
 			++$len;
 		}
