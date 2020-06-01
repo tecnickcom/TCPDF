@@ -4851,6 +4851,21 @@ class TCPDF {
 	}
 
 	/**
+	 * Attach a file to the PDF without embedding it as an annotation.
+	 *
+	 * @param $filestream (mixed) The file to attach.
+	 */
+	public function Attachment($filestream) {
+		if (!$this->pdfa_mode || ($this->pdfa_mode && $this->pdfa_version == 3)) {
+			if ((!TCPDF_STATIC::empty_string($filestream))
+				AND (@TCPDF_STATIC::file_exists($filestream) OR TCPDF_STATIC::isValidURL($filestream))
+				AND (!isset($this->embeddedfiles[basename($filestream)]))) {
+				$this->embeddedfiles[basename($filestream)] = array('f' => ++$this->n, 'n' => ++$this->n, 'file' => $filestream);
+			}
+		}
+	}
+
+	/**
 	 * Embedd the attached files.
 	 * @since 4.4.000 (2008-12-07)
 	 * @protected
