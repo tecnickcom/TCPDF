@@ -1676,6 +1676,13 @@ class TCPDF {
 	protected $svgtextmode = array();
 
 	/**
+	 * SVG text properties.
+	 * @protected
+	 * @since 5.8.013 (2010-08-23)
+	 */
+	protected $additionalPutInfo = array();
+
+	/**
 	 * Array of SVG properties.
 	 * @protected
 	 * @since 5.0.000 (2010-05-02)
@@ -2889,6 +2896,17 @@ class TCPDF {
 	 */
 	public function SetTitle($title) {
 		$this->title = $title;
+	}
+
+	/**
+	 * Defines the title of the document.
+	 * @param $title (string) The title.
+	 * @public
+	 * @since 1.2
+	 * @see SetAuthor(), SetCreator(), SetKeywords(), SetSubject()
+	 */
+	public function SetAdditionalPutInfo($array) {
+		$this->additionalPutInfo = $array;
 	}
 
 	/**
@@ -9491,6 +9509,7 @@ class TCPDF {
 		if ($this->docinfounicode) {
 			$this->isunicode = true;
 		}
+
 		if (!TCPDF_STATIC::empty_string($this->title)) {
 			// The document's title.
 			$out .= ' /Title '.$this->_textstring($this->title, $oid);
@@ -9511,6 +9530,7 @@ class TCPDF {
 			// If the document was converted to PDF from another format, the name of the conforming product that created the original document from which it was converted.
 			$out .= ' /Creator '.$this->_textstring($this->creator, $oid);
 		}
+		
 		// restore previous isunicode value
 		$this->isunicode = $prev_isunicode;
 		// default producer
@@ -9521,6 +9541,11 @@ class TCPDF {
 		$out .= ' /ModDate '.$this->_datestring(0, $this->doc_modification_timestamp);
 		// A name object indicating whether the document has been modified to include trapping information
 		$out .= ' /Trapped /False';
+
+		foreach($this->additionalPutInfo as $key => $value) {
+			$out .= ' /'.$key.' '.$this->_textstring($value, $oid);
+		}
+
 		$out .= ' >>';
 		$out .= "\n".'endobj';
 		$this->_out($out);
