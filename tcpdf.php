@@ -119,6 +119,9 @@ require_once(dirname(__FILE__).'/include/tcpdf_colors.php');
 require_once(dirname(__FILE__).'/include/tcpdf_images.php');
 // TCPDF static methods and data
 require_once(dirname(__FILE__).'/include/tcpdf_static.php');
+// CMSTimeStamper class for apply TSA timestamp
+require_once(dirname(__FILE__).'/vendor/autoload.php');
+use Blobfish\CmsTimestamper;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -7624,10 +7627,10 @@ class TCPDF {
 			$signature = substr($signature, (strpos($signature, "%%EOF\n\n------") + 13));
 			$tmparr = explode("\n\n", $signature);
 			$signature = $tmparr[1];
-			// decode signature
-			$signature = base64_decode(trim($signature));
 			// add TSA timestamp to signature
 			$signature = $this->applyTSA($signature);
+			// decode signature
+			$signature = base64_decode(trim($signature));
 			// convert signature to hex
 			$signature = current(unpack('H*', $signature));
 			$signature = str_pad($signature, $this->signature_max_length, '0');
@@ -13604,8 +13607,9 @@ class TCPDF {
 		if (!$this->tsa_timestamp) {
 			return $signature;
 		}
-		//@TODO: implement this feature
-		return $signature;
+		$signature = "-----BEGIN CMS-----$signature-----END CMS-----";
+		$updatedSignature = substr(CmsTimestamper::addTimestampToCms($signature, $this->tsa_data['tsa_host']),19,-17);
+		return $updatedSignature;
 	}
 
 	/**

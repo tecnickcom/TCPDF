@@ -1,0 +1,12 @@
+{
+  "name": "blobfish/phpcmstimestamper",
+  "description": "Append RFC 3161 timestamp to CMS signature",
+  "require": {
+    "phpseclib/phpseclib": "2.0.7"
+  },
+  "autoload": {
+    "psr-4": {
+      "Blobfish\\": "src/"
+    }
+  }
+}
