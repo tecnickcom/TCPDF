@@ -19554,6 +19554,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				// closing tag used for the thead part
 				$in_table_head = true;
 				$this->inthead = false;
+				break;
 			case 'table': {
 				$table_el = $parent;
 				// set default border
