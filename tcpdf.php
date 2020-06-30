@@ -4962,10 +4962,10 @@ class TCPDF {
 
 	/**
 	 * Add page if needed.
-	 * @param $h (float) Cell height. Default value: 0.
-	 * @param $y (mixed) starting y position, leave empty for current position.
+	 * @param float|int $h (float) Cell height. Default value: 0.
+	 * @param int|string $y (mixed) starting y position, leave empty for current position.
 	 * @param $addpage (boolean) if true add a page, otherwise only return the true/false state
-	 * @return boolean true in case of page break, false otherwise.
+	 * @return bool true in case of page break, false otherwise.
 	 * @since 3.2.000 (2008-07-01)
 	 * @protected
 	 */
