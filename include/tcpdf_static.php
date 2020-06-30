@@ -1136,7 +1136,7 @@ class TCPDF_STATIC {
 	 * @see setHtmlVSpace()
 	 * @public static
 	 */
-	public static function fixHTMLCode($html, $default_css='', $tagvs='', $tidy_options='', &$tagvspaces) {
+	public static function fixHTMLCode($html, $default_css, $tagvs, $tidy_options, &$tagvspaces) {
 		// configure parameters for HTML Tidy
 		if ($tidy_options === '') {
 			$tidy_options = array (
@@ -1859,7 +1859,7 @@ class TCPDF_STATIC {
 	public static function encodeUrlQuery($url) {
 		$urlData = parse_url($url);
 		if (isset($urlData['query']) && $urlData['query']) {
-			$urlQueryData = array();
+			$urlQueryData = [];
 			parse_str(urldecode($urlData['query']), $urlQueryData);
 			$updatedUrl = $urlData['scheme'] . '://' . $urlData['host'] . $urlData['path'] . '?' . http_build_query($urlQueryData);
 		} else {
@@ -2507,7 +2507,7 @@ class TCPDF_STATIC {
 	 * @since 5.0.010 (2010-05-17)
 	 * @public static
 	 */
-	public static function setPageBoxes($page, $type, $llx, $lly, $urx, $ury, $points=false, $k, $pagedim=array()) {
+	public static function setPageBoxes($page, $type, $llx, $lly, $urx, $ury, $points, $k, $pagedim=array()) {
 		if (!isset($pagedim[$page])) {
 			// initialize array
 			$pagedim[$page] = array();
