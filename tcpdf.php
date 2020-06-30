@@ -8160,7 +8160,7 @@ class TCPDF {
 						$annots .= ' /FT /Btn';
 						$annots .= ' /Kids [';
 						$defval = '';
-						foreach ($this->radiobutton_groups[$n][$pl['txt']] as $key => $data) {
+						foreach ($this->radiobutton_groups[$n][$pl['txt']] as $keyInner => $data) {
 							if (isset($data['kid'])) {
 								$annots .= ' '.$data['kid'].' 0 R';
 								if ($data['def'] !== 'Off') {
