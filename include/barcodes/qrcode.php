@@ -1386,7 +1386,7 @@ class QRcode {
 			$p += 2;
 		}
 		$this->items = $this->appendNewInputItem($this->items, QR_MODE_KJ, $p, str_split($this->dataStr));
-		return $run;
+		return 0;
 	}
 
 	/**
@@ -1443,6 +1443,7 @@ class QRcode {
 	 * @return (int)
 	 */
 	 protected function splitString() {
+	    $hint = 0;
 		while (strlen($this->dataStr) > 0) {
 			$mode = $this->identifyMode(0);
 			switch ($mode) {

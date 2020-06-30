@@ -956,6 +956,7 @@ class TCPDF_FONTS {
 			// sfnt version must be 0x00010000 for TrueType version 1.0.
 			return $font;
 		}
+		$c = 0;
 		$offset += 4;
 		// get number of tables
 		$numTables = TCPDF_STATIC::_getUSHORT($font, $offset);
