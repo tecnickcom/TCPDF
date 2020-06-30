@@ -1702,27 +1702,6 @@ class QRcode {
 	}
 
 	/**
-	 * insertStructuredAppendHeader
-	 * @param $items (array)
-	 * @param $size (int)
-	 * @param $index (int)
-	 * @param $parity (int)
-	 * @return array items
-	 */
-	 protected function insertStructuredAppendHeader($items, $size, $index, $parity) {
-		if ($size > MAX_STRUCTURED_SYMBOLS) {
-			return -1;
-		}
-		if (($index <= 0) OR ($index > MAX_STRUCTURED_SYMBOLS)) {
-			return -1;
-		}
-		$buf = array($size, $index, $parity);
-		$entry = $this->newInputItem(QR_MODE_ST, 3, buf);
-		array_unshift($items, $entry);
-		return $items;
-	}
-
-	/**
 	 * calcParity
 	 * @param $items (array)
 	 * @return int parity
