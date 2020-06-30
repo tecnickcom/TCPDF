@@ -2377,7 +2377,7 @@ class TCPDF {
 
 	/**
 	 * Return the RTL status
-	 * @return boolean
+	 * @return bool
 	 * @public
 	 * @since 4.0.012 (2008-07-24)
 	 */
@@ -2419,7 +2419,7 @@ class TCPDF {
 
 	/**
 	 * Return the current temporary RTL status
-	 * @return boolean
+	 * @return bool
 	 * @public
 	 * @since 4.8.014 (2009-11-04)
 	 */
@@ -2815,7 +2815,7 @@ class TCPDF {
 
 	/**
 	 * Return the auto-page-break mode (true or false).
-	 * @return boolean auto-page-break mode
+	 * @return bool auto-page-break mode
 	 * @public
 	 * @since 5.9.088
 	 */
@@ -4937,7 +4937,7 @@ class TCPDF {
 	 * Whenever a page break condition is met, the method is called, and the break is issued or not depending on the returned value.
 	 * The default implementation returns a value according to the mode selected by SetAutoPageBreak().<br />
 	 * This method is called automatically and should not be called directly by the application.
-	 * @return boolean
+	 * @return bool
 	 * @public
 	 * @since 1.4
 	 * @see SetAutoPageBreak()
@@ -14627,7 +14627,7 @@ class TCPDF {
 	 * @since 3.1.000 (2008-06-09)
 	 * @protected
 	 */
-	function _putshaders() {
+	public function _putshaders() {
 		if ($this->pdfa_mode) {
 			return;
 		}
@@ -22188,7 +22188,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 
 	/**
 	 * Return the default option for font subsetting.
-	 * @return boolean default font subsetting state.
+	 * @return bool default font subsetting state.
 	 * @author Nicola Asuni
 	 * @public
 	 * @since 5.3.002 (2010-06-07)

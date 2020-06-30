@@ -1257,7 +1257,7 @@ class QRcode {
 	 * Return true if the character at specified position is a number
 	 * @param $str (string) string
 	 * @param $pos (int) characted position
-	 * @return boolean true of false
+	 * @return bool true of false
 	 */
 	 protected function isdigitat($str, $pos) {
 		if ($pos >= strlen($str)) {
@@ -1270,7 +1270,7 @@ class QRcode {
 	 * Return true if the character at specified position is an alphanumeric character
 	 * @param $str (string) string
 	 * @param $pos (int) characted position
-	 * @return boolean true of false
+	 * @return bool true of false
 	 */
 	 protected function isalnumat($str, $pos) {
 		if ($pos >= strlen($str)) {
@@ -1723,7 +1723,7 @@ class QRcode {
 	 * checkModeNum
 	 * @param $size (int)
 	 * @param $data (array)
-	 * @return boolean true or false
+	 * @return bool true or false
 	 */
 	 protected function checkModeNum($size, $data) {
 		for ($i=0; $i<$size; ++$i) {
@@ -1747,7 +1747,7 @@ class QRcode {
 	 * checkModeAn
 	 * @param $size (int)
 	 * @param $data (array)
-	 * @return boolean true or false
+	 * @return bool true or false
 	 */
 	 protected function checkModeAn($size, $data) {
 		for ($i=0; $i<$size; ++$i) {
@@ -1814,7 +1814,7 @@ class QRcode {
 	 * checkModeKanji
 	 * @param $size (int)
 	 * @param $data (array)
-	 * @return boolean true or false
+	 * @return bool true or false
 	 */
 	 protected function checkModeKanji($size, $data) {
 		if ($size & 1) {
@@ -1834,7 +1834,7 @@ class QRcode {
 	 * @param $mode (int) encoding mode.
 	 * @param $size (int) size of data (byte).
 	 * @param $data (array) data to validate
-	 * @return boolean true in case of valid data, false otherwise
+	 * @return bool true in case of valid data, false otherwise
 	 */
 	protected function check($mode, $size, $data) {
 		if ($size <= 0) {

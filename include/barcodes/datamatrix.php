@@ -470,7 +470,7 @@ class Datamatrix {
 	 * Returns true if the char belongs to the selected mode
 	 * @param $chr (int) Character (byte) to check.
 	 * @param $mode (int) Current encoding mode.
-	 * @return boolean true if the char is of the selected mode.
+	 * @return bool true if the char is of the selected mode.
 	 * @protected
 	 */
 	protected function isCharMode($chr, $mode) {

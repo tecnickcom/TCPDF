@@ -276,7 +276,7 @@ class TCPDF_STATIC {
 	/**
 	 * Determine whether a string is empty.
 	 * @param $str (string) string to be checked
-	 * @return boolean true if string is empty
+	 * @return bool true if string is empty
 	 * @since 4.5.044 (2009-04-16)
 	 * @public static
 	 */
