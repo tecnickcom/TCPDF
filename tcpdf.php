@@ -7174,7 +7174,7 @@ class TCPDF {
 		} else {
 			$ximg = $x;
 		}
-		
+
 		if ($ismask OR $hidden) {
 			// image is not displayed
 			return $info['i'];
@@ -7775,7 +7775,7 @@ class TCPDF {
 			// remove all temporary files
 			if ($handle = @opendir(K_PATH_CACHE)) {
 				while ( false !== ( $file_name = readdir( $handle ) ) ) {
-					if (strpos($file_name, '__tcpdf_'.$this->file_id.'_') === 0) {
+					if (strpos($file_name, '__tcpdf_'.$this->file_id.'_') === 0 && file_exists(K_PATH_CACHE.$file_name)) {
 						unlink(K_PATH_CACHE.$file_name);
 					}
 				}
@@ -7783,8 +7783,8 @@ class TCPDF {
 			}
 			if (isset($this->imagekeys)) {
 				foreach($this->imagekeys as $file) {
-					if (strpos($file, K_PATH_CACHE) === 0) {
-						@unlink($file);
+					if (strpos($file, K_PATH_CACHE) === 0 && file_exists($file)) {
+						unlink($file);
 					}
 				}
 			}
