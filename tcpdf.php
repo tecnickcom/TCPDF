@@ -4291,7 +4291,9 @@ class TCPDF {
 				$fontfile = TCPDF_FONTS::getFontFullPath($tmp_fontfile, $fontdir);
 			}
 		}
-		$originalsize = $size1 = $size2 = null;
+		$originalsize = null;
+		$size1 = null;
+		$size2 = null;
 		// include font file
 		if (!TCPDF_STATIC::empty_string($fontfile) AND (@TCPDF_STATIC::file_exists($fontfile))) {
 			include($fontfile);
