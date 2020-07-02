@@ -1,1 +1,2 @@
 *.php text eol=lf
+/.github export-ignore
