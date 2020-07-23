@@ -1832,6 +1832,14 @@ class TCPDF {
 	 */
 	protected $gdgammacache = array();
 
+	/**
+	 * Whether to allow local file path in image html tags, when prefixed with file://
+     *
+	 * @protected
+	 * @since 6.4 (2020-07-23)
+	 */
+	protected $allowLocalFiles = false;
+	
 	//------------------------------------------------------------
 	// METHODS
 	//------------------------------------------------------------
@@ -2934,6 +2942,18 @@ class TCPDF {
 	public function SetCreator($creator) {
 		$this->creator = $creator;
 	}
+
+	/**
+	 * Whether to allow local file path in image html tags, when prefixed with file://
+	 * 
+	 * @param $allowLocalFiles (bool) True, when local files should be allowed. Otherwise false.
+	 * @public
+	 * @since 6.3
+	 */
+	public function SetAllowLocalFiles($allowLocalFiles) {
+		$this->allowLocalFiles = (bool) $allowLocalFiles;
+	}
+
 
 	/**
 	 * Throw an exception or print an error message and die if the K_TCPDF_PARSER_THROW_EXCEPTION_ERROR constant is set to true.
@@ -18885,7 +18905,11 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					// data stream
 					$imgsrc = '@'.base64_decode(substr($imgsrc, 1));
 					$type = '';
-				} else {
+				} elseif ( $this->allowLocalFiles && substr($imgsrc, 0, 7) === 'file://') {
+                    // get image type from a local file path
+                    $imgsrc = substr($imgsrc, 7);
+                    $type = TCPDF_IMAGES::getImageFileType($imgsrc);
+                } else {
 					if (($imgsrc[0] === '/') AND !empty($_SERVER['DOCUMENT_ROOT']) AND ($_SERVER['DOCUMENT_ROOT'] != '/')) {
 						// fix image path
 						$findroot = strpos($imgsrc, $_SERVER['DOCUMENT_ROOT']);
