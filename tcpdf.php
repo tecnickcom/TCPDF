@@ -2948,7 +2948,7 @@ class TCPDF {
 	 * 
 	 * @param $allowLocalFiles (bool) True, when local files should be allowed. Otherwise false.
 	 * @public
-	 * @since 6.3
+	 * @since 6.4
 	 */
 	public function SetAllowLocalFiles($allowLocalFiles) {
 		$this->allowLocalFiles = (bool) $allowLocalFiles;
