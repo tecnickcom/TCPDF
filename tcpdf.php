@@ -1838,7 +1838,7 @@ class TCPDF {
 	 * @protected
 	 * @since 6.4 (2020-07-23)
 	 */
-	protected $allowLocalFiles = false;
+	protected $allowLocalFiles = true;
 	
 	//------------------------------------------------------------
 	// METHODS
