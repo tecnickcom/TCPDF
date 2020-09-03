@@ -774,13 +774,6 @@ class TCPDF {
 	protected $encoding = 'UTF-8';
 
 	/**
-	 * PHP internal encoding.
-	 * @protected
-	 * @since 1.53.0.TC016
-	 */
-	protected $internal_encoding;
-
-	/**
 	 * Boolean flag to indicate if the document language is Right-To-Left.
 	 * @protected
 	 * @since 2.0.000
@@ -1840,8 +1833,6 @@ class TCPDF {
 	 * This is the class constructor.
 	 * It allows to set up the page format, the orientation and the measure unit used in all the methods (except for the font sizes).
 	 *
-	 * IMPORTANT: Please note that this method sets the mb_internal_encoding to ASCII, so if you are using the mbstring module functions with TCPDF you need to correctly set/unset the mb_internal_encoding when needed.
-	 *
 	 * @param $orientation (string) page orientation. Possible values are (case insensitive):<ul><li>P or Portrait (default)</li><li>L or Landscape</li><li>'' (empty string) for automatic orientation</li></ul>
 	 * @param $unit (string) User measure unit. Possible values are:<ul><li>pt: point</li><li>mm: millimeter (default)</li><li>cm: centimeter</li><li>in: inch</li></ul><br />A point equals 1/72 of inch, that is to say about 0.35 mm (an inch being 2.54 cm). This is a very common unit in typography; font sizes are expressed in that unit.
 	 * @param $format (mixed) The format used for pages. It can be either: one of the string values specified at getPageSizeFromFormat() or an array of parameters specified at setPageFormat().
@@ -1853,11 +1844,6 @@ class TCPDF {
 	 * @see getPageSizeFromFormat(), setPageFormat()
 	 */
 	public function __construct($orientation='P', $unit='mm', $format='A4', $unicode=true, $encoding='UTF-8', $diskcache=false, $pdfa=false) {
-		/* Set internal character encoding to ASCII */
-		if (function_exists('mb_internal_encoding') AND mb_internal_encoding()) {
-			$this->internal_encoding = mb_internal_encoding();
-			mb_internal_encoding('ASCII');
-		}
 		// set file ID for trailer
 		$serformat = (is_array($format) ? json_encode($format) : $format);
 		$this->file_id = md5(TCPDF_STATIC::getRandomSeed('TCPDF'.$orientation.$unit.$serformat.$encoding));
@@ -7767,10 +7753,6 @@ class TCPDF {
 	 * @since 4.5.016 (2009-02-24)
 	 */
 	public function _destroy($destroyall=false, $preserve_objcopy=false) {
-		// restore internal encoding
-		if (isset($this->internal_encoding) AND !empty($this->internal_encoding)) {
-			mb_internal_encoding($this->internal_encoding);
-		}
 		if (isset(self::$cleaned_ids[$this->file_id])) {
 			$destroyall = false;
 		}
@@ -7795,7 +7777,6 @@ class TCPDF {
 		}
 		$preserve = array(
 			'file_id',
-			'internal_encoding',
 			'state',
 			'bufferlen',
 			'buffer',
