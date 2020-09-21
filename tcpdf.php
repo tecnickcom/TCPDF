@@ -22986,22 +22986,26 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$f = ($this->h - $oy) * $this->k * (1 - $svgscale_y);
 		$this->_out(sprintf('%F %F %F %F %F %F cm', $svgscale_x, 0, 0, $svgscale_y, ($e + $svgoffset_x), ($f + $svgoffset_y)));
 		// creates a new XML parser to be used by the other XML functions
-		$this->parser = xml_parser_create('UTF-8');
+		$parser = xml_parser_create('UTF-8');
 		// the following function allows to use parser inside object
-		xml_set_object($this->parser, $this);
+		xml_set_object($parser, $this);
 		// disable case-folding for this XML parser
-		xml_parser_set_option($this->parser, XML_OPTION_CASE_FOLDING, 0);
+		xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, 0);
 		// sets the element handler functions for the XML parser
-		xml_set_element_handler($this->parser, 'startSVGElementHandler', 'endSVGElementHandler');
+		xml_set_element_handler($parser, 'startSVGElementHandler', 'endSVGElementHandler');
 		// sets the character data handler function for the XML parser
-		xml_set_character_data_handler($this->parser, 'segSVGContentHandler');
+		xml_set_character_data_handler($parser, 'segSVGContentHandler');
 		// start parsing an XML document
-		if (!xml_parse($this->parser, $svgdata)) {
-			$error_message = sprintf('SVG Error: %s at line %d', xml_error_string(xml_get_error_code($this->parser)), xml_get_current_line_number($this->parser));
+		if (!xml_parse($parser, $svgdata)) {
+			$error_message = sprintf('SVG Error: %s at line %d', xml_error_string(xml_get_error_code($parser)), xml_get_current_line_number($parser));
 			$this->Error($error_message);
 		}
 		// free this XML parser
-		xml_parser_free($this->parser);
+		xml_parser_free($parser);
+
+		// >= PHP 7.0.0 "explicitly unset the reference to parser to avoid memory leaks"
+		unset($parser);
+
 		// restore previous graphic state
 		$this->_out($this->epsmarker.'Q');
 		// restore graphic vars
