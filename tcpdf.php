@@ -1832,6 +1832,14 @@ class TCPDF {
 	 */
 	protected $gdgammacache = array();
 
+    /**
+     * Cache array for file content
+     * @protected
+     * @var array
+     * @sinde 6.3.5 (2020-09-28)
+     */
+	protected $fileContentCache = array();
+
 	//------------------------------------------------------------
 	// METHODS
 	//------------------------------------------------------------
@@ -4863,7 +4871,7 @@ class TCPDF {
 		}
 		reset($this->embeddedfiles);
 		foreach ($this->embeddedfiles as $filename => $filedata) {
-			$data = TCPDF_STATIC::fileGetContents($filedata['file']);
+		    $data = $this->getCachedFileContents($filedata['file']);
 			if ($data !== FALSE) {
 				$rawsize = strlen($data);
 				if ($rawsize > 0) {
@@ -6886,7 +6894,7 @@ class TCPDF {
 					$info = $this->getImageBuffer($file);
 					$imsize = array($info['w'], $info['h']);
 				} elseif (strpos($file, '__tcpdf_'.$this->file_id.'_img') === FALSE) {
-					$imgdata = TCPDF_STATIC::fileGetContents($file);
+                    $imgdata = $this->getCachedFileContents($file);
 				}
 			}
 		}
@@ -7093,7 +7101,7 @@ class TCPDF {
 							$svgimg = substr($file, 1);
 						} else {
 							// get SVG file content
-							$svgimg = TCPDF_STATIC::fileGetContents($file);
+                            $svgimg = $this->getCachedFileContents($file);
 						}
 						if ($svgimg !== FALSE) {
 							// get width and height
@@ -14909,7 +14917,7 @@ class TCPDF {
 		if ($file[0] === '@') { // image from string
 			$data = substr($file, 1);
 		} else { // EPS/AI file
-			$data = TCPDF_STATIC::fileGetContents($file);
+            $data = $this->getCachedFileContents($file);
 		}
 		if ($data === FALSE) {
 			$this->Error('EPS file not found: '.$file);
@@ -16328,7 +16336,7 @@ class TCPDF {
 						$type = array();
 						if (preg_match('/href[\s]*=[\s]*"([^"]*)"/', $link, $type) > 0) {
 							// read CSS data file
-							$cssdata = TCPDF_STATIC::fileGetContents(trim($type[1]));
+                            $cssdata = $this->getCachedFileContents(trim($type[1]));
 							if (($cssdata !== FALSE) AND (strlen($cssdata) > 0)) {
 								$css = array_merge($css, TCPDF_STATIC::extractCSSproperties($cssdata));
 							}
@@ -22776,7 +22784,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			$svgdata = substr($file, 1);
 		} else { // SVG file
 			$this->svgdir = dirname($file);
-			$svgdata = TCPDF_STATIC::fileGetContents($file);
+            $svgdata = $this->getCachedFileContents($file);
 		}
 		if ($svgdata === FALSE) {
 			$this->Error('SVG file not found: '.$file);
@@ -24570,6 +24578,14 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	}
 
 	// --- END SVG METHODS -----------------------------------------------------
+
+    protected function getCachedFileContents($file)
+    {
+        if (!isset($this->fileContentCache[$file])) {
+            $this->fileContentCache[$file] = TCPDF_STATIC::fileGetContents($file);
+        }
+        return $this->fileContentCache[$file];
+    }
 
 } // END OF TCPDF CLASS
 
