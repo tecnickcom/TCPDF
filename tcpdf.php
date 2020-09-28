@@ -6888,15 +6888,11 @@ class TCPDF {
 			if (!@$this->fileExists($file)) {
 				return false;
 			}
-			if (($imsize = @getimagesize($file)) === FALSE) {
-				if (in_array($file, $this->imagekeys)) {
-					// get existing image data
-					$info = $this->getImageBuffer($file);
-					$imsize = array($info['w'], $info['h']);
-				} elseif (strpos($file, '__tcpdf_'.$this->file_id.'_img') === FALSE) {
-                    $imgdata = $this->getCachedFileContents($file);
-				}
-			}
+            if (false !== $info = $this->getImageBuffer($file)) {
+                $imsize = array($info['w'], $info['h']);
+            } elseif (($imsize = @getimagesize($file)) === FALSE && strpos($file, '__tcpdf_'.$this->file_id.'_img') === FALSE){
+                $imgdata = $this->getCachedFileContents($file);
+            }
 		}
 		if (!empty($imgdata)) {
 			// copy image to cache
@@ -24593,13 +24589,13 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
     }
 
     /**
-     * Make use of the file content cache, to avoid a lot of calls to an external server to see if a file exists
+     * Avoid multiple calls to an external server to see if a file exists
      * @param string $file
      * @return bool
      */
     protected function fileExists($file)
     {
-        if (isset($this->fileContentCache[$file])) {
+        if (isset($this->fileContentCache[$file]) || false !== $this->getImageBuffer($file)) {
             return true;
         }
 
