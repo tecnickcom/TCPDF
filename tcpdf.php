@@ -6885,7 +6885,7 @@ class TCPDF {
 				$exurl = $file;
 			}
 			// check if file exist and it is valid
-			if (!@TCPDF_STATIC::file_exists($file)) {
+			if (!@$this->fileExists($file)) {
 				return false;
 			}
 			if (($imsize = @getimagesize($file)) === FALSE) {
@@ -24579,12 +24579,31 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 
 	// --- END SVG METHODS -----------------------------------------------------
 
+    /**
+     * Keeps files in memory, so it doesn't need to downloaded everytime in a loop
+     * @param string $file
+     * @return string
+     */
     protected function getCachedFileContents($file)
     {
         if (!isset($this->fileContentCache[$file])) {
             $this->fileContentCache[$file] = TCPDF_STATIC::fileGetContents($file);
         }
         return $this->fileContentCache[$file];
+    }
+
+    /**
+     * Make use of the file content cache, to avoid a lot of calls to an external server to see if a file exists
+     * @param string $file
+     * @return bool
+     */
+    protected function fileExists($file)
+    {
+        if (isset($this->fileContentCache[$file])) {
+            return true;
+        }
+
+        return TCPDF_STATIC::file_exists($file);
     }
 
 } // END OF TCPDF CLASS
