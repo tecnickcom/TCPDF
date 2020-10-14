@@ -1136,7 +1136,7 @@ class TCPDF_STATIC {
 	 * @see setHtmlVSpace()
 	 * @public static
 	 */
-	public static function fixHTMLCode($html, $default_css='', $tagvs='', $tidy_options='', &$tagvspaces) {
+	public static function fixHTMLCode($html, $default_css='', $tagvs='', $tidy_options='', &$tagvspaces=array()) {
 		// configure parameters for HTML Tidy
 		if ($tidy_options === '') {
 			$tidy_options = array (
