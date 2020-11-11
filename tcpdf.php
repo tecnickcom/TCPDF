@@ -6489,7 +6489,7 @@ class TCPDF {
 					// *** very slow ***
 					$l = $this->GetArrStringWidth(TCPDF_FONTS::utf8Bidi(array_slice($chars, $j, ($i - $j)), '', $this->tmprtl, $this->isunicode, $this->CurrentFont));
 				} else {
-					$l += $this->GetCharWidth($c);
+					$l += $this->GetCharWidth($c, ($i+1 < $nb));
 				}
 				if (($l > $wmax) OR (($c == 173) AND (($l + $tmp_shy_replacement_width) >= $wmax))) {
 					if (($c == 173) AND (($l + $tmp_shy_replacement_width) > $wmax)) {
