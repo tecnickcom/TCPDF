@@ -1,1 +1,8 @@
-.idea
+/vendor
+/composer.lock
+.idea/
+nbproject/
+
+cache
+*.cache
+*.cache.*
