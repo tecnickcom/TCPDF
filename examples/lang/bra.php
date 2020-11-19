@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : eng.php
 // Begin       : 2004-03-03
@@ -17,7 +18,7 @@
 //               info@tecnick.com
 //============================================================+
 
-/**
+/*
  * TCPDF language file (contains translated texts).
  * @package com.tecnick.tcpdf
  * @brief TCPDF language file: Brazilian
@@ -28,7 +29,7 @@
 // Brazilian
 
 global $l;
-$l = Array();
+$l = [];
 
 // PAGE META DESCRIPTORS --------------------------------------
 

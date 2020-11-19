@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : example_050.php
 // Begin       : 2009-04-09
@@ -17,15 +18,15 @@
 //============================================================+
 
 /**
- * Creates an example PDF TEST document using TCPDF
- * @package com.tecnick.tcpdf
+ * Creates an example PDF TEST document using TCPDF.
+ *
  * @abstract TCPDF - Example: 2D barcodes.
- * @author Nicola Asuni
+ *
  * @since 2008-03-04
  */
 
 // Include the main TCPDF library (search for installation path).
-require_once('tcpdf_include.php');
+require_once 'tcpdf_include.php';
 
 // create new PDF document
 $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -38,11 +39,11 @@ $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 050', PDF_HEADER_STRING);
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE . ' 050', PDF_HEADER_STRING);
 
 // set header and footer fonts
-$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+$pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
+$pdf->setFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
 
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -53,15 +54,15 @@ $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
 // set auto page breaks
-$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 
 // set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // set some language-dependent strings (optional)
-if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-	require_once(dirname(__FILE__).'/lang/eng.php');
-	$pdf->setLanguageArray($l);
+if (@file_exists(__DIR__ . '/lang/eng.php')) {
+    require_once __DIR__ . '/lang/eng.php';
+    $pdf->setLanguageArray($l);
 }
 
 // ---------------------------------------------------------
@@ -78,21 +79,20 @@ $pdf->AddPage();
 $txt = "You can also export 2D barcodes in other formats (PNG, SVG, HTML). Check the examples inside the barcode directory.\n";
 $pdf->MultiCell(70, 50, $txt, 0, 'J', false, 1, 125, 30, true, 0, false, true, 0, 'T', false);
 
-
 $pdf->SetFont('helvetica', '', 10);
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 // set style for barcode
-$style = array(
-	'border' => true,
-	'vpadding' => 'auto',
-	'hpadding' => 'auto',
-	'fgcolor' => array(0,0,0),
-	'bgcolor' => false, //array(255,255,255)
-	'module_width' => 1, // width of a single module in points
-	'module_height' => 1 // height of a single module in points
-);
+$style = [
+    'border' => true,
+    'vpadding' => 'auto',
+    'hpadding' => 'auto',
+    'fgcolor' => [0, 0, 0],
+    'bgcolor' => false, //array(255,255,255)
+    'module_width' => 1, // width of a single module in points
+    'module_height' => 1, // height of a single module in points
+];
 
 // write RAW 2D Barcode
 
@@ -106,15 +106,15 @@ $pdf->write2DBarcode($code, 'RAW2', 80, 60, 30, 20, $style, 'N');
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 // set style for barcode
-$style = array(
-	'border' => 2,
-	'vpadding' => 'auto',
-	'hpadding' => 'auto',
-	'fgcolor' => array(0,0,0),
-	'bgcolor' => false, //array(255,255,255)
-	'module_width' => 1, // width of a single module in points
-	'module_height' => 1 // height of a single module in points
-);
+$style = [
+    'border' => 2,
+    'vpadding' => 'auto',
+    'hpadding' => 'auto',
+    'fgcolor' => [0, 0, 0],
+    'bgcolor' => false, //array(255,255,255)
+    'module_width' => 1, // width of a single module in points
+    'module_height' => 1, // height of a single module in points
+];
 
 // QRCODE,L : QR-CODE Low error correction
 $pdf->write2DBarcode('www.tcpdf.org', 'QRCODE,L', 20, 30, 50, 50, $style, 'N');
@@ -144,21 +144,21 @@ $pdf->Text(20, 205, 'QRCODE H');
 
  Possible options are:
 
- 	a  = aspect ratio (width/height);
- 	e  = error correction level (0-8);
+    a  = aspect ratio (width/height);
+    e  = error correction level (0-8);
 
- 	Macro Control Block options:
+    Macro Control Block options:
 
- 	t  = total number of macro segments;
- 	s  = macro segment index (0-99998);
- 	f  = file ID;
- 	o0 = File Name (text);
- 	o1 = Segment Count (numeric);
- 	o2 = Time Stamp (numeric);
- 	o3 = Sender (text);
- 	o4 = Addressee (text);
- 	o5 = File Size (numeric);
- 	o6 = Checksum (numeric).
+    t  = total number of macro segments;
+    s  = macro segment index (0-99998);
+    f  = file ID;
+    o0 = File Name (text);
+    o1 = Segment Count (numeric);
+    o2 = Time Stamp (numeric);
+    o3 = Sender (text);
+    o4 = Addressee (text);
+    o5 = File Size (numeric);
+    o6 = Checksum (numeric).
 
  Parameters t, s and f are required for a Macro Control Block, all other parametrs are optional.
  To use a comma character ',' on text options, replace it with the character 255: "\xff".
@@ -177,24 +177,24 @@ $pdf->Text(80, 145, 'DATAMATRIX (ISO/IEC 16022:2006)');
 // -------------------------------------------------------------------
 
 // new style
-$style = array(
-	'border' => 2,
-	'padding' => 'auto',
-	'fgcolor' => array(0,0,255),
-	'bgcolor' => array(255,255,64)
-);
+$style = [
+    'border' => 2,
+    'padding' => 'auto',
+    'fgcolor' => [0, 0, 255],
+    'bgcolor' => [255, 255, 64],
+];
 
 // QRCODE,H : QR-CODE Best error correction
 $pdf->write2DBarcode('www.tcpdf.org', 'QRCODE,H', 80, 210, 50, 50, $style, 'N');
 $pdf->Text(80, 205, 'QRCODE H - COLORED');
 
 // new style
-$style = array(
-	'border' => false,
-	'padding' => 0,
-	'fgcolor' => array(128,0,0),
-	'bgcolor' => false
-);
+$style = [
+    'border' => false,
+    'padding' => 0,
+    'fgcolor' => [128, 0, 0],
+    'bgcolor' => false,
+];
 
 // QRCODE,H : QR-CODE Best error correction
 $pdf->write2DBarcode('www.tcpdf.org', 'QRCODE,H', 140, 210, 50, 50, $style, 'N');

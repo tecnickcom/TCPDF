@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : jpn.php
 // Begin       : 2011-01-24
@@ -17,7 +18,7 @@
 //               info@tecnick.com
 //============================================================+
 
-/**
+/*
  * TCPDF language file (contains translated texts).
  * @package com.tecnick.tcpdf
  * @brief TCPDF language file: Japanese
@@ -28,7 +29,7 @@
 // Japanese
 
 global $l;
-$l = Array();
+$l = [];
 
 // PAGE META DESCRIPTORS --------------------------------------
 

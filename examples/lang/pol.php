@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : pol.php
 // Begin       : 2010-10-26
@@ -17,7 +18,7 @@
 //               info@tecnick.com
 //============================================================+
 
-/**
+/*
  * TCPDF language file (contains translated texts).
  * @package com.tecnick.tcpdf
  * @brief TCPDF language file: Polish
@@ -28,7 +29,7 @@
 // Polish
 
 global $l;
-$l = Array();
+$l = [];
 
 // PAGE META DESCRIPTORS --------------------------------------
 

@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : example_1d_svgi.php
 // Version     : 1.0.000
@@ -34,13 +35,12 @@
 /**
  * @file
  * Example for tcpdf_barcodes_2d.php class
- * @package com.tecnick.tcpdf
- * @author Nicola Asuni
+ *
  * @version 1.0.000
  */
 
 // include 1D barcode class (search for installation path)
-require_once(dirname(__FILE__).'/tcpdf_barcodes_1d_include.php');
+require_once __DIR__ . '/tcpdf_barcodes_1d_include.php';
 
 // set the barcode content and type
 $barcodeobj = new TCPDFBarcode('http://www.tcpdf.org', 'C128');

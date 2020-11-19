@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : example_013.php
 // Begin       : 2008-03-04
@@ -17,15 +18,15 @@
 //============================================================+
 
 /**
- * Creates an example PDF TEST document using TCPDF
- * @package com.tecnick.tcpdf
+ * Creates an example PDF TEST document using TCPDF.
+ *
  * @abstract TCPDF - Example: Graphic Transformations
- * @author Nicola Asuni
+ *
  * @since 2008-03-04
  */
 
 // Include the main TCPDF library (search for installation path).
-require_once('tcpdf_include.php');
+require_once 'tcpdf_include.php';
 
 // create new PDF document
 $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -38,11 +39,11 @@ $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 013', PDF_HEADER_STRING);
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE . ' 013', PDF_HEADER_STRING);
 
 // set header and footer fonts
-$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+$pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
+$pdf->setFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
 
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -53,15 +54,15 @@ $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
 // set auto page breaks
-$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 
 // set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // set some language-dependent strings (optional)
-if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-	require_once(dirname(__FILE__).'/lang/eng.php');
-	$pdf->setLanguageArray($l);
+if (@file_exists(__DIR__ . '/lang/eng.php')) {
+    require_once __DIR__ . '/lang/eng.php';
+    $pdf->setLanguageArray($l);
 }
 
 // ---------------------------------------------------------
@@ -183,25 +184,25 @@ $pdf->SetTextColor(0);
 // Start Transformation
 $pdf->StartTransform();
 // point reflection at the lower left point of rectangle
-$pdf->MirrorP(70,170);
+$pdf->MirrorP(70, 170);
 $pdf->Rect(70, 160, 40, 10, 'D');
 $pdf->Text(70, 156, 'MirrorP');
 // Stop Transformation
 $pdf->StopTransform();
 
 // --- Mirroring against a straigth line described by a point (120, 120) and an angle -20°
-$angle=-20;
-$px=120;
-$py=170;
+$angle = -20;
+$px = 120;
+$py = 170;
 
 // just for visualisation: the straight line to mirror against
 
 $pdf->SetDrawColor(200);
-$pdf->Line($px-1,$py-1,$px+1,$py+1);
-$pdf->Line($px-1,$py+1,$px+1,$py-1);
+$pdf->Line($px - 1, $py - 1, $px + 1, $py + 1);
+$pdf->Line($px - 1, $py + 1, $px + 1, $py - 1);
 $pdf->StartTransform();
 $pdf->Rotate($angle, $px, $py);
-$pdf->Line($px-5, $py, $px+60, $py);
+$pdf->Line($px - 5, $py, $px + 60, $py);
 $pdf->StopTransform();
 
 $pdf->SetDrawColor(200);

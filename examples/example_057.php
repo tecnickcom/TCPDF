@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : example_057.php
 // Begin       : 2010-04-03
@@ -17,15 +18,15 @@
 //============================================================+
 
 /**
- * Creates an example PDF TEST document using TCPDF
- * @package com.tecnick.tcpdf
+ * Creates an example PDF TEST document using TCPDF.
+ *
  * @abstract TCPDF - Example: Cell vertical alignments
- * @author Nicola Asuni
+ *
  * @since 2008-03-04
  */
 
 // Include the main TCPDF library (search for installation path).
-require_once('tcpdf_include.php');
+require_once 'tcpdf_include.php';
 
 // create new PDF document
 $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -38,11 +39,11 @@ $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 057', PDF_HEADER_STRING);
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE . ' 057', PDF_HEADER_STRING);
 
 // set header and footer fonts
-$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+$pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
+$pdf->setFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
 
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -53,15 +54,15 @@ $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
 // set auto page breaks
-$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 
 // set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // set some language-dependent strings (optional)
-if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-	require_once(dirname(__FILE__).'/lang/eng.php');
-	$pdf->setLanguageArray($l);
+if (@file_exists(__DIR__ . '/lang/eng.php')) {
+    require_once __DIR__ . '/lang/eng.php';
+    $pdf->setLanguageArray($l);
 }
 
 // ---------------------------------------------------------
@@ -80,45 +81,42 @@ $pdf->SetFont('helvetica', '', 11);
 $pdf->SetLineWidth(0.7);
 
 // set color for cell border
-$pdf->SetDrawColor(0,128,255);
+$pdf->SetDrawColor(0, 128, 255);
 
 $pdf->setCellHeightRatio(3);
 
 $pdf->SetXY(15, 60);
 
 // text on center
-$pdf->Cell(30, 0, 'Top-Center', 1, $ln=0, 'C', 0, '', 0, false, 'T', 'C');
-$pdf->Cell(30, 0, 'Center-Center', 1, $ln=0, 'C', 0, '', 0, false, 'C', 'C');
-$pdf->Cell(30, 0, 'Bottom-Center', 1, $ln=0, 'C', 0, '', 0, false, 'B', 'C');
-$pdf->Cell(30, 0, 'Ascent-Center', 1, $ln=0, 'C', 0, '', 0, false, 'A', 'C');
-$pdf->Cell(30, 0, 'Baseline-Center', 1, $ln=0, 'C', 0, '', 0, false, 'L', 'C');
-$pdf->Cell(30, 0, 'Descent-Center', 1, $ln=0, 'C', 0, '', 0, false, 'D', 'C');
-
+$pdf->Cell(30, 0, 'Top-Center', 1, $ln = 0, 'C', 0, '', 0, false, 'T', 'C');
+$pdf->Cell(30, 0, 'Center-Center', 1, $ln = 0, 'C', 0, '', 0, false, 'C', 'C');
+$pdf->Cell(30, 0, 'Bottom-Center', 1, $ln = 0, 'C', 0, '', 0, false, 'B', 'C');
+$pdf->Cell(30, 0, 'Ascent-Center', 1, $ln = 0, 'C', 0, '', 0, false, 'A', 'C');
+$pdf->Cell(30, 0, 'Baseline-Center', 1, $ln = 0, 'C', 0, '', 0, false, 'L', 'C');
+$pdf->Cell(30, 0, 'Descent-Center', 1, $ln = 0, 'C', 0, '', 0, false, 'D', 'C');
 
 $pdf->SetXY(15, 90);
 
 // text on top
-$pdf->Cell(30, 0, 'Top-Top', 1, $ln=0, 'C', 0, '', 0, false, 'T', 'T');
-$pdf->Cell(30, 0, 'Center-Top', 1, $ln=0, 'C', 0, '', 0, false, 'C', 'T');
-$pdf->Cell(30, 0, 'Bottom-Top', 1, $ln=0, 'C', 0, '', 0, false, 'B', 'T');
-$pdf->Cell(30, 0, 'Ascent-Top', 1, $ln=0, 'C', 0, '', 0, false, 'A', 'T');
-$pdf->Cell(30, 0, 'Baseline-Top', 1, $ln=0, 'C', 0, '', 0, false, 'L', 'T');
-$pdf->Cell(30, 0, 'Descent-Top', 1, $ln=0, 'C', 0, '', 0, false, 'D', 'T');
-
+$pdf->Cell(30, 0, 'Top-Top', 1, $ln = 0, 'C', 0, '', 0, false, 'T', 'T');
+$pdf->Cell(30, 0, 'Center-Top', 1, $ln = 0, 'C', 0, '', 0, false, 'C', 'T');
+$pdf->Cell(30, 0, 'Bottom-Top', 1, $ln = 0, 'C', 0, '', 0, false, 'B', 'T');
+$pdf->Cell(30, 0, 'Ascent-Top', 1, $ln = 0, 'C', 0, '', 0, false, 'A', 'T');
+$pdf->Cell(30, 0, 'Baseline-Top', 1, $ln = 0, 'C', 0, '', 0, false, 'L', 'T');
+$pdf->Cell(30, 0, 'Descent-Top', 1, $ln = 0, 'C', 0, '', 0, false, 'D', 'T');
 
 $pdf->SetXY(15, 120);
 
 // text on bottom
-$pdf->Cell(30, 0, 'Top-Bottom', 1, $ln=0, 'C', 0, '', 0, false, 'T', 'B');
-$pdf->Cell(30, 0, 'Center-Bottom', 1, $ln=0, 'C', 0, '', 0, false, 'C', 'B');
-$pdf->Cell(30, 0, 'Bottom-Bottom', 1, $ln=0, 'C', 0, '', 0, false, 'B', 'B');
-$pdf->Cell(30, 0, 'Ascent-Bottom', 1, $ln=0, 'C', 0, '', 0, false, 'A', 'B');
-$pdf->Cell(30, 0, 'Baseline-Bottom', 1, $ln=0, 'C', 0, '', 0, false, 'L', 'B');
-$pdf->Cell(30, 0, 'Descent-Bottom', 1, $ln=0, 'C', 0, '', 0, false, 'D', 'B');
-
+$pdf->Cell(30, 0, 'Top-Bottom', 1, $ln = 0, 'C', 0, '', 0, false, 'T', 'B');
+$pdf->Cell(30, 0, 'Center-Bottom', 1, $ln = 0, 'C', 0, '', 0, false, 'C', 'B');
+$pdf->Cell(30, 0, 'Bottom-Bottom', 1, $ln = 0, 'C', 0, '', 0, false, 'B', 'B');
+$pdf->Cell(30, 0, 'Ascent-Bottom', 1, $ln = 0, 'C', 0, '', 0, false, 'A', 'B');
+$pdf->Cell(30, 0, 'Baseline-Bottom', 1, $ln = 0, 'C', 0, '', 0, false, 'L', 'B');
+$pdf->Cell(30, 0, 'Descent-Bottom', 1, $ln = 0, 'C', 0, '', 0, false, 'D', 'B');
 
 // draw some reference lines
-$linestyle = array('width' => 0.1, 'cap' => 'butt', 'join' => 'miter', 'dash' => '', 'phase' => 0, 'color' => array(255, 0, 0));
+$linestyle = ['width' => 0.1, 'cap' => 'butt', 'join' => 'miter', 'dash' => '', 'phase' => 0, 'color' => [255, 0, 0]];
 $pdf->Line(15, 60, 195, 60, $linestyle);
 $pdf->Line(15, 90, 195, 90, $linestyle);
 $pdf->Line(15, 120, 195, 120, $linestyle);
@@ -171,10 +169,10 @@ $pdf->SetFont('helvetica', '', 11);
 $pdf->SetLineWidth(0.508);
 
 // set color for cell border
-$pdf->SetDrawColor(0,128,255);
+$pdf->SetDrawColor(0, 128, 255);
 
 // set filling color
-$pdf->SetFillColor(255,255,128);
+$pdf->SetFillColor(255, 255, 128);
 
 // set cell height ratio
 $pdf->setCellHeightRatio(3);
@@ -228,28 +226,29 @@ $pdf->SetFont('helvetica', '', 11);
 $pdf->SetLineWidth(1);
 
 // set color for cell border
-$pdf->SetDrawColor(0,128,255);
+$pdf->SetDrawColor(0, 128, 255);
 
 // set filling color
-$pdf->SetFillColor(255,255,128);
+$pdf->SetFillColor(255, 255, 128);
 
-$border = array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(255, 0, 0)));
+$border = ['LTRB' => ['width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => [255, 0, 0]]];
 $pdf->Cell(30, 0, 'LTRB', $border, 1, 'C', 1, '', 0, false, 'T', 'C');
 $pdf->Ln(5);
 
-$border = array(
-'L' => array('width' => 2, 'cap' => 'square', 'join' => 'miter', 'dash' => 0, 'color' => array(255, 0, 0)),
-'R' => array('width' => 2, 'cap' => 'square', 'join' => 'miter', 'dash' => 0, 'color' => array(255, 0, 255)),
-'T' => array('width' => 2, 'cap' => 'square', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 255, 0)),
-'B' => array('width' => 2, 'cap' => 'square', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 255)));
+$border = [
+    'L' => ['width' => 2, 'cap' => 'square', 'join' => 'miter', 'dash' => 0, 'color' => [255, 0, 0]],
+    'R' => ['width' => 2, 'cap' => 'square', 'join' => 'miter', 'dash' => 0, 'color' => [255, 0, 255]],
+    'T' => ['width' => 2, 'cap' => 'square', 'join' => 'miter', 'dash' => 0, 'color' => [0, 255, 0]],
+    'B' => ['width' => 2, 'cap' => 'square', 'join' => 'miter', 'dash' => 0, 'color' => [0, 0, 255]],
+];
 $pdf->Cell(30, 0, 'LTRB', $border, 1, 'C', 1, '', 0, false, 'T', 'C');
 $pdf->Ln(5);
 
-$border = array('mode' => 'ext', 'LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(255, 0, 0)));
+$border = ['mode' => 'ext', 'LTRB' => ['width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => [255, 0, 0]]];
 $pdf->Cell(30, 0, 'LTRB EXT', $border, 1, 'C', 1, '', 0, false, 'T', 'C');
 $pdf->Ln(5);
 
-$border = array('mode' => 'int', 'LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(255, 0, 0)));
+$border = ['mode' => 'int', 'LTRB' => ['width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => [255, 0, 0]]];
 $pdf->Cell(30, 0, 'LTRB INT', $border, 1, 'C', 1, '', 0, false, 'T', 'C');
 $pdf->Ln(5);
 
