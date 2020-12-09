@@ -6866,6 +6866,12 @@ class TCPDF {
 		list($x, $y) = $this->checkPageRegions($h, $x, $y);
 		$exurl = ''; // external streams
 		$imsize = FALSE;
+
+        // Make sure the file variable is not empty or null because accessing $file[0] later
+        // results in error when running PHP 7.4
+        if (empty($file)) {
+            return false;
+        }
 		// check if we are passing an image as file or string
 		if ($file[0] === '@') {
 			// image from string
