@@ -2946,7 +2946,7 @@ class TCPDF {
 	/**
 	 * Whether to allow local file path in image html tags, when prefixed with file://
 	 * 
-	 * @param $allowLocalFiles (bool) True, when local files should be allowed. Otherwise false.
+	 * @param $allowLocalFiles bool true, when local files should be allowed. Otherwise false.
 	 * @public
 	 * @since 6.4
 	 */
