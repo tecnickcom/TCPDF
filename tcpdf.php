@@ -6489,7 +6489,7 @@ class TCPDF {
 					// *** very slow ***
 					$l = $this->GetArrStringWidth(TCPDF_FONTS::utf8Bidi(array_slice($chars, $j, ($i - $j)), '', $this->tmprtl, $this->isunicode, $this->CurrentFont));
 				} else {
-					$l += $this->GetCharWidth($c);
+					$l += $this->GetCharWidth($c, ($i+1 < $nb));
 				}
 				if (($l > $wmax) OR (($c == 173) AND (($l + $tmp_shy_replacement_width) >= $wmax))) {
 					if (($c == 173) AND (($l + $tmp_shy_replacement_width) > $wmax)) {
@@ -6866,6 +6866,12 @@ class TCPDF {
 		list($x, $y) = $this->checkPageRegions($h, $x, $y);
 		$exurl = ''; // external streams
 		$imsize = FALSE;
+
+        // Make sure the file variable is not empty or null because accessing $file[0] later
+        // results in error when running PHP 7.4
+        if (empty($file)) {
+            return false;
+        }
 		// check if we are passing an image as file or string
 		if ($file[0] === '@') {
 			// image from string
