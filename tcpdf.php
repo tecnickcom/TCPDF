@@ -7178,7 +7178,7 @@ class TCPDF {
 		} else {
 			$ximg = $x;
 		}
-		
+
 		if ($ismask OR $hidden) {
 			// image is not displayed
 			return $info['i'];
@@ -18873,6 +18873,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					'dash'  => $tag['style']['dash'],
 					'phase' => $tag['style']['phase'],
 				);
+
+				$lineStyle = array_filter($lineStyle);
 
 				$this->Line($x, $y, $x + $hrWidth, $y, $lineStyle);
 				$this->SetLineWidth($prevlinewidth);
