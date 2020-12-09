@@ -1834,8 +1834,8 @@ class TCPDF {
 
 	/**
 	 * Whether to allow local file path in image html tags, when prefixed with file://
-       *
-       * @var bool
+	 *
+	 * @var bool
 	 * @protected
 	 * @since 6.4 (2020-07-23)
 	 */
