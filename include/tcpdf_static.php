@@ -1830,6 +1830,7 @@ class TCPDF_STATIC {
 	 * @param url (string) URL to check.
 	 * @return Returns TRUE if the URL exists; FALSE otherwise.
 	 * @public static
+	 * @since 6.2.25
 	 */
 	public static function url_exists($url) {
 		$crs = curl_init();
