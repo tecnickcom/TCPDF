@@ -170,6 +170,9 @@ class TCPDF_STATIC {
 	 */
 	public static function isValidURL($url) {
 		$headers = @get_headers($url);
+		if ($headers === false) {
+			return false;
+		}
     	return (strpos($headers[0], '200') !== false);
 	}
 
