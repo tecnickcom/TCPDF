@@ -35,10 +35,10 @@ class MC_TCPDF extends TCPDF {
 
 	/**
 	 * Print chapter
-	 * @param $num (int) chapter number
-	 * @param $title (string) chapter title
-	 * @param $file (string) name of the file containing the chapter body
-	 * @param $mode (boolean) if true the chapter body is in HTML, otherwise in simple text.
+	 * @param int $num chapter number
+	 * @param string $title chapter title
+	 * @param string $file name of the file containing the chapter body
+	 * @param boolean $mode if true the chapter body is in HTML, otherwise in simple text.
 	 * @public
 	 */
 	public function PrintChapter($num, $title, $file, $mode=false) {
@@ -56,8 +56,8 @@ class MC_TCPDF extends TCPDF {
 
 	/**
 	 * Set chapter title
-	 * @param $num (int) chapter number
-	 * @param $title (string) chapter title
+	 * @param int $num chapter number
+	 * @param string $title chapter title
 	 * @public
 	 */
 	public function ChapterTitle($num, $title) {
@@ -69,8 +69,8 @@ class MC_TCPDF extends TCPDF {
 
 	/**
 	 * Print chapter body
-	 * @param $file (string) name of the file containing the chapter body
-	 * @param $mode (boolean) if true the chapter body is in HTML, otherwise in simple text.
+	 * @param string $file name of the file containing the chapter body
+	 * @param boolean $mode if true the chapter body is in HTML, otherwise in simple text.
 	 * @public
 	 */
 	public function ChapterBody($file, $mode=false) {

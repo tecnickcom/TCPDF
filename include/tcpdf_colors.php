@@ -240,8 +240,8 @@ class TCPDF_COLORS {
 
 	/**
 	 * Return the Spot color array.
-	 * @param $name (string) Name of the spot color.
-	 * @param $spotc (array) Reference to an array of spot colors.
+	 * @param string $name Name of the spot color.
+	 * @param array $spotc Reference to an array of spot colors.
 	 * @return (array) Spot color array or false if not defined.
 	 * @since 5.9.125 (2011-10-03)
 	 * @public static
@@ -264,9 +264,9 @@ class TCPDF_COLORS {
 
 	/**
 	 * Returns an array (RGB or CMYK) from an html color name, or a six-digit (i.e. #3FE5AA), or three-digit (i.e. #7FF) hexadecimal color, or a javascript color array, or javascript color name.
-	 * @param $hcolor (string) HTML color.
-	 * @param $spotc (array) Reference to an array of spot colors.
-	 * @param $defcol (array) Color to return in case of error.
+	 * @param string $hcolor HTML color.
+	 * @param array $spotc Reference to an array of spot colors.
+	 * @param array $defcol Color to return in case of error.
 	 * @return array RGB or CMYK color, or false in case of error.
 	 * @public static
 	 */
@@ -407,7 +407,7 @@ class TCPDF_COLORS {
 
 	/**
 	 * Convert a color array into a string representation.
-	 * @param $c (array) Array of colors.
+	 * @param array $c Array of colors.
 	 * @return (string) The color array representation.
 	 * @since 5.9.137 (2011-12-01)
 	 * @public static
@@ -438,7 +438,7 @@ class TCPDF_COLORS {
 
 	/**
 	 * Convert color to javascript color.
-	 * @param $color (string) color name or "#RRGGBB"
+	 * @param string $color color name or "#RRGGBB"
 	 * @protected
 	 * @since 2.1.002 (2008-02-12)
 	 * @public static

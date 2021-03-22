@@ -62,8 +62,8 @@ class TCPDF_IMAGES {
 
 	/**
 	 * Return the image type given the file name or array returned by getimagesize() function.
-	 * @param $imgfile (string) image file name
-	 * @param $iminfo (array) array of image information returned by getimagesize() function.
+	 * @param string $imgfile image file name
+	 * @param array $iminfo array of image information returned by getimagesize() function.
 	 * @return string image type
 	 * @since 4.8.017 (2009-11-27)
 	 * @public static
@@ -87,8 +87,8 @@ class TCPDF_IMAGES {
 
 	/**
 	 * Set the transparency for the given GD image.
-	 * @param $new_image (image) GD image object
-	 * @param $image (image) GD image object.
+	 * @param image $new_image GD image object
+	 * @param image $image GD image object.
 	 * return GD image object.
 	 * @since 4.9.016 (2010-04-20)
 	 * @public static
@@ -112,8 +112,8 @@ class TCPDF_IMAGES {
 	/**
 	 * Convert the loaded image to a PNG and then return a structure for the PDF creator.
 	 * This function requires GD library and write access to the directory defined on K_PATH_CACHE constant.
-	 * @param $image (image) Image object.
-	 * @param $tempfile (string) Temporary file name.
+	 * @param image $image Image object.
+	 * @param string $tempfile Temporary file name.
 	 * return image PNG image object.
 	 * @since 4.9.016 (2010-04-20)
 	 * @public static
@@ -135,9 +135,9 @@ class TCPDF_IMAGES {
 	/**
 	 * Convert the loaded image to a JPEG and then return a structure for the PDF creator.
 	 * This function requires GD library and write access to the directory defined on K_PATH_CACHE constant.
-	 * @param $image (image) Image object.
-	 * @param $quality (int) JPEG quality.
-	 * @param $tempfile (string) Temporary file name.
+	 * @param image $image Image object.
+	 * @param int $quality JPEG quality.
+	 * @param string $tempfile Temporary file name.
 	 * return image JPEG image object.
 	 * @public static
 	 */
@@ -152,7 +152,7 @@ class TCPDF_IMAGES {
 
 	/**
 	 * Extract info from a JPEG file without using the GD library.
-	 * @param $file (string) image file to parse
+	 * @param string $file image file to parse
 	 * @return array structure containing the image data
 	 * @public static
 	 */
@@ -231,7 +231,7 @@ class TCPDF_IMAGES {
 
 	/**
 	 * Extract info from a PNG file without using the GD library.
-	 * @param $file (string) image file to parse
+	 * @param string $file image file to parse
 	 * @return array structure containing the image data
 	 * @public static
 	 */
