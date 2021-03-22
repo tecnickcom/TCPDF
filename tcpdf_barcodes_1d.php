@@ -856,8 +856,7 @@ class TCPDFBarcode {
 	/**
 	 * Convert binary barcode sequence to WarnockPDF barcode array.
 	 * @param string $seq barcode as binary sequence.
-	 * @param array $bararray barcode array.
-	 * @param array $bararray WarnockPDF barcode array to fill up
+	 * @param array $bararray barcode array to fill up
 	 * @return array barcode representation.
 	 * @protected
 	 */

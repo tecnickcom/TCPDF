@@ -854,7 +854,7 @@ class QRcode {
 	/**
 	 * Initialize code.
 	 * @param array $spec array of ECC specification
-	 * @return 0 in case of success, -1 in case of error
+	 * @return int 0 in case of success, -1 in case of error
 	 */
 	protected function init($spec) {
 		$dl = $this->rsDataCodes1($spec);

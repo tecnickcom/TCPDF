@@ -146,7 +146,7 @@ class TCPDF_STATIC {
 
 	/**
 	 * Gets the current active configuration setting of magic_quotes_runtime (if the get_magic_quotes_runtime function exist)
-	 * @return Returns 0 if magic quotes runtime is off or get_magic_quotes_runtime doesn't exist, 1 otherwise.
+	 * @return int Returns 0 if magic quotes runtime is off or get_magic_quotes_runtime doesn't exist, 1 otherwise.
 	 * @since 4.6.025 (2009-08-17)
 	 * @public static
 	 */
@@ -1504,7 +1504,7 @@ class TCPDF_STATIC {
 	 * @param string $haystack The string to search in.
 	 * @param string $needle substring to search.
 	 * @param int $offset May be specified to begin searching an arbitrary number of characters into the string.
-	 * @return Returns the position where the needle exists. Returns FALSE if the needle was not found.
+	 * @return int|false Returns the position where the needle exists. Returns FALSE if the needle was not found.
 	 * @since 4.8.038 (2010-03-13)
 	 * @public static
 	 */
@@ -1786,7 +1786,7 @@ class TCPDF_STATIC {
 	 * @param string $subject The input string.
 	 * @param int $limit If specified, then only substrings up to limit are returned with the rest of the string being placed in the last substring. A limit of -1, 0 or NULL means "no limit" and, as is standard across PHP, you can use NULL to skip to the flags parameter.
 	 * @param int $flags The flags as specified on the preg_split PHP function.
-	 * @return Returns an array containing substrings of subject split along boundaries matched by pattern.modifier
+	 * @return array Returns an array containing substrings of subject split along boundaries matched by pattern.modifier
 	 * @author Nicola Asuni
 	 * @since 6.0.023
 	 * @public static
@@ -1811,9 +1811,9 @@ class TCPDF_STATIC {
 
 	/**
 	 * Wrapper to use fopen only with local files
-	 * @param filename (string) Name of the file to open
+	 * @param string $filename Name of the file to open
 	 * @param string $mode
-	 * @return Returns a file pointer resource on success, or FALSE on error.
+	 * @return resource|false Returns a file pointer resource on success, or FALSE on error.
 	 * @public static
 	 */
 	public static function fopenLocal($filename, $mode) {
@@ -1827,8 +1827,8 @@ class TCPDF_STATIC {
 
 	/**
 	 * Check if the URL exist.
-	 * @param url (string) URL to check.
-	 * @return Returns TRUE if the URL exists; FALSE otherwise.
+	 * @param string $url URL to check.
+	 * @return bool Returns TRUE if the URL exists; FALSE otherwise.
 	 * @public static
 	 * @since 6.2.25
 	 */
@@ -1881,8 +1881,8 @@ class TCPDF_STATIC {
 	 * Wrapper for file_exists.
 	 * Checks whether a file or directory exists.
 	 * Only allows some protocols and local files.
-	 * @param filename (string) Path to the file or directory. 
-	 * @return Returns TRUE if the file or directory specified by filename exists; FALSE otherwise.  
+	 * @param string $filename Path to the file or directory.
+	 * @return bool Returns TRUE if the file or directory specified by filename exists; FALSE otherwise.
 	 * @public static
 	 */
 	public static function file_exists($filename) {
@@ -1899,7 +1899,7 @@ class TCPDF_STATIC {
 	 * Reads entire file into a string.
 	 * The file can be also an URL.
 	 * @param string $file Name of the file or URL to read.
-	 * @return The function returns the read data or FALSE on failure. 
+	 * @return The function returns the read data or FALSE on failure.
 	 * @author Nicola Asuni
 	 * @since 6.0.025
 	 * @public static
@@ -2105,7 +2105,7 @@ class TCPDF_STATIC {
 	 * Reads up to length bytes from the file pointer referenced by handle. Reading stops as soon as one of the following conditions is met: length bytes have been read; EOF (end of file) is reached.
 	 * @param resource $handle
 	 * @param int $length
-	 * @return Returns the read string or FALSE in case of error.
+	 * @return string|false Returns the read string or FALSE in case of error.
 	 * @author Nicola Asuni
 	 * @since 4.5.027 (2009-03-16)
 	 * @public static
@@ -2125,7 +2125,7 @@ class TCPDF_STATIC {
 	/**
 	 * Read a 4-byte (32 bit) integer from file.
 	 * @param string $f file name.
-	 * @return 4-byte integer
+	 * @return int 4-byte integer
 	 * @public static
 	 */
 	public static function _freadint($f) {
@@ -2133,7 +2133,6 @@ class TCPDF_STATIC {
 		return $a['i'];
 	}
 
-	
 	/**
 	 * Array of page formats
 	 * measures are calculated in this way: (inches * 72) or (millimeters * 72 / 25.4)

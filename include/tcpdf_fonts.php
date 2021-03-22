@@ -1661,7 +1661,7 @@ class TCPDF_FONTS {
 	 * Returns the unicode caracter specified by the value
 	 * @param int $c UTF-8 value
 	 * @param boolean $unicode True if we are in unicode mode, false otherwise.
-	 * @return Returns the specified character.
+	 * @return string Returns the specified character.
 	 * @since 2.3.000 (2008-03-05)
 	 * @public static
 	 */
@@ -1689,7 +1689,7 @@ class TCPDF_FONTS {
 	/**
 	 * Returns the unicode caracter specified by UTF-8 value
 	 * @param int $c UTF-8 value
-	 * @return Returns the specified character.
+	 * @return string Returns the specified character.
 	 * @public static
 	 */
 	public static function unichrUnicode($c) {
@@ -1699,7 +1699,7 @@ class TCPDF_FONTS {
 	/**
 	 * Returns the unicode caracter specified by ASCII value
 	 * @param int $c UTF-8 value
-	 * @return Returns the specified character.
+	 * @return string Returns the specified character.
 	 * @public static
 	 */
 	public static function unichrASCII($c) {
@@ -1774,7 +1774,7 @@ class TCPDF_FONTS {
 	 * Convert an array of UTF8 values to array of unicode characters
 	 * @param array $ta The input array of UTF8 values.
 	 * @param boolean $isunicode True for Unicode mode, false otherwise.
-	 * @return Return array of unicode characters
+	 * @return array Return array of unicode characters
 	 * @since 4.5.037 (2009-04-07)
 	 * @public static
 	 */
@@ -1791,7 +1791,7 @@ class TCPDF_FONTS {
 	 * @param int $start the starting element of $strarr.
 	 * @param int $end first element that will not be returned.
 	 * @param boolean $unicode True if we are in unicode mode, false otherwise.
-	 * @return Return part of a string
+	 * @return string Return part of a string
 	 * @public static
 	 */
 	public static function UTF8ArrSubString($strarr, $start='', $end='', $unicode=true) {
@@ -1813,7 +1813,7 @@ class TCPDF_FONTS {
 	 * @param string $uniarr The input array of characters.
 	 * @param int $start the starting element of $strarr.
 	 * @param int $end first element that will not be returned.
-	 * @return Return part of a string
+	 * @return string Return part of a string
 	 * @since 4.5.037 (2009-04-07)
 	 * @public static
 	 */

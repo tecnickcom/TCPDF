@@ -647,7 +647,7 @@ class Datamatrix {
 	/**
 	 * Get the switching codeword to a new encoding mode (latch codeword)
 	 * @param int $mode New encoding mode.
-	 * @return (int) Switch codeword.
+	 * @return int Switch codeword.
 	 * @protected
 	 */
 	protected function getSwitchEncodingCodeword($mode) {

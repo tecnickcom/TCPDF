@@ -600,12 +600,14 @@ class TCPDF {
 	/**
 	 * Default font used on page header.
 	 * @protected
+	 * @var array<int,string>
 	 */
 	protected $header_font;
 
 	/**
 	 * Default font used on page footer.
 	 * @protected
+	 * @var array<int,string>
 	 */
 	protected $footer_font;
 
@@ -1793,6 +1795,7 @@ class TCPDF {
 	 * (Check the "Entries in a Graphics State Parameter Dictionary" on PDF 32000-1:2008).
 	 * @protected
 	 * @since 5.9.152 (2012-03-23)
+	 * @var array<string,bool|int>
 	 */
 	protected $overprint = array('OP' => false, 'op' => false, 'OPM' => 0);
 
@@ -3342,7 +3345,7 @@ class TCPDF {
 	/**
 	 * Returns header data:
 	 * <ul><li>$ret['logo'] = logo image</li><li>$ret['logo_width'] = width of the image logo in user units</li><li>$ret['title'] = header title</li><li>$ret['string'] = header description string</li></ul>
-	 * @return array()
+	 * @return array<string,mixed>
 	 * @public
 	 * @since 4.0.012 (2008-07-24)
 	 */
@@ -6795,7 +6798,7 @@ class TCPDF {
 	 * @param float $x X coordinate
 	 * @param float $y Y coodiante
 	 * @param boolean $fitonpage if true the block is resized to not exceed page dimensions.
-	 * @return array($w, $h, $x, $y)
+	 * @return array array($w, $h, $x, $y)
 	 * @protected
 	 * @since 5.5.009 (2010-07-05)
 	 */
@@ -10391,7 +10394,7 @@ class TCPDF {
 
 	/**
 	 * Set header font.
-	 * @param array $font Array describing the basic font parameters: (family, style, size).
+	 * @param array<int,string> $font Array describing the basic font parameters: (family, style, size).
 	 * @public
 	 * @since 1.1
 	 */
@@ -10401,7 +10404,7 @@ class TCPDF {
 
 	/**
 	 * Get header font.
-	 * @return array() Array describing the basic font parameters: (family, style, size).
+	 * @return array<int,string> Array describing the basic font parameters: (family, style, size).
 	 * @public
 	 * @since 4.0.012 (2008-07-24)
 	 */
@@ -10411,7 +10414,7 @@ class TCPDF {
 
 	/**
 	 * Set footer font.
-	 * @param array $font Array describing the basic font parameters: (family, style, size).
+	 * @param array<int,string> $font Array describing the basic font parameters: (family, style, size).
 	 * @public
 	 * @since 1.1
 	 */
@@ -10421,7 +10424,7 @@ class TCPDF {
 
 	/**
 	 * Get Footer font.
-	 * @return array() Array describing the basic font parameters: (family, style, size).
+	 * @return array<int,string> Array describing the basic font parameters: (family, style, size).
 	 * @public
 	 * @since 4.0.012 (2008-07-24)
 	 */
@@ -11734,9 +11737,9 @@ class TCPDF {
 	 * @param float $y0 Ordinate of center point.
 	 * @param float $rx Horizontal radius.
 	 * @param float $ry Vertical radius (if ry = 0 then is a circle, see Circle()). Default value: 0.
-	 * @param $angle: (float) Angle oriented (anti-clockwise). Default value: 0.
-	 * @param $astart: (float) Angle start of draw line. Default value: 0.
-	 * @param $afinish: (float) Angle finish of draw line. Default value: 360.
+	 * @param float $angle Angle oriented (anti-clockwise). Default value: 0.
+	 * @param float $astart Angle start of draw line. Default value: 0.
+	 * @param float $afinish Angle finish of draw line. Default value: 360.
 	 * @param string $style Style of rendering. See the getPathPaintOperator() function for more information.
 	 * @param array $line_style Line style of ellipse. Array like for SetLineStyle(). Default value: default line style (empty array).
 	 * @param array $fill_color Fill color. Format: array(GREY) or array(R,G,B) or array(C,M,Y,K) or array(C,M,Y,K,SpotColorName). Default value: default color (empty array).
@@ -11773,9 +11776,9 @@ class TCPDF {
 	 * @param float $yc Ordinate of center point.
 	 * @param float $rx Horizontal radius.
 	 * @param float $ry Vertical radius (if ry = 0 then is a circle, see Circle()). Default value: 0.
-	 * @param $xang: (float) Angle between the X-axis and the major axis of the ellipse. Default value: 0.
-	 * @param $angs: (float) Angle start of draw line. Default value: 0.
-	 * @param $angf: (float) Angle finish of draw line. Default value: 360.
+	 * @param float $xang Angle between the X-axis and the major axis of the ellipse. Default value: 0.
+	 * @param float $angs Angle start of draw line. Default value: 0.
+	 * @param float $angf Angle finish of draw line. Default value: 360.
 	 * @param boolean $pie if true do not mark the border point (used to draw pie sectors).
 	 * @param integer $nc Number of curves used to draw a 90 degrees portion of ellipse.
 	 * @param boolean $startpoint if true output a starting point.
@@ -11908,8 +11911,8 @@ class TCPDF {
 	 * @param float $x0 Abscissa of center point.
 	 * @param float $y0 Ordinate of center point.
 	 * @param float $r Radius.
-	 * @param $angstr: (float) Angle start of draw line. Default value: 0.
-	 * @param $angend: (float) Angle finish of draw line. Default value: 360.
+	 * @param float $angstr Angle start of draw line. Default value: 0.
+	 * @param float $angend Angle finish of draw line. Default value: 360.
 	 * @param string $style Style of rendering. See the getPathPaintOperator() function for more information.
 	 * @param array $line_style Line style of circle. Array like for SetLineStyle(). Default value: default line style (empty array).
 	 * @param array $fill_color Fill color. Format: array(red, green, blue). Default value: default color (empty array).
@@ -12030,7 +12033,7 @@ class TCPDF {
 	 * Draws a regular polygon.
 	 * @param float $x0 Abscissa of center point.
 	 * @param float $y0 Ordinate of center point.
-	 * @param $r: (float) Radius of inscribed circle.
+	 * @param float $r Radius of inscribed circle.
 	 * @param integer $ns Number of sides.
 	 * @param float $angle Angle oriented (anti-clockwise). Default value: 0.
 	 * @param boolean $draw_circle Draw inscribed circle or not. Default value: false.
@@ -12079,8 +12082,8 @@ class TCPDF {
 	 * @param float $r Radius of inscribed circle.
 	 * @param integer $nv Number of vertices.
 	 * @param integer $ng Number of gap (if ($ng % $nv = 1) then is a regular polygon).
-	 * @param $angle: (float) Angle oriented (anti-clockwise). Default value: 0.
-	 * @param $draw_circle: (boolean) Draw inscribed circle or not. Default value is false.
+	 * @param float $angle Angle oriented (anti-clockwise). Default value: 0.
+	 * @param boolean $draw_circle Draw inscribed circle or not. Default value is false.
 	 * @param string $style Style of rendering. See the getPathPaintOperator() function for more information.
 	 * @param array $line_style Line style of polygon sides. Array with keys among the following:
 	 * <ul>
@@ -13986,7 +13989,7 @@ class TCPDF {
 	/**
 	 * Get the overprint mode array (OP, op, OPM).
 	 * (Check the "Entries in a Graphics State Parameter Dictionary" on PDF 32000-1:2008).
-	 * @return array.
+	 * @return array<string,bool|int>
 	 * @public
 	 * @since 5.9.152 (2012-03-23)
 	 */
@@ -14031,7 +14034,7 @@ class TCPDF {
 	/**
 	 * Get the alpha mode array (CA, ca, BM, AIS).
 	 * (Check the "Entries in a Graphics State Parameter Dictionary" on PDF 32000-1:2008).
-	 * @return array.
+	 * @return array<string,bool|string>
 	 * @public
 	 * @since 5.9.152 (2012-03-23)
 	 */
@@ -14857,8 +14860,8 @@ class TCPDF {
 	 * @param float $a start angle (in degrees).
 	 * @param float $b end angle (in degrees).
 	 * @param string $style Style of rendering. See the getPathPaintOperator() function for more information.
-	 * @param $cw: (float) indicates whether to go clockwise (default: true).
-	 * @param $o: (float) origin of angles (0 for 3 o'clock, 90 for noon, 180 for 9 o'clock, 270 for 6 o'clock). Default: 90.
+	 * @param float $cw indicates whether to go clockwise (default: true).
+	 * @param float $o origin of angles (0 for 3 o'clock, 90 for noon, 180 for 9 o'clock, 270 for 6 o'clock). Default: 90.
 	 * @author Maxime Delorme, Nicola Asuni
 	 * @since 3.1.000 (2008-06-09)
 	 * @public
@@ -14877,8 +14880,8 @@ class TCPDF {
 	 * @param float $a start angle (in degrees).
 	 * @param float $b end angle (in degrees).
 	 * @param string $style Style of rendering. See the getPathPaintOperator() function for more information.
-	 * @param $cw: (float) indicates whether to go clockwise.
-	 * @param $o: (float) origin of angles (0 for 3 o'clock, 90 for noon, 180 for 9 o'clock, 270 for 6 o'clock).
+	 * @param float $cw indicates whether to go clockwise.
+	 * @param float $o origin of angles (0 for 3 o'clock, 90 for noon, 180 for 9 o'clock, 270 for 6 o'clock).
 	 * @param integer $nc Number of curves used to draw a 90 degrees portion of arc.
 	 * @author Maxime Delorme, Nicola Asuni
 	 * @since 3.1.000 (2008-06-09)
@@ -18782,7 +18785,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @param array $dom html dom array
 	 * @param int $key current element id
 	 * @param boolean $cell if true add the default left (or right if RTL) padding to each new line (default false).
-	 * @return $dom array
+	 * @return array $dom
 	 * @protected
 	 */
 	protected function openHTMLTagHandler($dom, $key, $cell) {
@@ -19489,7 +19492,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @param int $key current element id
 	 * @param boolean $cell if true add the default left (or right if RTL) padding to each new line (default false).
 	 * @param int $maxbottomliney maximum y value of current line
-	 * @return $dom array
+	 * @return array $dom
 	 * @protected
 	 */
 	protected function closeHTMLTagHandler($dom, $key, $cell, $maxbottomliney=0) {
@@ -22722,7 +22725,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @param float $h height of the text/image/object to print in user units
 	 * @param float $x current X coordinate in user units
 	 * @param float $y current Y coordinate in user units
-	 * @return array($x, $y)
+	 * @return float[] array($x, $y)
 	 * @author Nicola Asuni
 	 * @protected
 	 * @since 5.9.003 (2010-10-13)
