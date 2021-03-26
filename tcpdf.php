@@ -2383,7 +2383,7 @@ class TCPDF {
 
 	/**
 	 * Return the RTL status
-	 * @return boolean
+	 * @return bool
 	 * @public
 	 * @since 4.0.012 (2008-07-24)
 	 */
@@ -2425,7 +2425,7 @@ class TCPDF {
 
 	/**
 	 * Return the current temporary RTL status
-	 * @return boolean
+	 * @return bool
 	 * @public
 	 * @since 4.8.014 (2009-11-04)
 	 */
@@ -2848,7 +2848,7 @@ class TCPDF {
 
 	/**
 	 * Return the auto-page-break mode (true or false).
-	 * @return boolean auto-page-break mode
+	 * @return bool auto-page-break mode
 	 * @public
 	 * @since 5.9.088
 	 */
@@ -4670,7 +4670,7 @@ class TCPDF {
 	 * @param mixed $char Character to check (integer value or string)
 	 * @param string $font Font name (family name).
 	 * @param string $style Font style.
-	 * @return (boolean) true if the char is defined, false otherwise.
+	 * @return bool true if the char is defined, false otherwise.
 	 * @public
 	 * @since 5.9.153 (2012-03-28)
 	 */
@@ -4982,7 +4982,7 @@ class TCPDF {
 	 * Whenever a page break condition is met, the method is called, and the break is issued or not depending on the returned value.
 	 * The default implementation returns a value according to the mode selected by SetAutoPageBreak().<br />
 	 * This method is called automatically and should not be called directly by the application.
-	 * @return boolean
+	 * @return bool
 	 * @public
 	 * @since 1.4
 	 * @see SetAutoPageBreak()
@@ -5009,8 +5009,8 @@ class TCPDF {
 	 * Add page if needed.
 	 * @param float $h Cell height. Default value: 0.
 	 * @param mixed $y starting y position, leave empty for current position.
-	 * @param boolean $addpage if true add a page, otherwise only return the true/false state
-	 * @return boolean true in case of page break, false otherwise.
+	 * @param bool  $addpage if true add a page, otherwise only return the true/false state
+	 * @return bool true in case of page break, false otherwise.
 	 * @since 3.2.000 (2008-07-01)
 	 * @protected
 	 */
@@ -10926,11 +10926,11 @@ class TCPDF {
 	 * Remark: the protection against modification is for people who have the full Acrobat product.
 	 * If you don't set any password, the document will open as usual. If you set a user password, the PDF viewer will ask for it before displaying the document. The master password, if different from the user one, can be used to get full access.
 	 * Note: protecting a document requires to encrypt it, which increases the processing time a lot. This can cause a PHP time-out in some cases, especially if the document contains images or fonts.
-	 * @param Array $permissions the set of permissions (specify the ones you want to block):<ul><li>print : Print the document;</li><li>modify : Modify the contents of the document by operations other than those controlled by 'fill-forms', 'extract' and 'assemble';</li><li>copy : Copy or otherwise extract text and graphics from the document;</li><li>annot-forms : Add or modify text annotations, fill in interactive form fields, and, if 'modify' is also set, create or modify interactive form fields (including signature fields);</li><li>fill-forms : Fill in existing interactive form fields (including signature fields), even if 'annot-forms' is not specified;</li><li>extract : Extract text and graphics (in support of accessibility to users with disabilities or for other purposes);</li><li>assemble : Assemble the document (insert, rotate, or delete pages and create bookmarks or thumbnail images), even if 'modify' is not set;</li><li>print-high : Print the document to a representation from which a faithful digital copy of the PDF content could be generated. When this is not set, printing is limited to a low-level representation of the appearance, possibly of degraded quality.</li><li>owner : (inverted logic - only for public-key) when set permits change of encryption and enables all other permissions.</li></ul>
-	 * @param String $user_pass user password. Empty by default.
-	 * @param String $owner_pass owner password. If not specified, a random value is used.
+	 * @param array $permissions the set of permissions (specify the ones you want to block):<ul><li>print : Print the document;</li><li>modify : Modify the contents of the document by operations other than those controlled by 'fill-forms', 'extract' and 'assemble';</li><li>copy : Copy or otherwise extract text and graphics from the document;</li><li>annot-forms : Add or modify text annotations, fill in interactive form fields, and, if 'modify' is also set, create or modify interactive form fields (including signature fields);</li><li>fill-forms : Fill in existing interactive form fields (including signature fields), even if 'annot-forms' is not specified;</li><li>extract : Extract text and graphics (in support of accessibility to users with disabilities or for other purposes);</li><li>assemble : Assemble the document (insert, rotate, or delete pages and create bookmarks or thumbnail images), even if 'modify' is not set;</li><li>print-high : Print the document to a representation from which a faithful digital copy of the PDF content could be generated. When this is not set, printing is limited to a low-level representation of the appearance, possibly of degraded quality.</li><li>owner : (inverted logic - only for public-key) when set permits change of encryption and enables all other permissions.</li></ul>
+	 * @param string $user_pass user password. Empty by default.
+	 * @param string $owner_pass owner password. If not specified, a random value is used.
 	 * @param int $mode encryption strength: 0 = RC4 40 bit; 1 = RC4 128 bit; 2 = AES 128 bit; 3 = AES 256 bit.
-	 * @param String $pubkeys array of recipients containing public-key certificates ('c') and permissions ('p'). For example: array(array('c' => 'file://../examples/data/cert/tcpdf.crt', 'p' => array('print')))
+	 * @param string $pubkeys array of recipients containing public-key certificates ('c') and permissions ('p'). For example: array(array('c' => 'file://../examples/data/cert/tcpdf.crt', 'p' => array('print')))
 	 * @public
 	 * @since 2.0.000 (2008-01-02)
 	 * @author Nicola Asuni
@@ -22273,7 +22273,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 
 	/**
 	 * Return the default option for font subsetting.
-	 * @return boolean default font subsetting state.
+	 * @return bool default font subsetting state.
 	 * @author Nicola Asuni
 	 * @public
 	 * @since 5.3.002 (2010-06-07)

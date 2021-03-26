@@ -432,11 +432,11 @@ class TCPDF_STATIC {
 	}
 
 	/**
-	 * Returns the input text exrypted using AES algorithm and the specified key.
+	 * Returns the input text encrypted using AES algorithm and the specified key.
 	 * This method requires openssl or mcrypt. Text is padded to 16bytes blocks
 	 * @param string $key encryption key
-	 * @param String $text input text to be encrypted
-	 * @return String encrypted text
+	 * @param string $text input text to be encrypted
+	 * @return string encrypted text
 	 * @author Nicola Asuni
 	 * @since 5.0.005 (2010-05-11)
 	 * @public static
@@ -457,11 +457,11 @@ class TCPDF_STATIC {
 	}
 
 	/**
-	 * Returns the input text exrypted using AES algorithm and the specified key.
+	 * Returns the input text encrypted using AES algorithm and the specified key.
 	 * This method requires openssl or mcrypt. Text is not padded
 	 * @param string $key encryption key
-	 * @param String $text input text to be encrypted
-	 * @return String encrypted text
+	 * @param string $text input text to be encrypted
+	 * @return string encrypted text
 	 * @author Nicola Asuni
 	 * @since TODO
 	 * @public static
@@ -481,10 +481,10 @@ class TCPDF_STATIC {
 	 * Returns the input text encrypted using RC4 algorithm and the specified key.
 	 * RC4 is the standard encryption algorithm used in PDF format
 	 * @param string $key Encryption key.
-	 * @param String $text Input text to be encrypted.
-	 * @param String $last_enc_key Reference to last RC4 key encrypted.
-	 * @param String $last_enc_key_c Reference to last RC4 computed key.
-	 * @return String encrypted text
+	 * @param string $text Input text to be encrypted.
+	 * @param string $last_enc_key Reference to last RC4 key encrypted.
+	 * @param string $last_enc_key_c Reference to last RC4 computed key.
+	 * @return string encrypted text
 	 * @since 2.0.000 (2008-01-02)
 	 * @author Klemen Vodopivec, Nicola Asuni
 	 * @public static
@@ -527,7 +527,7 @@ class TCPDF_STATIC {
 
 	/**
 	 * Return the permission code used on encryption (P value).
-	 * @param Array $permissions the set of permissions (specify the ones you want to block).
+	 * @param array $permissions the set of permissions (specify the ones you want to block).
 	 * @param int $mode encryption strength: 0 = RC4 40 bit; 1 = RC4 128 bit; 2 = AES 128 bit; 3 = AES 256 bit.
 	 * @since 5.0.005 (2010-05-12)
 	 * @author Nicola Asuni
@@ -652,7 +652,7 @@ class TCPDF_STATIC {
 	 */
 	public static function getAnnotOptFromJSProp($prop, &$spot_colors, $rtl=false) {
 		if (isset($prop['aopt']) AND is_array($prop['aopt'])) {
-			// the annotation options area lready defined
+			// the annotation options are already defined
 			return $prop['aopt'];
 		}
 		$opt = array(); // value to be returned
@@ -1011,7 +1011,7 @@ class TCPDF_STATIC {
 
 	/**
 	 * Format the page numbers.
-	 * This method can be overriden for custom formats.
+	 * This method can be overridden for custom formats.
 	 * @param int $num page number
 	 * @since 4.2.005 (2008-11-06)
 	 * @public static
@@ -1022,7 +1022,7 @@ class TCPDF_STATIC {
 
 	/**
 	 * Format the page numbers on the Table Of Content.
-	 * This method can be overriden for custom formats.
+	 * This method can be overridden for custom formats.
 	 * @param int $num page number
 	 * @since 4.5.001 (2009-01-04)
 	 * @see addTOC(), addHTMLTOC()
@@ -1517,7 +1517,7 @@ class TCPDF_STATIC {
 
 	/**
 	 * Returns an array of hyphenation patterns.
-	 * @param string $file TEX file containing hypenation patterns. TEX pattrns can be downloaded from http://www.ctan.org/tex-archive/language/hyph-utf8/tex/generic/hyph-utf8/patterns/
+	 * @param string $file TEX file containing hypenation patterns. TEX patterns can be downloaded from http://www.ctan.org/tex-archive/language/hyph-utf8/tex/generic/hyph-utf8/patterns/
 	 * @return array of hyphenation patterns
 	 * @author Nicola Asuni
 	 * @since 4.9.012 (2010-04-12)
