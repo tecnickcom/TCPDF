@@ -7201,7 +7201,7 @@ class TCPDF {
 		} else {
 			$ximg = $x;
 		}
-		
+
 		if ($ismask OR $hidden) {
 			// image is not displayed
 			return $info['i'];
@@ -18897,7 +18897,18 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				}
 				$prevlinewidth = $this->GetLineWidth();
 				$this->SetLineWidth($hrHeight);
-				$this->Line($x, $y, $x + $hrWidth, $y);
+
+				$lineStyle = array(
+					'color' => $tag['fgcolor'],
+					'cap'   => $tag['style']['cap'],
+					'join'  => $tag['style']['join'],
+					'dash'  => $tag['style']['dash'],
+					'phase' => $tag['style']['phase'],
+				);
+
+				$lineStyle = array_filter($lineStyle);
+
+				$this->Line($x, $y, $x + $hrWidth, $y, $lineStyle);
 				$this->SetLineWidth($prevlinewidth);
 				$this->addHTMLVertSpace(max($hbc, ($hrHeight / 2)), 0, $cell, !isset($dom[($key + 1)]));
 				break;
