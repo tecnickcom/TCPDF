@@ -1825,6 +1825,14 @@ class TCPDF {
 	 */
 	protected $gdgammacache = array();
 
+    /**
+     * Cache array for file content
+     * @protected
+     * @var array
+     * @sinde 6.3.5 (2020-09-28)
+     */
+	protected $fileContentCache = array();
+
 	//------------------------------------------------------------
 	// METHODS
 	//------------------------------------------------------------
@@ -2714,7 +2722,7 @@ class TCPDF {
 	/**
 	 * Adjust the internal Cell padding array to take account of the line width.
 	 * @param $brd (mixed) Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
-	 * @return array of adjustments
+	 * @return void|array of adjustments
 	 * @public
 	 * @since 5.9.000 (2010-10-03)
 	 */
@@ -2730,7 +2738,11 @@ class TCPDF {
 				$newbrd[$brd[$i]] = true;
 			}
 			$brd = $newbrd;
-		} elseif (($brd === 1) OR ($brd === true) OR (is_numeric($brd) AND (intval($brd) > 0))) {
+		} elseif (
+			($brd === 1)
+			|| ($brd === true)
+			|| (is_numeric($brd) && ((int)$brd > 0))
+		) {
 			$brd = array('LRTB' => true);
 		}
 		if (!is_array($brd)) {
@@ -2748,7 +2760,7 @@ class TCPDF {
 		// process borders
 		foreach ($brd as $border => $style) {
 			$line_width = $this->LineWidth;
-			if (is_array($style) AND isset($style['width'])) {
+			if (is_array($style) && isset($style['width'])) {
 				// get border width
 				$line_width = $style['width'];
 			}
@@ -2769,20 +2781,43 @@ class TCPDF {
 				}
 			}
 			// correct internal cell padding if required to avoid overlap between text and lines
-			if ((strpos($border,'T') !== false) AND ($this->cell_padding['T'] < $adj)) {
+			if (
+				is_numeric($this->cell_padding['T'])
+				&& ($this->cell_padding['T'] < $adj)
+				&& (strpos($border, 'T') !== false)
+			) {
 				$this->cell_padding['T'] = $adj;
 			}
-			if ((strpos($border,'R') !== false) AND ($this->cell_padding['R'] < $adj)) {
+			if (
+				is_numeric($this->cell_padding['R'])
+				&& ($this->cell_padding['R'] < $adj)
+				&& (strpos($border, 'R') !== false)
+			) {
 				$this->cell_padding['R'] = $adj;
 			}
-			if ((strpos($border,'B') !== false) AND ($this->cell_padding['B'] < $adj)) {
+			if (
+				is_numeric($this->cell_padding['B'])
+				&& ($this->cell_padding['B'] < $adj)
+				&& (strpos($border, 'B') !== false)
+			) {
 				$this->cell_padding['B'] = $adj;
 			}
-			if ((strpos($border,'L') !== false) AND ($this->cell_padding['L'] < $adj)) {
+			if (
+				is_numeric($this->cell_padding['L'])
+				&& ($this->cell_padding['L'] < $adj)
+				&& (strpos($border, 'L') !== false)
+			) {
 				$this->cell_padding['L'] = $adj;
 			}
+
 		}
-		return array('T' => ($this->cell_padding['T'] - $cp['T']), 'R' => ($this->cell_padding['R'] - $cp['R']), 'B' => ($this->cell_padding['B'] - $cp['B']), 'L' => ($this->cell_padding['L'] - $cp['L']));
+
+		return array(
+			'T' => ($this->cell_padding['T'] - $cp['T']),
+			'R' => ($this->cell_padding['R'] - $cp['R']),
+			'B' => ($this->cell_padding['B'] - $cp['B']),
+			'L' => ($this->cell_padding['L'] - $cp['L']),
+		);
 	}
 
 	/**
@@ -4849,7 +4884,7 @@ class TCPDF {
 		}
 		reset($this->embeddedfiles);
 		foreach ($this->embeddedfiles as $filename => $filedata) {
-			$data = TCPDF_STATIC::fileGetContents($filedata['file']);
+		    $data = $this->getCachedFileContents($filedata['file']);
 			if ($data !== FALSE) {
 				$rawsize = strlen($data);
 				if ($rawsize > 0) {
@@ -6475,7 +6510,7 @@ class TCPDF {
 					// *** very slow ***
 					$l = $this->GetArrStringWidth(TCPDF_FONTS::utf8Bidi(array_slice($chars, $j, ($i - $j)), '', $this->tmprtl, $this->isunicode, $this->CurrentFont));
 				} else {
-					$l += $this->GetCharWidth($c);
+					$l += $this->GetCharWidth($c, ($i+1 < $nb));
 				}
 				if (($l > $wmax) OR (($c == 173) AND (($l + $tmp_shy_replacement_width) >= $wmax))) {
 					if (($c == 173) AND (($l + $tmp_shy_replacement_width) > $wmax)) {
@@ -6852,6 +6887,12 @@ class TCPDF {
 		list($x, $y) = $this->checkPageRegions($h, $x, $y);
 		$exurl = ''; // external streams
 		$imsize = FALSE;
+
+        // Make sure the file variable is not empty or null because accessing $file[0] later
+        // results in error when running PHP 7.4
+        if (empty($file)) {
+            return false;
+        }
 		// check if we are passing an image as file or string
 		if ($file[0] === '@') {
 			// image from string
@@ -6863,18 +6904,14 @@ class TCPDF {
 				$exurl = $file;
 			}
 			// check if file exist and it is valid
-			if (!@TCPDF_STATIC::file_exists($file)) {
+			if (!@$this->fileExists($file)) {
 				return false;
 			}
-			if (($imsize = @getimagesize($file)) === FALSE) {
-				if (in_array($file, $this->imagekeys)) {
-					// get existing image data
-					$info = $this->getImageBuffer($file);
-					$imsize = array($info['w'], $info['h']);
-				} elseif (strpos($file, '__tcpdf_'.$this->file_id.'_img') === FALSE) {
-					$imgdata = TCPDF_STATIC::fileGetContents($file);
-				}
-			}
+            if (false !== $info = $this->getImageBuffer($file)) {
+                $imsize = array($info['w'], $info['h']);
+            } elseif (($imsize = @getimagesize($file)) === FALSE && strpos($file, '__tcpdf_'.$this->file_id.'_img') === FALSE){
+                $imgdata = $this->getCachedFileContents($file);
+            }
 		}
 		if (!empty($imgdata)) {
 			// copy image to cache
@@ -7079,7 +7116,7 @@ class TCPDF {
 							$svgimg = substr($file, 1);
 						} else {
 							// get SVG file content
-							$svgimg = TCPDF_STATIC::fileGetContents($file);
+                            $svgimg = $this->getCachedFileContents($file);
 						}
 						if ($svgimg !== FALSE) {
 							// get width and height
@@ -7756,7 +7793,7 @@ class TCPDF {
 		if (isset(self::$cleaned_ids[$this->file_id])) {
 			$destroyall = false;
 		}
-		if ($destroyall AND !$preserve_objcopy) {
+		if ($destroyall AND !$preserve_objcopy && isset($this->file_id)) {
 			self::$cleaned_ids[$this->file_id] = true;
 			// remove all temporary files
 			if ($handle = @opendir(K_PATH_CACHE)) {
@@ -14890,7 +14927,7 @@ class TCPDF {
 		if ($file[0] === '@') { // image from string
 			$data = substr($file, 1);
 		} else { // EPS/AI file
-			$data = TCPDF_STATIC::fileGetContents($file);
+            $data = $this->getCachedFileContents($file);
 		}
 		if ($data === FALSE) {
 			$this->Error('EPS file not found: '.$file);
@@ -16309,7 +16346,7 @@ class TCPDF {
 						$type = array();
 						if (preg_match('/href[\s]*=[\s]*"([^"]*)"/', $link, $type) > 0) {
 							// read CSS data file
-							$cssdata = TCPDF_STATIC::fileGetContents(trim($type[1]));
+                            $cssdata = $this->getCachedFileContents(trim($type[1]));
 							if (($cssdata !== FALSE) AND (strlen($cssdata) > 0)) {
 								$css = array_merge($css, TCPDF_STATIC::extractCSSproperties($cssdata));
 							}
@@ -16530,7 +16567,11 @@ class TCPDF {
 						$dom[($dom[$key]['parent'])]['content'] = str_replace('</thead>', '', $dom[($dom[$key]['parent'])]['content']);
 					}
 					// store header rows on a new table
-					if (($dom[$key]['value'] == 'tr') AND ($dom[($dom[$key]['parent'])]['thead'] === true)) {
+					if (
+						($dom[$key]['value'] === 'tr')
+						&& !empty($dom[($dom[$key]['parent'])]['thead'])
+						&& ($dom[($dom[$key]['parent'])]['thead'] === true)
+					) {
 						if (TCPDF_STATIC::empty_string($dom[($dom[($dom[$key]['parent'])]['parent'])]['thead'])) {
 							$dom[($dom[($dom[$key]['parent'])]['parent'])]['thead'] = $csstagarray.$a[$dom[($dom[($dom[$key]['parent'])]['parent'])]['elkey']];
 						}
@@ -16960,10 +17001,20 @@ class TCPDF {
 							// rows on thead block are printed as a separate table
 						} else {
 							$dom[$key]['thead'] = false;
+							$parent = $dom[$key]['parent'];
+
+							if (!isset($dom[$parent]['rows'])) {
+								$dom[$parent]['rows'] = 0;
+							}
 							// store the number of rows on table element
-							++$dom[($dom[$key]['parent'])]['rows'];
+							++$dom[$parent]['rows'];
+
+							if (!isset($dom[$parent]['trids'])) {
+								$dom[$parent]['trids'] = array();
+							}
+
 							// store the TR elements IDs on table element
-							array_push($dom[($dom[$key]['parent'])]['trids'], $key);
+							array_push($dom[$parent]['trids'], $key);
 						}
 					}
 					if (($dom[$key]['value'] == 'th') OR ($dom[$key]['value'] == 'td')) {
@@ -19788,7 +19839,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					}
 				}
 				if (!$in_table_head) { // we are not inside a thead section
-					$this->cell_padding = $table_el['old_cell_padding'];
+					$this->cell_padding = isset($table_el['old_cell_padding']) ? $table_el['old_cell_padding'] : null;
 					// reset row height
 					$this->resetLastH();
 					if (($this->page == ($this->numpages - 1)) AND ($this->pageopen[$this->numpages])) {
@@ -21698,6 +21749,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	public function commitTransaction() {
 		if (isset($this->objcopy)) {
 			$this->objcopy->_destroy(true, true);
+			/* The unique file_id should not be used during cleanup again */
+			$this->objcopy->file_id = NULL;
 			unset($this->objcopy);
 		}
 	}
@@ -21711,14 +21764,22 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 */
 	public function rollbackTransaction($self=false) {
 		if (isset($this->objcopy)) {
+			$objcopy = $this->objcopy;
 			$this->_destroy(true, true);
 			if ($self) {
-				$objvars = get_object_vars($this->objcopy);
+				$objvars = get_object_vars($objcopy);
 				foreach ($objvars as $key => $value) {
 					$this->$key = $value;
 				}
+				$objcopy->_destroy(true, true);
+				/* The unique file_id should not be used during cleanup again */
+				$objcopy->file_id = NULL;
+				unset($objcopy);
+				return $this;
 			}
-			return $this->objcopy;
+			/* The unique file_id should not be used during cleanup again */
+			$this->file_id = NULL;
+			return $objcopy;
 		}
 		return $this;
 	}
@@ -22757,7 +22818,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			$svgdata = substr($file, 1);
 		} else { // SVG file
 			$this->svgdir = dirname($file);
-			$svgdata = TCPDF_STATIC::fileGetContents($file);
+            $svgdata = $this->getCachedFileContents($file);
 		}
 		if ($svgdata === FALSE) {
 			$this->Error('SVG file not found: '.$file);
@@ -24551,6 +24612,33 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	}
 
 	// --- END SVG METHODS -----------------------------------------------------
+
+    /**
+     * Keeps files in memory, so it doesn't need to downloaded everytime in a loop
+     * @param string $file
+     * @return string
+     */
+    protected function getCachedFileContents($file)
+    {
+        if (!isset($this->fileContentCache[$file])) {
+            $this->fileContentCache[$file] = TCPDF_STATIC::fileGetContents($file);
+        }
+        return $this->fileContentCache[$file];
+    }
+
+    /**
+     * Avoid multiple calls to an external server to see if a file exists
+     * @param string $file
+     * @return bool
+     */
+    protected function fileExists($file)
+    {
+        if (isset($this->fileContentCache[$file]) || false !== $this->getImageBuffer($file)) {
+            return true;
+        }
+
+        return TCPDF_STATIC::file_exists($file);
+    }
 
 } // END OF TCPDF CLASS
 
