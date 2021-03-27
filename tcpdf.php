@@ -2469,7 +2469,7 @@ class TCPDF {
 
 	/**
 	 * Get the last cell height.
-	 * @return last cell height
+	 * @return float last cell height
 	 * @public
 	 * @since 4.0.017 (2008-08-05)
 	 */
@@ -2733,7 +2733,7 @@ class TCPDF {
 
 	/**
 	 * Adjust the internal Cell padding array to take account of the line width.
-	 * @param mixed $brd Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
+	 * @param string|array|int $brd Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
 	 * @return void|array array of adjustments
 	 * @public
 	 * @since 5.9.000 (2010-10-03)
@@ -2971,7 +2971,7 @@ class TCPDF {
 	/**
 	 * Whether to allow local file path in image html tags, when prefixed with file://
 	 * 
-	 * @param $allowLocalFiles bool true, when local files should be allowed. Otherwise false.
+	 * @param bool $allowLocalFiles true, when local files should be allowed. Otherwise false.
 	 * @public
 	 * @since 6.4
 	 */
@@ -3760,7 +3760,7 @@ class TCPDF {
 
 	/**
 	 * Returns the array of spot colors.
-	 * @return (array) Spot colors array.
+	 * @return array Spot colors array.
 	 * @public
 	 * @since 6.0.038 (2013-09-30)
 	 */
@@ -3793,7 +3793,7 @@ class TCPDF {
 	 * @param string $type Type of object affected by this color: ('draw', 'fill', 'text').
 	 * @param string $name Name of the spot color.
 	 * @param float $tint Intensity of the color (from 0 to 100 ; 100 = full intensity by default).
-	 * @return (string) PDF color command.
+	 * @return string PDF color command.
 	 * @public
 	 * @since 5.9.125 (2011-10-03)
 	 */
@@ -3878,7 +3878,7 @@ class TCPDF {
 	 * @param string $type Type of object affected by this color: ('draw', 'fill', 'text').
 	 * @param array $color Array of colors (1=gray, 3=RGB, 4=CMYK or 5=spotcolor=CMYK+name values).
 	 * @param boolean $ret If true do not send the PDF command.
-	 * @return (string) The PDF command or empty string.
+	 * @return string The PDF command or empty string.
 	 * @public
 	 * @since 3.1.000 (2008-06-11)
 	 */
@@ -3953,7 +3953,7 @@ class TCPDF {
 	 * @param float $col4 KEY (BLACK) color for CMYK (0-100).
 	 * @param boolean $ret If true do not send the command.
 	 * @param string $name spot color name (if any)
-	 * @return (string) The PDF command or empty string.
+	 * @return string The PDF command or empty string.
 	 * @public
 	 * @since 5.9.125 (2011-10-03)
 	 */
@@ -4059,7 +4059,7 @@ class TCPDF {
 	 * @param float $col4 KEY (BLACK) color for CMYK (0-100).
 	 * @param boolean $ret If true do not send the command.
 	 * @param string $name Spot color name (if any).
-	 * @return (string) The PDF command.
+	 * @return string The PDF command.
 	 * @public
 	 * @since 1.3
 	 * @see SetFillColorArray(), SetDrawColor(), SetTextColor(), Rect(), Cell(), MultiCell()
@@ -4076,7 +4076,7 @@ class TCPDF {
 	 * @param float $col4 KEY (BLACK) color for CMYK (0-100).
 	 * @param boolean $ret If true do not send the command.
 	 * @param string $name Spot color name (if any).
-	 * @return (string) Empty string.
+	 * @return string Empty string.
 	 * @public
 	 * @since 1.3
 	 * @see SetTextColorArray(), SetDrawColor(), SetFillColor(), Text(), Cell(), MultiCell()
@@ -4230,7 +4230,7 @@ class TCPDF {
 	 * @param string $family Font family. The name can be chosen arbitrarily. If it is a standard family name, it will override the corresponding font.
 	 * @param string $style Font style. Possible values are (case insensitive):<ul><li>empty string: regular (default)</li><li>B: bold</li><li>I: italic</li><li>BI or IB: bold italic</li></ul>
 	 * @param string $fontfile The font definition file. By default, the name is built from the family and style, in lower case with no spaces.
-	 * @return array containing the font data, or false in case of error.
+	 * @return array|false array containing the font data, or false in case of error.
 	 * @param mixed $subset if true embedd only a subset of the font (stores only the information related to the used characters); if false embedd full font; if 'default' uses the default value set using setFontSubsetting(). This option is valid only for TrueTypeUnicode fonts. If you want to enable users to change the document, set this parameter to false. If you subset the font, the person who receives your PDF would need to have your same font in order to make changes to your PDF. The file size of the PDF would also be smaller because you are embedding only part of a font.
 	 * @public
 	 * @since 1.5
@@ -4697,7 +4697,7 @@ class TCPDF {
 	 * @param string $font Font name (family name).
 	 * @param string $style Font style.
 	 * @param array $subs Array of possible character substitutions. The key is the character to check (integer value) and the value is a single intege value or an array of possible substitutes.
-	 * @return (string) Processed text.
+	 * @return string Processed text.
 	 * @public
 	 * @since 5.9.153 (2012-03-28)
 	 */
@@ -4760,7 +4760,7 @@ class TCPDF {
 	 * Defines the page and position a link points to.
 	 * @param int $link The link identifier returned by AddLink()
 	 * @param float $y Ordinate of target position; -1 indicates the current position. The default value is 0 (top of page)
-	 * @param $page (int|string) Number of target page; -1 indicates the current page (default value). If you prefix a page number with the * character, then this page will not be changed when adding/deleting/moving pages.
+	 * @param int|string $page Number of target page; -1 indicates the current page (default value). If you prefix a page number with the * character, then this page will not be changed when adding/deleting/moving pages.
 	 * @public
 	 * @since 1.5
 	 * @see AddLink()
@@ -5622,7 +5622,7 @@ class TCPDF {
 	 * @param float $y Y coordinate.
 	 * @param float $w Cell width.
 	 * @param float $h Cell height.
-	 * @param mixed $brd Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
+	 * @param string|array|int $brd Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
 	 * @return string containing cell border code
 	 * @protected
 	 * @see SetLineStyle()
@@ -6893,7 +6893,7 @@ class TCPDF {
 	 * @param boolean $fitonpage If true the image is resized to not exceed page dimensions.
 	 * @param boolean $alt If true the image will be added as alternative and not directly printed (the ID of the image will be returned).
 	 * @param array $altimgs Array of alternate images IDs. Each alternative image must be an array with two values: an integer representing the image ID (the value returned by the Image method) and a boolean value to indicate if the image is the default for printing.
-	 * @return image information
+	 * @return mixed|false image information
 	 * @public
 	 * @since 1.1
 	 */
@@ -7916,7 +7916,7 @@ class TCPDF {
 	 * @param string $page Page content.
 	 * @param array $aliases Array of page aliases.
 	 * @param int $diff initial difference to add.
-	 * @return replaced page content.
+	 * @return string replaced page content.
 	 * @protected
 	 */
 	protected function replaceRightShiftPageNumAliases($page, $aliases, $diff) {
@@ -9593,7 +9593,7 @@ class TCPDF {
 
 	/**
 	 * Put XMP data object and return ID.
-	 * @return (int) The object ID.
+	 * @return int The object ID.
 	 * @since 5.9.121 (2011-09-28)
 	 * @protected
 	 */
@@ -10300,7 +10300,7 @@ class TCPDF {
 
 	/**
 	 * Returns document creation timestamp in seconds.
-	 * @return (int) Creation timestamp in seconds.
+	 * @return int Creation timestamp in seconds.
 	 * @public
 	 * @since 5.9.152 (2012-03-23)
 	 */
@@ -10310,7 +10310,7 @@ class TCPDF {
 
 	/**
 	 * Returns document modification timestamp in seconds.
-	 * @return (int) Modfication timestamp in seconds.
+	 * @return int Modfication timestamp in seconds.
 	 * @public
 	 * @since 5.9.152 (2012-03-23)
 	 */
@@ -10467,7 +10467,7 @@ class TCPDF {
 	 * @param array $color array of RGB text color
 	 * @param string $style font style (U, D, B, I)
 	 * @param boolean $firstblock if true the string is the starting of a line.
-	 * @return the number of cells used or the remaining text if $firstline = true;
+	 * @return int the number of cells used or the remaining text if $firstline = true;
 	 * @public
 	 */
 	public function addHtmlLink($url, $name, $fill=false, $firstline=false, $color='', $style=-1, $firstblock=false) {
@@ -10553,7 +10553,7 @@ class TCPDF {
 	 * Encrypt the input string.
 	 * @param int $n object number
 	 * @param string $s data string to encrypt
-	 * @return encrypted string
+	 * @return string encrypted string
 	 * @protected
 	 * @author Nicola Asuni
 	 * @since 5.0.005 (2010-05-11)
@@ -12295,9 +12295,9 @@ class TCPDF {
 	 * NOTE: destination names are unique, so only last entry will be saved.
 	 * @param string $name Destination name.
 	 * @param float $y Y position in user units of the destiantion on the selected page (default = -1 = current position; 0 = page start;).
-	 * @param $page (int|string) Target page number (leave empty for current page). If you prefix a page number with the * character, then this page will not be changed when adding/deleting/moving pages.
+	 * @param int|string $page Target page number (leave empty for current page). If you prefix a page number with the * character, then this page will not be changed when adding/deleting/moving pages.
 	 * @param float $x X position in user units of the destiantion on the selected page (default = -1 = current position;).
-	 * @return (string) Stripped named destination identifier or false in case of error.
+	 * @return string|false Stripped named destination identifier or false in case of error.
 	 * @public
 	 * @author Christian Deligant, Nicola Asuni
 	 * @since 5.9.097 (2011-06-23)
@@ -12340,7 +12340,7 @@ class TCPDF {
 
 	/**
 	 * Return the Named Destination array.
-	 * @return (array) Named Destination array.
+	 * @return array Named Destination array.
 	 * @public
 	 * @author Nicola Asuni
 	 * @since 5.9.097 (2011-06-23)
@@ -12374,7 +12374,7 @@ class TCPDF {
 	 * @param string $txt Bookmark description.
 	 * @param int $level Bookmark level (minimum value is 0).
 	 * @param float $y Y position in user units of the bookmark on the selected page (default = -1 = current position; 0 = page start;).
-	 * @param $page (int|string) Target page number (leave empty for current page). If you prefix a page number with the * character, then this page will not be changed when adding/deleting/moving pages.
+	 * @param int|string $page Target page number (leave empty for current page). If you prefix a page number with the * character, then this page will not be changed when adding/deleting/moving pages.
 	 * @param string $style Font style: B = Bold, I = Italic, BI = Bold + Italic.
 	 * @param array $color RGB color array (values from 0 to 255).
 	 * @param float $x X position in user units of the bookmark on the selected page (default = -1 = current position;).
@@ -12390,7 +12390,7 @@ class TCPDF {
 	 * @param string $txt Bookmark description.
 	 * @param int $level Bookmark level (minimum value is 0).
 	 * @param float $y Y position in user units of the bookmark on the selected page (default = -1 = current position; 0 = page start;).
-	 * @param $page (int|string) Target page number (leave empty for current page). If you prefix a page number with the * character, then this page will not be changed when adding/deleting/moving pages.
+	 * @param int|string $page Target page number (leave empty for current page). If you prefix a page number with the * character, then this page will not be changed when adding/deleting/moving pages.
 	 * @param string $style Font style: B = Bold, I = Italic, BI = Bold + Italic.
 	 * @param array $color RGB color array (values from 0 to 255).
 	 * @param float $x X position in user units of the bookmark on the selected page (default = -1 = current position;).
@@ -13577,7 +13577,7 @@ class TCPDF {
 	 * @param float $h Height of the signature area.
 	 * @param int $page option page number (if < 0 the current page is used).
 	 * @param string $name Name of the signature.
-	 * @return (array) Array defining page and rectangle coordinates of signature appearance.
+	 * @return array Array defining page and rectangle coordinates of signature appearance.
 	 * @protected
 	 * @author Nicola Asuni
 	 * @since 5.9.101 (2011-07-06)
@@ -13637,7 +13637,7 @@ class TCPDF {
 	 * NOT YET IMPLEMENTED
 	 * Request TSA for a timestamp
 	 * @param string $signature Digital signature as binary string
-	 * @return (string) Timestamped digital signature
+	 * @return string Timestamped digital signature
 	 * @protected
 	 * @author Richard Stockinger
 	 * @since 6.0.090 (2014-06-16)
@@ -13733,7 +13733,7 @@ class TCPDF {
 	 * Return the alias for the total number of pages in the current page group.
 	 * If the current font is unicode type, the returned string is surrounded by additional curly braces.
 	 * This alias will be replaced by the total number of pages in this group.
-	 * @return alias of the current page group
+	 * @return string alias of the current page group
 	 * @public
 	 * @since 3.0.000 (2008-03-27)
 	 */
@@ -13748,7 +13748,7 @@ class TCPDF {
 	 * Return the alias for the page number on the current page group.
 	 * If the current font is unicode type, the returned string is surrounded by additional curly braces.
 	 * This alias will be replaced by the page number (relative to the belonging group).
-	 * @return alias of the current page group
+	 * @return string alias of the current page group
 	 * @public
 	 * @since 4.5.000 (2009-01-02)
 	 */
@@ -13761,7 +13761,7 @@ class TCPDF {
 
 	/**
 	 * Return the current page in the group.
-	 * @return current page in the group
+	 * @return int current page in the group
 	 * @public
 	 * @since 3.0.000 (2008-03-27)
 	 */
@@ -13816,7 +13816,7 @@ class TCPDF {
 	/**
 	 * Start a new pdf layer.
 	 * @param string $name Layer name (only a-z letters and numbers). Leave empty for automatic name.
-	 * @param $print (boolean|null) Set to TRUE to print this layer, FALSE to not print and NULL to not set this option
+	 * @param boolean|null $print Set to TRUE to print this layer, FALSE to not print and NULL to not set this option
 	 * @param boolean $view Set to true to view this layer.
 	 * @param boolean $lock If true lock the layer
 	 * @public
@@ -13890,7 +13890,7 @@ class TCPDF {
 	/**
 	 * Add transparency parameters to the current extgstate
 	 * @param array $parms parameters
-	 * @return the number of extgstates
+	 * @return int|void the number of extgstates
 	 * @protected
 	 * @since 3.0.000 (2008-03-27)
 	 */
@@ -15878,7 +15878,7 @@ class TCPDF {
 
 	/**
 	 * Returns the current font size.
-	 * @return current font size
+	 * @return float current font size
 	 * @public
 	 * @since 3.2.000 (2008-06-23)
 	 */
@@ -15888,7 +15888,7 @@ class TCPDF {
 
 	/**
 	 * Returns the current font size in points unit.
-	 * @return current font size in points unit
+	 * @return int current font size in points unit
 	 * @public
 	 * @since 3.2.000 (2008-06-23)
 	 */
@@ -20921,7 +20921,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	/**
 	 * Get image buffer content.
 	 * @param string $image image key
-	 * @return string image buffer content or false in case of error
+	 * @return string|false image buffer content or false in case of error
 	 * @protected
 	 * @since 4.5.000 (2008-12-31)
 	 */
@@ -20968,7 +20968,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	/**
 	 * Get font buffer content.
 	 * @param string $font font key
-	 * @return string font buffer content or false in case of error
+	 * @return string|false font buffer content or false in case of error
 	 * @protected
 	 * @since 4.5.000 (2009-01-02)
 	 */
@@ -20983,7 +20983,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * Move a page to a previous position.
 	 * @param int $frompage number of the source page
 	 * @param int $topage number of the destination page (must be less than $frompage)
-	 * @return true in case of success, false in case of error.
+	 * @return bool true in case of success, false in case of error.
 	 * @public
 	 * @since 4.5.000 (2009-01-02)
 	 */
@@ -21154,7 +21154,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	/**
 	 * Remove the specified page.
 	 * @param int $page page to remove
-	 * @return true in case of success, false in case of error.
+	 * @return bool true in case of success, false in case of error.
 	 * @public
 	 * @since 4.6.004 (2009-04-23)
 	 */
@@ -21344,7 +21344,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	/**
 	 * Clone the specified page to a new page.
 	 * @param int $page number of page to copy (0 = current page)
-	 * @return true in case of success, false in case of error.
+	 * @return bool true in case of success, false in case of error.
 	 * @public
 	 * @since 4.9.015 (2010-04-20)
 	 */
@@ -22286,7 +22286,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * Left trim the input string
 	 * @param string $str string to trim
 	 * @param string $replace string that replace spaces.
-	 * @return left trimmed string
+	 * @return string left trimmed string
 	 * @author Nicola Asuni
 	 * @public
 	 * @since 5.8.000 (2010-08-11)
@@ -22299,7 +22299,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * Right trim the input string
 	 * @param string $str string to trim
 	 * @param string $replace string that replace spaces.
-	 * @return right trimmed string
+	 * @return string right trimmed string
 	 * @author Nicola Asuni
 	 * @public
 	 * @since 5.8.000 (2010-08-11)
@@ -22312,7 +22312,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * Trim the input string
 	 * @param string $str string to trim
 	 * @param string $replace string that replace spaces.
-	 * @return trimmed string
+	 * @return string trimmed string
 	 * @author Nicola Asuni
 	 * @public
 	 * @since 5.8.000 (2010-08-11)
@@ -22380,7 +22380,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @param int $w Template width in user units (empty string or zero = page width less margins).
 	 * @param int $h Template height in user units (empty string or zero = page height less margins).
 	 * @param mixed $group Set transparency group. Can be a boolean value or an array specifying optional parameters: 'CS' (solour space name), 'I' (boolean flag to indicate isolated group) and 'K' (boolean flag to indicate knockout group).
-	 * @return int the XObject Template ID in case of success or false in case of error.
+	 * @return int|false the XObject Template ID in case of success or false in case of error.
 	 * @author Nicola Asuni
 	 * @public
 	 * @since 5.8.017 (2010-08-24)
@@ -22445,7 +22445,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * End the current XObject Template started with startTemplate() and restore the previous graphic state.
 	 * An XObject Template is a PDF block that is a self-contained description of any sequence of graphics objects (including path objects, text objects, and sampled images).
 	 * An XObject Template may be painted multiple times, either on several pages or at several locations on the same page and produces the same results each time, subject only to the graphics state at the time it is invoked.
-	 * @return int the XObject Template ID in case of success or false in case of error.
+	 * @return int|false the XObject Template ID in case of success or false in case of error.
 	 * @author Nicola Asuni
 	 * @public
 	 * @since 5.8.017 (2010-08-24)

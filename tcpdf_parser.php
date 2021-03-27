@@ -150,7 +150,7 @@ class TCPDF_PARSER {
 
 	/**
 	 * Return an array of parsed PDF document objects.
-	 * @return (array) Array of parsed PDF document objects.
+	 * @return array Array of parsed PDF document objects.
 	 * @public
 	 * @since 1.0.000 (2011-06-26)
 	 */

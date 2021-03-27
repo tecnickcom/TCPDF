@@ -242,7 +242,7 @@ class TCPDF_COLORS {
 	 * Return the Spot color array.
 	 * @param string $name Name of the spot color.
 	 * @param array $spotc Reference to an array of spot colors.
-	 * @return (array) Spot color array or false if not defined.
+	 * @return array Spot color array or false if not defined.
 	 * @since 5.9.125 (2011-10-03)
 	 * @public static
 	 */
@@ -267,7 +267,7 @@ class TCPDF_COLORS {
 	 * @param string $hcolor HTML color.
 	 * @param array $spotc Reference to an array of spot colors.
 	 * @param array $defcol Color to return in case of error.
-	 * @return array RGB or CMYK color, or false in case of error.
+	 * @return array|false RGB or CMYK color, or false in case of error.
 	 * @public static
 	 */
 	public static function convertHTMLColorToDec($hcolor, &$spotc, $defcol=array('R'=>128,'G'=>128,'B'=>128)) {
@@ -408,7 +408,7 @@ class TCPDF_COLORS {
 	/**
 	 * Convert a color array into a string representation.
 	 * @param array $c Array of colors.
-	 * @return (string) The color array representation.
+	 * @return string The color array representation.
 	 * @since 5.9.137 (2011-12-01)
 	 * @public static
 	 */

@@ -810,7 +810,7 @@ class PDF417 {
 	/**
 	 * Create array of sequences from input
 	 * @param string $code code
-	 * @return bidimensional array containing characters and classification
+	 * @return array bi-dimensional array containing characters and classification
 	 * @protected
 	 */
 	protected function getInputSequences($code) {

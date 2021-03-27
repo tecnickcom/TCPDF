@@ -187,7 +187,7 @@ class TCPDF2DBarcode {
 	 * @param int $w Width of a single rectangle element in pixels.
 	 * @param int $h Height of a single rectangle element in pixels.
 	 * @param array $color RGB (0-255) foreground color for bar elements (background is transparent).
- 	 * @return image or false in case of error.
+ 	 * @return string|Imagick|false image or false in case of error.
  	 * @public
 	 */
 	public function getBarcodePngData($w=3, $h=3, $color=array(0,0,0)) {

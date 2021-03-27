@@ -1441,7 +1441,7 @@ class QRcode {
 
 	/**
 	 * splitString
-	 * @return (int)
+	 * @return int
 	 */
 	 protected function splitString() {
 		while (strlen($this->dataStr) > 0) {
@@ -1687,11 +1687,11 @@ class QRcode {
 	/**
 	 * Append data to an input object.
 	 * The data is copied and appended to the input object.
-	 * @param arrray $items input items
+	 * @param array $items input items
 	 * @param int $mode encoding mode.
 	 * @param int $size size of data (byte).
 	 * @param array $data array of input data.
-	 * @return items
+	 * @return array items
 	 *
 	 */
 	protected function appendNewInputItem($items, $mode, $size, $data) {
@@ -1756,9 +1756,9 @@ class QRcode {
 	}
 
 	/**
-	 * Look up the alphabet-numeric convesion table (see JIS X0510:2004, pp.19).
+	 * Look up the alphabet-numeric conversion table (see JIS X0510:2004, pp.19).
 	 * @param int $c character value
-	 * @return value
+	 * @return int value
 	 */
 	protected function lookAnTable($c) {
 		return (($c > 127)?-1:$this->anTable[$c]);

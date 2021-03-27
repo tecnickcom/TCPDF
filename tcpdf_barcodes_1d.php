@@ -186,7 +186,7 @@ class TCPDFBarcode {
 	 * @param int $w Width of a single bar element in pixels.
 	 * @param int $h Height of a single bar element in pixels.
 	 * @param array $color RGB (0-255) foreground color for bar elements (background is transparent).
- 	 * @return image or false in case of error.
+ 	 * @return string|Imagick|false image or false in case of error.
  	 * @public
 	 */
 	public function getBarcodePngData($w=2, $h=30, $color=array(0,0,0)) {
@@ -480,7 +480,7 @@ class TCPDFBarcode {
 	/**
 	 * Encode a string to be used for CODE 39 Extended mode.
 	 * @param string $code code to represent.
-	 * @return encoded string.
+	 * @return string encoded string.
 	 * @protected
 	 */
 	protected function encode_code39_ext($code) {
@@ -531,7 +531,7 @@ class TCPDFBarcode {
 	/**
 	 * Calculate CODE 39 checksum (modulo 43).
 	 * @param string $code code to represent.
-	 * @return char checksum.
+	 * @return string char checksum.
 	 * @protected
 	 */
 	protected function checksum_code39($code) {

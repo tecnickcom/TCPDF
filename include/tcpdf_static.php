@@ -110,7 +110,7 @@ class TCPDF_STATIC {
 
 	/**
 	 * Return the current TCPDF version.
-	 * @return TCPDF version string
+	 * @return string TCPDF version string
 	 * @since 5.9.012 (2010-11-10)
 	 * @public static
 	 */
@@ -120,7 +120,7 @@ class TCPDF_STATIC {
 
 	/**
 	 * Return the current TCPDF producer.
-	 * @return TCPDF producer string
+	 * @return string TCPDF producer string
 	 * @since 6.0.000 (2013-03-16)
 	 * @public static
 	 */
@@ -201,10 +201,10 @@ class TCPDF_STATIC {
 
 	/**
 	 * Get the border mode accounting for multicell position (opens bottom side of multicell crossing pages)
-	 * @param mixed $brd Indicates if borders must be drawn around the cell block. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul>or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
+	 * @param string|array|int $brd Indicates if borders must be drawn around the cell block. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul>or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
 	 * @param string $position multicell position: 'start', 'middle', 'end'
 	 * @param boolean $opencell True when the cell is left open at the page bottom, false otherwise.
-	 * @return border mode array
+	 * @return array border mode array
 	 * @since 4.4.002 (2008-12-09)
 	 * @public static
 	 */
@@ -310,7 +310,7 @@ class TCPDF_STATIC {
 	/**
 	* Escape some special characters (&lt; &gt; &amp;) for XML output.
 	* @param string $str Input string to convert.
-	* @return converted string
+	* @return string converted string
 	* @since 5.9.121 (2011-09-28)
 	 * @public static
 	 */
@@ -323,7 +323,7 @@ class TCPDF_STATIC {
 	/**
 	 * Creates a copy of a class object
 	 * @param object $object class object to be cloned
-	 * @return cloned object
+	 * @return object cloned object
 	 * @since 4.5.029 (2009-03-19)
 	 * @public static
 	 */
@@ -355,7 +355,7 @@ class TCPDF_STATIC {
 	 * @param string $page Page content.
 	 * @param array $replace Array of replacements (array keys are replacement strings, values are alias arrays).
 	 * @param int $diff If passed, this will be set to the total char number difference between alias and replacements.
-	 * @return replaced page content and updated $diff parameter as array.
+	 * @return array replaced page content and updated $diff parameter as array.
 	 * @public static
 	 */
 	public static function replacePageNumAliases($page, $replace, $diff=0) {
@@ -423,7 +423,7 @@ class TCPDF_STATIC {
 	/**
 	 * Encrypts a string using MD5 and returns it's value as a binary string.
 	 * @param string $str input string
-	 * @return String MD5 encrypted binary string
+	 * @return string MD5 encrypted binary string
 	 * @since 2.0.000 (2008-01-02)
 	 * @public static
 	 */
@@ -565,7 +565,7 @@ class TCPDF_STATIC {
 	/**
 	 * Convert hexadecimal string to string
 	 * @param string $bs byte-string to convert
-	 * @return String
+	 * @return string
 	 * @since 5.0.005 (2010-05-12)
 	 * @author Nicola Asuni
 	 * @public static
@@ -587,7 +587,7 @@ class TCPDF_STATIC {
 	/**
 	 * Convert string to hexadecimal string (byte string)
 	 * @param string $s string to convert
-	 * @return byte string
+	 * @return string byte string
 	 * @since 5.0.010 (2010-05-17)
 	 * @author Nicola Asuni
 	 * @public static
@@ -604,7 +604,7 @@ class TCPDF_STATIC {
 	/**
 	 * Convert encryption P value to a string of bytes, low-order byte first.
 	 * @param string $protection 32bit encryption permission value (P value)
-	 * @return String
+	 * @return string
 	 * @since 5.0.005 (2010-05-12)
 	 * @author Nicola Asuni
 	 * @public static
@@ -621,7 +621,7 @@ class TCPDF_STATIC {
 	/**
 	 * Encode a name object.
 	 * @param string $name Name object to encode.
-	 * @return (string) Encoded name object.
+	 * @return string Encoded name object.
 	 * @author Nicola Asuni
 	 * @since 5.9.097 (2011-06-23)
 	 * @public static
@@ -1013,6 +1013,7 @@ class TCPDF_STATIC {
 	 * Format the page numbers.
 	 * This method can be overridden for custom formats.
 	 * @param int $num page number
+	 * @return string
 	 * @since 4.2.005 (2008-11-06)
 	 * @public static
 	 */
@@ -1024,6 +1025,7 @@ class TCPDF_STATIC {
 	 * Format the page numbers on the Table Of Content.
 	 * This method can be overridden for custom formats.
 	 * @param int $num page number
+	 * @return string
 	 * @since 4.5.001 (2009-01-04)
 	 * @see addTOC(), addHTMLTOC()
 	 * @public static
@@ -1035,7 +1037,7 @@ class TCPDF_STATIC {
 	/**
 	 * Extracts the CSS properties from a CSS string.
 	 * @param string $cssdata string containing CSS definitions.
-	 * @return An array where the keys are the CSS selectors and the values are the CSS properties.
+	 * @return array An array where the keys are the CSS selectors and the values are the CSS properties.
 	 * @author Nicola Asuni
 	 * @since 5.1.000 (2010-05-25)
 	 * @public static
@@ -1565,6 +1567,7 @@ class TCPDF_STATIC {
 	 *   <li>n: End the path object without filling or stroking it.</li>
 	 * </ul>
 	 * @param string $default default style
+	 * @return string
 	 * @author Nicola Asuni
 	 * @since 5.0.000 (2010-04-30)
 	 * @public static
@@ -1643,7 +1646,7 @@ class TCPDF_STATIC {
 	 * Get the product of two SVG tranformation matrices
 	 * @param array $ta first SVG tranformation matrix
 	 * @param array $tb second SVG tranformation matrix
-	 * @return transformation array
+	 * @return array transformation array
 	 * @author Nicola Asuni
 	 * @since 5.0.000 (2010-05-02)
 	 * @public static
@@ -1899,7 +1902,7 @@ class TCPDF_STATIC {
 	 * Reads entire file into a string.
 	 * The file can be also an URL.
 	 * @param string $file Name of the file or URL to read.
-	 * @return The function returns the read data or FALSE on failure.
+	 * @return string|false The function returns the read data or FALSE on failure.
 	 * @author Nicola Asuni
 	 * @since 6.0.025
 	 * @public static
@@ -2137,6 +2140,8 @@ class TCPDF_STATIC {
 	 * Array of page formats
 	 * measures are calculated in this way: (inches * 72) or (millimeters * 72 / 25.4)
 	 * @public static
+	 * 
+     * @var array<string,float[]>
 	 */
 	public static $page_formats = array(
 		// ISO 216 A Series + 2 SIS 014711 extensions
@@ -2515,7 +2520,7 @@ class TCPDF_STATIC {
 	 * @param boolean $points If true uses user units as unit of measure, otherwise uses PDF points.
 	 * @param float $k Scale factor (number of points in user unit).
 	 * @param array $pagedim Array of page dimensions.
-	 * @return pagedim array of page dimensions.
+	 * @return array pagedim array of page dimensions.
 	 * @since 5.0.010 (2010-05-17)
 	 * @public static
 	 */
@@ -2541,7 +2546,7 @@ class TCPDF_STATIC {
 	 * Swap X and Y coordinates of page boxes (change page boxes orientation).
 	 * @param int $page page number
 	 * @param array $pagedim Array of page dimensions.
-	 * @return pagedim array of page dimensions.
+	 * @return array pagedim array of page dimensions.
 	 * @since 5.0.010 (2010-05-17)
 	 * @public static
 	 */
@@ -2563,7 +2568,7 @@ class TCPDF_STATIC {
 	/**
 	 * Get the canonical page layout mode.
 	 * @param string $layout The page layout. Possible values are:<ul><li>SinglePage Display one page at a time</li><li>OneColumn Display the pages in one column</li><li>TwoColumnLeft Display the pages in two columns, with odd-numbered pages on the left</li><li>TwoColumnRight Display the pages in two columns, with odd-numbered pages on the right</li><li>TwoPageLeft (PDF 1.5) Display the pages two at a time, with odd-numbered pages on the left</li><li>TwoPageRight (PDF 1.5) Display the pages two at a time, with odd-numbered pages on the right</li></ul>
-	 * @return (string) Canonical page layout name.
+	 * @return string Canonical page layout name.
 	 * @public static
 	 */
 	public static function getPageLayoutMode($layout='SinglePage') {
@@ -2606,7 +2611,7 @@ class TCPDF_STATIC {
 	/**
 	 * Get the canonical page layout mode.
 	 * @param string $mode A name object specifying how the document should be displayed when opened:<ul><li>UseNone Neither document outline nor thumbnail images visible</li><li>UseOutlines Document outline visible</li><li>UseThumbs Thumbnail images visible</li><li>FullScreen Full-screen mode, with no menu bar, window controls, or any other window visible</li><li>UseOC (PDF 1.5) Optional content group panel visible</li><li>UseAttachments (PDF 1.6) Attachments panel visible</li></ul>
-	 * @return (string) Canonical page mode name.
+	 * @return string Canonical page mode name.
 	 * @public static
 	 */
 	public static function getPageMode($mode='UseNone') {

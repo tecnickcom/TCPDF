@@ -60,7 +60,7 @@ class TCPDF_FILTERS {
 
 	/**
 	 * Get a list of available decoding filters.
-	 * @return (array) Array of available filter decoders.
+	 * @return array Array of available filter decoders.
 	 * @since 1.0.000 (2011-05-23)
 	 * @public static
 	 */
