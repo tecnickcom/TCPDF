@@ -276,7 +276,7 @@ class TCPDF_STATIC {
 	/**
 	 * Determine whether a string is empty.
 	 * @param $str (string) string to be checked
-	 * @return boolean true if string is empty
+	 * @return bool true if string is empty
 	 * @since 4.5.044 (2009-04-16)
 	 * @public static
 	 */
@@ -1136,7 +1136,7 @@ class TCPDF_STATIC {
 	 * @see setHtmlVSpace()
 	 * @public static
 	 */
-	public static function fixHTMLCode($html, $default_css='', $tagvs='', $tidy_options='', &$tagvspaces=array()) {
+	public static function fixHTMLCode($html, $default_css, $tagvs, $tidy_options, &$tagvspaces) {
 		// configure parameters for HTML Tidy
 		if ($tidy_options === '') {
 			$tidy_options = array (
@@ -1842,6 +1842,10 @@ class TCPDF_STATIC {
 		curl_setopt($crs, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($crs, CURLOPT_SSL_VERIFYHOST, false);
 		curl_setopt($crs, CURLOPT_USERAGENT, 'tc-lib-file');
+		curl_setopt($crs, CURLOPT_MAXREDIRS, 5);
+		if (defined('CURLOPT_PROTOCOLS')) {
+		    curl_setopt($crs, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS | CURLPROTO_HTTP |  CURLPROTO_FTP | CURLPROTO_FTPS);
+		}
 		curl_exec($crs);
 		$code = curl_getinfo($crs, CURLINFO_HTTP_CODE);
 		curl_close($crs);
@@ -1973,6 +1977,10 @@ class TCPDF_STATIC {
 				curl_setopt($crs, CURLOPT_SSL_VERIFYPEER, false);
 				curl_setopt($crs, CURLOPT_SSL_VERIFYHOST, false);
 				curl_setopt($crs, CURLOPT_USERAGENT, 'tc-lib-file');
+				curl_setopt($crs, CURLOPT_MAXREDIRS, 5);
+				if (defined('CURLOPT_PROTOCOLS')) {
+				    curl_setopt($crs, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS | CURLPROTO_HTTP |  CURLPROTO_FTP | CURLPROTO_FTPS);
+				}
 				$ret = curl_exec($crs);
 				curl_close($crs);
 				if ($ret !== false) {
@@ -2507,7 +2515,7 @@ class TCPDF_STATIC {
 	 * @since 5.0.010 (2010-05-17)
 	 * @public static
 	 */
-	public static function setPageBoxes($page, $type, $llx, $lly, $urx, $ury, $points=false, $k=1, $pagedim=array()) {
+	public static function setPageBoxes($page, $type, $llx, $lly, $urx, $ury, $points, $k, $pagedim=array()) {
 		if (!isset($pagedim[$page])) {
 			// initialize array
 			$pagedim[$page] = array();
