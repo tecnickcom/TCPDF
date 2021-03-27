@@ -7365,6 +7365,9 @@ class TCPDF {
 		$imgmask = $this->Image($tempfile_alpha, $x, $y, $w, $h, 'PNG', '', '', $resize, $dpi, '', true, false);
 		// embed image, masked with previously embedded mask
 		$this->Image($tempfile_plain, $x, $y, $w, $h, $type, $link, $align, $resize, $dpi, $palign, false, $imgmask);
+		// remove temp files
+		unlink($tempfile_alpha);
+		unlink($tempfile_plain);
 	}
 
 	/**
