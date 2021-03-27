@@ -7807,7 +7807,7 @@ class TCPDF {
 		if (isset(self::$cleaned_ids[$this->file_id])) {
 			$destroyall = false;
 		}
-		if ($destroyall AND !$preserve_objcopy) {
+		if ($destroyall AND !$preserve_objcopy && isset($this->file_id)) {
 			self::$cleaned_ids[$this->file_id] = true;
 			// remove all temporary files
 			if ($handle = @opendir(K_PATH_CACHE)) {
@@ -21764,6 +21764,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	public function commitTransaction() {
 		if (isset($this->objcopy)) {
 			$this->objcopy->_destroy(true, true);
+			/* The unique file_id should not be used during cleanup again */
+			$this->objcopy->file_id = NULL;
 			unset($this->objcopy);
 		}
 	}
@@ -21777,14 +21779,22 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 */
 	public function rollbackTransaction($self=false) {
 		if (isset($this->objcopy)) {
+			$objcopy = $this->objcopy;
 			$this->_destroy(true, true);
 			if ($self) {
-				$objvars = get_object_vars($this->objcopy);
+				$objvars = get_object_vars($objcopy);
 				foreach ($objvars as $key => $value) {
 					$this->$key = $value;
 				}
+				$objcopy->_destroy(true, true);
+				/* The unique file_id should not be used during cleanup again */
+				$objcopy->file_id = NULL;
+				unset($objcopy);
+				return $this;
 			}
-			return $this->objcopy;
+			/* The unique file_id should not be used during cleanup again */
+			$this->file_id = NULL;
+			return $objcopy;
 		}
 		return $this;
 	}
