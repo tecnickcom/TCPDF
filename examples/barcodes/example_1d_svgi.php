@@ -27,13 +27,13 @@
 // See LICENSE.TXT file for more information.
 // -------------------------------------------------------------------
 //
-// Description : Example for tcpdf_barcodes_2d.php class
+// Description : Example for tcpdf_barcodes_1d.php class
 //
 //============================================================+
 
 /**
  * @file
- * Example for tcpdf_barcodes_2d.php class
+ * Example for tcpdf_barcodes_1d.php class
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
  * @version 1.0.000
