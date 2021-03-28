@@ -1,3 +1,9 @@
+6.x.x (YYYY-MM-DD)
+	- Fix PHP 8.1 type error with TCPDF_STATIC::pregSplit on preg_split
+	- Fix a PHP array offset error
+	- Fixed phpdoc blocks
+	- Drop a PHP 4 polyfill and add a .gitattributes file
+
 6.4.1 (2020-03-27)
 	- Update tcpdf version (no code changes)
 
