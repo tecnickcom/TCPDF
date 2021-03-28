@@ -162,7 +162,7 @@ class TCPDF_PARSER {
 	 * Get Cross-Reference (xref) table and trailer data from PDF document data.
 	 * @param int $offset xref offset (if know).
 	 * @param array $xref previous xref array (if any).
-	 * @return Array containing xref and trailer data.
+	 * @return array containing xref and trailer data.
 	 * @protected
 	 * @since 1.0.000 (2011-05-24)
 	 */
@@ -204,7 +204,7 @@ class TCPDF_PARSER {
 	 * Decode the Cross-Reference section
 	 * @param int $startxref Offset at which the xref section starts (position of the 'xref' keyword).
 	 * @param array $xref Previous xref array (if any).
-	 * @return Array containing xref and trailer data.
+	 * @return array containing xref and trailer data.
 	 * @protected
 	 * @since 1.0.000 (2011-06-20)
 	 */
@@ -276,7 +276,7 @@ class TCPDF_PARSER {
 	 * Decode the Cross-Reference Stream section
 	 * @param int $startxref Offset at which the xref section starts.
 	 * @param array $xref Previous xref array (if any).
-	 * @return Array containing xref and trailer data.
+	 * @return array containing xref and trailer data.
 	 * @protected
 	 * @since 1.0.003 (2013-03-16)
 	 */
