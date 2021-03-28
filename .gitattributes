@@ -2,3 +2,4 @@
 /.gitignore export-ignore
 /.gitattributes export-ignore
 /tests export-ignore
+/scripts export-ignore
