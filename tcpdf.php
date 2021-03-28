@@ -18922,13 +18922,19 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				$prevlinewidth = $this->GetLineWidth();
 				$this->SetLineWidth($hrHeight);
 
-				$lineStyle = array(
-					'color' => $tag['fgcolor'],
-					'cap'   => $tag['style']['cap'],
-					'join'  => $tag['style']['join'],
-					'dash'  => $tag['style']['dash'],
-					'phase' => $tag['style']['phase'],
-				);
+				$lineStyle = array();
+
+				if (isset($tag['fgcolor'])) {
+					$lineStyle['color'] = $tag['fgcolor'];
+				}
+
+				if (isset($tag['style']) && is_array($tag['style'])) {
+					foreach(['cap', 'join', 'dash', 'phase'] as $attr) {
+						if (isset($tag['style'][$attr])) {
+							$lineStyle[$attr] = $tag['style'][$attr];
+						}
+					}
+				}
 
 				$lineStyle = array_filter($lineStyle);
 
