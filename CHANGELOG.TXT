@@ -1,13 +1,14 @@
-6.x.x (YYYY-MM-DD)
+
+6.4.2 (2021-04-02)
 	- Fix PHP 8.1 type error with TCPDF_STATIC::pregSplit on preg_split
 	- Fix a PHP array offset error
 	- Fixed phpdoc blocks
 	- Drop a PHP 4 polyfill and add a .gitattributes file
 
-6.4.1 (2020-03-27)
+6.4.1 (2021-03-27)
 	- Update tcpdf version (no code changes)
 
-6.4.0 (2020-03-27)
+6.4.0 (2021-03-27)
 	- allow styles on <HR> tags
 	- check if file exists before calling unlink
 	- Fix image file type for urls with query params
