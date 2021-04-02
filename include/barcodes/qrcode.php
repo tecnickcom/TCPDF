@@ -2449,7 +2449,7 @@ class QRcode {
 	/**
 	 * Return BCH encoded version information pattern that is used for the symbol of version 7 or greater. Use lower 18 bits.
 	 * @param int $version version
-	 * @return BCH encoded version information pattern
+	 * @return string BCH encoded version information pattern
 	 */
 	protected function getVersionPattern($version) {
 		if (($version < 7) OR ($version > QRSPEC_VERSION_MAX)) {
@@ -2462,7 +2462,7 @@ class QRcode {
 	 * Return BCH encoded format information pattern.
 	 * @param array $mask
 	 * @param int $level error correction level
-	 * @return BCH encoded format information pattern
+	 * @return string BCH encoded format information pattern
 	 */
 	protected function getFormatInfo($mask, $level) {
 		if (($mask < 0) OR ($mask > 7)) {
@@ -2500,7 +2500,7 @@ class QRcode {
 	/**
 	 * Return a copy of initialized frame.
 	 * @param int $version version
-	 * @return Array of unsigned char.
+	 * @return array array of unsigned char.
 	 */
 	protected function createFrame($version) {
 		$width = $this->capacity[$version][QRCAP_WIDTH];
@@ -2565,7 +2565,7 @@ class QRcode {
 	/**
 	 * Set new frame for the specified version.
 	 * @param int $version version
-	 * @return Array of unsigned char.
+	 * @return array array of unsigned char.
 	 */
 	protected function newFrame($version) {
 		if (($version < 1) OR ($version > QRSPEC_VERSION_MAX)) {

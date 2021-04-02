@@ -164,12 +164,15 @@ class TCPDF_STATIC {
 	/**
 	 * Check if the URL exist.
 	 * @param string $url URL to check.
-	 * @return Boolean true if the URl exist, false otherwise.
+	 * @return boolean true if the URl exist, false otherwise.
 	 * @since 5.9.204 (2013-01-28)
 	 * @public static
 	 */
 	public static function isValidURL($url) {
 		$headers = @get_headers($url);
+		if ($headers === false) {
+			return false;
+		}
     	return (strpos($headers[0], '200') !== false);
 	}
 
@@ -1795,6 +1798,9 @@ class TCPDF_STATIC {
 	 * @public static
 	 */
 	public static function pregSplit($pattern, $modifiers, $subject, $limit=NULL, $flags=NULL) {
+		// PHP 8.1 deprecates nulls for $limit and $flags
+		$limit = $limit === null ? -1 : $limit;
+		$flags = $flags === null ? 0 : $flags;
 		// the bug only happens on PHP 5.2 when using the u modifier
 		if ((strpos($modifiers, 'u') === FALSE) OR (count(preg_split('//u', "\n\t", -1, PREG_SPLIT_NO_EMPTY)) == 2)) {
 			return preg_split($pattern.$modifiers, $subject, $limit, $flags);

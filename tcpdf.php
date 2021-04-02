@@ -2366,8 +2366,8 @@ class TCPDF {
 
 	/**
 	 * Enable or disable Right-To-Left language mode
-	 * @param Boolean $enable if true enable Right-To-Left language mode.
-	 * @param Boolean $resetx if true reset the X position on direction change.
+	 * @param boolean $enable if true enable Right-To-Left language mode.
+	 * @param boolean $resetx if true reset the X position on direction change.
 	 * @public
 	 * @since 2.0.000 (2008-01-03)
 	 */
@@ -22086,7 +22086,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 
 	/**
 	 * Return the text shadow parameters array.
-	 * @return Array of parameters.
+	 * @return array array of parameters.
 	 * @since 5.9.174 (2012-07-25)
 	 * @public
 	 */
