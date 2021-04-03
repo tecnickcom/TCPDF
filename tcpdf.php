@@ -16350,15 +16350,15 @@ class TCPDF {
 		$css = array();
 		// get CSS array defined at previous call
 		$matches = array();
-		if (preg_match_all('/<cssarray>([^\<]*)<\/cssarray>/isU', $html, $matches) > 0) {
+		if (preg_match_all('/<cssarray>([^\<]*?)<\/cssarray>/is', $html, $matches) > 0) {
 			if (isset($matches[1][0])) {
 				$css = array_merge($css, json_decode($this->unhtmlentities($matches[1][0]), true));
 			}
-			$html = preg_replace('/<cssarray>(.*?)<\/cssarray>/isU', '', $html);
+			$html = preg_replace('/<cssarray>(.*?)<\/cssarray>/is', '', $html);
 		}
 		// extract external CSS files
 		$matches = array();
-		if (preg_match_all('/<link([^\>]*)>/isU', $html, $matches) > 0) {
+		if (preg_match_all('/<link([^\>]*?)>/is', $html, $matches) > 0) {
 			foreach ($matches[1] as $key => $link) {
 				$type = array();
 				if (preg_match('/type[\s]*=[\s]*"text\/css"/', $link, $type)) {
@@ -16381,7 +16381,7 @@ class TCPDF {
 		}
 		// extract style tags
 		$matches = array();
-		if (preg_match_all('/<style([^\>]*)>([^\<]*)<\/style>/isU', $html, $matches) > 0) {
+		if (preg_match_all('/<style([^\>]*?)>([^\<]*?)<\/style>/is', $html, $matches) > 0) {
 			foreach ($matches[1] as $key => $media) {
 				$type = array();
 				preg_match('/media[\s]*=[\s]*"([^"]*)"/', $media, $type);
@@ -16396,8 +16396,8 @@ class TCPDF {
 		// create a special tag to contain the CSS array (used for table content)
 		$csstagarray = '<cssarray>'.htmlentities(json_encode($css)).'</cssarray>';
 		// remove head and style blocks
-		$html = preg_replace('/<head([^\>]*)>(.*?)<\/head>/siU', '', $html);
-		$html = preg_replace('/<style([^\>]*)>([^\<]*)<\/style>/isU', '', $html);
+		$html = preg_replace('/<head([^\>]*?)>(.*)<\/head>/is', '', $html);
+		$html = preg_replace('/<style([^\>]*?)>([^\<]*?)<\/style>/is', '', $html);
 		// define block tags
 		$blocktags = array('blockquote','br','dd','dl','div','dt','h1','h2','h3','h4','h5','h6','hr','li','ol','p','pre','ul','tcpdf','table','tr','td');
 		// define self-closing tags
