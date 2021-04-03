@@ -38,7 +38,7 @@ $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 055', PDF_HEADER_STRING);
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE . ' 055', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -59,9 +59,9 @@ $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // set some language-dependent strings (optional)
-if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-	require_once(dirname(__FILE__).'/lang/eng.php');
-	$pdf->setLanguageArray($l);
+if (@file_exists(dirname(__FILE__) . '/lang/eng.php')) {
+    require_once(dirname(__FILE__) . '/lang/eng.php');
+    $pdf->setLanguageArray($l);
 }
 
 // ---------------------------------------------------------
@@ -77,32 +77,32 @@ $pdf->SetFillColor(221,238,255);
 
 // create one HTML table for each core font
 foreach($core_fonts as $font) {
-	// add a page
-	$pdf->AddPage();
+    // add a page
+    $pdf->AddPage();
 
-	// Cell($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=false, $link='', $stretch=0, $ignore_min_height=false, $calign='T', $valign='M')
+    // Cell($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=false, $link='', $stretch=0, $ignore_min_height=false, $calign='T', $valign='M')
 
-	// set font for title
-	$pdf->SetFont('helvetica', 'B', 16);
+    // set font for title
+    $pdf->SetFont('helvetica', 'B', 16);
 
-	// print font name
-	$pdf->Cell(0, 10, 'FONT: '.$font, 1, 1, 'C', true, '', 0, false, 'T', 'M');
+    // print font name
+    $pdf->Cell(0, 10, 'FONT: ' . $font, 1, 1, 'C', true, '', 0, false, 'T', 'M');
 
-	// set font for chars
-	$pdf->SetFont($font, '', 16);
+    // set font for chars
+    $pdf->SetFont($font, '', 16);
 
-	// print each character
-	for ($i = 0; $i < 256; ++$i) {
-		if (($i > 0) AND (($i % 16) == 0)) {
-			$pdf->Ln();
-		}
-		$pdf->Cell(11.25, 11.25, TCPDF_FONTS::unichr($i), 1, 0, 'C', false, '', 0, false, 'T', 'M');
-	}
+    // print each character
+    for ($i = 0; $i < 256; ++$i) {
+        if (($i > 0) AND (($i % 16) == 0)) {
+            $pdf->Ln();
+        }
+        $pdf->Cell(11.25, 11.25, TCPDF_FONTS::unichr($i), 1, 0, 'C', false, '', 0, false, 'T', 'M');
+    }
 
-	$pdf->Ln(20);
+    $pdf->Ln(20);
 
-	// print a pangram
-	$pdf->Cell(0, 0, 'The quick brown fox jumps over the lazy dog', 0, 1, 'C', false, '', 0, false, 'T', 'M');
+    // print a pangram
+    $pdf->Cell(0, 0, 'The quick brown fox jumps over the lazy dog', 0, 1, 'C', false, '', 0, false, 'T', 'M');
 }
 
 // ---------------------------------------------------------

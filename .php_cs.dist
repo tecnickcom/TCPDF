@@ -1,0 +1,19 @@
+<?php
+
+$finder = PhpCsFixer\Finder::create()
+    ->in([__DIR__])
+    ->exclude([
+        'vendor',
+    ]);
+
+return PhpCsFixer\Config::create()
+    ->setRiskyAllowed(true)
+    ->setRules([
+        'concat_space' => [
+            'spacing' => 'one',
+        ],
+        'binary_operator_spaces' => true,
+        'whitespace_after_comma_in_array' => true,
+        'indentation_type' => true,
+    ])
+    ->setFinder($finder);

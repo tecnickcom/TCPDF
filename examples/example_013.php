@@ -38,7 +38,7 @@ $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 013', PDF_HEADER_STRING);
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE . ' 013', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -59,9 +59,9 @@ $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // set some language-dependent strings (optional)
-if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-	require_once(dirname(__FILE__).'/lang/eng.php');
-	$pdf->setLanguageArray($l);
+if (@file_exists(dirname(__FILE__) . '/lang/eng.php')) {
+    require_once(dirname(__FILE__) . '/lang/eng.php');
+    $pdf->setLanguageArray($l);
 }
 
 // ---------------------------------------------------------
@@ -190,18 +190,18 @@ $pdf->Text(70, 156, 'MirrorP');
 $pdf->StopTransform();
 
 // --- Mirroring against a straigth line described by a point (120, 120) and an angle -20°
-$angle=-20;
-$px=120;
-$py=170;
+$angle = -20;
+$px = 120;
+$py = 170;
 
 // just for visualisation: the straight line to mirror against
 
 $pdf->SetDrawColor(200);
-$pdf->Line($px-1,$py-1,$px+1,$py+1);
-$pdf->Line($px-1,$py+1,$px+1,$py-1);
+$pdf->Line($px - 1,$py - 1,$px + 1,$py + 1);
+$pdf->Line($px - 1,$py + 1,$px + 1,$py - 1);
 $pdf->StartTransform();
 $pdf->Rotate($angle, $px, $py);
-$pdf->Line($px-5, $py, $px+60, $py);
+$pdf->Line($px - 5, $py, $px + 60, $py);
 $pdf->StopTransform();
 
 $pdf->SetDrawColor(200);

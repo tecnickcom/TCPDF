@@ -38,7 +38,7 @@ $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 046', PDF_HEADER_STRING);
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE . ' 046', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -59,9 +59,9 @@ $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // set some language-dependent strings (optional)
-if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-	require_once(dirname(__FILE__).'/lang/eng.php');
-	$pdf->setLanguageArray($l);
+if (@file_exists(dirname(__FILE__) . '/lang/eng.php')) {
+    require_once(dirname(__FILE__) . '/lang/eng.php');
+    $pdf->setLanguageArray($l);
 }
 
 // ---------------------------------------------------------
@@ -78,12 +78,12 @@ $pdf->Ln(10);
 
 /*
 Unicode Data for SHY:
-	Name : SOFT HYPHEN, commonly abbreviated as SHY
-	HTML Entity (decimal): &#173;
-	HTML Entity (hex): &#xad;
-	HTML Entity (named): &shy;
-	How to type in Microsoft Windows: [Alt +00AD] or [Alt 0173]
-	UTF-8 (hex): 0xC2 0xAD (c2ad)
+    Name : SOFT HYPHEN, commonly abbreviated as SHY
+    HTML Entity (decimal): &#173;
+    HTML Entity (hex): &#xad;
+    HTML Entity (named): &shy;
+    How to type in Microsoft Windows: [Alt +00AD] or [Alt 0173]
+    UTF-8 (hex): 0xC2 0xAD (c2ad)
 */
 
 /*

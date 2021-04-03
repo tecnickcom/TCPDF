@@ -39,7 +39,7 @@ $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 014', PDF_HEADER_STRING);
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE . ' 014', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -60,9 +60,9 @@ $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // set some language-dependent strings (optional)
-if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-	require_once(dirname(__FILE__).'/lang/eng.php');
-	$pdf->setLanguageArray($l);
+if (@file_exists(dirname(__FILE__) . '/lang/eng.php')) {
+    require_once(dirname(__FILE__) . '/lang/eng.php');
+    $pdf->setLanguageArray($l);
 }
 
 // ---------------------------------------------------------
@@ -83,7 +83,7 @@ This name allows to manipulate them via JavaScript in order to perform some vali
 */
 
 // set default form properties
-$pdf->setFormDefaultProp(array('lineWidth'=>1, 'borderStyle'=>'solid', 'fillColor'=>array(255, 255, 200), 'strokeColor'=>array(255, 128, 128)));
+$pdf->setFormDefaultProp(array('lineWidth' => 1, 'borderStyle' => 'solid', 'fillColor' => array(255, 255, 200), 'strokeColor' => array(255, 128, 128)));
 
 $pdf->SetFont('helvetica', 'BI', 18);
 $pdf->Cell(0, 5, 'Example of Form', 0, 1, 'C');
@@ -132,12 +132,12 @@ $pdf->CheckBox('newsletter', 5, true, array(), array(), 'OK');
 $pdf->Ln(10);
 // Address
 $pdf->Cell(35, 5, 'Address:');
-$pdf->TextField('address', 60, 18, array('multiline'=>true, 'lineWidth'=>0, 'borderStyle'=>'none'), array('v'=>'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', 'dv'=>'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'));
+$pdf->TextField('address', 60, 18, array('multiline' => true, 'lineWidth' => 0, 'borderStyle' => 'none'), array('v' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', 'dv' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'));
 $pdf->Ln(19);
 
 // Listbox
 $pdf->Cell(35, 5, 'List:');
-$pdf->ListBox('listbox', 60, 15, array('', 'item1', 'item2', 'item3', 'item4', 'item5', 'item6', 'item7'), array('multipleSelection'=>'true'));
+$pdf->ListBox('listbox', 60, 15, array('', 'item1', 'item2', 'item3', 'item4', 'item5', 'item6', 'item7'), array('multipleSelection' => 'true'));
 $pdf->Ln(20);
 
 // E-mail
@@ -147,19 +147,19 @@ $pdf->Ln(6);
 
 // Date of the day
 $pdf->Cell(35, 5, 'Date:');
-$pdf->TextField('date', 30, 5, array(), array('v'=>date('Y-m-d'), 'dv'=>date('Y-m-d')));
+$pdf->TextField('date', 30, 5, array(), array('v' => date('Y-m-d'), 'dv' => date('Y-m-d')));
 $pdf->Ln(10);
 
 $pdf->SetX(50);
 
 // Button to validate and print
-$pdf->Button('print', 30, 10, 'Print', 'Print()', array('lineWidth'=>2, 'borderStyle'=>'beveled', 'fillColor'=>array(128, 196, 255), 'strokeColor'=>array(64, 64, 64)));
+$pdf->Button('print', 30, 10, 'Print', 'Print()', array('lineWidth' => 2, 'borderStyle' => 'beveled', 'fillColor' => array(128, 196, 255), 'strokeColor' => array(64, 64, 64)));
 
 // Reset Button
-$pdf->Button('reset', 30, 10, 'Reset', array('S'=>'ResetForm'), array('lineWidth'=>2, 'borderStyle'=>'beveled', 'fillColor'=>array(128, 196, 255), 'strokeColor'=>array(64, 64, 64)));
+$pdf->Button('reset', 30, 10, 'Reset', array('S' => 'ResetForm'), array('lineWidth' => 2, 'borderStyle' => 'beveled', 'fillColor' => array(128, 196, 255), 'strokeColor' => array(64, 64, 64)));
 
 // Submit Button
-$pdf->Button('submit', 30, 10, 'Submit', array('S'=>'SubmitForm', 'F'=>'http://localhost/printvars.php', 'Flags'=>array('ExportFormat')), array('lineWidth'=>2, 'borderStyle'=>'beveled', 'fillColor'=>array(128, 196, 255), 'strokeColor'=>array(64, 64, 64)));
+$pdf->Button('submit', 30, 10, 'Submit', array('S' => 'SubmitForm', 'F' => 'http://localhost/printvars.php', 'Flags' => array('ExportFormat')), array('lineWidth' => 2, 'borderStyle' => 'beveled', 'fillColor' => array(128, 196, 255), 'strokeColor' => array(64, 64, 64)));
 
 // Form validation functions
 $js = <<<EOD

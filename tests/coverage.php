@@ -10,9 +10,9 @@ if (extension_loaded('pcov')) {
         public function __destruct()
         {
             \pcov\stop();
-            $rootDir      = realpath(__DIR__ . '/../') . '/';
+            $rootDir = realpath(__DIR__ . '/../') . '/';
             $coverageFile = $rootDir . 'tests/coverage.lcov';
-            $covData      = \pcov\collect(
+            $covData = \pcov\collect(
                 \pcov\exclusive,
                 array(
                 __FILE__
@@ -43,9 +43,9 @@ if (extension_loaded('xdebug')) {
 
         public function __destruct()
         {
-            $rootDir      = realpath(__DIR__ . '/../') . '/';
+            $rootDir = realpath(__DIR__ . '/../') . '/';
             $coverageFile = $rootDir . 'tests/coverage.lcov';
-            $covData      = xdebug_get_code_coverage();
+            $covData = xdebug_get_code_coverage();
             $coverageData = '';
             foreach ($covData as $file => $coverageForFile) {
                 $coverageData .= 'SF:' . $file . "\n";

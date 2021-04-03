@@ -63,7 +63,7 @@ define ('K_TCPDF_EXTERNAL_CONFIG', true);
  * Default images directory.
  * By default it is automatically set but you can also set it as a fixed string to improve performances.
  */
-define ('K_PATH_IMAGES', dirname(__FILE__).'/../images/');
+define ('K_PATH_IMAGES', dirname(__FILE__) . '/../images/');
 
 /**
  * Deafult image logo used be the default Header() method.
@@ -79,7 +79,7 @@ define ('PDF_HEADER_LOGO_WIDTH', 30);
 /**
  * Cache directory for temporary files (full path).
  */
-define ('K_PATH_CACHE', sys_get_temp_dir().'/');
+define ('K_PATH_CACHE', sys_get_temp_dir() . '/');
 
 /**
  * Generic name for a blank image.
@@ -199,7 +199,7 @@ define('K_TITLE_MAGNIFICATION', 1.3);
 /**
  * Reduction factor for small font.
  */
-define('K_SMALL_RATIO', 2/3);
+define('K_SMALL_RATIO', 2 / 3);
 
 /**
  * Set to true to enable the special procedure used to avoid the overlappind of symbols on Thai language.

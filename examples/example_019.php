@@ -41,7 +41,7 @@ $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 019', PDF_HEADER_STRING);
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE . ' 019', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -86,7 +86,7 @@ $txt = 'An alternative configuration file is used on this example.
 Check the definition of the K_TCPDF_EXTERNAL_CONFIG constant on the source code.';
 
 // print some text
-$pdf->MultiCell(0, 0, $txt."\n", 1, 'J', 1, 1, '', '', true, 0, false, true, 0);
+$pdf->MultiCell(0, 0, $txt . "\n", 1, 'J', 1, 1, '', '', true, 0, false, true, 0);
 
 // ---------------------------------------------------------
 

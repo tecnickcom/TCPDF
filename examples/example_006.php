@@ -38,7 +38,7 @@ $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 006', PDF_HEADER_STRING);
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE . ' 006', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -59,9 +59,9 @@ $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // set some language-dependent strings (optional)
-if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-	require_once(dirname(__FILE__).'/lang/eng.php');
-	$pdf->setLanguageArray($l);
+if (@file_exists(dirname(__FILE__) . '/lang/eng.php')) {
+    require_once(dirname(__FILE__) . '/lang/eng.php');
+    $pdf->setLanguageArray($l);
 }
 
 // ---------------------------------------------------------
@@ -165,7 +165,7 @@ $html = '<h2>HTML TABLE:</h2>
 		<td>4B</td>
 	</tr>
 	<tr>
-		<td>'.$subtable.'</td>
+		<td>' . $subtable . '</td>
 		<td bgcolor="#0000FF" color="yellow" align="center">A2 € &euro; &#8364; &amp; è &egrave;<br/>A2 € &euro; &#8364; &amp; è &egrave;</td>
 		<td bgcolor="#FFFF00" align="left"><font color="#FF0000">Red</font> Yellow BG</td>
 		<td>4C</td>
@@ -237,8 +237,8 @@ $textcolors = '<h1>HTML Text Colors</h1>';
 $bgcolors = '<hr /><h1>HTML Background Colors</h1>';
 
 foreach(TCPDF_COLORS::$webcolor as $k => $v) {
-	$textcolors .= '<span color="#'.$v.'">'.$v.'</span> ';
-	$bgcolors .= '<span bgcolor="#'.$v.'" color="#333333">'.$v.'</span> ';
+    $textcolors .= '<span color="#' . $v . '">' . $v . '</span> ';
+    $bgcolors .= '<span bgcolor="#' . $v . '" color="#333333">' . $v . '</span> ';
 }
 
 // output the HTML content
@@ -263,7 +263,7 @@ $html1 = 'Default <font face="courier">Courier <font face="helvetica">Helvetica 
 $html2 = '<small>small text</small> normal <small>small text</small> normal <sub>subscript</sub> normal <sup>superscript</sup> normal';
 $html3 = '<font size="10" color="#ff7f50">The</font> <font size="10" color="#6495ed">quick</font> <font size="14" color="#dc143c">brown</font> <font size="18" color="#008000">fox</font> <font size="22"><a href="http://www.tcpdf.org">jumps</a></font> <font size="22" color="#a0522d">over</font> <font size="18" color="#da70d6">the</font> <font size="14" color="#9400d3">lazy</font> <font size="10" color="#4169el">dog</font>.';
 
-$html = $html1.'<br />'.$html2.'<br />'.$html3.'<br />'.$html3.'<br />'.$html2;
+$html = $html1 . '<br />' . $html2 . '<br />' . $html3 . '<br />' . $html3 . '<br />' . $html2;
 
 // output the HTML content
 $pdf->writeHTML($html, true, false, true, false, '');
