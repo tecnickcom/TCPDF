@@ -41,8 +41,8 @@ $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE . ' 005', PDF_HEADER_STRING);
 
 // set header and footer fonts
-$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+$pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+$pdf->setFooterFont(array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -53,7 +53,7 @@ $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
 // set auto page breaks
-$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 
 // set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
@@ -90,7 +90,7 @@ $txt = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
 $pdf->MultiCell(55, 5, '[LEFT] ' . $txt, 1, 'L', 1, 0, '', '', true);
 $pdf->MultiCell(55, 5, '[RIGHT] ' . $txt, 1, 'R', 0, 1, '', '', true);
 $pdf->MultiCell(55, 5, '[CENTER] ' . $txt, 1, 'C', 0, 0, '', '', true);
-$pdf->MultiCell(55, 5, '[JUSTIFY] ' . $txt . "\n", 1, 'J', 1, 2, '' ,'', true);
+$pdf->MultiCell(55, 5, '[JUSTIFY] ' . $txt . "\n", 1, 'J', 1, 2, '', '', true);
 $pdf->MultiCell(55, 5, '[DEFAULT] ' . $txt, 1, '', 0, 1, '', '', true);
 
 $pdf->Ln(4);
@@ -116,7 +116,7 @@ $txt = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In sed imperdie
 Fusce et felis vitae diam lobortis sollicitudin. Aenean tincidunt accumsan nisi, id vehicula quam laoreet elementum. Phasellus egestas interdum erat, et viverra ipsum ultricies ac. Praesent sagittis augue at augue volutpat eleifend. Cras nec orci neque. Mauris bibendum posuere blandit. Donec feugiat mollis dui sit amet pellentesque. Sed a enim justo. Donec tincidunt, nisl eget elementum aliquam, odio ipsum ultrices quam, eu porttitor ligula urna at lorem. Donec varius, eros et convallis laoreet, ligula tellus consequat felis, ut ornare metus tellus sodales velit. Duis sed diam ante. Ut rutrum malesuada massa, vitae consectetur ipsum rhoncus sed. Suspendisse potenti. Pellentesque a congue massa.';
 
 // print a blox of text using multicell()
-$pdf->MultiCell(80, 5, $txt . "\n", 1, 'J', 1, 1, '' ,'', true);
+$pdf->MultiCell(80, 5, $txt . "\n", 1, 'J', 1, 1, '', '', true);
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

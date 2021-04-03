@@ -42,8 +42,8 @@
  */
 
 if (php_sapi_name() != 'cli') {
-  echo 'You need to run this command from console.';
-  exit(1);
+    echo 'You need to run this command from console.';
+    exit(1);
 }
 
 $tcpdf_include_dirs = array(realpath(dirname(__FILE__) . '/../tcpdf.php'), '/usr/share/php/tcpdf/tcpdf.php', '/usr/share/tcpdf/tcpdf.php', '/usr/share/php-tcpdf/tcpdf.php', '/var/www/tcpdf/tcpdf.php', '/var/www/html/tcpdf/tcpdf.php', '/usr/local/apache2/htdocs/tcpdf/tcpdf.php');
@@ -57,7 +57,8 @@ foreach ($tcpdf_include_dirs as $tcpdf_include_path) {
 /**
  * Display help guide for this command.
  */
-function showHelp() {
+function showHelp()
+{
     $help = <<<EOD
 tcpdf_addfont - command line tool to convert fonts for the TCPDF library.
 
@@ -130,7 +131,7 @@ array_shift($argv);
 
 // no options chosen
 if (!is_array($argv)) {
-  showHelp();
+    showHelp();
 }
 
 // initialize the array of options
@@ -233,7 +234,7 @@ if (empty($options['fonts'])) {
 }
 
 // check the output path
-if (!is_dir($options['outpath']) OR !is_writable($options['outpath'])) {
+if (!is_dir($options['outpath']) or !is_writable($options['outpath'])) {
     echo "ERROR: Can't write to " . $options['outpath'] . "\n\n";
     exit(3);
 }

@@ -56,7 +56,8 @@ require_once(dirname(__FILE__) . '/tcpdf_parser.php');
  * @version 1.0.001
  * @author Nicola Asuni - info@tecnick.com
  */
-class TCPDF_IMPORT extends TCPDF {
+class TCPDF_IMPORT extends TCPDF
+{
 
     /**
      * Import an existing PDF document
@@ -65,7 +66,8 @@ class TCPDF_IMPORT extends TCPDF {
      * @public
      * @since 1.0.000 (2011-05-24)
      */
-    public function importPDF($filename) {
+    public function importPDF($filename)
+    {
         // load document
         $rawdata = file_get_contents($filename);
         if ($rawdata === false) {
@@ -96,7 +98,6 @@ class TCPDF_IMPORT extends TCPDF {
 
         unset($pdf);
     }
-
 } // END OF CLASS
 
 //============================================================+

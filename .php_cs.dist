@@ -9,11 +9,11 @@ $finder = PhpCsFixer\Finder::create()
 return PhpCsFixer\Config::create()
     ->setRiskyAllowed(true)
     ->setRules([
+        '@PSR2' => true,
         'concat_space' => [
             'spacing' => 'one',
         ],
         'binary_operator_spaces' => true,
         'whitespace_after_comma_in_array' => true,
-        'indentation_type' => true,
     ])
     ->setFinder($finder);

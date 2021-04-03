@@ -45,55 +45,56 @@
  * @version 1.0.001
  * @author Nicola Asuni - info@tecnick.com
  */
-class TCPDF_FONT_DATA {
+class TCPDF_FONT_DATA
+{
 
 /**
  * Unicode code for Left-to-Right Mark.
  * @public
  */
-public static $uni_LRM = 8206;
+    public static $uni_LRM = 8206;
 
-/**
- * Unicode code for Right-to-Left Mark.
- * @public
- */
-public static $uni_RLM = 8207;
+    /**
+     * Unicode code for Right-to-Left Mark.
+     * @public
+     */
+    public static $uni_RLM = 8207;
 
-/**
- * Unicode code for Left-to-Right Embedding.
- * @public
- */
-public static $uni_LRE = 8234;
+    /**
+     * Unicode code for Left-to-Right Embedding.
+     * @public
+     */
+    public static $uni_LRE = 8234;
 
-/**
- * Unicode code for Right-to-Left Embedding.
- * @public
- */
-public static $uni_RLE = 8235;
+    /**
+     * Unicode code for Right-to-Left Embedding.
+     * @public
+     */
+    public static $uni_RLE = 8235;
 
-/**
- * Unicode code for Pop Directional Format.
- * @public
- */
-public static $uni_PDF = 8236;
+    /**
+     * Unicode code for Pop Directional Format.
+     * @public
+     */
+    public static $uni_PDF = 8236;
 
-/**
- * Unicode code for Left-to-Right Override.
- * @public
- */
-public static $uni_LRO = 8237;
+    /**
+     * Unicode code for Left-to-Right Override.
+     * @public
+     */
+    public static $uni_LRO = 8237;
 
-/**
- * Unicode code for Right-to-Left Override.
- * @public
- */
-public static $uni_RLO = 8238;
+    /**
+     * Unicode code for Right-to-Left Override.
+     * @public
+     */
+    public static $uni_RLO = 8238;
 
-/**
- * Pattern to test RTL (Righ-To-Left) strings using regular expressions.
- * @public
- */
-public static $uni_RE_PATTERN_RTL = "/(
+    /**
+     * Pattern to test RTL (Righ-To-Left) strings using regular expressions.
+     * @public
+     */
+    public static $uni_RE_PATTERN_RTL = "/(
 	  \xD6\xBE                                             # R
 	| \xD7[\x80\x83\x86\x90-\xAA\xB0-\xB4]                 # R
 	| \xDF[\x80-\xAA\xB4\xB5\xBA]                          # R
@@ -107,11 +108,11 @@ public static $uni_RE_PATTERN_RTL = "/(
 	| \xE2\x80[\xAB\xAE]                                   # RLE & RLO
 	)/x";
 
-/**
- * Pattern to test Arabic strings using regular expressions. Source: http://www.w3.org/International/questions/qa-forms-utf-8
- * @public
- */
-public static $uni_RE_PATTERN_ARABIC = "/(
+    /**
+     * Pattern to test Arabic strings using regular expressions. Source: http://www.w3.org/International/questions/qa-forms-utf-8
+     * @public
+     */
+    public static $uni_RE_PATTERN_ARABIC = "/(
 		  \xD8[\x80-\x83\x8B\x8D\x9B\x9E\x9F\xA1-\xBA]  # AL
 		| \xD9[\x80-\x8A\xAD-\xAF\xB1-\xBF]             # AL
 		| \xDA[\x80-\xBF]                               # AL
@@ -133,11 +134,11 @@ public static $uni_RE_PATTERN_ARABIC = "/(
 		| \xD9[\xA0-\xA9\xAB\xAC]                       # AN
 		)/x";
 
-/**
- * Array of Unicode types.
- * @public
- */
-public static $uni_type = array(
+    /**
+     * Array of Unicode types.
+     * @public
+     */
+    public static $uni_type = array(
 0 => 'BN',
 1 => 'BN',
 2 => 'BN',
@@ -17860,11 +17861,11 @@ public static $uni_type = array(
 1114109 => 'L'
 );
 
-/**
- * Mirror unicode characters. For information on bidi mirroring, see UAX #9: Bidirectional Algorithm, at http://www.unicode.org/unicode/reports/tr9/
- * @public
- */
-public static $uni_mirror = array (
+    /**
+     * Mirror unicode characters. For information on bidi mirroring, see UAX #9: Bidirectional Algorithm, at http://www.unicode.org/unicode/reports/tr9/
+     * @public
+     */
+    public static $uni_mirror = array(
 0x0028 => 0x0029,
 0x0029 => 0x0028,
 0x003C => 0x003E,
@@ -18218,11 +18219,11 @@ public static $uni_mirror = array (
 0xFF62 => 0xFF63,
 0xFF63 => 0xFF62);
 
-/**
- * Arabic shape substitutions: char code => (isolated, final, initial, medial).
- * @public
- */
-public static $uni_arabicsubst = array(
+    /**
+     * Arabic shape substitutions: char code => (isolated, final, initial, medial).
+     * @public
+     */
+    public static $uni_arabicsubst = array(
 1569 => array(65152),
 1570 => array(65153, 65154, 65153, 65154),
 1571 => array(65155, 65156, 65155, 65156),
@@ -18301,24 +18302,24 @@ public static $uni_arabicsubst = array(
 1747 => array(64432, 64433)
 );
 
-/**
- * Arabic laa letter: (char code => isolated, final, initial, medial).
- * @public
- */
-public static $uni_laa_array = array (
+    /**
+     * Arabic laa letter: (char code => isolated, final, initial, medial).
+     * @public
+     */
+    public static $uni_laa_array = array(
 1570 => array(65269, 65270, 65269, 65270),
 1571 => array(65271, 65272, 65271, 65272),
 1573 => array(65273, 65274, 65273, 65274),
 1575 => array(65275, 65276, 65275, 65276)
 );
 
-/**
- * Array of character substitutions for sequences of two diacritics symbols.
- * Putting the combining mark and character in the same glyph allows us to avoid the two marks overlapping each other in an illegible manner.
- * second NSM char code => substitution char
- * @public
- */
-public static $uni_diacritics = array (
+    /**
+     * Array of character substitutions for sequences of two diacritics symbols.
+     * Putting the combining mark and character in the same glyph allows us to avoid the two marks overlapping each other in an illegible manner.
+     * second NSM char code => substitution char
+     * @public
+     */
+    public static $uni_diacritics = array(
 1612 => 64606, # Shadda + Dammatan
 1613 => 64607, # Shadda + Kasratan
 1614 => 64608, # Shadda + Fatha
@@ -18326,11 +18327,11 @@ public static $uni_diacritics = array (
 1616 => 64610  # Shadda + Kasra
 );
 
-/**
- * Array of character substitutions from UTF-8 Unicode to Latin1.
- * @public
- */
-public static $uni_utf8tolatin = array (
+    /**
+     * Array of character substitutions from UTF-8 Unicode to Latin1.
+     * @public
+     */
+    public static $uni_utf8tolatin = array(
 8364 => 128, # Euro1
 338 => 140,  # OE
 352 => 138,  # Scaron
@@ -18360,11 +18361,11 @@ public static $uni_utf8tolatin = array (
 382 => 158   # zcaron2
 );
 
-/**
- * Array of Encoding Maps.
- * @public static
- */
-public static $encmap = array(
+    /**
+     * Array of Encoding Maps.
+     * @public static
+     */
+    public static $encmap = array(
 
 // encoding map for: cp874
 'cp874' => array(0 => '.notdef', 1 => '.notdef', 2 => '.notdef', 3 => '.notdef', 4 => '.notdef', 5 => '.notdef', 6 => '.notdef', 7 => '.notdef', 8 => '.notdef', 9 => '.notdef', 10 => '.notdef', 11 => '.notdef', 12 => '.notdef', 13 => '.notdef', 14 => '.notdef', 15 => '.notdef', 16 => '.notdef', 17 => '.notdef', 18 => '.notdef', 19 => '.notdef', 20 => '.notdef', 21 => '.notdef', 22 => '.notdef', 23 => '.notdef', 24 => '.notdef', 25 => '.notdef', 26 => '.notdef', 27 => '.notdef', 28 => '.notdef', 29 => '.notdef', 30 => '.notdef', 31 => '.notdef', 32 => 'space', 33 => 'exclam', 34 => 'quotedbl', 35 => 'numbersign', 36 => 'dollar', 37 => 'percent', 38 => 'ampersand', 39 => 'quotesingle', 40 => 'parenleft', 41 => 'parenright', 42 => 'asterisk', 43 => 'plus', 44 => 'comma', 45 => 'hyphen', 46 => 'period', 47 => 'slash', 48 => 'zero', 49 => 'one', 50 => 'two', 51 => 'three', 52 => 'four', 53 => 'five', 54 => 'six', 55 => 'seven', 56 => 'eight', 57 => 'nine', 58 => 'colon', 59 => 'semicolon', 60 => 'less', 61 => 'equal', 62 => 'greater', 63 => 'question', 64 => 'at', 65 => 'A', 66 => 'B', 67 => 'C', 68 => 'D', 69 => 'E', 70 => 'F', 71 => 'G', 72 => 'H', 73 => 'I', 74 => 'J', 75 => 'K', 76 => 'L', 77 => 'M', 78 => 'N', 79 => 'O', 80 => 'P', 81 => 'Q', 82 => 'R', 83 => 'S', 84 => 'T', 85 => 'U', 86 => 'V', 87 => 'W', 88 => 'X', 89 => 'Y', 90 => 'Z', 91 => 'bracketleft', 92 => 'backslash', 93 => 'bracketright', 94 => 'asciicircum', 95 => 'underscore', 96 => 'grave', 97 => 'a', 98 => 'b', 99 => 'c', 100 => 'd', 101 => 'e', 102 => 'f', 103 => 'g', 104 => 'h', 105 => 'i', 106 => 'j', 107 => 'k', 108 => 'l', 109 => 'm', 110 => 'n', 111 => 'o', 112 => 'p', 113 => 'q', 114 => 'r', 115 => 's', 116 => 't', 117 => 'u', 118 => 'v', 119 => 'w', 120 => 'x', 121 => 'y', 122 => 'z', 123 => 'braceleft', 124 => 'bar', 125 => 'braceright', 126 => 'asciitilde', 127 => '.notdef', 128 => 'Euro', 129 => '.notdef', 130 => '.notdef', 131 => '.notdef', 132 => '.notdef', 133 => 'ellipsis', 134 => '.notdef', 135 => '.notdef', 136 => '.notdef', 137 => '.notdef', 138 => '.notdef', 139 => '.notdef', 140 => '.notdef', 141 => '.notdef', 142 => '.notdef', 143 => '.notdef', 144 => '.notdef', 145 => 'quoteleft', 146 => 'quoteright', 147 => 'quotedblleft', 148 => 'quotedblright', 149 => 'bullet', 150 => 'endash', 151 => 'emdash', 152 => '.notdef', 153 => '.notdef', 154 => '.notdef', 155 => '.notdef', 156 => '.notdef', 157 => '.notdef', 158 => '.notdef', 159 => '.notdef', 160 => 'space', 161 => 'kokaithai', 162 => 'khokhaithai', 163 => 'khokhuatthai', 164 => 'khokhwaithai', 165 => 'khokhonthai', 166 => 'khorakhangthai', 167 => 'ngonguthai', 168 => 'chochanthai', 169 => 'chochingthai', 170 => 'chochangthai', 171 => 'sosothai', 172 => 'chochoethai', 173 => 'yoyingthai', 174 => 'dochadathai', 175 => 'topatakthai', 176 => 'thothanthai', 177 => 'thonangmonthothai', 178 => 'thophuthaothai', 179 => 'nonenthai', 180 => 'dodekthai', 181 => 'totaothai', 182 => 'thothungthai', 183 => 'thothahanthai', 184 => 'thothongthai', 185 => 'nonuthai', 186 => 'bobaimaithai', 187 => 'poplathai', 188 => 'phophungthai', 189 => 'fofathai', 190 => 'phophanthai', 191 => 'fofanthai', 192 => 'phosamphaothai', 193 => 'momathai', 194 => 'yoyakthai', 195 => 'roruathai', 196 => 'ruthai', 197 => 'lolingthai', 198 => 'luthai', 199 => 'wowaenthai', 200 => 'sosalathai', 201 => 'sorusithai', 202 => 'sosuathai', 203 => 'hohipthai', 204 => 'lochulathai', 205 => 'oangthai', 206 => 'honokhukthai', 207 => 'paiyannoithai', 208 => 'saraathai', 209 => 'maihanakatthai', 210 => 'saraaathai', 211 => 'saraamthai', 212 => 'saraithai', 213 => 'saraiithai', 214 => 'sarauethai', 215 => 'saraueethai', 216 => 'sarauthai', 217 => 'sarauuthai', 218 => 'phinthuthai', 219 => '.notdef', 220 => '.notdef', 221 => '.notdef', 222 => '.notdef', 223 => 'bahtthai', 224 => 'saraethai', 225 => 'saraaethai', 226 => 'saraothai', 227 => 'saraaimaimuanthai', 228 => 'saraaimaimalaithai', 229 => 'lakkhangyaothai', 230 => 'maiyamokthai', 231 => 'maitaikhuthai', 232 => 'maiekthai', 233 => 'maithothai', 234 => 'maitrithai', 235 => 'maichattawathai', 236 => 'thanthakhatthai', 237 => 'nikhahitthai', 238 => 'yamakkanthai', 239 => 'fongmanthai', 240 => 'zerothai', 241 => 'onethai', 242 => 'twothai', 243 => 'threethai', 244 => 'fourthai', 245 => 'fivethai', 246 => 'sixthai', 247 => 'seventhai', 248 => 'eightthai', 249 => 'ninethai', 250 => 'angkhankhuthai', 251 => 'khomutthai', 252 => '.notdef', 253 => '.notdef', 254 => '.notdef', 255 => '.notdef'),
@@ -18434,12 +18435,11 @@ public static $encmap = array(
 
 ); // end of encoding maps
 
-/**
- * ToUnicode map for Identity-H stream
- * @public static
- */
-public static $uni_identity_h = "/CIDInit /ProcSet findresource begin\n12 dict begin\nbegincmap\n/CIDSystemInfo << /Registry (Adobe) /Ordering (UCS) /Supplement 0 >> def\n/CMapName /Adobe-Identity-UCS def\n/CMapType 2 def\n/WMode 0 def\n1 begincodespacerange\n<0000> <FFFF>\nendcodespacerange\n100 beginbfrange\n<0000> <00ff> <0000>\n<0100> <01ff> <0100>\n<0200> <02ff> <0200>\n<0300> <03ff> <0300>\n<0400> <04ff> <0400>\n<0500> <05ff> <0500>\n<0600> <06ff> <0600>\n<0700> <07ff> <0700>\n<0800> <08ff> <0800>\n<0900> <09ff> <0900>\n<0a00> <0aff> <0a00>\n<0b00> <0bff> <0b00>\n<0c00> <0cff> <0c00>\n<0d00> <0dff> <0d00>\n<0e00> <0eff> <0e00>\n<0f00> <0fff> <0f00>\n<1000> <10ff> <1000>\n<1100> <11ff> <1100>\n<1200> <12ff> <1200>\n<1300> <13ff> <1300>\n<1400> <14ff> <1400>\n<1500> <15ff> <1500>\n<1600> <16ff> <1600>\n<1700> <17ff> <1700>\n<1800> <18ff> <1800>\n<1900> <19ff> <1900>\n<1a00> <1aff> <1a00>\n<1b00> <1bff> <1b00>\n<1c00> <1cff> <1c00>\n<1d00> <1dff> <1d00>\n<1e00> <1eff> <1e00>\n<1f00> <1fff> <1f00>\n<2000> <20ff> <2000>\n<2100> <21ff> <2100>\n<2200> <22ff> <2200>\n<2300> <23ff> <2300>\n<2400> <24ff> <2400>\n<2500> <25ff> <2500>\n<2600> <26ff> <2600>\n<2700> <27ff> <2700>\n<2800> <28ff> <2800>\n<2900> <29ff> <2900>\n<2a00> <2aff> <2a00>\n<2b00> <2bff> <2b00>\n<2c00> <2cff> <2c00>\n<2d00> <2dff> <2d00>\n<2e00> <2eff> <2e00>\n<2f00> <2fff> <2f00>\n<3000> <30ff> <3000>\n<3100> <31ff> <3100>\n<3200> <32ff> <3200>\n<3300> <33ff> <3300>\n<3400> <34ff> <3400>\n<3500> <35ff> <3500>\n<3600> <36ff> <3600>\n<3700> <37ff> <3700>\n<3800> <38ff> <3800>\n<3900> <39ff> <3900>\n<3a00> <3aff> <3a00>\n<3b00> <3bff> <3b00>\n<3c00> <3cff> <3c00>\n<3d00> <3dff> <3d00>\n<3e00> <3eff> <3e00>\n<3f00> <3fff> <3f00>\n<4000> <40ff> <4000>\n<4100> <41ff> <4100>\n<4200> <42ff> <4200>\n<4300> <43ff> <4300>\n<4400> <44ff> <4400>\n<4500> <45ff> <4500>\n<4600> <46ff> <4600>\n<4700> <47ff> <4700>\n<4800> <48ff> <4800>\n<4900> <49ff> <4900>\n<4a00> <4aff> <4a00>\n<4b00> <4bff> <4b00>\n<4c00> <4cff> <4c00>\n<4d00> <4dff> <4d00>\n<4e00> <4eff> <4e00>\n<4f00> <4fff> <4f00>\n<5000> <50ff> <5000>\n<5100> <51ff> <5100>\n<5200> <52ff> <5200>\n<5300> <53ff> <5300>\n<5400> <54ff> <5400>\n<5500> <55ff> <5500>\n<5600> <56ff> <5600>\n<5700> <57ff> <5700>\n<5800> <58ff> <5800>\n<5900> <59ff> <5900>\n<5a00> <5aff> <5a00>\n<5b00> <5bff> <5b00>\n<5c00> <5cff> <5c00>\n<5d00> <5dff> <5d00>\n<5e00> <5eff> <5e00>\n<5f00> <5fff> <5f00>\n<6000> <60ff> <6000>\n<6100> <61ff> <6100>\n<6200> <62ff> <6200>\n<6300> <63ff> <6300>\nendbfrange\n100 beginbfrange\n<6400> <64ff> <6400>\n<6500> <65ff> <6500>\n<6600> <66ff> <6600>\n<6700> <67ff> <6700>\n<6800> <68ff> <6800>\n<6900> <69ff> <6900>\n<6a00> <6aff> <6a00>\n<6b00> <6bff> <6b00>\n<6c00> <6cff> <6c00>\n<6d00> <6dff> <6d00>\n<6e00> <6eff> <6e00>\n<6f00> <6fff> <6f00>\n<7000> <70ff> <7000>\n<7100> <71ff> <7100>\n<7200> <72ff> <7200>\n<7300> <73ff> <7300>\n<7400> <74ff> <7400>\n<7500> <75ff> <7500>\n<7600> <76ff> <7600>\n<7700> <77ff> <7700>\n<7800> <78ff> <7800>\n<7900> <79ff> <7900>\n<7a00> <7aff> <7a00>\n<7b00> <7bff> <7b00>\n<7c00> <7cff> <7c00>\n<7d00> <7dff> <7d00>\n<7e00> <7eff> <7e00>\n<7f00> <7fff> <7f00>\n<8000> <80ff> <8000>\n<8100> <81ff> <8100>\n<8200> <82ff> <8200>\n<8300> <83ff> <8300>\n<8400> <84ff> <8400>\n<8500> <85ff> <8500>\n<8600> <86ff> <8600>\n<8700> <87ff> <8700>\n<8800> <88ff> <8800>\n<8900> <89ff> <8900>\n<8a00> <8aff> <8a00>\n<8b00> <8bff> <8b00>\n<8c00> <8cff> <8c00>\n<8d00> <8dff> <8d00>\n<8e00> <8eff> <8e00>\n<8f00> <8fff> <8f00>\n<9000> <90ff> <9000>\n<9100> <91ff> <9100>\n<9200> <92ff> <9200>\n<9300> <93ff> <9300>\n<9400> <94ff> <9400>\n<9500> <95ff> <9500>\n<9600> <96ff> <9600>\n<9700> <97ff> <9700>\n<9800> <98ff> <9800>\n<9900> <99ff> <9900>\n<9a00> <9aff> <9a00>\n<9b00> <9bff> <9b00>\n<9c00> <9cff> <9c00>\n<9d00> <9dff> <9d00>\n<9e00> <9eff> <9e00>\n<9f00> <9fff> <9f00>\n<a000> <a0ff> <a000>\n<a100> <a1ff> <a100>\n<a200> <a2ff> <a200>\n<a300> <a3ff> <a300>\n<a400> <a4ff> <a400>\n<a500> <a5ff> <a500>\n<a600> <a6ff> <a600>\n<a700> <a7ff> <a700>\n<a800> <a8ff> <a800>\n<a900> <a9ff> <a900>\n<aa00> <aaff> <aa00>\n<ab00> <abff> <ab00>\n<ac00> <acff> <ac00>\n<ad00> <adff> <ad00>\n<ae00> <aeff> <ae00>\n<af00> <afff> <af00>\n<b000> <b0ff> <b000>\n<b100> <b1ff> <b100>\n<b200> <b2ff> <b200>\n<b300> <b3ff> <b300>\n<b400> <b4ff> <b400>\n<b500> <b5ff> <b500>\n<b600> <b6ff> <b600>\n<b700> <b7ff> <b700>\n<b800> <b8ff> <b800>\n<b900> <b9ff> <b900>\n<ba00> <baff> <ba00>\n<bb00> <bbff> <bb00>\n<bc00> <bcff> <bc00>\n<bd00> <bdff> <bd00>\n<be00> <beff> <be00>\n<bf00> <bfff> <bf00>\n<c000> <c0ff> <c000>\n<c100> <c1ff> <c100>\n<c200> <c2ff> <c200>\n<c300> <c3ff> <c300>\n<c400> <c4ff> <c400>\n<c500> <c5ff> <c500>\n<c600> <c6ff> <c600>\n<c700> <c7ff> <c700>\nendbfrange\n56 beginbfrange\n<c800> <c8ff> <c800>\n<c900> <c9ff> <c900>\n<ca00> <caff> <ca00>\n<cb00> <cbff> <cb00>\n<cc00> <ccff> <cc00>\n<cd00> <cdff> <cd00>\n<ce00> <ceff> <ce00>\n<cf00> <cfff> <cf00>\n<d000> <d0ff> <d000>\n<d100> <d1ff> <d100>\n<d200> <d2ff> <d200>\n<d300> <d3ff> <d300>\n<d400> <d4ff> <d400>\n<d500> <d5ff> <d500>\n<d600> <d6ff> <d600>\n<d700> <d7ff> <d700>\n<d800> <d8ff> <d800>\n<d900> <d9ff> <d900>\n<da00> <daff> <da00>\n<db00> <dbff> <db00>\n<dc00> <dcff> <dc00>\n<dd00> <ddff> <dd00>\n<de00> <deff> <de00>\n<df00> <dfff> <df00>\n<e000> <e0ff> <e000>\n<e100> <e1ff> <e100>\n<e200> <e2ff> <e200>\n<e300> <e3ff> <e300>\n<e400> <e4ff> <e400>\n<e500> <e5ff> <e500>\n<e600> <e6ff> <e600>\n<e700> <e7ff> <e700>\n<e800> <e8ff> <e800>\n<e900> <e9ff> <e900>\n<ea00> <eaff> <ea00>\n<eb00> <ebff> <eb00>\n<ec00> <ecff> <ec00>\n<ed00> <edff> <ed00>\n<ee00> <eeff> <ee00>\n<ef00> <efff> <ef00>\n<f000> <f0ff> <f000>\n<f100> <f1ff> <f100>\n<f200> <f2ff> <f200>\n<f300> <f3ff> <f300>\n<f400> <f4ff> <f400>\n<f500> <f5ff> <f500>\n<f600> <f6ff> <f600>\n<f700> <f7ff> <f700>\n<f800> <f8ff> <f800>\n<f900> <f9ff> <f900>\n<fa00> <faff> <fa00>\n<fb00> <fbff> <fb00>\n<fc00> <fcff> <fc00>\n<fd00> <fdff> <fd00>\n<fe00> <feff> <fe00>\n<ff00> <ffff> <ff00>\nendbfrange\nendcmap\nCMapName currentdict /CMap defineresource pop\nend\nend";
-
+    /**
+     * ToUnicode map for Identity-H stream
+     * @public static
+     */
+    public static $uni_identity_h = "/CIDInit /ProcSet findresource begin\n12 dict begin\nbegincmap\n/CIDSystemInfo << /Registry (Adobe) /Ordering (UCS) /Supplement 0 >> def\n/CMapName /Adobe-Identity-UCS def\n/CMapType 2 def\n/WMode 0 def\n1 begincodespacerange\n<0000> <FFFF>\nendcodespacerange\n100 beginbfrange\n<0000> <00ff> <0000>\n<0100> <01ff> <0100>\n<0200> <02ff> <0200>\n<0300> <03ff> <0300>\n<0400> <04ff> <0400>\n<0500> <05ff> <0500>\n<0600> <06ff> <0600>\n<0700> <07ff> <0700>\n<0800> <08ff> <0800>\n<0900> <09ff> <0900>\n<0a00> <0aff> <0a00>\n<0b00> <0bff> <0b00>\n<0c00> <0cff> <0c00>\n<0d00> <0dff> <0d00>\n<0e00> <0eff> <0e00>\n<0f00> <0fff> <0f00>\n<1000> <10ff> <1000>\n<1100> <11ff> <1100>\n<1200> <12ff> <1200>\n<1300> <13ff> <1300>\n<1400> <14ff> <1400>\n<1500> <15ff> <1500>\n<1600> <16ff> <1600>\n<1700> <17ff> <1700>\n<1800> <18ff> <1800>\n<1900> <19ff> <1900>\n<1a00> <1aff> <1a00>\n<1b00> <1bff> <1b00>\n<1c00> <1cff> <1c00>\n<1d00> <1dff> <1d00>\n<1e00> <1eff> <1e00>\n<1f00> <1fff> <1f00>\n<2000> <20ff> <2000>\n<2100> <21ff> <2100>\n<2200> <22ff> <2200>\n<2300> <23ff> <2300>\n<2400> <24ff> <2400>\n<2500> <25ff> <2500>\n<2600> <26ff> <2600>\n<2700> <27ff> <2700>\n<2800> <28ff> <2800>\n<2900> <29ff> <2900>\n<2a00> <2aff> <2a00>\n<2b00> <2bff> <2b00>\n<2c00> <2cff> <2c00>\n<2d00> <2dff> <2d00>\n<2e00> <2eff> <2e00>\n<2f00> <2fff> <2f00>\n<3000> <30ff> <3000>\n<3100> <31ff> <3100>\n<3200> <32ff> <3200>\n<3300> <33ff> <3300>\n<3400> <34ff> <3400>\n<3500> <35ff> <3500>\n<3600> <36ff> <3600>\n<3700> <37ff> <3700>\n<3800> <38ff> <3800>\n<3900> <39ff> <3900>\n<3a00> <3aff> <3a00>\n<3b00> <3bff> <3b00>\n<3c00> <3cff> <3c00>\n<3d00> <3dff> <3d00>\n<3e00> <3eff> <3e00>\n<3f00> <3fff> <3f00>\n<4000> <40ff> <4000>\n<4100> <41ff> <4100>\n<4200> <42ff> <4200>\n<4300> <43ff> <4300>\n<4400> <44ff> <4400>\n<4500> <45ff> <4500>\n<4600> <46ff> <4600>\n<4700> <47ff> <4700>\n<4800> <48ff> <4800>\n<4900> <49ff> <4900>\n<4a00> <4aff> <4a00>\n<4b00> <4bff> <4b00>\n<4c00> <4cff> <4c00>\n<4d00> <4dff> <4d00>\n<4e00> <4eff> <4e00>\n<4f00> <4fff> <4f00>\n<5000> <50ff> <5000>\n<5100> <51ff> <5100>\n<5200> <52ff> <5200>\n<5300> <53ff> <5300>\n<5400> <54ff> <5400>\n<5500> <55ff> <5500>\n<5600> <56ff> <5600>\n<5700> <57ff> <5700>\n<5800> <58ff> <5800>\n<5900> <59ff> <5900>\n<5a00> <5aff> <5a00>\n<5b00> <5bff> <5b00>\n<5c00> <5cff> <5c00>\n<5d00> <5dff> <5d00>\n<5e00> <5eff> <5e00>\n<5f00> <5fff> <5f00>\n<6000> <60ff> <6000>\n<6100> <61ff> <6100>\n<6200> <62ff> <6200>\n<6300> <63ff> <6300>\nendbfrange\n100 beginbfrange\n<6400> <64ff> <6400>\n<6500> <65ff> <6500>\n<6600> <66ff> <6600>\n<6700> <67ff> <6700>\n<6800> <68ff> <6800>\n<6900> <69ff> <6900>\n<6a00> <6aff> <6a00>\n<6b00> <6bff> <6b00>\n<6c00> <6cff> <6c00>\n<6d00> <6dff> <6d00>\n<6e00> <6eff> <6e00>\n<6f00> <6fff> <6f00>\n<7000> <70ff> <7000>\n<7100> <71ff> <7100>\n<7200> <72ff> <7200>\n<7300> <73ff> <7300>\n<7400> <74ff> <7400>\n<7500> <75ff> <7500>\n<7600> <76ff> <7600>\n<7700> <77ff> <7700>\n<7800> <78ff> <7800>\n<7900> <79ff> <7900>\n<7a00> <7aff> <7a00>\n<7b00> <7bff> <7b00>\n<7c00> <7cff> <7c00>\n<7d00> <7dff> <7d00>\n<7e00> <7eff> <7e00>\n<7f00> <7fff> <7f00>\n<8000> <80ff> <8000>\n<8100> <81ff> <8100>\n<8200> <82ff> <8200>\n<8300> <83ff> <8300>\n<8400> <84ff> <8400>\n<8500> <85ff> <8500>\n<8600> <86ff> <8600>\n<8700> <87ff> <8700>\n<8800> <88ff> <8800>\n<8900> <89ff> <8900>\n<8a00> <8aff> <8a00>\n<8b00> <8bff> <8b00>\n<8c00> <8cff> <8c00>\n<8d00> <8dff> <8d00>\n<8e00> <8eff> <8e00>\n<8f00> <8fff> <8f00>\n<9000> <90ff> <9000>\n<9100> <91ff> <9100>\n<9200> <92ff> <9200>\n<9300> <93ff> <9300>\n<9400> <94ff> <9400>\n<9500> <95ff> <9500>\n<9600> <96ff> <9600>\n<9700> <97ff> <9700>\n<9800> <98ff> <9800>\n<9900> <99ff> <9900>\n<9a00> <9aff> <9a00>\n<9b00> <9bff> <9b00>\n<9c00> <9cff> <9c00>\n<9d00> <9dff> <9d00>\n<9e00> <9eff> <9e00>\n<9f00> <9fff> <9f00>\n<a000> <a0ff> <a000>\n<a100> <a1ff> <a100>\n<a200> <a2ff> <a200>\n<a300> <a3ff> <a300>\n<a400> <a4ff> <a400>\n<a500> <a5ff> <a500>\n<a600> <a6ff> <a600>\n<a700> <a7ff> <a700>\n<a800> <a8ff> <a800>\n<a900> <a9ff> <a900>\n<aa00> <aaff> <aa00>\n<ab00> <abff> <ab00>\n<ac00> <acff> <ac00>\n<ad00> <adff> <ad00>\n<ae00> <aeff> <ae00>\n<af00> <afff> <af00>\n<b000> <b0ff> <b000>\n<b100> <b1ff> <b100>\n<b200> <b2ff> <b200>\n<b300> <b3ff> <b300>\n<b400> <b4ff> <b400>\n<b500> <b5ff> <b500>\n<b600> <b6ff> <b600>\n<b700> <b7ff> <b700>\n<b800> <b8ff> <b800>\n<b900> <b9ff> <b900>\n<ba00> <baff> <ba00>\n<bb00> <bbff> <bb00>\n<bc00> <bcff> <bc00>\n<bd00> <bdff> <bd00>\n<be00> <beff> <be00>\n<bf00> <bfff> <bf00>\n<c000> <c0ff> <c000>\n<c100> <c1ff> <c100>\n<c200> <c2ff> <c200>\n<c300> <c3ff> <c300>\n<c400> <c4ff> <c400>\n<c500> <c5ff> <c500>\n<c600> <c6ff> <c600>\n<c700> <c7ff> <c700>\nendbfrange\n56 beginbfrange\n<c800> <c8ff> <c800>\n<c900> <c9ff> <c900>\n<ca00> <caff> <ca00>\n<cb00> <cbff> <cb00>\n<cc00> <ccff> <cc00>\n<cd00> <cdff> <cd00>\n<ce00> <ceff> <ce00>\n<cf00> <cfff> <cf00>\n<d000> <d0ff> <d000>\n<d100> <d1ff> <d100>\n<d200> <d2ff> <d200>\n<d300> <d3ff> <d300>\n<d400> <d4ff> <d400>\n<d500> <d5ff> <d500>\n<d600> <d6ff> <d600>\n<d700> <d7ff> <d700>\n<d800> <d8ff> <d800>\n<d900> <d9ff> <d900>\n<da00> <daff> <da00>\n<db00> <dbff> <db00>\n<dc00> <dcff> <dc00>\n<dd00> <ddff> <dd00>\n<de00> <deff> <de00>\n<df00> <dfff> <df00>\n<e000> <e0ff> <e000>\n<e100> <e1ff> <e100>\n<e200> <e2ff> <e200>\n<e300> <e3ff> <e300>\n<e400> <e4ff> <e400>\n<e500> <e5ff> <e500>\n<e600> <e6ff> <e600>\n<e700> <e7ff> <e700>\n<e800> <e8ff> <e800>\n<e900> <e9ff> <e900>\n<ea00> <eaff> <ea00>\n<eb00> <ebff> <eb00>\n<ec00> <ecff> <ec00>\n<ed00> <edff> <ed00>\n<ee00> <eeff> <ee00>\n<ef00> <efff> <ef00>\n<f000> <f0ff> <f000>\n<f100> <f1ff> <f100>\n<f200> <f2ff> <f200>\n<f300> <f3ff> <f300>\n<f400> <f4ff> <f400>\n<f500> <f5ff> <f500>\n<f600> <f6ff> <f600>\n<f700> <f7ff> <f700>\n<f800> <f8ff> <f800>\n<f900> <f9ff> <f900>\n<fa00> <faff> <fa00>\n<fb00> <fbff> <fb00>\n<fc00> <fcff> <fc00>\n<fd00> <fdff> <fd00>\n<fe00> <feff> <fe00>\n<ff00> <ffff> <ff00>\nendbfrange\nendcmap\nCMapName currentdict /CMap defineresource pop\nend\nend";
 } // END OF TCPDF_FONT_DATA CLASS
 
 //============================================================+

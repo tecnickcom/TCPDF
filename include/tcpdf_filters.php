@@ -48,7 +48,8 @@
  * @version 1.0.001
  * @author Nicola Asuni - info@tecnick.com
  */
-class TCPDF_FILTERS {
+class TCPDF_FILTERS
+{
 
     /**
      * Define a list of available filter decoders.
@@ -56,7 +57,7 @@ class TCPDF_FILTERS {
      */
     private static $available_filters = array('ASCIIHexDecode', 'ASCII85Decode', 'LZWDecode', 'FlateDecode', 'RunLengthDecode');
 
-// -----------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------
 
     /**
      * Get a list of available decoding filters.
@@ -64,7 +65,8 @@ class TCPDF_FILTERS {
      * @since 1.0.000 (2011-05-23)
      * @public static
      */
-    public static function getAvailableFilters() {
+    public static function getAvailableFilters()
+    {
         return self::$available_filters;
     }
 
@@ -76,7 +78,8 @@ class TCPDF_FILTERS {
      * @since 1.0.000 (2011-05-23)
      * @public static
      */
-    public static function decodeFilter($filter, $data) {
+    public static function decodeFilter($filter, $data)
+    {
         switch ($filter) {
             case 'ASCIIHexDecode': {
                 return self::decodeFilterASCIIHexDecode($data);
@@ -135,7 +138,8 @@ class TCPDF_FILTERS {
      * @since 1.0.000 (2011-05-23)
      * @public static
      */
-    public static function decodeFilterStandard($data) {
+    public static function decodeFilterStandard($data)
+    {
         return $data;
     }
 
@@ -147,7 +151,8 @@ class TCPDF_FILTERS {
      * @since 1.0.000 (2011-05-23)
      * @public static
      */
-    public static function decodeFilterASCIIHexDecode($data) {
+    public static function decodeFilterASCIIHexDecode($data)
+    {
         // initialize string to return
         $decoded = '';
         // all white-space characters shall be ignored
@@ -187,7 +192,8 @@ class TCPDF_FILTERS {
      * @since 1.0.000 (2011-05-23)
      * @public static
      */
-    public static function decodeFilterASCII85Decode($data) {
+    public static function decodeFilterASCII85Decode($data)
+    {
         // initialize string to return
         $decoded = '';
         // all white-space characters shall be ignored
@@ -271,7 +277,8 @@ class TCPDF_FILTERS {
      * @since 1.0.000 (2011-05-23)
      * @public static
      */
-    public static function decodeFilterLZWDecode($data) {
+    public static function decodeFilterLZWDecode($data)
+    {
         // initialize string to return
         $decoded = '';
         // data length
@@ -295,7 +302,7 @@ class TCPDF_FILTERS {
         // previous val
         $prev_index = 0;
         // while we encounter EOD marker (257), read code_length bits
-        while (($data_length > 0) AND (($index = bindec(substr($bitstring, 0, $bitlen))) != 257)) {
+        while (($data_length > 0) and (($index = bindec(substr($bitstring, 0, $bitlen))) != 257)) {
             // remove read bits from string
             $bitstring = substr($bitstring, $bitlen);
             // update number of bits
@@ -352,7 +359,8 @@ class TCPDF_FILTERS {
      * @since 1.0.000 (2011-05-23)
      * @public static
      */
-    public static function decodeFilterFlateDecode($data) {
+    public static function decodeFilterFlateDecode($data)
+    {
         // initialize string to return
         $decoded = @gzuncompress($data);
         if ($decoded === false) {
@@ -368,13 +376,14 @@ class TCPDF_FILTERS {
      * @since 1.0.000 (2011-05-23)
      * @public static
      */
-    public static function decodeFilterRunLengthDecode($data) {
+    public static function decodeFilterRunLengthDecode($data)
+    {
         // initialize string to return
         $decoded = '';
         // data length
         $data_length = strlen($data);
         $i = 0;
-        while($i < $data_length) {
+        while ($i < $data_length) {
             // get current byte value
             $byte = ord($data[$i]);
             if ($byte == 128) {
@@ -405,7 +414,8 @@ class TCPDF_FILTERS {
      * @since 1.0.000 (2011-05-23)
      * @public static
      */
-    public static function decodeFilterCCITTFaxDecode($data) {
+    public static function decodeFilterCCITTFaxDecode($data)
+    {
         self::Error('~decodeFilterCCITTFaxDecode: this method has not been yet implemented');
         //return $data;
     }
@@ -418,7 +428,8 @@ class TCPDF_FILTERS {
      * @since 1.0.000 (2011-05-23)
      * @public static
      */
-    public static function decodeFilterJBIG2Decode($data) {
+    public static function decodeFilterJBIG2Decode($data)
+    {
         self::Error('~decodeFilterJBIG2Decode: this method has not been yet implemented');
         //return $data;
     }
@@ -431,7 +442,8 @@ class TCPDF_FILTERS {
      * @since 1.0.000 (2011-05-23)
      * @public static
      */
-    public static function decodeFilterDCTDecode($data) {
+    public static function decodeFilterDCTDecode($data)
+    {
         self::Error('~decodeFilterDCTDecode: this method has not been yet implemented');
         //return $data;
     }
@@ -444,7 +456,8 @@ class TCPDF_FILTERS {
      * @since 1.0.000 (2011-05-23)
      * @public static
      */
-    public static function decodeFilterJPXDecode($data) {
+    public static function decodeFilterJPXDecode($data)
+    {
         self::Error('~decodeFilterJPXDecode: this method has not been yet implemented');
         //return $data;
     }
@@ -457,7 +470,8 @@ class TCPDF_FILTERS {
      * @since 1.0.000 (2011-05-23)
      * @public static
      */
-    public static function decodeFilterCrypt($data) {
+    public static function decodeFilterCrypt($data)
+    {
         self::Error('~decodeFilterCrypt: this method has not been yet implemented');
         //return $data;
     }
@@ -470,10 +484,10 @@ class TCPDF_FILTERS {
      * @since 1.0.000 (2011-05-23)
      * @public static
      */
-    public static function Error($msg) {
+    public static function Error($msg)
+    {
         throw new Exception('TCPDF_PARSER ERROR: ' . $msg);
     }
-
 } // END OF TCPDF_FILTERS CLASS
 
 //============================================================+

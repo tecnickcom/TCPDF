@@ -77,7 +77,6 @@ if (!defined('PDF417DEFS')) {
      * Vertical quiet zone in modules
      */
     define('QUIETV', 2);
-
 } // end of definitions
 
 // #*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#
@@ -90,7 +89,8 @@ if (!defined('PDF417DEFS')) {
  * @author Nicola Asuni
  * @version 1.0.003
  */
-class PDF417 {
+class PDF417
+{
 
     /**
      * Barcode array to be returned which is readable by TCPDF.
@@ -529,15 +529,16 @@ class PDF417 {
      * @param array $macro information for macro block
      * @public
      */
-    public function __construct($code, $ecl = -1, $aspectratio = 2, $macro = array()) {
+    public function __construct($code, $ecl = -1, $aspectratio = 2, $macro = array())
+    {
         $barcode_array = array();
-        if ((is_null($code)) OR ($code == '\0') OR ($code == '')) {
+        if ((is_null($code)) or ($code == '\0') or ($code == '')) {
             return false;
         }
         // get the input sequence array
         $sequence = $this->getInputSequences($code);
         $codewords = array(); // array of code-words
-        foreach($sequence as $seq) {
+        foreach ($sequence as $seq) {
             $cw = $this->getCompaction($seq[0], $seq[1], true);
             $codewords = array_merge($codewords, $cw);
         }
@@ -601,7 +602,7 @@ class PDF417 {
         $rows = ceil($nce / $cols);
         $size = ($cols * $rows);
         // adjust rows
-        if (($rows < 3) OR ($rows > 90)) {
+        if (($rows < 3) or ($rows > 90)) {
             if ($rows < 3) {
                 $rows = 3;
             } elseif ($rows > 90) {
@@ -728,7 +729,8 @@ class PDF417 {
      * @return array barcode array readable by TCPDF;
      * @public
      */
-    public function getBarcodeArray() {
+    public function getBarcodeArray()
+    {
         return $this->barcode_array;
     }
 
@@ -739,10 +741,11 @@ class PDF417 {
      * @return int error correction level
      * @protected
      */
-    protected function getErrorCorrectionLevel($ecl, $numcw) {
+    protected function getErrorCorrectionLevel($ecl, $numcw)
+    {
         $maxecl = 8; // starting error level
         // check for automatic levels
-        if (($ecl < 0) OR ($ecl > 8)) {
+        if (($ecl < 0) or ($ecl > 8)) {
             if ($numcw < 41) {
                 $ecl = 2;
             } elseif ($numcw < 161) {
@@ -777,7 +780,8 @@ class PDF417 {
      * @return array of error correction codewords
      * @protected
      */
-    protected function getErrorCorrection($cw, $ecl) {
+    protected function getErrorCorrection($cw, $ecl)
+    {
         // get error correction coefficients
         $ecc = $this->rsfactors[$ecl];
         // number of error correction factors
@@ -787,7 +791,7 @@ class PDF417 {
         // initialize array of error correction codewords
         $ecw = array_fill(0, $eclsize, 0);
         // for each data codeword
-        foreach($cw as $k => $d) {
+        foreach ($cw as $k => $d) {
             $t1 = ($d + $ecw[$eclmaxid]) % 929;
             for ($j = $eclmaxid; $j > 0; --$j) {
                 $t2 = ($t1 * $ecc[$j]) % 929;
@@ -798,7 +802,7 @@ class PDF417 {
             $t3 = 929 - $t2;
             $ecw[0] = $t3 % 929;
         }
-        foreach($ecw as $j => $e) {
+        foreach ($ecw as $j => $e) {
             if ($e != 0) {
                 $ecw[$j] = 929 - $e;
             }
@@ -813,14 +817,15 @@ class PDF417 {
      * @return array bi-dimensional array containing characters and classification
      * @protected
      */
-    protected function getInputSequences($code) {
+    protected function getInputSequences($code)
+    {
         $sequence_array = array(); // array to be returned
         $numseq = array();
         // get numeric sequences
         preg_match_all('/([0-9]{13,44})/', $code, $numseq, PREG_OFFSET_CAPTURE);
         $numseq[1][] = array('', strlen($code));
         $offset = 0;
-        foreach($numseq[1] as $seq) {
+        foreach ($numseq[1] as $seq) {
             $seqlen = strlen($seq[0]);
             if ($seq[1] > 0) {
                 // extract text sequence before the number sequence
@@ -830,14 +835,14 @@ class PDF417 {
                 preg_match_all('/([\x09\x0a\x0d\x20-\x7e]{5,})/', $prevseq, $textseq, PREG_OFFSET_CAPTURE);
                 $textseq[1][] = array('', strlen($prevseq));
                 $txtoffset = 0;
-                foreach($textseq[1] as $txtseq) {
+                foreach ($textseq[1] as $txtseq) {
                     $txtseqlen = strlen($txtseq[0]);
                     if ($txtseq[1] > 0) {
                         // extract byte sequence before the text sequence
                         $prevtxtseq = substr($prevseq, $txtoffset, ($txtseq[1] - $txtoffset));
                         if (strlen($prevtxtseq) > 0) {
                             // add BYTE sequence
-                            if ((strlen($prevtxtseq) == 1) AND ((count($sequence_array) > 0) AND ($sequence_array[(count($sequence_array) - 1)][0] == 900))) {
+                            if ((strlen($prevtxtseq) == 1) and ((count($sequence_array) > 0) and ($sequence_array[(count($sequence_array) - 1)][0] == 900))) {
                                 $sequence_array[] = array(913, $prevtxtseq);
                             } elseif ((strlen($prevtxtseq) % 6) == 0) {
                                 $sequence_array[] = array(924, $prevtxtseq);
@@ -870,9 +875,10 @@ class PDF417 {
      * @return array of codewords
      * @protected
      */
-    protected function getCompaction($mode, $code, $addmode = true) {
+    protected function getCompaction($mode, $code, $addmode = true)
+    {
         $cw = array(); // array of codewords to return
-        switch($mode) {
+        switch ($mode) {
             case 900: { // Text Compaction mode latch
                 $submode = 0; // default Alpha sub-mode
                 $txtarr = array(); // array of characters and sub-mode switching characters
@@ -886,9 +892,9 @@ class PDF417 {
                         // the sub-mode is changed
                         for ($s = 0; $s < 4; ++$s) {
                             // search new sub-mode
-                            if (($s != $submode) AND (($k = array_search($chval, $this->textsubmodes[$s])) !== false)) {
+                            if (($s != $submode) and (($k = array_search($chval, $this->textsubmodes[$s])) !== false)) {
                                 // $s is the new submode
-                                if (((($i + 1) == $codelen) OR ((($i + 1) < $codelen) AND (array_search(ord($code[($i + 1)]), $this->textsubmodes[$submode]) !== false))) AND (($s == 3) OR (($s == 0) AND ($submode == 1)))) {
+                                if (((($i + 1) == $codelen) or ((($i + 1) < $codelen) and (array_search(ord($code[($i + 1)]), $this->textsubmodes[$submode]) !== false))) and (($s == 3) or (($s == 0) and ($submode == 1)))) {
                                     // shift (temporary change only for this char)
                                     if ($s == 3) {
                                         // shift to puntuaction
@@ -988,7 +994,6 @@ class PDF417 {
         }
         return $cw;
     }
-
 } // end PDF417 class
 
 //============================================================+

@@ -82,8 +82,8 @@ $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE . ' 016', PDF_HEADER_STRING);
 
 // set header and footer fonts
-$pdf->setHeaderFont(Array('helvetica', '', PDF_FONT_SIZE_MAIN));
-$pdf->setFooterFont(Array('helvetica', '', PDF_FONT_SIZE_DATA));
+$pdf->setHeaderFont(array('helvetica', '', PDF_FONT_SIZE_MAIN));
+$pdf->setFooterFont(array('helvetica', '', PDF_FONT_SIZE_DATA));
 
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -94,7 +94,7 @@ $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
 // set auto page breaks
-$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 
 // set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);

@@ -30,13 +30,15 @@ require_once('tcpdf_include.php');
 /**
  * TCPDF class extension with custom header and footer for TOC page
  */
-class TOC_TCPDF extends TCPDF {
+class TOC_TCPDF extends TCPDF
+{
 
     /**
      * Overwrite Header() method.
      * @public
      */
-    public function Header() {
+    public function Header()
+    {
         if ($this->tocpage) {
             // *** replace the following parent::Header() with your code for TOC page
             parent::Header();
@@ -50,7 +52,8 @@ class TOC_TCPDF extends TCPDF {
      * Overwrite Footer() method.
      * @public
      */
-    public function Footer() {
+    public function Footer()
+    {
         if ($this->tocpage) {
             // *** replace the following parent::Footer() with your code for TOC page
             parent::Footer();
@@ -59,7 +62,6 @@ class TOC_TCPDF extends TCPDF {
             parent::Footer();
         }
     }
-
 } // end of class
 
 // create new PDF document
@@ -76,8 +78,8 @@ $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE . ' 059', PDF_HEADER_STRING);
 
 // set header and footer fonts
-$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+$pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+$pdf->setFooterFont(array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -88,7 +90,7 @@ $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
 // set auto page breaks
-$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 
 // set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);

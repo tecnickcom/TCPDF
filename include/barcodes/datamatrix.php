@@ -52,7 +52,6 @@ if (!defined('DATAMATRIXDEFS')) {
     define('DATAMATRIXDEFS', true);
 
     // -----------------------------------------------------
-
 } // end of custom definitions
 
 // #*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#
@@ -107,7 +106,8 @@ define('ENC_ASCII_NUM', 7);
 * @author Nicola Asuni
 * @version 1.0.004
 */
-class Datamatrix {
+class Datamatrix
+{
 
     /**
      * Barcode array to be returned which is readable by TCPDF.
@@ -224,7 +224,7 @@ class Datamatrix {
             0x51 => 0x1e, 0x52 => 0x1f, 0x53 => 0x20, 0x54 => 0x21, 0x55 => 0x22, 0x56 => 0x23, 0x57 => 0x24, 0x58 => 0x25, 0x59 => 0x26, 0x5a => 0x27) //
         );
 
-// -----------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------
 
     /**
      * This is the class constructor.
@@ -232,9 +232,10 @@ class Datamatrix {
      * @param string $code Code to represent using Datamatrix.
      * @public
      */
-    public function __construct($code) {
+    public function __construct($code)
+    {
         $barcode_array = array();
-        if ((is_null($code)) OR ($code == '\0') OR ($code == '')) {
+        if ((is_null($code)) or ($code == '\0') or ($code == '')) {
             return false;
         }
         // get data codewords
@@ -256,12 +257,12 @@ class Datamatrix {
             return false;
         } elseif ($params[11] > $nd) {
             // add padding
-            if ((($params[11] - $nd) > 1) AND ($cw[($nd - 1)] != 254)) {
+            if ((($params[11] - $nd) > 1) and ($cw[($nd - 1)] != 254)) {
                 if ($this->last_enc == ENC_EDF) {
                     // switch to ASCII encoding
                     $cw[] = 124;
                     ++$nd;
-                } elseif (($this->last_enc != ENC_ASCII) AND ($this->last_enc != ENC_BASE256)) {
+                } elseif (($this->last_enc != ENC_ASCII) and ($this->last_enc != ENC_BASE256)) {
                     // switch to ASCII encoding
                     $cw[] = 254;
                     ++$nd;
@@ -349,7 +350,8 @@ class Datamatrix {
      * @return array barcode array readable by TCPDF;
      * @public
      */
-    public function getBarcodeArray() {
+    public function getBarcodeArray()
+    {
         return $this->barcode_array;
     }
 
@@ -363,8 +365,9 @@ class Datamatrix {
      * @return int product
      * @protected
      */
-    protected function getGFProduct($a, $b, $log, $alog, $gf) {
-        if (($a == 0) OR ($b == 0)) {
+    protected function getGFProduct($a, $b, $log, $alog, $gf)
+    {
+        if (($a == 0) or ($b == 0)) {
             return 0;
         }
         return ($alog[($log[$a] + $log[$b]) % ($gf - 1)]);
@@ -381,7 +384,8 @@ class Datamatrix {
      * @return array data codewords + error codewords
      * @protected
      */
-    protected function getErrorCorrection($wd, $nb, $nd, $nc, $gf = 256, $pp = 301) {
+    protected function getErrorCorrection($wd, $nb, $nd, $nc, $gf = 256, $pp = 301)
+    {
         // generate the log ($log) and antilog ($alog) tables
         $log[0] = 0;
         $alog[0] = 1;
@@ -443,7 +447,8 @@ class Datamatrix {
      * @return int pad codeword
      * @protected
      */
-    protected function get253StateCodeword($cwpad, $cwpos) {
+    protected function get253StateCodeword($cwpad, $cwpos)
+    {
         $pad = ($cwpad + (((149 * $cwpos) % 253) + 1));
         if ($pad > 254) {
             $pad -= 254;
@@ -458,7 +463,8 @@ class Datamatrix {
      * @return int pad codeword
      * @protected
      */
-    protected function get255StateCodeword($cwpad, $cwpos) {
+    protected function get255StateCodeword($cwpad, $cwpos)
+    {
         $pad = ($cwpad + (((149 * $cwpos) % 255) + 1));
         if ($pad > 255) {
             $pad -= 256;
@@ -473,39 +479,40 @@ class Datamatrix {
      * @return boolean true if the char is of the selected mode.
      * @protected
      */
-    protected function isCharMode($chr, $mode) {
+    protected function isCharMode($chr, $mode)
+    {
         $status = false;
         switch ($mode) {
             case ENC_ASCII: { // ASCII character 0 to 127
-                $status = (($chr >= 0) AND ($chr <= 127));
+                $status = (($chr >= 0) and ($chr <= 127));
                 break;
             }
             case ENC_C40: { // Upper-case alphanumeric
-                $status = (($chr == 32) OR (($chr >= 48) AND ($chr <= 57)) OR (($chr >= 65) AND ($chr <= 90)));
+                $status = (($chr == 32) or (($chr >= 48) and ($chr <= 57)) or (($chr >= 65) and ($chr <= 90)));
                 break;
             }
             case ENC_TXT: { // Lower-case alphanumeric
-                $status = (($chr == 32) OR (($chr >= 48) AND ($chr <= 57)) OR (($chr >= 97) AND ($chr <= 122)));
+                $status = (($chr == 32) or (($chr >= 48) and ($chr <= 57)) or (($chr >= 97) and ($chr <= 122)));
                 break;
             }
             case ENC_X12: { // ANSI X12
-                $status = (($chr == 13) OR ($chr == 42) OR ($chr == 62));
+                $status = (($chr == 13) or ($chr == 42) or ($chr == 62));
                 break;
             }
             case ENC_EDF: { // ASCII character 32 to 94
-                $status = (($chr >= 32) AND ($chr <= 94));
+                $status = (($chr >= 32) and ($chr <= 94));
                 break;
             }
             case ENC_BASE256: { // Function character (FNC1, Structured Append, Reader Program, or Code Page)
-                $status = (($chr == 232) OR ($chr == 233) OR ($chr == 234) OR ($chr == 241));
+                $status = (($chr == 232) or ($chr == 233) or ($chr == 234) or ($chr == 241));
                 break;
             }
             case ENC_ASCII_EXT: { // ASCII character 128 to 255
-                $status = (($chr >= 128) AND ($chr <= 255));
+                $status = (($chr >= 128) and ($chr <= 255));
                 break;
             }
             case ENC_ASCII_NUM: { // ASCII digits
-                $status = (($chr >= 48) AND ($chr <= 57));
+                $status = (($chr >= 48) and ($chr <= 57));
                 break;
             }
         }
@@ -520,7 +527,8 @@ class Datamatrix {
      * @return int encoding mode
      * @protected
      */
-    protected function lookAheadTest($data, $pos, $mode) {
+    protected function lookAheadTest($data, $pos, $mode)
+    {
         $data_length = strlen($data);
         if ($pos >= $data_length) {
             return $mode;
@@ -583,7 +591,7 @@ class Datamatrix {
                 $numch[ENC_TXT] += (4 / 3);
             }
             // STEP O
-            if ($this->isCharMode($chr, ENC_X12) OR $this->isCharMode($chr, ENC_C40)) {
+            if ($this->isCharMode($chr, ENC_X12) or $this->isCharMode($chr, ENC_C40)) {
                 $numch[ENC_X12] += (2 / 3);
             } elseif ($this->isCharMode($chr, ENC_ASCII_EXT)) {
                 $numch[ENC_X12] += (13 / 3);
@@ -610,7 +618,7 @@ class Datamatrix {
                     return ENC_ASCII;
                 }
                 if ((($numch[ENC_BASE256] + 1) <= $numch[ENC_ASCII])
-                    OR (($numch[ENC_BASE256] + 1) < min($numch[ENC_C40], $numch[ENC_TXT], $numch[ENC_X12], $numch[ENC_EDF]))) {
+                    or (($numch[ENC_BASE256] + 1) < min($numch[ENC_C40], $numch[ENC_TXT], $numch[ENC_X12], $numch[ENC_EDF]))) {
                     return ENC_BASE256;
                 }
                 if (($numch[ENC_EDF] + 1) < min($numch[ENC_ASCII], $numch[ENC_C40], $numch[ENC_TXT], $numch[ENC_X12], $numch[ENC_BASE256])) {
@@ -632,7 +640,7 @@ class Datamatrix {
                             $tmpchr = ord($data[$k]);
                             if ($this->isCharMode($tmpchr, ENC_X12)) {
                                 return ENC_X12;
-                            } elseif (!($this->isCharMode($tmpchr, ENC_X12) OR $this->isCharMode($tmpchr, ENC_C40))) {
+                            } elseif (!($this->isCharMode($tmpchr, ENC_X12) or $this->isCharMode($tmpchr, ENC_C40))) {
                                 break;
                             }
                             ++$k;
@@ -650,7 +658,8 @@ class Datamatrix {
      * @return int Switch codeword.
      * @protected
      */
-    protected function getSwitchEncodingCodeword($mode) {
+    protected function getSwitchEncodingCodeword($mode)
+    {
         switch ($mode) {
             case ENC_ASCII: { // ASCII character 0 to 127
                 $cw = 254;
@@ -689,7 +698,8 @@ class Datamatrix {
      * @return number of data codewords in matrix
      * @protected
      */
-    protected function getMaxDataCodewords($numcw) {
+    protected function getMaxDataCodewords($numcw)
+    {
         foreach ($this->symbattr as $key => $matrix) {
             if ($matrix[11] >= $numcw) {
                 return $matrix[11];
@@ -704,7 +714,8 @@ class Datamatrix {
      * @return array of codewords
      * @protected
      */
-    protected function getHighLevelEncoding($data) {
+    protected function getHighLevelEncoding($data)
+    {
         // STEP A. Start in ASCII encodation.
         $enc = ENC_ASCII; // current encoding mode
         $pos = 0; // current position
@@ -716,7 +727,7 @@ class Datamatrix {
             $this->last_enc = $enc;
             switch ($enc) {
                 case ENC_ASCII: { // STEP B. While in ASCII encodation
-                    if (($data_length > 1) AND ($pos < ($data_length - 1)) AND ($this->isCharMode(ord($data[$pos]), ENC_ASCII_NUM) AND $this->isCharMode(ord($data[$pos + 1]), ENC_ASCII_NUM))) {
+                    if (($data_length > 1) and ($pos < ($data_length - 1)) and ($this->isCharMode(ord($data[$pos]), ENC_ASCII_NUM) and $this->isCharMode(ord($data[$pos + 1]), ENC_ASCII_NUM))) {
                         // 1. If the next data sequence is at least 2 consecutive digits, encode the next two digits as a double digit in ASCII mode.
                         $cw[] = (intval(substr($data, $pos, 2)) + 130);
                         ++$cw_num;
@@ -747,9 +758,9 @@ class Datamatrix {
                     }
                     break;
                 }
-                case ENC_C40 :   // Upper-case alphanumeric
-                case ENC_TXT :   // Lower-case alphanumeric
-                case ENC_X12 : { // ANSI X12
+                case ENC_C40:   // Upper-case alphanumeric
+                case ENC_TXT:   // Lower-case alphanumeric
+                case ENC_X12: { // ANSI X12
                     $temp_cw = array();
                     $p = 0;
                     $epos = $pos;
@@ -781,10 +792,10 @@ class Datamatrix {
                             } elseif (isset($chr, $this->chset['SH2'][$chr])) {
                                 $temp_cw[] = 1; // shift 2
                                 $shiftset = $this->chset['SH2'];
-                            } elseif (($enc == ENC_C40) AND isset($this->chset['S3C'][$chr])) {
+                            } elseif (($enc == ENC_C40) and isset($this->chset['S3C'][$chr])) {
                                 $temp_cw[] = 2; // shift 3
                                 $shiftset = $this->chset['S3C'];
-                            } elseif (($enc == ENC_TXT) AND isset($this->chset['S3T'][$chr])) {
+                            } elseif (($enc == ENC_TXT) and isset($this->chset['S3T'][$chr])) {
                                 $temp_cw[] = 2; // shift 3
                                 $shiftset = $this->chset['S3T'];
                             } else {
@@ -820,12 +831,12 @@ class Datamatrix {
                                 break;
                             }
                         }
-                    } while (($p > 0) AND ($epos < $data_length));
+                    } while (($p > 0) and ($epos < $data_length));
                     // process last data (if any)
                     if ($p > 0) {
                         // get remaining number of data symbols
                         $cwr = ($this->getMaxDataCodewords($cw_num) - $cw_num);
-                        if (($cwr == 1) AND ($p == 1)) {
+                        if (($cwr == 1) and ($p == 1)) {
                             // d. If one symbol character remains and one C40 value (data character) remains to be encoded
                             $c1 = array_shift($temp_cw);
                             --$p;
@@ -834,7 +845,7 @@ class Datamatrix {
                             $pos = $epos;
                             $enc = ENC_ASCII;
                             $this->last_enc = $enc;
-                        } elseif (($cwr == 2) AND ($p == 1)) {
+                        } elseif (($cwr == 2) and ($p == 1)) {
                             // c. If two symbol characters remain and only one C40 value (data character) remains to be encoded
                             $c1 = array_shift($temp_cw);
                             --$p;
@@ -844,7 +855,7 @@ class Datamatrix {
                             $pos = $epos;
                             $enc = ENC_ASCII;
                             $this->last_enc = $enc;
-                        } elseif (($cwr == 2) AND ($p == 2)) {
+                        } elseif (($cwr == 2) and ($p == 2)) {
                             // b. If two symbol characters remain and two C40 values remain to be encoded
                             $c1 = array_shift($temp_cw);
                             $c2 = array_shift($temp_cw);
@@ -883,8 +894,8 @@ class Datamatrix {
                             $temp_cw[] = $chr;
                             ++$field_length;
                         }
-                        if (($field_length == 4) OR ($epos == $data_length) OR !$this->isCharMode($chr, ENC_EDF)) {
-                            if (($epos == $data_length) AND ($field_length < 3)) {
+                        if (($field_length == 4) or ($epos == $data_length) or !$this->isCharMode($chr, ENC_EDF)) {
+                            if (($epos == $data_length) and ($field_length < 3)) {
                                 $enc = ENC_ASCII;
                                 $cw[] = $this->getSwitchEncodingCodeword($enc);
                                 ++$cw_num;
@@ -931,7 +942,7 @@ class Datamatrix {
                     // initialize temporary array with 0 length
                     $temp_cw = array();
                     $field_length = 0;
-                    while (($pos < $data_length) AND ($field_length <= 1555)) {
+                    while (($pos < $data_length) and ($field_length <= 1555)) {
                         $newenc = $this->lookAheadTest($data, $pos, $enc);
                         if ($newenc != $enc) {
                             // 1. If the look-ahead test (starting at step J) indicates another mode, switch to that mode.
@@ -980,7 +991,8 @@ class Datamatrix {
      * @return array
      * @protected
      */
-    protected function placeModule($marr, $nrow, $ncol, $row, $col, $chr, $bit) {
+    protected function placeModule($marr, $nrow, $ncol, $row, $col, $chr, $bit)
+    {
         if ($row < 0) {
             $row += $nrow;
             $col += (4 - (($nrow + 4) % 8));
@@ -1005,15 +1017,16 @@ class Datamatrix {
      * @return array
      * @protected
      */
-    protected function placeUtah($marr, $nrow, $ncol, $row, $col, $chr) {
+    protected function placeUtah($marr, $nrow, $ncol, $row, $col, $chr)
+    {
         $marr = $this->placeModule($marr, $nrow, $ncol, $row - 2, $col - 2, $chr, 1);
         $marr = $this->placeModule($marr, $nrow, $ncol, $row - 2, $col - 1, $chr, 2);
         $marr = $this->placeModule($marr, $nrow, $ncol, $row - 1, $col - 2, $chr, 3);
         $marr = $this->placeModule($marr, $nrow, $ncol, $row - 1, $col - 1, $chr, 4);
-        $marr = $this->placeModule($marr, $nrow, $ncol, $row - 1, $col,   $chr, 5);
-        $marr = $this->placeModule($marr, $nrow, $ncol, $row,   $col - 2, $chr, 6);
-        $marr = $this->placeModule($marr, $nrow, $ncol, $row,   $col - 1, $chr, 7);
-        $marr = $this->placeModule($marr, $nrow, $ncol, $row,   $col,   $chr, 8);
+        $marr = $this->placeModule($marr, $nrow, $ncol, $row - 1, $col, $chr, 5);
+        $marr = $this->placeModule($marr, $nrow, $ncol, $row, $col - 2, $chr, 6);
+        $marr = $this->placeModule($marr, $nrow, $ncol, $row, $col - 1, $chr, 7);
+        $marr = $this->placeModule($marr, $nrow, $ncol, $row, $col, $chr, 8);
         return $marr;
     }
 
@@ -1027,15 +1040,16 @@ class Datamatrix {
      * @return array
      * @protected
      */
-    protected function placeCornerA($marr, $nrow, $ncol, $chr) {
-        $marr = $this->placeModule($marr, $nrow, $ncol, $nrow - 1, 0,       $chr, 1);
-        $marr = $this->placeModule($marr, $nrow, $ncol, $nrow - 1, 1,       $chr, 2);
-        $marr = $this->placeModule($marr, $nrow, $ncol, $nrow - 1, 2,       $chr, 3);
-        $marr = $this->placeModule($marr, $nrow, $ncol, 0,       $ncol - 2, $chr, 4);
-        $marr = $this->placeModule($marr, $nrow, $ncol, 0,       $ncol - 1, $chr, 5);
-        $marr = $this->placeModule($marr, $nrow, $ncol, 1,       $ncol - 1, $chr, 6);
-        $marr = $this->placeModule($marr, $nrow, $ncol, 2,       $ncol - 1, $chr, 7);
-        $marr = $this->placeModule($marr, $nrow, $ncol, 3,       $ncol - 1, $chr, 8);
+    protected function placeCornerA($marr, $nrow, $ncol, $chr)
+    {
+        $marr = $this->placeModule($marr, $nrow, $ncol, $nrow - 1, 0, $chr, 1);
+        $marr = $this->placeModule($marr, $nrow, $ncol, $nrow - 1, 1, $chr, 2);
+        $marr = $this->placeModule($marr, $nrow, $ncol, $nrow - 1, 2, $chr, 3);
+        $marr = $this->placeModule($marr, $nrow, $ncol, 0, $ncol - 2, $chr, 4);
+        $marr = $this->placeModule($marr, $nrow, $ncol, 0, $ncol - 1, $chr, 5);
+        $marr = $this->placeModule($marr, $nrow, $ncol, 1, $ncol - 1, $chr, 6);
+        $marr = $this->placeModule($marr, $nrow, $ncol, 2, $ncol - 1, $chr, 7);
+        $marr = $this->placeModule($marr, $nrow, $ncol, 3, $ncol - 1, $chr, 8);
         return $marr;
     }
 
@@ -1049,15 +1063,16 @@ class Datamatrix {
      * @return array
      * @protected
      */
-    protected function placeCornerB($marr, $nrow, $ncol, $chr) {
-        $marr = $this->placeModule($marr, $nrow, $ncol, $nrow - 3, 0,       $chr, 1);
-        $marr = $this->placeModule($marr, $nrow, $ncol, $nrow - 2, 0,       $chr, 2);
-        $marr = $this->placeModule($marr, $nrow, $ncol, $nrow - 1, 0,       $chr, 3);
-        $marr = $this->placeModule($marr, $nrow, $ncol, 0,       $ncol - 4, $chr, 4);
-        $marr = $this->placeModule($marr, $nrow, $ncol, 0,       $ncol - 3, $chr, 5);
-        $marr = $this->placeModule($marr, $nrow, $ncol, 0,       $ncol - 2, $chr, 6);
-        $marr = $this->placeModule($marr, $nrow, $ncol, 0,       $ncol - 1, $chr, 7);
-        $marr = $this->placeModule($marr, $nrow, $ncol, 1,       $ncol - 1, $chr, 8);
+    protected function placeCornerB($marr, $nrow, $ncol, $chr)
+    {
+        $marr = $this->placeModule($marr, $nrow, $ncol, $nrow - 3, 0, $chr, 1);
+        $marr = $this->placeModule($marr, $nrow, $ncol, $nrow - 2, 0, $chr, 2);
+        $marr = $this->placeModule($marr, $nrow, $ncol, $nrow - 1, 0, $chr, 3);
+        $marr = $this->placeModule($marr, $nrow, $ncol, 0, $ncol - 4, $chr, 4);
+        $marr = $this->placeModule($marr, $nrow, $ncol, 0, $ncol - 3, $chr, 5);
+        $marr = $this->placeModule($marr, $nrow, $ncol, 0, $ncol - 2, $chr, 6);
+        $marr = $this->placeModule($marr, $nrow, $ncol, 0, $ncol - 1, $chr, 7);
+        $marr = $this->placeModule($marr, $nrow, $ncol, 1, $ncol - 1, $chr, 8);
         return $marr;
     }
 
@@ -1071,15 +1086,16 @@ class Datamatrix {
      * @return array
      * @protected
      */
-    protected function placeCornerC($marr, $nrow, $ncol, $chr) {
-        $marr = $this->placeModule($marr, $nrow, $ncol, $nrow - 3, 0,       $chr, 1);
-        $marr = $this->placeModule($marr, $nrow, $ncol, $nrow - 2, 0,       $chr, 2);
-        $marr = $this->placeModule($marr, $nrow, $ncol, $nrow - 1, 0,       $chr, 3);
-        $marr = $this->placeModule($marr, $nrow, $ncol, 0,       $ncol - 2, $chr, 4);
-        $marr = $this->placeModule($marr, $nrow, $ncol, 0,       $ncol - 1, $chr, 5);
-        $marr = $this->placeModule($marr, $nrow, $ncol, 1,       $ncol - 1, $chr, 6);
-        $marr = $this->placeModule($marr, $nrow, $ncol, 2,       $ncol - 1, $chr, 7);
-        $marr = $this->placeModule($marr, $nrow, $ncol, 3,       $ncol - 1, $chr, 8);
+    protected function placeCornerC($marr, $nrow, $ncol, $chr)
+    {
+        $marr = $this->placeModule($marr, $nrow, $ncol, $nrow - 3, 0, $chr, 1);
+        $marr = $this->placeModule($marr, $nrow, $ncol, $nrow - 2, 0, $chr, 2);
+        $marr = $this->placeModule($marr, $nrow, $ncol, $nrow - 1, 0, $chr, 3);
+        $marr = $this->placeModule($marr, $nrow, $ncol, 0, $ncol - 2, $chr, 4);
+        $marr = $this->placeModule($marr, $nrow, $ncol, 0, $ncol - 1, $chr, 5);
+        $marr = $this->placeModule($marr, $nrow, $ncol, 1, $ncol - 1, $chr, 6);
+        $marr = $this->placeModule($marr, $nrow, $ncol, 2, $ncol - 1, $chr, 7);
+        $marr = $this->placeModule($marr, $nrow, $ncol, 3, $ncol - 1, $chr, 8);
         return $marr;
     }
 
@@ -1093,15 +1109,16 @@ class Datamatrix {
      * @return array
      * @protected
      */
-    protected function placeCornerD($marr, $nrow, $ncol, $chr) {
-        $marr = $this->placeModule($marr, $nrow, $ncol, $nrow - 1, 0,       $chr, 1);
+    protected function placeCornerD($marr, $nrow, $ncol, $chr)
+    {
+        $marr = $this->placeModule($marr, $nrow, $ncol, $nrow - 1, 0, $chr, 1);
         $marr = $this->placeModule($marr, $nrow, $ncol, $nrow - 1, $ncol - 1, $chr, 2);
-        $marr = $this->placeModule($marr, $nrow, $ncol, 0,       $ncol - 3, $chr, 3);
-        $marr = $this->placeModule($marr, $nrow, $ncol, 0,       $ncol - 2, $chr, 4);
-        $marr = $this->placeModule($marr, $nrow, $ncol, 0,       $ncol - 1, $chr, 5);
-        $marr = $this->placeModule($marr, $nrow, $ncol, 1,       $ncol - 3, $chr, 6);
-        $marr = $this->placeModule($marr, $nrow, $ncol, 1,       $ncol - 2, $chr, 7);
-        $marr = $this->placeModule($marr, $nrow, $ncol, 1,       $ncol - 1, $chr, 8);
+        $marr = $this->placeModule($marr, $nrow, $ncol, 0, $ncol - 3, $chr, 3);
+        $marr = $this->placeModule($marr, $nrow, $ncol, 0, $ncol - 2, $chr, 4);
+        $marr = $this->placeModule($marr, $nrow, $ncol, 0, $ncol - 1, $chr, 5);
+        $marr = $this->placeModule($marr, $nrow, $ncol, 1, $ncol - 3, $chr, 6);
+        $marr = $this->placeModule($marr, $nrow, $ncol, 1, $ncol - 2, $chr, 7);
+        $marr = $this->placeModule($marr, $nrow, $ncol, 1, $ncol - 1, $chr, 8);
         return $marr;
     }
 
@@ -1113,7 +1130,8 @@ class Datamatrix {
      * @return array
      * @protected
      */
-    protected function getPlacementMap($nrow, $ncol) {
+    protected function getPlacementMap($nrow, $ncol)
+    {
         // initialize array with zeros
         $marr = array_fill(0, ($nrow * $ncol), 0);
         // set starting values
@@ -1122,46 +1140,46 @@ class Datamatrix {
         $col = 0;
         do {
             // repeatedly first check for one of the special corner cases, then
-            if (($row == $nrow) AND ($col == 0)) {
+            if (($row == $nrow) and ($col == 0)) {
                 $marr = $this->placeCornerA($marr, $nrow, $ncol, $chr);
                 ++$chr;
             }
-            if (($row == ($nrow - 2)) AND ($col == 0) AND ($ncol % 4)) {
+            if (($row == ($nrow - 2)) and ($col == 0) and ($ncol % 4)) {
                 $marr = $this->placeCornerB($marr, $nrow, $ncol, $chr);
                 ++$chr;
             }
-            if (($row == ($nrow - 2)) AND ($col == 0) AND (($ncol % 8) == 4)) {
+            if (($row == ($nrow - 2)) and ($col == 0) and (($ncol % 8) == 4)) {
                 $marr = $this->placeCornerC($marr, $nrow, $ncol, $chr);
                 ++$chr;
             }
-            if (($row == ($nrow + 4)) AND ($col == 2) AND (!($ncol % 8))) {
+            if (($row == ($nrow + 4)) and ($col == 2) and (!($ncol % 8))) {
                 $marr = $this->placeCornerD($marr, $nrow, $ncol, $chr);
                 ++$chr;
             }
             // sweep upward diagonally, inserting successive characters,
             do {
-                if (($row < $nrow) AND ($col >= 0) AND (!$marr[(($row * $ncol) + $col)])) {
+                if (($row < $nrow) and ($col >= 0) and (!$marr[(($row * $ncol) + $col)])) {
                     $marr = $this->placeUtah($marr, $nrow, $ncol, $row, $col, $chr);
                     ++$chr;
                 }
                 $row -= 2;
                 $col += 2;
-            } while (($row >= 0) AND ($col < $ncol));
+            } while (($row >= 0) and ($col < $ncol));
             ++$row;
             $col += 3;
             // & then sweep downward diagonally, inserting successive characters,...
             do {
-                if (($row >= 0) AND ($col < $ncol) AND (!$marr[(($row * $ncol) + $col)])) {
+                if (($row >= 0) and ($col < $ncol) and (!$marr[(($row * $ncol) + $col)])) {
                     $marr = $this->placeUtah($marr, $nrow, $ncol, $row, $col, $chr);
                     ++$chr;
                 }
                 $row += 2;
                 $col -= 2;
-            } while (($row < $nrow) AND ($col >= 0));
+            } while (($row < $nrow) and ($col >= 0));
             $row += 3;
             ++$col;
             // ... until the entire array is scanned
-        } while (($row < $nrow) OR ($col < $ncol));
+        } while (($row < $nrow) or ($col < $ncol));
         // lastly, if the lower righthand corner is untouched, fill in fixed pattern
         if (!$marr[(($nrow * $ncol) - 1)]) {
             $marr[(($nrow * $ncol) - 1)] = 1;
@@ -1169,7 +1187,6 @@ class Datamatrix {
         }
         return $marr;
     }
-
 } // end DataMatrix class
 //============================================================+
 // END OF FILE

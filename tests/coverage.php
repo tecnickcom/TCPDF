@@ -6,7 +6,6 @@ if (extension_loaded('pcov')) {
 
     class CoverageObjectPcov
     {
-
         public function __destruct()
         {
             \pcov\stop();
@@ -30,7 +29,6 @@ if (extension_loaded('pcov')) {
             }
             file_put_contents($coverageFile, $coverageData, LOCK_EX | FILE_APPEND);
         }
-
     }
 
     $a = new CoverageObjectPcov();
@@ -40,7 +38,6 @@ if (extension_loaded('xdebug')) {
 
     class CoverageObjectXdebug
     {
-
         public function __destruct()
         {
             $rootDir = realpath(__DIR__ . '/../') . '/';
@@ -59,7 +56,6 @@ if (extension_loaded('xdebug')) {
             file_put_contents($coverageFile, $coverageData, LOCK_EX | FILE_APPEND);
             \xdebug_stop_code_coverage(true);
         }
-
     }
 
     $a = new CoverageObjectXdebug();

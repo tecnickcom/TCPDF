@@ -29,9 +29,10 @@
 require_once('tcpdf_include.php');
 
 // extend TCPF with custom functions
-class MYPDF extends TCPDF {
-
-    public function MultiRow($left, $right) {
+class MYPDF extends TCPDF
+{
+    public function MultiRow($left, $right)
+    {
         // MultiCell($w, $h, $txt, $border=0, $align='J', $fill=0, $ln=1, $x='', $y='', $reseth=true, $stretch=0)
 
         $page_start = $this->getPage();
@@ -46,13 +47,13 @@ class MYPDF extends TCPDF {
         $this->setPage($page_start);
 
         // write the right cell
-        $this->MultiCell(0, 0, $right, 1, 'J', 0, 1, $this->GetX() ,$y_start, true, 0);
+        $this->MultiCell(0, 0, $right, 1, 'J', 0, 1, $this->GetX(), $y_start, true, 0);
 
         $page_end_2 = $this->getPage();
         $y_end_2 = $this->GetY();
 
         // set the new row position by case
-        if (max($page_end_1,$page_end_2) == $page_start) {
+        if (max($page_end_1, $page_end_2) == $page_start) {
             $ynew = max($y_end_1, $y_end_2);
         } elseif ($page_end_1 == $page_end_2) {
             $ynew = max($y_end_1, $y_end_2);
@@ -62,10 +63,9 @@ class MYPDF extends TCPDF {
             $ynew = $y_end_2;
         }
 
-        $this->setPage(max($page_end_1,$page_end_2));
-        $this->SetXY($this->GetX(),$ynew);
+        $this->setPage(max($page_end_1, $page_end_2));
+        $this->SetXY($this->GetX(), $ynew);
     }
-
 }
 
 // create new PDF document
@@ -82,8 +82,8 @@ $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE . ' 020', PDF_HEADER_STRING);
 
 // set header and footer fonts
-$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+$pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+$pdf->setFooterFont(array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -94,7 +94,7 @@ $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
 // set auto page breaks
-$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 
 // set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
