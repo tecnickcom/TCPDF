@@ -6716,13 +6716,10 @@ class TCPDF {
 			switch ($align) {
 				case 'J':
 				case 'C': {
-					$w = $w;
 					break;
 				}
 				case 'L': {
-					if ($this->rtl) {
-						$w = $w;
-					} else {
+					if (!$this->rtl) {
 						$w = $l;
 					}
 					break;
@@ -6730,8 +6727,6 @@ class TCPDF {
 				case 'R': {
 					if ($this->rtl) {
 						$w = $l;
-					} else {
-						$w = $w;
 					}
 					break;
 				}
