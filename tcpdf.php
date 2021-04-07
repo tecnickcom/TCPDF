@@ -16396,7 +16396,7 @@ class TCPDF {
 		// create a special tag to contain the CSS array (used for table content)
 		$csstagarray = '<cssarray>'.htmlentities(json_encode($css)).'</cssarray>';
 		// remove head and style blocks
-		$html = preg_replace('/<head([^\>]*?)>(.*)<\/head>/is', '', $html);
+		$html = preg_replace('/<head([^\>]*?)>(.*?)<\/head>/is', '', $html);
 		$html = preg_replace('/<style([^\>]*?)>([^\<]*?)<\/style>/is', '', $html);
 		// define block tags
 		$blocktags = array('blockquote','br','dd','dl','div','dt','h1','h2','h3','h4','h5','h6','hr','li','ol','p','pre','ul','tcpdf','table','tr','td');
