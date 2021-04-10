@@ -44,12 +44,9 @@ if [ "$(php -r 'echo PHP_MAJOR_VERSION;')" = "5" ];then
     if [ "$(php -r 'echo (PHP_MINOR_VERSION < 6) ? "true" : "false";')" = "true" ];then
         # seems like there is no bcmath extension to be found
         BCMATH_EXT=""
-    fi
-
-    if [ "$(php -r 'echo PHP_MINOR_VERSION;')" = "3" ];then
-        # pcov does not exist for PHP 5
         IMAGICK_OR_GD="-dextension=imagick.so"
     fi
+
 fi
 
 echo "Root folder: ${ROOT_DIR}"
