@@ -1,4 +1,5 @@
 .idea
 .phpdoc
 *.bak
-vendor/
+/vendor/
+/composer.lock
