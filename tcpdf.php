@@ -18917,12 +18917,46 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				$prevlinewidth = $this->GetLineWidth();
 				$this->SetLineWidth($hrHeight);
 
+				if (isset($tag['fgcolor'])) {
+				    	$fgColor = $tag['fgcolor'];
+				} else {
+				    	$fgColor = '';
+				}
+
+				if (isset($tag['fgcolor']['style'])) {
+				    	if (isset($tag['fgcolor']['style']['cap'])) {
+						$cap = $tag['fgcolor']['style']['cap'];
+				    	} else {
+						$cap = '';
+				    	}
+				    	if (isset($tag['fgcolor']['style']['join'])) {
+						$join = $tag['fgcolor']['style']['join'];
+				    	} else {
+						$join = '';
+				    	}
+				    	if (isset($tag['fgcolor']['style']['dash'])) {
+						$dash = $tag['fgcolor']['style']['dash'];
+				    	} else {
+						$dash = '';
+				    	}
+				    	if (isset($tag['fgcolor']['style']['phase'])) {
+						$phase = $tag['fgcolor']['style']['phase'];
+				    	} else {
+						$phase = '';
+				    	}
+				} else {
+					$cap = '';
+				    	$join = '';
+				    	$dash = '';
+				    	$phase = '';
+				}
+
 				$lineStyle = array(
-					'color' => $tag['fgcolor'],
-					'cap'   => $tag['style']['cap'],
-					'join'  => $tag['style']['join'],
-					'dash'  => $tag['style']['dash'],
-					'phase' => $tag['style']['phase'],
+					'color' => $fgColor,
+					'cap'   => $cap,
+					'join'  => $join,
+					'dash'  => $dash,
+					'phase' => $phase,
 				);
 
 				$lineStyle = array_filter($lineStyle);
