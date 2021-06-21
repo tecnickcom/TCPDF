@@ -1898,6 +1898,11 @@ class TCPDF_STATIC {
 		if (preg_match('|^https?://|', $filename) == 1) {
 			return self::url_exists($filename);
 		}
+		// HACK: https://github.com/tecnickcom/TCPDF/issues/179
+		// Issue after version 6.3.4, base64 images are not being rendering within pdf.
+		if(stripos($filename,'data:') === 0) {
+			return true;
+		}
 		if (strpos($filename, '://')) {
 			return false; // only support http and https wrappers for security reasons
 		}
