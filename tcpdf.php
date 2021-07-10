@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.3.2
+// Version     : 6.4.1
 // Begin       : 2002-08-03
-// Last Update : 2019-09-20
+// Last Update : 2021-03-27
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -1833,7 +1833,7 @@ class TCPDF
      * Cache array for file content
      * @protected
      * @var array
-     * @sinde 6.3.5 (2020-09-28)
+     * @since 6.3.5 (2020-09-28)
      */
     protected $fileContentCache = array();
 
@@ -4114,7 +4114,7 @@ class TCPDF
             }
         }
         $this->ColorFlag = ($this->FillColor != $this->TextColor);
-        if (($type != 'text') and ($this->state == 2)) {
+        if (($type != 'text') and ($this->state == 2) and $type !== 0) {
             if (!$ret) {
                 $this->_out($pdfcolor);
             }
@@ -6841,13 +6841,10 @@ class TCPDF
             switch ($align) {
                 case 'J':
                 case 'C': {
-                    $w = $w;
                     break;
                 }
                 case 'L': {
-                    if ($this->rtl) {
-                        $w = $w;
-                    } else {
+                    if (!$this->rtl) {
                         $w = $l;
                     }
                     break;
@@ -6855,8 +6852,6 @@ class TCPDF
                 case 'R': {
                     if ($this->rtl) {
                         $w = $l;
-                    } else {
-                        $w = $w;
                     }
                     break;
                 }
@@ -8214,7 +8209,7 @@ class TCPDF
             }
             $out .= ' /Contents ' . ($this->n + 1) . ' 0 R';
             $out .= ' /Rotate ' . $this->pagedim[$n]['Rotate'];
-            if (!$this->pdfa_mode) {
+            if (!$this->pdfa_mode || $this->pdfa_version >= 2) {
                 $out .= ' /Group << /Type /Group /S /Transparency /CS /DeviceRGB >>';
             }
             if (isset($this->pagedim[$n]['trans']) and !empty($this->pagedim[$n]['trans'])) {
@@ -9476,7 +9471,7 @@ class TCPDF
                 $out .= ' /Matrix [1 0 0 1 0 0]';
                 $out .= ' /Resources <<';
                 $out .= ' /ProcSet [/PDF /Text /ImageB /ImageC /ImageI]';
-                if (!$this->pdfa_mode) {
+                if (!$this->pdfa_mode || $this->pdfa_version >= 2) {
                     // transparency
                     if (isset($data['extgstates']) and !empty($data['extgstates'])) {
                         $out .= ' /ExtGState <<';
@@ -9617,7 +9612,7 @@ class TCPDF
             }
             $out .= ' >>';
         }
-        if (!$this->pdfa_mode) {
+        if (!$this->pdfa_mode || $this->pdfa_version >= 2) {
             // transparency
             if (isset($this->extgstates) and !empty($this->extgstates)) {
                 $out .= ' /ExtGState <<';
@@ -14183,7 +14178,7 @@ class TCPDF
      */
     protected function addExtGState($parms)
     {
-        if ($this->pdfa_mode) {
+        if ($this->pdfa_mode || $this->pdfa_version >= 2) {
             // transparencies are not allowed in PDF/A mode
             return;
         }
@@ -14215,8 +14210,8 @@ class TCPDF
      */
     protected function setExtGState($gs)
     {
-        if ($this->pdfa_mode or ($this->state != 2)) {
-            // transparency is not allowed in PDF/A mode
+        if (($this->pdfa_mode && $this->pdfa_version < 2) or ($this->state != 2)) {
+            // transparency is not allowed in PDF/A-1 mode
             return;
         }
         $this->_out(sprintf('/GS%d gs', $gs));
@@ -14300,8 +14295,8 @@ class TCPDF
      */
     public function setAlpha($stroking = 1, $bm = 'Normal', $nonstroking = '', $ais = false)
     {
-        if ($this->pdfa_mode) {
-            // transparency is not allowed in PDF/A mode
+        if ($this->pdfa_mode && $this->pdfa_version < 2) {
+            // transparency is not allowed in PDF/A-1 mode
             return;
         }
         $stroking = floatval($stroking);
@@ -14391,8 +14386,11 @@ class TCPDF
     public function setPDFVersion($version = '1.7')
     {
         if ($this->pdfa_mode && $this->pdfa_version == 1) {
-            // PDF/A mode
+            // PDF/A-1 mode
             $this->PDFVersion = '1.4';
+        } elseif ($this->pdfa_mode && $this->pdfa_version >= 2) {
+            // PDF/A-2 mode
+            $this->PDFVersion = '1.7';
         } else {
             $this->PDFVersion = $version;
         }
@@ -14756,7 +14754,7 @@ class TCPDF
      */
     public function CoonsPatchMesh($x, $y, $w, $h, $col1 = array(), $col2 = array(), $col3 = array(), $col4 = array(), $coords = array(0.00, 0.0, 0.33, 0.00, 0.67, 0.00, 1.00, 0.00, 1.00, 0.33, 1.00, 0.67, 1.00, 1.00, 0.67, 1.00, 0.33, 1.00, 0.00, 1.00, 0.00, 0.67, 0.00, 0.33), $coords_min = 0, $coords_max = 1, $antialias = false)
     {
-        if ($this->pdfa_mode or ($this->state != 2)) {
+        if (($this->pdfa_mode && $this->pdfa_version < 2) or ($this->state != 2)) {
             return;
         }
         $this->Clip($x, $y, $w, $h);
@@ -14877,7 +14875,7 @@ class TCPDF
      */
     public function Gradient($type, $coords, $stops, $background = array(), $antialias = false)
     {
-        if ($this->pdfa_mode or ($this->state != 2)) {
+        if (($this->pdfa_mode && $this->pdfa_version < 2) or ($this->state != 2)) {
             return;
         }
         $n = count($this->gradients) + 1;
@@ -14933,7 +14931,7 @@ class TCPDF
             }
             if (isset($stop['opacity'])) {
                 $this->gradients[$n]['colors'][$key]['opacity'] = $stop['opacity'];
-                if ((!$this->pdfa_mode) and ($stop['opacity'] < 1)) {
+                if ((!($this->pdfa_mode && $this->pdfa_version < 2)) and ($stop['opacity'] < 1)) {
                     $this->gradients[$n]['transparency'] = true;
                 }
             } else {
@@ -14985,7 +14983,7 @@ class TCPDF
      */
     public function _putshaders()
     {
-        if ($this->pdfa_mode) {
+        if ($this->pdfa_mode && $this->pdfa_version < 2) {
             return;
         }
         $idt = count($this->gradients); //index for transparency gradients
@@ -19264,13 +19262,30 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
                 $prevlinewidth = $this->GetLineWidth();
                 $this->SetLineWidth($hrHeight);
 
-                $lineStyle = array(
-                    'color' => $tag['fgcolor'],
-                    'cap' => $tag['style']['cap'],
-                    'join' => $tag['style']['join'],
-                    'dash' => $tag['style']['dash'],
-                    'phase' => $tag['style']['phase'],
-                );
+                $lineStyle = array();
+                            if (isset($tag['fgcolor'])) {
+                                $lineStyle['color'] = $tag['fgcolor'];
+                            }
+
+                            if (isset($tag['fgcolor'])) {
+                                $lineStyle['color'] = $tag['fgcolor'];
+                            }
+
+                            if (isset($tag['style']['cap'])) {
+                                $lineStyle['cap'] = $tag['style']['cap'];
+                            }
+
+                            if (isset($tag['style']['join'])) {
+                                $lineStyle['join'] = $tag['style']['join'];
+                            }
+
+                            if (isset($tag['style']['dash'])) {
+                                $lineStyle['dash'] = $tag['style']['dash'];
+                            }
+
+                            if (isset($tag['style']['phase'])) {
+                                $lineStyle['phase'] = $tag['style']['phase'];
+                            }
 
                 $lineStyle = array_filter($lineStyle);
 
@@ -24483,7 +24498,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
                 break;
             }
             case 'linearGradient': {
-                if ($this->pdfa_mode) {
+                if ($this->pdfa_mode && $this->pdfa_version < 2) {
                     break;
                 }
                 if (!isset($attribs['id'])) {
@@ -24523,7 +24538,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
                 break;
             }
             case 'radialGradient': {
-                if ($this->pdfa_mode) {
+                if ($this->pdfa_mode && $this->pdfa_version < 2) {
                     break;
                 }
                 if (!isset($attribs['id'])) {
