@@ -6,7 +6,7 @@ $finder = PhpCsFixer\Finder::create()
         'vendor',
     ]);
 
-return PhpCsFixer\Config::create()
+return (new PhpCsFixer\Config())
     ->setRiskyAllowed(true)
     ->setRules([
         '@PSR2' => true,
@@ -16,4 +16,5 @@ return PhpCsFixer\Config::create()
         'binary_operator_spaces' => true,
         'whitespace_after_comma_in_array' => true,
     ])
-    ->setFinder($finder);
+    ->setFinder($finder)
+    ->setCacheFile(sys_get_temp_dir() . '/php-cs-fixer.' . md5(__DIR__) . '.cache');

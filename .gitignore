@@ -1,8 +1,4 @@
 .idea
-.php_cs
-.php_cs.cache
-vendor
-composer.lock
 .phpdoc
 *.bak
 /vendor/
