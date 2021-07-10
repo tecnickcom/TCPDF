@@ -4025,7 +4025,7 @@ class TCPDF {
 			}
 		}
 		$this->ColorFlag = ($this->FillColor != $this->TextColor);
-		if (($type != 'text') AND ($this->state == 2)) {
+		if (($type != 'text') AND ($this->state == 2) AND $type !== 0) {
 			if (!$ret) {
 				$this->_out($pdfcolor);
 			}
