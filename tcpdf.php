@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.3.2
+// Version     : 6.4.1
 // Begin       : 2002-08-03
-// Last Update : 2019-09-20
+// Last Update : 2021-03-27
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -1832,7 +1832,7 @@ class TCPDF {
      * Cache array for file content
      * @protected
      * @var array
-     * @sinde 6.3.5 (2020-09-28)
+     * @since 6.3.5 (2020-09-28)
      */
 	protected $fileContentCache = array();
 
@@ -4025,7 +4025,7 @@ class TCPDF {
 			}
 		}
 		$this->ColorFlag = ($this->FillColor != $this->TextColor);
-		if (($type != 'text') AND ($this->state == 2)) {
+		if (($type != 'text') AND ($this->state == 2) AND $type !== 0) {
 			if (!$ret) {
 				$this->_out($pdfcolor);
 			}
