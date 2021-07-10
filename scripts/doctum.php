@@ -18,17 +18,17 @@ $iterator = Finder::create()
     ->in($rootDir);
 
 return new Doctum($iterator, [
-    'title'                => 'TCPDF',
-    'build_dir'            => $rootDir . '/build',
-    'cache_dir'            => $rootDir . '/cache',
-    'source_dir'           => $rootDir,
-    'remote_repository'    => new GitHubRemoteRepository('tecnickcom/TCPDF', $rootDir),
-    'footer_link'          => [
-        'href'        => 'https://github.com/tecnickcom/TCPDF#readme',
-        'rel'         => 'noreferrer noopener',
-        'target'      => '_blank',
+    'title' => 'TCPDF',
+    'build_dir' => $rootDir . '/build',
+    'cache_dir' => $rootDir . '/cache',
+    'source_dir' => $rootDir,
+    'remote_repository' => new GitHubRemoteRepository('tecnickcom/TCPDF', $rootDir),
+    'footer_link' => [
+        'href' => 'https://github.com/tecnickcom/TCPDF#readme',
+        'rel' => 'noreferrer noopener',
+        'target' => '_blank',
         'before_text' => 'This documentation is for',
-        'link_text'   => 'TCPDF',
-        'after_text'  => 'the PHP library to build PDFs.',
+        'link_text' => 'TCPDF',
+        'after_text' => 'the PHP library to build PDFs.',
     ],
 ]);

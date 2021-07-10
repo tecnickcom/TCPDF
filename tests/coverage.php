@@ -6,13 +6,12 @@ if (extension_loaded('pcov')) {
 
     class CoverageObjectPcov
     {
-
         public function __destruct()
         {
             \pcov\stop();
-            $rootDir      = realpath(__DIR__ . '/../') . '/';
+            $rootDir = realpath(__DIR__ . '/../') . '/';
             $coverageFile = $rootDir . 'tests/coverage.lcov';
-            $covData      = \pcov\collect(
+            $covData = \pcov\collect(
                 \pcov\exclusive,
                 array(
                 __FILE__
@@ -30,7 +29,6 @@ if (extension_loaded('pcov')) {
             }
             file_put_contents($coverageFile, $coverageData, LOCK_EX | FILE_APPEND);
         }
-
     }
 
     $a = new CoverageObjectPcov();
@@ -40,12 +38,11 @@ if (extension_loaded('xdebug')) {
 
     class CoverageObjectXdebug
     {
-
         public function __destruct()
         {
-            $rootDir      = realpath(__DIR__ . '/../') . '/';
+            $rootDir = realpath(__DIR__ . '/../') . '/';
             $coverageFile = $rootDir . 'tests/coverage.lcov';
-            $covData      = xdebug_get_code_coverage();
+            $covData = xdebug_get_code_coverage();
             $coverageData = '';
             foreach ($covData as $file => $coverageForFile) {
                 $coverageData .= 'SF:' . $file . "\n";
@@ -59,7 +56,6 @@ if (extension_loaded('xdebug')) {
             file_put_contents($coverageFile, $coverageData, LOCK_EX | FILE_APPEND);
             \xdebug_stop_code_coverage(true);
         }
-
     }
 
     $a = new CoverageObjectXdebug();

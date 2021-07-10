@@ -38,11 +38,11 @@ $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 056', PDF_HEADER_STRING);
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE . ' 056', PDF_HEADER_STRING);
 
 // set header and footer fonts
-$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+$pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+$pdf->setFooterFont(array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -53,15 +53,15 @@ $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
 // set auto page breaks
-$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 
 // set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // set some language-dependent strings (optional)
-if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-	require_once(dirname(__FILE__).'/lang/eng.php');
-	$pdf->setLanguageArray($l);
+if (@file_exists(dirname(__FILE__) . '/lang/eng.php')) {
+    require_once(dirname(__FILE__) . '/lang/eng.php');
+    $pdf->setLanguageArray($l);
 }
 
 // ---------------------------------------------------------
@@ -93,20 +93,20 @@ $pdf->cropMark(140, 120, 10, 10, 'BR');
 
 // various crop marks
 
-$pdf->cropMark(95, 65, 5, 5, 'LEFT,TOP,RIGHT', array(255,0,0));
-$pdf->cropMark(95, 125, 5, 5, 'LEFT,BOTTOM,RIGHT', array(255,0,0));
+$pdf->cropMark(95, 65, 5, 5, 'LEFT,TOP,RIGHT', array(255, 0, 0));
+$pdf->cropMark(95, 125, 5, 5, 'LEFT,BOTTOM,RIGHT', array(255, 0, 0));
 
-$pdf->cropMark(45, 95, 5, 5, 'TL,BL', array(0,255,0));
-$pdf->cropMark(145, 95, 5, 5, 'TR,BR', array(0,255,0));
+$pdf->cropMark(45, 95, 5, 5, 'TL,BL', array(0, 255, 0));
+$pdf->cropMark(145, 95, 5, 5, 'TR,BR', array(0, 255, 0));
 
-$pdf->cropMark(95, 140, 5, 5, 'A,D', array(0,0,255));
+$pdf->cropMark(95, 140, 5, 5, 'A,D', array(0, 0, 255));
 
 // registration marks
 
 $pdf->registrationMark(40, 60, 5, false);
-$pdf->registrationMark(150, 60, 5, true, array(0,0,0), array(255,255,0));
-$pdf->registrationMark(40, 130, 5, true, array(0,0,0), array(255,255,0));
-$pdf->registrationMark(150, 130, 5, false, array(100,100,100,100,'All'), array(0,0,0,0,'None'));
+$pdf->registrationMark(150, 60, 5, true, array(0, 0, 0), array(255, 255, 0));
+$pdf->registrationMark(40, 130, 5, true, array(0, 0, 0), array(255, 255, 0));
+$pdf->registrationMark(150, 130, 5, false, array(100, 100, 100, 100, 'All'), array(0, 0, 0, 0, 'None'));
 
 // test registration bar with spot colors
 
