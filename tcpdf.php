@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.3.2
+// Version     : 6.4.1
 // Begin       : 2002-08-03
-// Last Update : 2019-09-20
+// Last Update : 2021-03-27
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -4025,7 +4025,7 @@ class TCPDF {
 			}
 		}
 		$this->ColorFlag = ($this->FillColor != $this->TextColor);
-		if (($type != 'text') AND ($this->state == 2)) {
+		if (($type != 'text') AND ($this->state == 2) AND $type !== 0) {
 			if (!$ret) {
 				$this->_out($pdfcolor);
 			}
@@ -18917,13 +18917,30 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				$prevlinewidth = $this->GetLineWidth();
 				$this->SetLineWidth($hrHeight);
 
-				$lineStyle = array(
-					'color' => $tag['fgcolor'],
-					'cap'   => $tag['style']['cap'],
-					'join'  => $tag['style']['join'],
-					'dash'  => $tag['style']['dash'],
-					'phase' => $tag['style']['phase'],
-				);
+				$lineStyle = array();
+                    		if (isset($tag['fgcolor'])) {
+		                        $lineStyle['color'] = $tag['fgcolor'];
+                    		}
+
+                    		if (isset($tag['fgcolor'])) {
+                        		$lineStyle['color'] = $tag['fgcolor'];
+                    		}
+
+                    		if (isset($tag['style']['cap'])) {
+                        		$lineStyle['cap'] = $tag['style']['cap'];
+                    		}
+
+                    		if (isset($tag['style']['join'])) {
+                        		$lineStyle['join'] = $tag['style']['join'];
+                    		}
+
+                    		if (isset($tag['style']['dash'])) {
+                        		$lineStyle['dash'] = $tag['style']['dash'];
+                    		}
+
+                    		if (isset($tag['style']['phase'])) {
+                        		$lineStyle['phase'] = $tag['style']['phase'];
+                    		}
 
 				$lineStyle = array_filter($lineStyle);
 
