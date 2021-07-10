@@ -1832,7 +1832,7 @@ class TCPDF {
      * Cache array for file content
      * @protected
      * @var array
-     * @sinde 6.3.5 (2020-09-28)
+     * @since 6.3.5 (2020-09-28)
      */
 	protected $fileContentCache = array();
 
