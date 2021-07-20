@@ -600,14 +600,16 @@ class TCPDF {
 	/**
 	 * Default font used on page header.
 	 * @protected
-	 * @var array<int,string>
+	 * @var array<int,string|float|null>
+	 * @phpstan-var array{0: string, 1: string, 2: float|null}
 	 */
 	protected $header_font;
 
 	/**
 	 * Default font used on page footer.
 	 * @protected
-	 * @var array<int,string>
+	 * @var array<int,string|float|null>
+	 * @phpstan-var array{0: string, 1: string, 2: float|null}
 	 */
 	protected $footer_font;
 
@@ -2970,7 +2972,7 @@ class TCPDF {
 
 	/**
 	 * Whether to allow local file path in image html tags, when prefixed with file://
-	 * 
+	 *
 	 * @param bool $allowLocalFiles true, when local files should be allowed. Otherwise false.
 	 * @public
 	 * @since 6.4
@@ -4483,7 +4485,7 @@ class TCPDF {
 	 * Note: for the standard fonts, the font metric files must be accessible. There are three possibilities for this:<ul><li>They are in the current directory (the one where the running script lies)</li><li>They are in one of the directories defined by the include_path parameter</li><li>They are in the directory defined by the K_PATH_FONTS constant</li></ul><br />
 	 * @param string $family Family font. It can be either a name defined by AddFont() or one of the standard Type1 families (case insensitive):<ul><li>times (Times-Roman)</li><li>timesb (Times-Bold)</li><li>timesi (Times-Italic)</li><li>timesbi (Times-BoldItalic)</li><li>helvetica (Helvetica)</li><li>helveticab (Helvetica-Bold)</li><li>helveticai (Helvetica-Oblique)</li><li>helveticabi (Helvetica-BoldOblique)</li><li>courier (Courier)</li><li>courierb (Courier-Bold)</li><li>courieri (Courier-Oblique)</li><li>courierbi (Courier-BoldOblique)</li><li>symbol (Symbol)</li><li>zapfdingbats (ZapfDingbats)</li></ul> It is also possible to pass an empty string. In that case, the current family is retained.
 	 * @param string $style Font style. Possible values are (case insensitive):<ul><li>empty string: regular</li><li>B: bold</li><li>I: italic</li><li>U: underline</li><li>D: line through</li><li>O: overline</li></ul> or any combination. The default value is regular. Bold and italic styles do not apply to Symbol and ZapfDingbats basic fonts or other fonts when not defined.
-	 * @param float $size Font size in points. The default value is the current size. If no size has been specified since the beginning of the document, the value taken is 12
+	 * @param float|null $size Font size in points. The default value is the current size. If no size has been specified since the beginning of the document, the value taken is 12
 	 * @param string $fontfile The font definition file. By default, the name is built from the family and style, in lower case with no spaces.
 	 * @param mixed $subset if true embedd only a subset of the font (stores only the information related to the used characters); if false embedd full font; if 'default' uses the default value set using setFontSubsetting(). This option is valid only for TrueTypeUnicode fonts. If you want to enable users to change the document, set this parameter to false. If you subset the font, the person who receives your PDF would need to have your same font in order to make changes to your PDF. The file size of the PDF would also be smaller because you are embedding only part of a font.
 	 * @param boolean $out if true output the font size command, otherwise only set the font properties.
@@ -10389,7 +10391,8 @@ class TCPDF {
 
 	/**
 	 * Set header font.
-	 * @param array<int,string> $font Array describing the basic font parameters: (family, style, size).
+	 * @param array<int,string|float|null> $font Array describing the basic font parameters: (family, style, size).
+	 * @phpstan-param array{0: string, 1: string, 2: float|null} $font
 	 * @public
 	 * @since 1.1
 	 */
@@ -10399,7 +10402,8 @@ class TCPDF {
 
 	/**
 	 * Get header font.
-	 * @return array<int,string> Array describing the basic font parameters: (family, style, size).
+	 * @return array<int,string|float|null> Array describing the basic font parameters: (family, style, size).
+	 * @phpstan-return array{0: string, 1: string, 2: float|null}
 	 * @public
 	 * @since 4.0.012 (2008-07-24)
 	 */
@@ -10409,7 +10413,8 @@ class TCPDF {
 
 	/**
 	 * Set footer font.
-	 * @param array<int,string> $font Array describing the basic font parameters: (family, style, size).
+	 * @param array<int,string|float|null> $font Array describing the basic font parameters: (family, style, size).
+	 * @phpstan-param array{0: string, 1: string, 2: float|null} $font
 	 * @public
 	 * @since 1.1
 	 */
@@ -10419,7 +10424,8 @@ class TCPDF {
 
 	/**
 	 * Get Footer font.
-	 * @return array<int,string> Array describing the basic font parameters: (family, style, size).
+	 * @return array<int,string|float|null> Array describing the basic font parameters: (family, style, size).
+	 * @phpstan-return array{0: string, 1: string, 2: float|null} $font
 	 * @public
 	 * @since 4.0.012 (2008-07-24)
 	 */
