@@ -1787,7 +1787,7 @@ class TCPDF_FONTS {
 
 	/**
 	 * Extract a slice of the $strarr array and return it as string.
-	 * @param array $strarr The input array of characters.
+	 * @param string[] $strarr The input array of characters.
 	 * @param int $start the starting element of $strarr.
 	 * @param int $end first element that will not be returned.
 	 * @param boolean $unicode True if we are in unicode mode, false otherwise.
