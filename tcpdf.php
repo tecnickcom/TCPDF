@@ -4103,7 +4103,7 @@ class TCPDF {
 
 	/**
 	 * Returns the string length of an array of chars in user unit or an array of characters widths. A font must be selected.<br>
-	 * @param string $sa The array of chars whose total length is to be computed
+	 * @param array $sa The array of chars whose total length is to be computed
 	 * @param string $fontname Family font. It can be either a name defined by AddFont() or one of the standard families. It is also possible to pass an empty string, in that case, the current family is retained.
 	 * @param string $fontstyle Font style. Possible values are (case insensitive):<ul><li>empty string: regular</li><li>B: bold</li><li>I: italic</li><li>U: underline</li><li>D: line through</li><li>O: overline</li></ul> or any combination. The default value is regular.
 	 * @param float $fontsize Font size in points. The default value is the current size.
@@ -6774,7 +6774,7 @@ class TCPDF {
 
 	/**
 	 * Returns the remaining width between the current position and margins.
-	 * @return int Return the remaining width
+	 * @return float Return the remaining width
 	 * @protected
 	 */
 	protected function getRemainingWidth() {
@@ -6894,7 +6894,7 @@ class TCPDF {
 	 */
 	public function Image($file, $x='', $y='', $w=0, $h=0, $type='', $link='', $align='', $resize=false, $dpi=300, $palign='', $ismask=false, $imgmask=false, $border=0, $fitbox=false, $hidden=false, $fitonpage=false, $alt=false, $altimgs=array()) {
 		if ($this->state != 2) {
-			return;
+			return false;
 		}
 		if (strcmp($x, '') === 0) {
 			$x = $this->x;
@@ -7188,7 +7188,7 @@ class TCPDF {
 			}
 			if ($info === false) {
 				// unable to process image
-				return;
+				return false;
 			}
 			TCPDF_STATIC::set_mqr($mqr);
 			if ($ismask) {
@@ -7388,7 +7388,7 @@ class TCPDF {
 
 	/**
 	 * Get the GD-corrected PNG gamma value from alpha color
-	 * @param int $img GD image Resource ID.
+	 * @param resource $img GD image Resource ID.
 	 * @param int $c alpha color
 	 * @protected
 	 * @since 4.3.007 (2008-12-04)
@@ -11416,7 +11416,7 @@ class TCPDF {
 	public function SetLineStyle($style, $ret=false) {
 		$s = ''; // string to be returned
 		if (!is_array($style)) {
-			return;
+			return $s;
 		}
 		if (isset($style['width'])) {
 			$this->LineWidth = $style['width'];
@@ -11695,7 +11695,7 @@ class TCPDF {
 	 * either end of the curve.
 	 * @param float $x0 Abscissa of start point.
 	 * @param float $y0 Ordinate of start point.
-	 * @param float $segments An array of bezier descriptions. Format: array(x1, y1, x2, y2, x3, y3).
+	 * @param float[] $segments An array of bezier descriptions. Format: array(x1, y1, x2, y2, x3, y3).
 	 * @param string $style Style of rendering. See the getPathPaintOperator() function for more information.
 	 * @param array $line_style Line style of curve. Array like for SetLineStyle(). Default value: default line style (empty array).
 	 * @param array $fill_color Fill color. Format: array(GREY) or array(R,G,B) or array(C,M,Y,K) or array(C,M,Y,K,SpotColorName). Default value: default color (empty array).
@@ -13916,7 +13916,7 @@ class TCPDF {
 
 	/**
 	 * Add an extgstate
-	 * @param array $gs extgstate
+	 * @param int $gs extgstate
 	 * @protected
 	 * @since 3.0.000 (2008-03-27)
 	 */
@@ -20969,7 +20969,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * Set font buffer content.
 	 * @param string $font font key
 	 * @param string $key font sub-key
-	 * @param array $data font data
+	 * @param mixed $data font data
 	 * @protected
 	 * @since 4.5.000 (2009-01-02)
 	 */
@@ -22198,7 +22198,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @param int $rightmin Minimum number of character to leave on the right of the word without applying the hyphens.
 	 * @param int $charmin Minimum word length to apply the hyphenation algorithm.
 	 * @param int $charmax Maximum length of broken piece of word.
-	 * @return array text with soft hyphens
+	 * @return string text with soft hyphens
 	 * @author Nicola Asuni
 	 * @since 4.9.012 (2010-04-12)
 	 * @public
@@ -22395,7 +22395,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @param int $w Template width in user units (empty string or zero = page width less margins).
 	 * @param int $h Template height in user units (empty string or zero = page height less margins).
 	 * @param mixed $group Set transparency group. Can be a boolean value or an array specifying optional parameters: 'CS' (solour space name), 'I' (boolean flag to indicate isolated group) and 'K' (boolean flag to indicate knockout group).
-	 * @return int|false the XObject Template ID in case of success or false in case of error.
+	 * @return string|false the XObject Template ID in case of success or false in case of error.
 	 * @author Nicola Asuni
 	 * @public
 	 * @since 5.8.017 (2010-08-24)
@@ -22460,7 +22460,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * End the current XObject Template started with startTemplate() and restore the previous graphic state.
 	 * An XObject Template is a PDF block that is a self-contained description of any sequence of graphics objects (including path objects, text objects, and sampled images).
 	 * An XObject Template may be painted multiple times, either on several pages or at several locations on the same page and produces the same results each time, subject only to the graphics state at the time it is invoked.
-	 * @return int|false the XObject Template ID in case of success or false in case of error.
+	 * @return string|false the XObject Template ID in case of success or false in case of error.
 	 * @author Nicola Asuni
 	 * @public
 	 * @since 5.8.017 (2010-08-24)
@@ -23207,7 +23207,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @param int $h height of the bounding box
 	 * @param string $clip_function clip function
 	 * @param array $clip_params array of parameters for clipping function
-	 * @return object style
+	 * @return string style
 	 * @author Nicola Asuni
 	 * @since 5.0.000 (2010-05-02)
 	 * @protected
@@ -23881,7 +23881,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 
 	/**
 	 * Sets the opening SVG element handler function for the XML parser. (*** TO BE COMPLETED ***)
-	 * @param resource $parser The first parameter, parser, is a reference to the XML parser calling the handler.
+	 * @param resource|string $parser The first parameter, parser, is a reference to the XML parser calling the handler.
 	 * @param string $name The second parameter, name, contains the name of the element for which this handler is called. If case-folding is in effect for this parser, the element name will be in uppercase letters.
 	 * @param array $attribs The third parameter, attribs, contains an associative array with the element's attributes (if any). The keys of this array are the attribute names, the values are the attribute values. Attribute names are case-folded on the same criteria as element names. Attribute values are not case-folded. The original order of the attributes can be retrieved by walking through attribs the normal way, using each(). The first key in the array was the first attribute, and so on.
 	 * @param array $ctm tranformation matrix for clipping mode (starting transformation matrix).
@@ -24553,7 +24553,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 
 	/**
 	 * Sets the closing SVG element handler function for the XML parser.
-	 * @param resource $parser The first parameter, parser, is a reference to the XML parser calling the handler.
+	 * @param resource|string $parser The first parameter, parser, is a reference to the XML parser calling the handler.
 	 * @param string $name The second parameter, name, contains the name of the element for which this handler is called. If case-folding is in effect for this parser, the element name will be in uppercase letters.
 	 * @author Nicola Asuni
 	 * @since 5.0.000 (2010-05-02)

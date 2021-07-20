@@ -242,7 +242,7 @@ class TCPDF_COLORS {
 	 * Return the Spot color array.
 	 * @param string $name Name of the spot color.
 	 * @param array $spotc Reference to an array of spot colors.
-	 * @return array Spot color array or false if not defined.
+	 * @return array|false Spot color array or false if not defined.
 	 * @since 5.9.125 (2011-10-03)
 	 * @public static
 	 */
