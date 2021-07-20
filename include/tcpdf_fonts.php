@@ -1810,7 +1810,7 @@ class TCPDF_FONTS {
 
 	/**
 	 * Extract a slice of the $uniarr array and return it as string.
-	 * @param array $uniarr The input array of characters.
+	 * @param string[] $uniarr The input array of characters.
 	 * @param int $start the starting element of $strarr.
 	 * @param int $end first element that will not be returned.
 	 * @return string Return part of a string
