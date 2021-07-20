@@ -1861,7 +1861,7 @@ class TCPDF {
 	 * @param boolean $unicode TRUE means that the input text is unicode (default = true)
 	 * @param string $encoding Charset encoding (used only when converting back html entities); default is UTF-8.
 	 * @param boolean $diskcache DEPRECATED FEATURE
-	 * @param integer $pdfa If not false, set the document to PDF/A mode and the good version (1 or 3).
+	 * @param false|integer $pdfa If not false, set the document to PDF/A mode and the good version (1 or 3).
 	 * @public
 	 * @see getPageSizeFromFormat(), setPageFormat()
 	 */
