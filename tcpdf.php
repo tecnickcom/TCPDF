@@ -2395,7 +2395,7 @@ class TCPDF {
 
 	/**
 	 * Force temporary RTL language direction
-	 * @param mixed $mode can be false, 'L' for LTR or 'R' for RTL
+	 * @param false|string $mode can be false, 'L' for LTR or 'R' for RTL
 	 * @public
 	 * @since 2.1.000 (2008-01-09)
 	 */
@@ -3676,7 +3676,7 @@ class TCPDF {
 
 	/**
 	 * Check if we are on the page body (excluding page header and footer).
-	 * @return true if we are not in page header nor in page footer, false otherwise.
+	 * @return bool true if we are not in page header nor in page footer, false otherwise.
 	 * @protected
 	 * @since 5.9.091 (2011-06-15)
 	 */
@@ -4609,7 +4609,7 @@ class TCPDF {
 	/**
 	 * Returns the glyph bounding box of the specified character in the current font in user units.
 	 * @param int $char Input character code.
-	 * @return mixed array(xMin, yMin, xMax, yMax) or FALSE if not defined.
+	 * @return false|array array(xMin, yMin, xMax, yMax) or FALSE if not defined.
 	 * @since 5.9.186 (2012-09-13)
 	 */
 	public function getCharBBox($char) {
@@ -22346,7 +22346,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 
 	/**
 	 * Return true if the current font is unicode type.
-	 * @return true for unicode font, false otherwise.
+	 * @return bool true for unicode font, false otherwise.
 	 * @author Nicola Asuni
 	 * @public
 	 * @since 5.8.002 (2010-08-14)
