@@ -665,6 +665,8 @@ class TCPDF {
 	 * Color for header text (RGB array).
 	 * @since 5.9.174 (2012-07-25)
 	 * @protected
+	 * @var int[]
+	 * @phpstan-var array{0: int, 1: int, 2: int}
 	 */
 	protected $header_text_color = array(0,0,0);
 
@@ -672,6 +674,8 @@ class TCPDF {
 	 * Color for header line (RGB array).
 	 * @since 5.9.174 (2012-07-25)
 	 * @protected
+	 * @var int[]
+	 * @phpstan-var array{0: int, 1: int, 2: int}
 	 */
 	protected $header_line_color = array(0,0,0);
 
@@ -679,6 +683,8 @@ class TCPDF {
 	 * Color for footer text (RGB array).
 	 * @since 5.9.174 (2012-07-25)
 	 * @protected
+	 * @var int[]
+	 * @phpstan-var array{0: int, 1: int, 2: int}
 	 */
 	protected $footer_text_color = array(0,0,0);
 
@@ -686,6 +692,8 @@ class TCPDF {
 	 * Color for footer line (RGB array).
 	 * @since 5.9.174 (2012-07-25)
 	 * @protected
+	 * @var int[]
+	 * @phpstan-var array{0: int, 1: int, 2: int}
 	 */
 	protected $footer_line_color = array(0,0,0);
 
@@ -3320,8 +3328,8 @@ class TCPDF {
 	 * @param int $lw header image logo width in mm
 	 * @param string $ht string to print as title on document header
 	 * @param string $hs string to print on document header
-	 * @param array $tc RGB array color for text.
-	 * @param array $lc RGB array color for line.
+	 * @param int[] $tc RGB array color for text.
+	 * @param int[] $lc RGB array color for line.
 	 * @public
 	 */
 	public function setHeaderData($ln='', $lw=0, $ht='', $hs='', $tc=array(0,0,0), $lc=array(0,0,0)) {
@@ -3335,8 +3343,8 @@ class TCPDF {
 
 	/**
 	 * Set footer data.
-	 * @param array $tc RGB array color for text.
-	 * @param array $lc RGB array color for line.
+	 * @param int[] $tc RGB array color for text.
+	 * @param int[] $lc RGB array color for line.
 	 * @public
 	 */
 	public function setFooterData($tc=array(0,0,0), $lc=array(0,0,0)) {
