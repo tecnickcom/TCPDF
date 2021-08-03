@@ -3317,7 +3317,7 @@ class TCPDF {
 	/**
 	 * Set header data.
 	 * @param string $ln header image logo
-	 * @param string $lw header image logo width in mm
+	 * @param int $lw header image logo width in mm
 	 * @param string $ht string to print as title on document header
 	 * @param string $hs string to print on document header
 	 * @param array $tc RGB array color for text.
