@@ -656,7 +656,7 @@ class TCPDF {
 	protected $header_title = '';
 
 	/**
-	 * String to pring on page header after title.
+	 * String to print on page header after title.
 	 * @protected
 	 */
 	protected $header_string = '';
