@@ -2970,7 +2970,7 @@ class TCPDF {
 
 	/**
 	 * Whether to allow local file path in image html tags, when prefixed with file://
-	 * 
+	 *
 	 * @param bool $allowLocalFiles true, when local files should be allowed. Otherwise false.
 	 * @public
 	 * @since 6.4
@@ -8443,7 +8443,7 @@ class TCPDF {
 							if (is_string($pl['txt']) && !empty($pl['txt'])) {
 								if ($pl['txt'][0] == '#') {
 									// internal destination
-									$annots .= ' /A <</S /GoTo /D '.TCPDF_STATIC::encodeNameObject(substr($pl['txt'], 1)).'>>';
+									$annots .= ' /A <</S /GoTo /D /'.TCPDF_STATIC::encodeNameObject(substr($pl['txt'], 1)).'>>';
 								} elseif ($pl['txt'][0] == '%') {
 									// embedded PDF file
 									$filename = basename(substr($pl['txt'], 1));
