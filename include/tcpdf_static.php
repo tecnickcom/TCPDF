@@ -2133,7 +2133,7 @@ class TCPDF_STATIC {
 
 	/**
 	 * Read a 4-byte (32 bit) integer from file.
-	 * @param string $f file name.
+	 * @param resource $f file resource.
 	 * @return int 4-byte integer
 	 * @public static
 	 */
