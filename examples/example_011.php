@@ -44,11 +44,11 @@ class MYPDF extends TCPDF {
 	// Colored table
 	public function ColoredTable($header,$data) {
 		// Colors, line width and bold font
-		$this->SetFillColor(255, 0, 0);
-		$this->SetTextColor(255);
-		$this->SetDrawColor(128, 0, 0);
-		$this->SetLineWidth(0.3);
-		$this->SetFont('', 'B');
+		$this->setFillColor(255, 0, 0);
+		$this->setTextColor(255);
+		$this->setDrawColor(128, 0, 0);
+		$this->setLineWidth(0.3);
+		$this->setFont('', 'B');
 		// Header
 		$w = array(40, 35, 40, 45);
 		$num_headers = count($header);
@@ -57,9 +57,9 @@ class MYPDF extends TCPDF {
 		}
 		$this->Ln();
 		// Color and font restoration
-		$this->SetFillColor(224, 235, 255);
-		$this->SetTextColor(0);
-		$this->SetFont('');
+		$this->setFillColor(224, 235, 255);
+		$this->setTextColor(0);
+		$this->setFont('');
 		// Data
 		$fill = 0;
 		foreach($data as $row) {
@@ -78,29 +78,29 @@ class MYPDF extends TCPDF {
 $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
 // set document information
-$pdf->SetCreator(PDF_CREATOR);
-$pdf->SetAuthor('Nicola Asuni');
-$pdf->SetTitle('TCPDF Example 011');
-$pdf->SetSubject('TCPDF Tutorial');
-$pdf->SetKeywords('TCPDF, PDF, example, test, guide');
+$pdf->setCreator(PDF_CREATOR);
+$pdf->setAuthor('Nicola Asuni');
+$pdf->setTitle('TCPDF Example 011');
+$pdf->setSubject('TCPDF Tutorial');
+$pdf->setKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 011', PDF_HEADER_STRING);
+$pdf->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 011', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
 $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 
 // set default monospaced font
-$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+$pdf->setDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
 // set margins
-$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+$pdf->setMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+$pdf->setHeaderMargin(PDF_MARGIN_HEADER);
+$pdf->setFooterMargin(PDF_MARGIN_FOOTER);
 
 // set auto page breaks
-$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+$pdf->setAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
 // set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
@@ -114,7 +114,7 @@ if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
 // ---------------------------------------------------------
 
 // set font
-$pdf->SetFont('helvetica', '', 12);
+$pdf->setFont('helvetica', '', 12);
 
 // add a page
 $pdf->AddPage();

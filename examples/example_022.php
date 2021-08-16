@@ -31,29 +31,29 @@ require_once('tcpdf_include.php');
 $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
 // set document information
-$pdf->SetCreator(PDF_CREATOR);
-$pdf->SetAuthor('Nicola Asuni');
-$pdf->SetTitle('TCPDF Example 022');
-$pdf->SetSubject('TCPDF Tutorial');
-$pdf->SetKeywords('TCPDF, PDF, example, test, guide');
+$pdf->setCreator(PDF_CREATOR);
+$pdf->setAuthor('Nicola Asuni');
+$pdf->setTitle('TCPDF Example 022');
+$pdf->setSubject('TCPDF Tutorial');
+$pdf->setKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 022', PDF_HEADER_STRING);
+$pdf->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 022', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
 $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 
 // set default monospaced font
-$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+$pdf->setDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
 // set margins
-$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+$pdf->setMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+$pdf->setHeaderMargin(PDF_MARGIN_HEADER);
+$pdf->setFooterMargin(PDF_MARGIN_FOOTER);
 
 // set auto page breaks
-$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+$pdf->setAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
 // set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
@@ -67,12 +67,12 @@ if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
 // ---------------------------------------------------------
 
 // check also the following methods:
-// SetDrawColorArray()
-// SetFillColorArray()
-// SetTextColorArray()
+// setDrawColorArray()
+// setFillColorArray()
+// setTextColorArray()
 
 // set font
-$pdf->SetFont('helvetica', 'B', 18);
+$pdf->setFont('helvetica', 'B', 18);
 
 // add a page
 $pdf->AddPage();
@@ -84,55 +84,55 @@ $border_style = array('all' => array('width' => 2, 'cap' => 'square', 'join' => 
 
 // --- CMYK ------------------------------------------------
 
-$pdf->SetDrawColor(50, 0, 0, 0);
-$pdf->SetFillColor(100, 0, 0, 0);
-$pdf->SetTextColor(100, 0, 0, 0);
+$pdf->setDrawColor(50, 0, 0, 0);
+$pdf->setFillColor(100, 0, 0, 0);
+$pdf->setTextColor(100, 0, 0, 0);
 $pdf->Rect(30, 60, 30, 30, 'DF', $border_style);
 $pdf->Text(30, 92, 'Cyan');
 
-$pdf->SetDrawColor(0, 50, 0, 0);
-$pdf->SetFillColor(0, 100, 0, 0);
-$pdf->SetTextColor(0, 100, 0, 0);
+$pdf->setDrawColor(0, 50, 0, 0);
+$pdf->setFillColor(0, 100, 0, 0);
+$pdf->setTextColor(0, 100, 0, 0);
 $pdf->Rect(70, 60, 30, 30, 'DF', $border_style);
 $pdf->Text(70, 92, 'Magenta');
 
-$pdf->SetDrawColor(0, 0, 50, 0);
-$pdf->SetFillColor(0, 0, 100, 0);
-$pdf->SetTextColor(0, 0, 100, 0);
+$pdf->setDrawColor(0, 0, 50, 0);
+$pdf->setFillColor(0, 0, 100, 0);
+$pdf->setTextColor(0, 0, 100, 0);
 $pdf->Rect(110, 60, 30, 30, 'DF', $border_style);
 $pdf->Text(110, 92, 'Yellow');
 
-$pdf->SetDrawColor(0, 0, 0, 50);
-$pdf->SetFillColor(0, 0, 0, 100);
-$pdf->SetTextColor(0, 0, 0, 100);
+$pdf->setDrawColor(0, 0, 0, 50);
+$pdf->setFillColor(0, 0, 0, 100);
+$pdf->setTextColor(0, 0, 0, 100);
 $pdf->Rect(150, 60, 30, 30, 'DF', $border_style);
 $pdf->Text(150, 92, 'Black');
 
 // --- RGB -------------------------------------------------
 
-$pdf->SetDrawColor(255, 127, 127);
-$pdf->SetFillColor(255, 0, 0);
-$pdf->SetTextColor(255, 0, 0);
+$pdf->setDrawColor(255, 127, 127);
+$pdf->setFillColor(255, 0, 0);
+$pdf->setTextColor(255, 0, 0);
 $pdf->Rect(30, 110, 30, 30, 'DF', $border_style);
 $pdf->Text(30, 142, 'Red');
 
-$pdf->SetDrawColor(127, 255, 127);
-$pdf->SetFillColor(0, 255, 0);
-$pdf->SetTextColor(0, 255, 0);
+$pdf->setDrawColor(127, 255, 127);
+$pdf->setFillColor(0, 255, 0);
+$pdf->setTextColor(0, 255, 0);
 $pdf->Rect(70, 110, 30, 30, 'DF', $border_style);
 $pdf->Text(70, 142, 'Green');
 
-$pdf->SetDrawColor(127, 127, 255);
-$pdf->SetFillColor(0, 0, 255);
-$pdf->SetTextColor(0, 0, 255);
+$pdf->setDrawColor(127, 127, 255);
+$pdf->setFillColor(0, 0, 255);
+$pdf->setTextColor(0, 0, 255);
 $pdf->Rect(110, 110, 30, 30, 'DF', $border_style);
 $pdf->Text(110, 142, 'Blue');
 
 // --- GRAY ------------------------------------------------
 
-$pdf->SetDrawColor(191);
-$pdf->SetFillColor(127);
-$pdf->SetTextColor(127);
+$pdf->setDrawColor(191);
+$pdf->setFillColor(127);
+$pdf->setTextColor(127);
 $pdf->Rect(30, 160, 30, 30, 'DF', $border_style);
 $pdf->Text(30, 192, 'Gray');
 
