@@ -31,29 +31,29 @@ require_once('tcpdf_include.php');
 $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
 // set document information
-$pdf->SetCreator(PDF_CREATOR);
-$pdf->SetAuthor('Nicola Asuni');
-$pdf->SetTitle('TCPDF Example 062');
-$pdf->SetSubject('TCPDF Tutorial');
-$pdf->SetKeywords('TCPDF, PDF, example, test, guide');
+$pdf->setCreator(PDF_CREATOR);
+$pdf->setAuthor('Nicola Asuni');
+$pdf->setTitle('TCPDF Example 062');
+$pdf->setSubject('TCPDF Tutorial');
+$pdf->setKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 062', PDF_HEADER_STRING);
+$pdf->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 062', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
 $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 
 // set default monospaced font
-$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+$pdf->setDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
 // set margins
-$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+$pdf->setMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+$pdf->setHeaderMargin(PDF_MARGIN_HEADER);
+$pdf->setFooterMargin(PDF_MARGIN_FOOTER);
 
 // set auto page breaks
-$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+$pdf->setAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
 // set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
@@ -67,7 +67,7 @@ if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
 // ---------------------------------------------------------
 
 // set font
-$pdf->SetFont('helvetica', 'B', 20);
+$pdf->setFont('helvetica', 'B', 20);
 
 // add a page
 $pdf->AddPage();
@@ -102,11 +102,11 @@ $pdf->Image('images/image_demo.jpg', 0, 0, 60, 60, '', '', '', true, 72, '', fal
 //Stop Graphic Transformation
 $pdf->StopTransform();
 
-$pdf->SetXY(0, 0);
+$pdf->setXY(0, 0);
 
-$pdf->SetFont('times', '', 40);
+$pdf->setFont('times', '', 40);
 
-$pdf->SetTextColor(255, 0, 0);
+$pdf->setTextColor(255, 0, 0);
 
 // print a text
 $pdf->Cell(60, 60, 'Template', 0, 0, 'C', false, '', 0, false, 'T', 'M');
@@ -118,16 +118,16 @@ $pdf->endTemplate();
 
 // print the selected Template various times using various transparencies
 
-$pdf->SetAlpha(0.4);
+$pdf->setAlpha(0.4);
 $pdf->printTemplate($template_id, 15, 50, 20, 20, '', '', false);
 
-$pdf->SetAlpha(0.6);
+$pdf->setAlpha(0.6);
 $pdf->printTemplate($template_id, 27, 62, 40, 40, '', '', false);
 
-$pdf->SetAlpha(0.8);
+$pdf->setAlpha(0.8);
 $pdf->printTemplate($template_id, 55, 85, 60, 60, '', '', false);
 
-$pdf->SetAlpha(1);
+$pdf->setAlpha(1);
 $pdf->printTemplate($template_id, 95, 125, 80, 80, '', '', false);
 
 // ---------------------------------------------------------

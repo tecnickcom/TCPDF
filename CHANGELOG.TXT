@@ -2754,7 +2754,7 @@
 	- Image-related functions were rewritten.
 	- resize parameter was added to Image() signature to reduce the image size and fit width and height (see example 9).
 	- TCPDF now supports all images supported by GD library: GD, GD2, GD2PART, GIF, JPEG, PNG, BMP, XBM, XPM.
-	- CMYK support was added to SetDrawColor(), SetFillColor(), SetTextColor() (see example 22).
+	- CMYK support was added to SetDrawColor(), setFillColor(), setTextColor() (see example 22).
 	- Page Groups were added (see example 23).
 	- setVisibility() function was added to restrict the rendering of some elements to screen or printout (see example 24).
 	- All private variables and functions were changed to protected.
