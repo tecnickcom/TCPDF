@@ -9,7 +9,7 @@ if [ $? -gt 0 ]; then
 fi
 
 # Only start here, the command checking can exit code > 0
-set -e
+set -eu
 
 EXAMPLE_FILES="$(find examples/ -type f -name 'example*.php' \
                 -not -path '*/barcodes/*' \
@@ -66,6 +66,9 @@ for file in $EXAMPLE_FILES; do
     php -n \
         -d date.timezone=UTC \
         ${IMAGICK_OR_GD} ${COVERAGE_EXTENSION} \
+        ${BCMATH_EXT} \
+        -dextension=json.so \
+        -dextension=xml.so \
         -d display_errors=on \
         -d error_reporting=-1 \
         -d pcov.directory="${ROOT_DIR}" \
@@ -96,7 +99,21 @@ for file in $EXAMPLE_FILES; do
             echo "Generated-invalid-file: $file"
         fi
     else
+        FAILED_FLAG=1
         echo "File-run-failed: $file"
+        ERROR_LOGS="$(cat "${OUTPUT_FILE_ERROR}")"
+        if [ ! -z "${ERROR_LOGS}" ]; then
+            echo "Logs: $file"
+            echo "---------------------------"
+            echo "${ERROR_LOGS}"
+            echo "---------------------------"
+        else
+            LOGS="$(cat "${OUTPUT_FILE}")"
+            echo "Logs: $file"
+            echo "---------------------------"
+            echo "${LOGS}"
+            echo "---------------------------"
+        fi
     fi
     set -e
 done
@@ -154,4 +171,5 @@ cd - > /dev/null
 
 rm -rf "${TEMP_FOLDER}"
 
+echo "Exit code: ${FAILED_FLAG}"
 exit "${FAILED_FLAG}"
