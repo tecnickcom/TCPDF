@@ -1973,7 +1973,7 @@ class TCPDF_STATIC {
 			    return $ret;
 			}
 			// try to use CURL for URLs
-			if (!ini_get('allow_url_fopen')
+			if (ini_get('allow_url_fopen')
 				&& function_exists('curl_init')
 				&& preg_match('%^(https?|ftp)://%', $path)
 			) {
