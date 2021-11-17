@@ -1,17 +1,16 @@
 {
-    "name": "tecnickcom/tcpdf",
+    "name": "ixc-soft/tcpdf",
     "type": "library",
-    "description": "TCPDF is a PHP class for generating PDF documents and barcodes.",
+    "description": "Adaptação da IXCSoft sobre o pacote TCPDF.",
     "keywords": [
         "PDF",
         "tcpdf",
-        "PDFD32000-2008",
         "qrcode",
-        "datamatrix",
-        "pdf417",
-        "barcodes"
+        "barcodes",
+        "ixcsoft",
+        "ixc"
     ],
-    "homepage": "http://www.tcpdf.org/",
+    "homepage": "https://www.ixcsoft.com.br",
     "version": "6.4.2",
     "license": "LGPL-3.0-only",
     "authors": [
@@ -19,6 +18,11 @@
             "name": "Nicola Asuni",
             "email": "info@tecnick.com",
             "role": "lead"
+        },
+        {
+            "name": "Marcos Marcolin",
+            "email": "marcos@ixcsoft.com.br",
+            "role": "developer"
         }
     ],
     "require": {
