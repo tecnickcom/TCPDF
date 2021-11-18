@@ -68,7 +68,7 @@
 //============================================================+
 
 // TCPDF configuration
-require_once(dirname(__FILE__) . '/tcpdf_autoconfig.php');
+require_once(dirname(__FILE__) . '/ixc_tcpdf_autoconfig.php');
 // TCPDF static font methods and data
 require_once(dirname(__FILE__) . '/include/IXCTCPDF_font_data.php');
 // TCPDF static font methods and data
