@@ -46,7 +46,7 @@ if (php_sapi_name() != 'cli') {
   exit(1);
 }
 
-$tcpdf_include_dirs = array(realpath(dirname(__FILE__).'/../tcpdf.php'), '/usr/share/php/tcpdf/tcpdf.php', '/usr/share/tcpdf/tcpdf.php', '/usr/share/php-tcpdf/tcpdf.php', '/var/www/tcpdf/tcpdf.php', '/var/www/html/tcpdf/tcpdf.php', '/usr/local/apache2/htdocs/tcpdf/tcpdf.php');
+$tcpdf_include_dirs = array(realpath(dirname(__FILE__).'/../IXCTCPDF.php'), '/usr/share/php/tcpdf/IXCTCPDF.php', '/usr/share/tcpdf/IXCTCPDF.php', '/usr/share/php-tcpdf/IXCTCPDF.php', '/var/www/tcpdf/IXCTCPDF.php', '/var/www/html/tcpdf/IXCTCPDF.php', '/usr/local/apache2/htdocs/tcpdf/IXCTCPDF.php');
 foreach ($tcpdf_include_dirs as $tcpdf_include_path) {
 	if (@file_exists($tcpdf_include_path)) {
 		require_once($tcpdf_include_path);
@@ -247,7 +247,7 @@ $errors = false;
 
 foreach ($options['fonts'] as $font) {
 	$fontfile = realpath($font);
-	$fontname = TCPDF_FONTS::addTTFfont($fontfile, $options['type'], $options['enc'], $options['flags'], $options['outpath'], $options['platid'], $options['encid'], $options['addcbbox'], $options['link']);
+	$fontname = IXCTCPDF_FONTS::addTTFfont($fontfile, $options['type'], $options['enc'], $options['flags'], $options['outpath'], $options['platid'], $options['encid'], $options['addcbbox'], $options['link']);
 	if ($fontname === false) {
 		$errors = true;
 		echo "--- ERROR: can't add ".$font."\n";

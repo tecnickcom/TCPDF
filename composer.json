@@ -4,8 +4,8 @@
     "description": "Adaptação da IXCSoft sobre o pacote TCPDF.",
     "keywords": [
         "PDF",
-        "tcpdf",
-        "qrcode",
+        "IXCTCPDF",
+        "IXCQRcode",
         "barcodes",
         "ixcsoft",
         "ixc"
@@ -32,20 +32,20 @@
         "classmap": [
             "config",
             "include",
-            "tcpdf.php",
-            "tcpdf_parser.php",
-            "tcpdf_import.php",
-            "tcpdf_barcodes_1d.php",
-            "tcpdf_barcodes_2d.php",
-            "include/tcpdf_colors.php",
-            "include/tcpdf_filters.php",
-            "include/tcpdf_font_data.php",
-            "include/tcpdf_fonts.php",
-            "include/tcpdf_images.php",
-            "include/tcpdf_static.php",
-            "include/barcodes/datamatrix.php",
-            "include/barcodes/pdf417.php",
-            "include/barcodes/qrcode.php"
+            "IXCTCPDF.php",
+            "IXCTCPDF_parser.php",
+            "IXCTCPDF_import.php",
+            "IXCTCPDF_barcodes_1D.php",
+            "IXCTCPDF_barcodes_2D.php",
+            "include/IXCTCPDF_colors.php",
+            "include/IXCTCPDF_filters.php",
+            "include/IXCTCPDF_font_data.php",
+            "include/IXCTCPDF_fonts.php",
+            "include/IXCTCPDF_images.php",
+            "include/IXCTCPDF_static.php",
+            "include/barcodes/IXCDatamatrix.php",
+            "include/barcodes/IXCPDF417.php",
+            "include/barcodes/IXCQRcode.php"
         ]
     }
 }
