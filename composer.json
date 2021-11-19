@@ -25,7 +25,7 @@
     }
   ],
   "require": {
-    "php": ">=5.3.0"
+    "php": ">=7.0"
   },
   "autoload": {
     "classmap": [
@@ -46,5 +46,9 @@
       "include/barcodes/IXCPDF417.php",
       "include/barcodes/IXCQRcode.php"
     ]
+  },
+  "require-dev": {
+    "squizlabs/php_codesniffer": "^3.6",
+    "phpcompatibility/php-compatibility": "^9.3"
   }
 }

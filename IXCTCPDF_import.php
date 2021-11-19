@@ -56,47 +56,48 @@ require_once(dirname(__FILE__).'/IXCTCPDF_parser.php');
  * @version 1.0.001
  * @author Nicola Asuni - info@tecnick.com
  */
-class IXCTCPDF_IMPORT extends IXCTCPDF {
+class IXCTCPDF_IMPORT extends IXCTCPDF
+{
 
-	/**
-	 * Import an existing PDF document
-	 * @param string $filename Filename of the PDF document to import.
-	 * @return true in case of success, false otherwise
-	 * @public
-	 * @since 1.0.000 (2011-05-24)
-	 */
-	public function importPDF($filename) {
-		// load document
-		$rawdata = file_get_contents($filename);
-		if ($rawdata === false) {
-			$this->Error('Unable to get the content of the file: '.$filename);
-		}
-		// configuration parameters for parser
-		$cfg = array(
-			'die_for_errors' => false,
-			'ignore_filter_decoding_errors' => true,
-			'ignore_missing_filter_decoders' => true,
-		);
-		try {
-			// parse PDF data
-			$pdf = new IXCTCPDF_PARSER($rawdata, $cfg);
-		} catch (Exception $e) {
-			die($e->getMessage());
-		}
-		// get the parsed data
-		$data = $pdf->getParsedData();
-		// release some memory
-		unset($rawdata);
+    /**
+     * Import an existing PDF document
+     * @param string $filename Filename of the PDF document to import.
+     * @return true in case of success, false otherwise
+     * @public
+     * @since 1.0.000 (2011-05-24)
+     */
+    public function importPDF($filename)
+    {
+        // load document
+        $rawdata = file_get_contents($filename);
+        if ($rawdata === false) {
+            $this->Error('Unable to get the content of the file: '.$filename);
+        }
+        // configuration parameters for parser
+        $cfg = [
+            'die_for_errors' => false,
+            'ignore_filter_decoding_errors' => true,
+            'ignore_missing_filter_decoders' => true,
+        ];
+        try {
+            // parse PDF data
+            $pdf = new IXCTCPDF_PARSER($rawdata, $cfg);
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
+        // get the parsed data
+        $data = $pdf->getParsedData();
+        // release some memory
+        unset($rawdata);
 
-		// ...
-
-
-		print_r($data); // DEBUG
+        // ...
 
 
-		unset($pdf);
-	}
+        print_r($data); // DEBUG
 
+
+        unset($pdf);
+    }
 } // END OF CLASS
 
 //============================================================+
