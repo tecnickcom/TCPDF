@@ -1,50 +1,50 @@
 {
-    "name": "ixc-soft/tcpdf",
-    "type": "library",
-    "description": "Adaptação da IXCSoft sobre o pacote TCPDF.",
-    "keywords": [
-        "PDF",
-        "IXCTCPDF",
-        "IXCQRcode",
-        "barcodes",
-        "ixcsoft",
-        "ixc"
-    ],
-    "homepage": "https://www.ixcsoft.com.br",
-    "license": "LGPL-3.0-only",
-    "authors": [
-        {
-            "name": "Nicola Asuni",
-            "email": "info@tecnick.com",
-            "role": "lead"
-        },
-        {
-            "name": "Marcos Marcolin",
-            "email": "marcos@ixcsoft.com.br",
-            "role": "developer"
-        }
-    ],
-    "require": {
-        "php": ">=5.3.0"
+  "name": "ixc-soft/tcpdf",
+  "type": "library",
+  "description": "AdaptaÃ§Ã£o da IXCSoft sobre o pacote TCPDF.",
+  "keywords": [
+    "pdf",
+    "ixctcpdf",
+    "ixcqrcode",
+    "barcodes",
+    "ixcsoft",
+    "ixc"
+  ],
+  "homepage": "https://www.ixcsoft.com.br",
+  "license": "LGPL-3.0-only",
+  "authors": [
+    {
+      "name": "Nicola Asuni",
+      "email": "info@tecnick.com",
+      "role": "lead"
     },
-    "autoload": {
-        "classmap": [
-            "config",
-            "include",
-            "IXCTCPDF.php",
-            "IXCTCPDF_parser.php",
-            "IXCTCPDF_import.php",
-            "IXCTCPDF_barcodes_1D.php",
-            "IXCTCPDF_barcodes_2D.php",
-            "include/IXCTCPDF_colors.php",
-            "include/IXCTCPDF_filters.php",
-            "include/IXCTCPDF_font_data.php",
-            "include/IXCTCPDF_fonts.php",
-            "include/IXCTCPDF_images.php",
-            "include/IXCTCPDF_static.php",
-            "include/barcodes/IXCDatamatrix.php",
-            "include/barcodes/IXCPDF417.php",
-            "include/barcodes/IXCQRcode.php"
-        ]
+    {
+      "name": "Marcos Marcolin",
+      "email": "marcos@ixcsoft.com.br",
+      "role": "developer"
     }
+  ],
+  "require": {
+    "php": ">=5.3.0"
+  },
+  "autoload": {
+    "classmap": [
+      "config",
+      "include",
+      "IXCTCPDF.php",
+      "IXCTCPDF_parser.php",
+      "IXCTCPDF_import.php",
+      "IXCTCPDF_barcodes_1D.php",
+      "IXCTCPDF_barcodes_2D.php",
+      "include/IXCTCPDF_colors.php",
+      "include/IXCTCPDF_filters.php",
+      "include/IXCTCPDF_font_data.php",
+      "include/IXCTCPDF_fonts.php",
+      "include/IXCTCPDF_images.php",
+      "include/IXCTCPDF_static.php",
+      "include/barcodes/IXCDatamatrix.php",
+      "include/barcodes/IXCPDF417.php",
+      "include/barcodes/IXCQRcode.php"
+    ]
+  }
 }
