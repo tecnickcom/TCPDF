@@ -2,9 +2,9 @@
 
 Pacote adaptado para funcionamento no ERP IXCProvedor.
 
-### Documentação completa do pacote
+### Instalação
 
-https://github.com/tecnickcom/TCPDF
+`composer require ixc-soft/tcpdf`
 
 ## Code Quality
 
@@ -15,3 +15,7 @@ Para verificar compatibilidade de código com o PHP >= 7.0
 Para analisar a qualidade código com Code Sniffer
 
 `php ./vendor/bin/phpcs --extensions=php --standard=rules-cs.xml ./`
+
+### Documentação completa do pacote
+
+https://github.com/tecnickcom/TCPDF
