@@ -449,8 +449,13 @@ class TCPDF_STATIC {
 		$padding = 16 - (strlen($text) % 16);
 		$text .= str_repeat(chr($padding), $padding);
 		if (extension_loaded('openssl')) {
-			$iv = openssl_random_pseudo_bytes (openssl_cipher_iv_length('aes-256-cbc'));
-			$text = openssl_encrypt($text, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
+			if (strlen($key) == 16) {
+				$algo = 'aes-128-cbc';
+			} else {
+				$algo = 'aes-256-cbc';
+			}
+			$iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($algo));
+			$text = openssl_encrypt($text, $algo, $key, OPENSSL_RAW_DATA, $iv);
 			return $iv.substr($text, 0, -16);
 		}
 		$iv = mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC), MCRYPT_RAND);
@@ -471,8 +476,13 @@ class TCPDF_STATIC {
 	 */
 	public static function _AESnopad($key, $text) {
 		if (extension_loaded('openssl')) {
-			$iv = str_repeat("\x00", openssl_cipher_iv_length('aes-256-cbc'));
-			$text = openssl_encrypt($text, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
+			if (strlen($key) == 16) {
+				$algo = 'aes-128-cbc';
+			} else {
+				$algo = 'aes-256-cbc';
+			}
+			$iv = str_repeat("\x00", openssl_cipher_iv_length($algo));
+			$text = openssl_encrypt($text, $algo, $key, OPENSSL_RAW_DATA, $iv);
 			return substr($text, 0, -16);
 		}
 		$iv = str_repeat("\x00", mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC));
