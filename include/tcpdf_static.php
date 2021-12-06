@@ -449,10 +449,9 @@ class TCPDF_STATIC {
 		$padding = 16 - (strlen($text) % 16);
 		$text .= str_repeat(chr($padding), $padding);
 		if (extension_loaded('openssl')) {
+			$algo = 'aes-256-cbc';
 			if (strlen($key) == 16) {
 				$algo = 'aes-128-cbc';
-			} else {
-				$algo = 'aes-256-cbc';
 			}
 			$iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($algo));
 			$text = openssl_encrypt($text, $algo, $key, OPENSSL_RAW_DATA, $iv);
@@ -476,10 +475,9 @@ class TCPDF_STATIC {
 	 */
 	public static function _AESnopad($key, $text) {
 		if (extension_loaded('openssl')) {
+			$algo = 'aes-256-cbc';
 			if (strlen($key) == 16) {
 				$algo = 'aes-128-cbc';
-			} else {
-				$algo = 'aes-256-cbc';
 			}
 			$iv = str_repeat("\x00", openssl_cipher_iv_length($algo));
 			$text = openssl_encrypt($text, $algo, $key, OPENSSL_RAW_DATA, $iv);
