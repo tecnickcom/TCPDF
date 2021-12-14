@@ -11118,8 +11118,8 @@ class TCPDF {
 	 * Vertical and horizontal non-proportional Scaling.
 	 * @param float $s_x scaling factor for width as percent. 0 is not allowed.
 	 * @param float $s_y scaling factor for height as percent. 0 is not allowed.
-	 * @param int|null $x abscissa of the scaling center. Default is current x position
-	 * @param int|null $y ordinate of the scaling center. Default is current y position
+	 * @param float|null $x abscissa of the scaling center. Default is current x position
+	 * @param float|null $y ordinate of the scaling center. Default is current y position
 	 * @public
 	 * @since 2.1.000 (2008-01-07)
 	 * @see StartTransform(), StopTransform()
