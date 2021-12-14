@@ -22485,8 +22485,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @param string $id The ID of XObject Template to print.
 	 * @param float|null $x X position in user units (empty string = current x position)
 	 * @param float|null $y Y position in user units (empty string = current y position)
-	 * @param int $w Width in user units (zero = remaining page width)
-	 * @param int $h Height in user units (zero = remaining page height)
+	 * @param float $w Width in user units (zero = remaining page width)
+	 * @param float $h Height in user units (zero = remaining page height)
 	 * @param string $align Indicates the alignment of the pointer next to template insertion relative to template height. The value can be:<ul><li>T: top-right for LTR or top-left for RTL</li><li>M: middle-right for LTR or middle-left for RTL</li><li>B: bottom-right for LTR or bottom-left for RTL</li><li>N: next line</li></ul>
 	 * @param string $palign Allows to center or align the template on the current line. Possible values are:<ul><li>L : left align</li><li>C : center</li><li>R : right align</li><li>'' : empty string : left for LTR or right for RTL</li></ul>
 	 * @param boolean $fitonpage If true the template is resized to not exceed page dimensions.
