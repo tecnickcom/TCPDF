@@ -11187,8 +11187,8 @@ class TCPDF {
 	/**
 	 * Reflection against a straight line through point (x, y) with the gradient angle (angle).
 	 * @param float $angle gradient angle of the straight line. Default is 0 (horizontal line).
-	 * @param int|null $x abscissa of the point. Default is current x position
-	 * @param int|null $y ordinate of the point. Default is current y position
+	 * @param float|null $x abscissa of the point. Default is current x position
+	 * @param float|null $y ordinate of the point. Default is current y position
 	 * @public
 	 * @since 2.1.000 (2008-01-07)
 	 * @see StartTransform(), StopTransform()
