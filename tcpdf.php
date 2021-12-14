@@ -11287,8 +11287,8 @@ class TCPDF {
 	/**
 	 * Skew vertically.
 	 * @param float $angle_y angle in degrees between -90 (skew to the bottom) and 90 (skew to the top)
-	 * @param int|null $x abscissa of the skewing center. default is current x position
-	 * @param int|null $y ordinate of the skewing center. default is current y position
+	 * @param float|null $x abscissa of the skewing center. default is current x position
+	 * @param float|null $y ordinate of the skewing center. default is current y position
 	 * @public
 	 * @since 2.1.000 (2008-01-07)
 	 * @see StartTransform(), StopTransform()
