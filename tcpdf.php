@@ -11152,7 +11152,7 @@ class TCPDF {
 
 	/**
 	 * Horizontal Mirroring.
-	 * @param int|null $x abscissa of the point. Default is current x position
+	 * @param float|null $x abscissa of the point. Default is current x position
 	 * @public
 	 * @since 2.1.000 (2008-01-07)
 	 * @see StartTransform(), StopTransform()
