@@ -11174,8 +11174,8 @@ class TCPDF {
 
 	/**
 	 * Point reflection mirroring.
-	 * @param int|null $x abscissa of the point. Default is current x position
-	 * @param int|null $y ordinate of the point. Default is current y position
+	 * @param float|null $x abscissa of the point. Default is current x position
+	 * @param float|null $y ordinate of the point. Default is current y position
 	 * @public
 	 * @since 2.1.000 (2008-01-07)
 	 * @see StartTransform(), StopTransform()
