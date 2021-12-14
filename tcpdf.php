@@ -15590,10 +15590,10 @@ class TCPDF {
 	 * Print 2D Barcode.
 	 * @param string $code code to print
 	 * @param string $type type of barcode (see tcpdf_barcodes_2d.php for supported formats).
-	 * @param int|null $x x position in user units
-	 * @param int|null $y y position in user units
-	 * @param int|null $w width in user units
-	 * @param int|null $h height in user units
+	 * @param float|null $x x position in user units
+	 * @param float|null $y y position in user units
+	 * @param float|null $w width in user units
+	 * @param float|null $h height in user units
 	 * @param array $style array of options:<ul>
 	 * <li>boolean $style['border'] if true prints a border around the barcode</li>
 	 * <li>int $style['padding'] padding to leave around the barcode in barcode units (set to 'auto' for automatic padding)</li>
