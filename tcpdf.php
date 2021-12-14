@@ -15267,9 +15267,9 @@ class TCPDF {
 	 * @param string $code code to print
 	 * @param string $type type of barcode (see tcpdf_barcodes_1d.php for supported formats).
 	 * @param float|null $x x position in user units (null = current x position)
-	 * @param int|null $y y position in user units (null = current y position)
-	 * @param int|null $w width in user units (null = remaining page width)
-	 * @param int|null $h height in user units (null = remaining page height)
+	 * @param float|null $y y position in user units (null = current y position)
+	 * @param float|null $w width in user units (null = remaining page width)
+	 * @param float|null $h height in user units (null = remaining page height)
 	 * @param float|null $xres width of the smallest bar in user units (null = default value = 0.4mm)
 	 * @param array $style array of options:<ul>
 	 * <li>boolean $style['border'] if true prints a border</li>
