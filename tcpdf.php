@@ -11244,8 +11244,8 @@ class TCPDF {
 	/**
 	 * Rotate object.
 	 * @param float $angle angle in degrees for counter-clockwise rotation
-	 * @param int|null $x abscissa of the rotation center. Default is current x position
-	 * @param int|null $y ordinate of the rotation center. Default is current y position
+	 * @param float|null $x abscissa of the rotation center. Default is current x position
+	 * @param float|null $y ordinate of the rotation center. Default is current y position
 	 * @public
 	 * @since 2.1.000 (2008-01-07)
 	 * @see StartTransform(), StopTransform()
