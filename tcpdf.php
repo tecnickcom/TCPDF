@@ -11163,7 +11163,7 @@ class TCPDF {
 
 	/**
 	 * Verical Mirroring.
-	 * @param int|null $y ordinate of the point. Default is current y position
+	 * @param float|null $y ordinate of the point. Default is current y position
 	 * @public
 	 * @since 2.1.000 (2008-01-07)
 	 * @see StartTransform(), StopTransform()
