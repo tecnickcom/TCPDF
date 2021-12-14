@@ -22483,8 +22483,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * An XObject Template is a PDF block that is a self-contained description of any sequence of graphics objects (including path objects, text objects, and sampled images).
 	 * An XObject Template may be painted multiple times, either on several pages or at several locations on the same page and produces the same results each time, subject only to the graphics state at the time it is invoked.
 	 * @param string $id The ID of XObject Template to print.
-	 * @param int|null $x X position in user units (empty string = current x position)
-	 * @param int|null $y Y position in user units (empty string = current y position)
+	 * @param float|null $x X position in user units (empty string = current x position)
+	 * @param float|null $y Y position in user units (empty string = current y position)
 	 * @param int $w Width in user units (zero = remaining page width)
 	 * @param int $h Height in user units (zero = remaining page height)
 	 * @param string $align Indicates the alignment of the pointer next to template insertion relative to template height. The value can be:<ul><li>T: top-right for LTR or top-left for RTL</li><li>M: middle-right for LTR or middle-left for RTL</li><li>B: bottom-right for LTR or bottom-left for RTL</li><li>N: next line</li></ul>
