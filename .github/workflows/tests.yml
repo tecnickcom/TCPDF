@@ -17,14 +17,14 @@ jobs:
             matrix:
                 experimental: [false]
                 coverage-extension: [pcov]
-                php-version: ["7.1", "7.2", "7.3", "7.4", "8.0"]
+                php-version: ["7.1", "7.2", "7.3", "7.4", "8.0", "8.1"]
                 os: [ubuntu-latest]
                 include:
                     - { php-version: '5.3', experimental: false, os: ubuntu-latest, coverage-extension: 'xdebug' }
                     - { php-version: '5.4', experimental: false, os: ubuntu-latest, coverage-extension: 'xdebug' }
                     - { php-version: '5.5', experimental: false, os: ubuntu-latest, coverage-extension: 'xdebug' }
                     - { php-version: '5.6', experimental: false, os: ubuntu-latest, coverage-extension: 'xdebug' }
-                    - { php-version: '8.1', experimental: true, os: ubuntu-latest, coverage-extension: 'pcov' }
+                    - { php-version: 'nightly', experimental: true, os: ubuntu-latest, coverage-extension: 'pcov' }
         steps:
             - uses: actions/checkout@v2
             - name: Install pdfinfo
