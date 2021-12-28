@@ -8418,8 +8418,13 @@ class TCPDF {
 							} else {
 								$annots .= ' /Name /Note';
 							}
+							$hasStateModel = isset($pl['opt']['statemodel']);
+							$hasState = isset($pl['opt']['state']); 
 							$statemodels = array('Marked', 'Review');
-							if (isset($pl['opt']['statemodel']) AND in_array($pl['opt']['statemodel'], $statemodels)) {
+							if (!$hasStateModel && !$hasState) {
+								break;
+							}
+							if ($hasStateModel AND in_array($pl['opt']['statemodel'], $statemodels)) {
 								$annots .= ' /StateModel /'.$pl['opt']['statemodel'];
 							} else {
 								$pl['opt']['statemodel'] = 'Marked';
@@ -8430,7 +8435,7 @@ class TCPDF {
 							} else {
 								$states = array('Accepted', 'Rejected', 'Cancelled', 'Completed', 'None');
 							}
-							if (isset($pl['opt']['state']) AND in_array($pl['opt']['state'], $states)) {
+							if ($hasState AND in_array($pl['opt']['state'], $states)) {
 								$annots .= ' /State /'.$pl['opt']['state'];
 							} else {
 								if ($pl['opt']['statemodel'] == 'Marked') {
