@@ -918,6 +918,7 @@ class TCPDF {
 	 * Default cell height ratio.
 	 * @protected
 	 * @since 3.0.014 (2008-05-23)
+	 * @var float
 	 */
 	protected $cell_height_ratio = K_CELL_HEIGHT_RATIO;
 
@@ -2449,6 +2450,7 @@ class TCPDF {
 	 * @param int $fontsize Font size in internal units
 	 * @param boolean $padding If true add cell padding
 	 * @public
+	 * @return float
 	 */
 	public function getCellHeight($fontsize, $padding=TRUE) {
 		$height = ($fontsize * $this->cell_height_ratio);
@@ -14062,7 +14064,7 @@ class TCPDF {
 
 	/**
 	 * Set the height of the cell (line height) respect the font height.
-	 * @param int $h cell proportion respect font height (typical value = 1.25).
+	 * @param float $h cell proportion respect font height (typical value = 1.25).
 	 * @public
 	 * @since 3.0.014 (2008-06-04)
 	 */
@@ -14073,6 +14075,7 @@ class TCPDF {
 	/**
 	 * return the height of cell repect font height.
 	 * @public
+	 * @return float
 	 * @since 4.0.012 (2008-07-24)
 	 */
 	public function getCellHeightRatio() {
@@ -17129,6 +17132,7 @@ class TCPDF {
 							}
 						}
 					}
+					$element = preg_replace("/&NBSP;/i", "&nbsp;", $element);
 				}
 				$dom[$key]['value'] = stripslashes($this->unhtmlentities($element));
 			}
