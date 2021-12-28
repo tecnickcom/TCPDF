@@ -1140,8 +1140,8 @@ class TCPDF_STATIC {
 	 * Cleanup HTML code (requires HTML Tidy library).
 	 * @param string $html htmlcode to fix
 	 * @param string $default_css CSS commands to add
-	 * @param array $tagvs parameters for setHtmlVSpace method
-	 * @param array $tidy_options options for tidy_parse_string function
+	 * @param array|null $tagvs parameters for setHtmlVSpace method
+	 * @param array|null $tidy_options options for tidy_parse_string function
 	 * @param array $tagvspaces Array of vertical spaces for tags.
 	 * @return string XHTML code cleaned up
 	 * @author Nicola Asuni
@@ -1151,7 +1151,7 @@ class TCPDF_STATIC {
 	 */
 	public static function fixHTMLCode($html, $default_css, $tagvs, $tidy_options, &$tagvspaces) {
 		// configure parameters for HTML Tidy
-		if ($tidy_options === '') {
+		if (TCPDF_STATIC::empty_string($tidy_options)) {
 			$tidy_options = array (
 				'clean' => 1,
 				'drop-empty-paras' => 0,
@@ -1198,7 +1198,7 @@ class TCPDF_STATIC {
 		// remove some empty tag blocks
 		$html = preg_replace('/<div([^\>]*)><\/div>/', '', $html);
 		$html = preg_replace('/<p([^\>]*)><\/p>/', '', $html);
-		if ($tagvs !== '') {
+		if (!TCPDF_STATIC::empty_string($tagvs)) {
 			// set vertical space for some XHTML tags
 			$tagvspaces = $tagvs;
 		}
