@@ -600,14 +600,16 @@ class TCPDF {
 	/**
 	 * Default font used on page header.
 	 * @protected
-	 * @var array<int,string>
+	 * @var array<int,string|float|null>
+	 * @phpstan-var array{0: string, 1: string, 2: float|null}
 	 */
 	protected $header_font;
 
 	/**
 	 * Default font used on page footer.
 	 * @protected
-	 * @var array<int,string>
+	 * @var array<int,string|float|null>
+	 * @phpstan-var array{0: string, 1: string, 2: float|null}
 	 */
 	protected $footer_font;
 
@@ -654,7 +656,7 @@ class TCPDF {
 	protected $header_title = '';
 
 	/**
-	 * String to pring on page header after title.
+	 * String to print on page header after title.
 	 * @protected
 	 */
 	protected $header_string = '';
@@ -663,6 +665,8 @@ class TCPDF {
 	 * Color for header text (RGB array).
 	 * @since 5.9.174 (2012-07-25)
 	 * @protected
+	 * @var int[]
+	 * @phpstan-var array{0: int, 1: int, 2: int}
 	 */
 	protected $header_text_color = array(0,0,0);
 
@@ -670,6 +674,8 @@ class TCPDF {
 	 * Color for header line (RGB array).
 	 * @since 5.9.174 (2012-07-25)
 	 * @protected
+	 * @var int[]
+	 * @phpstan-var array{0: int, 1: int, 2: int}
 	 */
 	protected $header_line_color = array(0,0,0);
 
@@ -677,6 +683,8 @@ class TCPDF {
 	 * Color for footer text (RGB array).
 	 * @since 5.9.174 (2012-07-25)
 	 * @protected
+	 * @var int[]
+	 * @phpstan-var array{0: int, 1: int, 2: int}
 	 */
 	protected $footer_text_color = array(0,0,0);
 
@@ -684,6 +692,8 @@ class TCPDF {
 	 * Color for footer line (RGB array).
 	 * @since 5.9.174 (2012-07-25)
 	 * @protected
+	 * @var int[]
+	 * @phpstan-var array{0: int, 1: int, 2: int}
 	 */
 	protected $footer_line_color = array(0,0,0);
 
@@ -1860,7 +1870,7 @@ class TCPDF {
 	 * @param boolean $unicode TRUE means that the input text is unicode (default = true)
 	 * @param string $encoding Charset encoding (used only when converting back html entities); default is UTF-8.
 	 * @param boolean $diskcache DEPRECATED FEATURE
-	 * @param integer $pdfa If not false, set the document to PDF/A mode and the good version (1 or 3).
+	 * @param false|integer $pdfa If not false, set the document to PDF/A mode and the good version (1 or 3).
 	 * @public
 	 * @see getPageSizeFromFormat(), setPageFormat()
 	 */
@@ -2394,7 +2404,7 @@ class TCPDF {
 
 	/**
 	 * Force temporary RTL language direction
-	 * @param mixed $mode can be false, 'L' for LTR or 'R' for RTL
+	 * @param false|string $mode can be false, 'L' for LTR or 'R' for RTL
 	 * @public
 	 * @since 2.1.000 (2008-01-09)
 	 */
@@ -3320,8 +3330,8 @@ class TCPDF {
 	 * @param int $lw header image logo width in mm
 	 * @param string $ht string to print as title on document header
 	 * @param string $hs string to print on document header
-	 * @param array $tc RGB array color for text.
-	 * @param array $lc RGB array color for line.
+	 * @param int[] $tc RGB array color for text.
+	 * @param int[] $lc RGB array color for line.
 	 * @public
 	 */
 	public function setHeaderData($ln='', $lw=0, $ht='', $hs='', $tc=array(0,0,0), $lc=array(0,0,0)) {
@@ -3335,8 +3345,8 @@ class TCPDF {
 
 	/**
 	 * Set footer data.
-	 * @param array $tc RGB array color for text.
-	 * @param array $lc RGB array color for line.
+	 * @param int[] $tc RGB array color for text.
+	 * @param int[] $lc RGB array color for line.
 	 * @public
 	 */
 	public function setFooterData($tc=array(0,0,0), $lc=array(0,0,0)) {
@@ -3676,7 +3686,7 @@ class TCPDF {
 
 	/**
 	 * Check if we are on the page body (excluding page header and footer).
-	 * @return true if we are not in page header nor in page footer, false otherwise.
+	 * @return bool true if we are not in page header nor in page footer, false otherwise.
 	 * @protected
 	 * @since 5.9.091 (2011-06-15)
 	 */
@@ -4485,7 +4495,7 @@ class TCPDF {
 	 * Note: for the standard fonts, the font metric files must be accessible. There are three possibilities for this:<ul><li>They are in the current directory (the one where the running script lies)</li><li>They are in one of the directories defined by the include_path parameter</li><li>They are in the directory defined by the K_PATH_FONTS constant</li></ul><br />
 	 * @param string $family Family font. It can be either a name defined by AddFont() or one of the standard Type1 families (case insensitive):<ul><li>times (Times-Roman)</li><li>timesb (Times-Bold)</li><li>timesi (Times-Italic)</li><li>timesbi (Times-BoldItalic)</li><li>helvetica (Helvetica)</li><li>helveticab (Helvetica-Bold)</li><li>helveticai (Helvetica-Oblique)</li><li>helveticabi (Helvetica-BoldOblique)</li><li>courier (Courier)</li><li>courierb (Courier-Bold)</li><li>courieri (Courier-Oblique)</li><li>courierbi (Courier-BoldOblique)</li><li>symbol (Symbol)</li><li>zapfdingbats (ZapfDingbats)</li></ul> It is also possible to pass an empty string. In that case, the current family is retained.
 	 * @param string $style Font style. Possible values are (case insensitive):<ul><li>empty string: regular</li><li>B: bold</li><li>I: italic</li><li>U: underline</li><li>D: line through</li><li>O: overline</li></ul> or any combination. The default value is regular. Bold and italic styles do not apply to Symbol and ZapfDingbats basic fonts or other fonts when not defined.
-	 * @param float $size Font size in points. The default value is the current size. If no size has been specified since the beginning of the document, the value taken is 12
+	 * @param float|null $size Font size in points. The default value is the current size. If no size has been specified since the beginning of the document, the value taken is 12
 	 * @param string $fontfile The font definition file. By default, the name is built from the family and style, in lower case with no spaces.
 	 * @param mixed $subset if true embedd only a subset of the font (stores only the information related to the used characters); if false embedd full font; if 'default' uses the default value set using setFontSubsetting(). This option is valid only for TrueTypeUnicode fonts. If you want to enable users to change the document, set this parameter to false. If you subset the font, the person who receives your PDF would need to have your same font in order to make changes to your PDF. The file size of the PDF would also be smaller because you are embedding only part of a font.
 	 * @param boolean $out if true output the font size command, otherwise only set the font properties.
@@ -4609,7 +4619,7 @@ class TCPDF {
 	/**
 	 * Returns the glyph bounding box of the specified character in the current font in user units.
 	 * @param int $char Input character code.
-	 * @return mixed array(xMin, yMin, xMax, yMax) or FALSE if not defined.
+	 * @return false|array array(xMin, yMin, xMax, yMax) or FALSE if not defined.
 	 * @since 5.9.186 (2012-09-13)
 	 */
 	public function getCharBBox($char) {
@@ -10396,7 +10406,8 @@ class TCPDF {
 
 	/**
 	 * Set header font.
-	 * @param array<int,string> $font Array describing the basic font parameters: (family, style, size).
+	 * @param array<int,string|float|null> $font Array describing the basic font parameters: (family, style, size).
+	 * @phpstan-param array{0: string, 1: string, 2: float|null} $font
 	 * @public
 	 * @since 1.1
 	 */
@@ -10406,7 +10417,8 @@ class TCPDF {
 
 	/**
 	 * Get header font.
-	 * @return array<int,string> Array describing the basic font parameters: (family, style, size).
+	 * @return array<int,string|float|null> Array describing the basic font parameters: (family, style, size).
+	 * @phpstan-return array{0: string, 1: string, 2: float|null}
 	 * @public
 	 * @since 4.0.012 (2008-07-24)
 	 */
@@ -10416,7 +10428,8 @@ class TCPDF {
 
 	/**
 	 * Set footer font.
-	 * @param array<int,string> $font Array describing the basic font parameters: (family, style, size).
+	 * @param array<int,string|float|null> $font Array describing the basic font parameters: (family, style, size).
+	 * @phpstan-param array{0: string, 1: string, 2: float|null} $font
 	 * @public
 	 * @since 1.1
 	 */
@@ -10426,7 +10439,8 @@ class TCPDF {
 
 	/**
 	 * Get Footer font.
-	 * @return array<int,string> Array describing the basic font parameters: (family, style, size).
+	 * @return array<int,string|float|null> Array describing the basic font parameters: (family, style, size).
+	 * @phpstan-return array{0: string, 1: string, 2: float|null} $font
 	 * @public
 	 * @since 4.0.012 (2008-07-24)
 	 */
@@ -22349,7 +22363,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 
 	/**
 	 * Return true if the current font is unicode type.
-	 * @return true for unicode font, false otherwise.
+	 * @return bool true for unicode font, false otherwise.
 	 * @author Nicola Asuni
 	 * @public
 	 * @since 5.8.002 (2010-08-14)
