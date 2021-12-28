@@ -31,29 +31,29 @@ require_once('tcpdf_include.php');
 $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
 // set document information
-$pdf->SetCreator(PDF_CREATOR);
-$pdf->SetAuthor('Nicola Asuni');
-$pdf->SetTitle('TCPDF Example 064');
-$pdf->SetSubject('TCPDF Tutorial');
-$pdf->SetKeywords('TCPDF, PDF, example, test, guide');
+$pdf->setCreator(PDF_CREATOR);
+$pdf->setAuthor('Nicola Asuni');
+$pdf->setTitle('TCPDF Example 064');
+$pdf->setSubject('TCPDF Tutorial');
+$pdf->setKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 064', PDF_HEADER_STRING);
+$pdf->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 064', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
 $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 
 // set default monospaced font
-$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+$pdf->setDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
 // set margins
-$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+$pdf->setMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+$pdf->setHeaderMargin(PDF_MARGIN_HEADER);
+$pdf->setFooterMargin(PDF_MARGIN_FOOTER);
 
 // set auto page breaks
-$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+$pdf->setAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
 // set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
@@ -67,7 +67,7 @@ if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
 // ---------------------------------------------------------
 
 // set font
-$pdf->SetFont('helvetica', '', 8);
+$pdf->setFont('helvetica', '', 8);
 
 
 // define some html content for testing
@@ -88,32 +88,32 @@ $pdf->Image('images/image_demo.jpg',  15, 230, 40, 40, 'JPG', '', '', true);
 // define some graphic styles
 $styleA = array('width' => 0.254, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(255, 0, 0));
 $styleB = array('width' => 0.254, 'cap' => 'butt', 'join' => 'miter', 'dash' => 3, 'color' => array(127, 127, 127));
-$pdf->SetFillColor(220, 255, 220);
+$pdf->setFillColor(220, 255, 220);
 
 // write a trapezoid with some information about no-write page regions
 $pdf->Polygon(array(15,90, 57,90, 67,140, 15,140), 'DF', array($styleB, $styleA, $styleB, $styleB));
-$pdf->SetXY(15, 90);
+$pdf->setXY(15, 90);
 $pdf->Cell(42, 0, 'xt,yt', 0, 0, 'R', false, '', 0, false, 'T', 'T');
-$pdf->SetXY(15, 140);
+$pdf->setXY(15, 140);
 $pdf->Cell(52, 0, 'xb,yb', 0, 0, 'R', false, '', 0, false, 'B', 'B');
-$pdf->SetXY(15, 115);
+$pdf->setXY(15, 115);
 $pdf->Cell(40, 0, 'side', 0, 0, 'R', false, '', 0, false, 'B', 'B');
-$pdf->SetLineStyle(array('width' => 0.254, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)));
+$pdf->setLineStyle(array('width' => 0.254, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)));
 $pdf->Arrow(60, 115, 35, 115, 2, 5, 15);
 
 // write a trapezoid with some information about no-write page regions
 $pdf->Polygon(array(145,130, 195,130, 195,180, 155,180), 'DF', array($styleB, $styleB, $styleB, $styleA));
-$pdf->SetXY(145, 130);
+$pdf->setXY(145, 130);
 $pdf->Cell(42, 0, 'xt,yt', 0, 0, 'L', false, '', 0, false, 'T', 'T');
-$pdf->SetXY(155, 180);
+$pdf->setXY(155, 180);
 $pdf->Cell(52, 0, 'xb,yb', 0, 0, 'L', false, '', 0, false, 'B', 'B');
-$pdf->SetXY(160, 155);
+$pdf->setXY(160, 155);
 $pdf->Cell(30, 0, 'side', 0, 0, 'L', false, '', 0, false, 'B', 'B');
-$pdf->SetLineStyle(array('width' => 0.254, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)));
+$pdf->setLineStyle(array('width' => 0.254, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)));
 $pdf->Arrow(155, 155, 180, 155, 2, 5, 15);
 
 // reset x,y position
-$pdf->SetXY(15, 30);
+$pdf->setXY(15, 30);
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
