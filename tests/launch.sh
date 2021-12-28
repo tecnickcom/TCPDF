@@ -9,7 +9,7 @@ if [ $? -gt 0 ]; then
 fi
 
 # Only start here, the command checking can exit code > 0
-set -e
+set -eu
 
 EXAMPLE_FILES="$(find examples/ -type f -name 'example*.php' \
                 -not -path '*/barcodes/*' \
@@ -34,6 +34,8 @@ echo "bcmath found at: ${BCMATH_EXT}"
 
 COVERAGE_EXTENSION="-d extension=pcov.so"
 IMAGICK_OR_GD="-dextension=gd.so"
+JSON_EXT="-dextension=json.so"
+XML_EXT="-dextension=xml.so"
 if [ "$(php -r 'echo PHP_MAJOR_VERSION;')" = "5" ];then
     X_DEBUG_EXT="$(find ${PHP_EXT_DIR} -type f -name 'xdebug.so' || '')"
     echo "Xdebug found at: ${X_DEBUG_EXT}"
@@ -45,8 +47,17 @@ if [ "$(php -r 'echo PHP_MAJOR_VERSION;')" = "5" ];then
         # seems like there is no bcmath extension to be found
         BCMATH_EXT=""
         IMAGICK_OR_GD="-dextension=imagick.so"
+        # Seems not to exist in 5.5, 5.4, 5.3
+        JSON_EXT=""
+        XML_EXT=""
     fi
 
+fi
+
+# PHP >= 8.x.x
+if [ "$(php -r 'echo (PHP_MAJOR_VERSION >= 8) ? "true" : "false";')" = "true" ];then
+    # The json ext is bundled into PHP 8.0
+    JSON_EXT=""
 fi
 
 echo "Root folder: ${ROOT_DIR}"
@@ -63,20 +74,25 @@ for file in $EXAMPLE_FILES; do
         echo "File-lint-passed: $file"
     fi
     set +e
+    # Some examples load a bit more into memory (this is why the limit is set to 1G)
     php -n \
         -d date.timezone=UTC \
         ${IMAGICK_OR_GD} ${COVERAGE_EXTENSION} \
+        ${BCMATH_EXT} \
+        ${JSON_EXT} \
+        ${XML_EXT} \
         -d display_errors=on \
         -d error_reporting=-1 \
+        -d memory_limit=1G \
         -d pcov.directory="${ROOT_DIR}" \
         -d auto_prepend_file="${TESTS_DIR}/coverage.php" \
         "${ROOT_DIR}/$file" 1> "${OUTPUT_FILE}" 2> "${OUTPUT_FILE_ERROR}"
+    set -e
     if [ $? -eq 0 ]; then
         echo "File-run-passed: $file"
         ERROR_LOGS="$(cat "${OUTPUT_FILE_ERROR}")"
         if [ ! -z "${ERROR_LOGS}" ]; then
             FAILED_FLAG=1
-            set -e
             echo "Logs: $file"
             echo "---------------------------"
             echo "${ERROR_LOGS}"
@@ -84,9 +100,12 @@ for file in $EXAMPLE_FILES; do
         fi
         if [ $(head -c 4 "${OUTPUT_FILE}") != "%PDF" ]; then
             FAILED_FLAG=1
+            # cut before the PDF output starts and destroys the final logs
+            OUT_LOGS="$(cat "${OUTPUT_FILE}" | sed '/%PDF/q')"
             echo "Generated-not-a-pdf: $file"
+            echo "Logs (cut before PDF output eventually starts): $file"
             echo "---------------------------"
-            cat "${OUTPUT_FILE}"
+            echo "${OUT_LOGS}"
             echo "---------------------------"
             continue
         fi
@@ -96,9 +115,23 @@ for file in $EXAMPLE_FILES; do
             echo "Generated-invalid-file: $file"
         fi
     else
+        FAILED_FLAG=1
         echo "File-run-failed: $file"
+        ERROR_LOGS="$(cat "${OUTPUT_FILE_ERROR}")"
+        if [ ! -z "${ERROR_LOGS}" ]; then
+            echo "Logs: $file"
+            echo "---------------------------"
+            echo "${ERROR_LOGS}"
+            echo "---------------------------"
+        else
+            # cut before the PDF output starts and destroys the final logs
+            OUT_LOGS="$(cat "${OUTPUT_FILE}" | sed '/%PDF/q')"
+            echo "Logs: $file"
+            echo "---------------------------"
+            echo "${OUT_LOGS}"
+            echo "---------------------------"
+        fi
     fi
-    set -e
 done
 
 for file in $EXAMPLE_BARCODE_FILES; do
@@ -116,12 +149,12 @@ for file in $EXAMPLE_BARCODE_FILES; do
         -d pcov.directory="${ROOT_DIR}" \
         -d auto_prepend_file="${TESTS_DIR}/coverage.php" \
         "${ROOT_DIR}/$file" 1> "${OUTPUT_FILE}" 2> "${OUTPUT_FILE_ERROR}"
+    set -e
     if [ $? -eq 0 ]; then
         echo "File-run-passed: $file"
         ERROR_LOGS="$(cat "${OUTPUT_FILE_ERROR}")"
         if [ ! -z "${ERROR_LOGS}" ]; then
             FAILED_FLAG=1
-            set -e
             echo "Logs: $file"
             echo "---------------------------"
             echo "${ERROR_LOGS}"
@@ -132,26 +165,25 @@ for file in $EXAMPLE_BARCODE_FILES; do
         echo "File-run-failed: $file"
         ERROR_LOGS="$(cat "${OUTPUT_FILE_ERROR}")"
         if [ ! -z "${ERROR_LOGS}" ]; then
-            set -e
             echo "Logs: $file"
             echo "---------------------------"
             echo "${ERROR_LOGS}"
             echo "---------------------------"
         fi
-        OUT_LOGS="$(cat "${OUTPUT_FILE}")"
+        # cut before the PDF output starts and destroys the final logs
+        OUT_LOGS="$(cat "${OUTPUT_FILE}" | sed '/%PDF/q')"
         if [ ! -z "${OUT_LOGS}" ]; then
-            set -e
-            echo "Logs: $file"
+            echo "Logs (cut before PDF output eventually starts): $file"
             echo "---------------------------"
             echo "${OUT_LOGS}"
             echo "---------------------------"
         fi
     fi
-    set -e
 done
 
 cd - > /dev/null
 
 rm -rf "${TEMP_FOLDER}"
 
+echo "Exit code: ${FAILED_FLAG}"
 exit "${FAILED_FLAG}"
