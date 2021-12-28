@@ -17132,6 +17132,7 @@ class TCPDF {
 							}
 						}
 					}
+					$element = preg_replace("/&NBSP;/i", "&nbsp;", $element);
 				}
 				$dom[$key]['value'] = stripslashes($this->unhtmlentities($element));
 			}
