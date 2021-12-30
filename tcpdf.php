@@ -14530,7 +14530,7 @@ class TCPDF {
 					$patch_array[$i]['points'][$j] = $bpcd;
 				}
 				$this->gradients[$n]['stream'] .= chr((int) floor($patch_array[$i]['points'][$j] / 256));
-				$this->gradients[$n]['stream'] .= chr((int) floor($patch_array[$i]['points'][$j] % 256));
+				$this->gradients[$n]['stream'] .= chr((int) floor(intval($patch_array[$i]['points'][$j]) % 256));
 			}
 			$count_cols = count($patch_array[$i]['colors']);
 			for ($j=0; $j < $count_cols; ++$j) {
