@@ -44,12 +44,7 @@ if [ "$(php -r 'echo PHP_MAJOR_VERSION;')" = "5" ];then
 
     # 5.5, 5.4, 5.3
     if [ "$(php -r 'echo (PHP_MINOR_VERSION < 6) ? "true" : "false";')" = "true" ];then
-        # seems like there is no bcmath extension to be found
-        BCMATH_EXT=""
         IMAGICK_OR_GD="-dextension=imagick.so"
-        # Seems not to exist in 5.5, 5.4, 5.3
-        JSON_EXT=""
-        XML_EXT=""
     fi
 
 fi
