@@ -22,10 +22,12 @@ EXAMPLE_BARCODE_FILES="$(find examples/barcodes -type f -name 'example*.php' \
 TEMP_FOLDER="$(mktemp -d /tmp/TCPDF-tests.XXXXXXXXX)"
 OUTPUT_FILE="${TEMP_FOLDER}/output.pdf"
 OUTPUT_FILE_ERROR="${TEMP_FOLDER}/errors.txt"
-ROOT_DIR="$(php -r 'echo realpath(__DIR__);')"
+# Allows you to use PHP_BINARY="php8.1" ./tests/launch.sh
+PHP_BINARY="${PHP_BINARY:-php}"
+ROOT_DIR="$(${PHP_BINARY} -r 'echo realpath(__DIR__);')"
 TESTS_DIR="${ROOT_DIR}/tests/"
 
-PHP_EXT_DIR="$(php -r 'echo ini_get("extension_dir");')"
+PHP_EXT_DIR="$(${PHP_BINARY} -r 'echo ini_get("extension_dir");')"
 
 echo "php extension dir: ${PHP_EXT_DIR}"
 
@@ -36,27 +38,28 @@ COVERAGE_EXTENSION="-d extension=pcov.so"
 IMAGICK_OR_GD="-dextension=gd.so"
 JSON_EXT="-dextension=json.so"
 XML_EXT="-dextension=xml.so"
-if [ "$(php -r 'echo PHP_MAJOR_VERSION;')" = "5" ];then
+if [ "$(${PHP_BINARY} -r 'echo PHP_MAJOR_VERSION;')" = "5" ];then
     X_DEBUG_EXT="$(find ${PHP_EXT_DIR} -type f -name 'xdebug.so' || '')"
     echo "Xdebug found at: ${X_DEBUG_EXT}"
     # pcov does not exist for PHP 5
     COVERAGE_EXTENSION="-d zend_extension=${X_DEBUG_EXT} -d xdebug.mode=coverage"
 
     # 5.5, 5.4, 5.3
-    if [ "$(php -r 'echo (PHP_MINOR_VERSION < 6) ? "true" : "false";')" = "true" ];then
+    if [ "$(${PHP_BINARY} -r 'echo (PHP_MINOR_VERSION < 6) ? "true" : "false";')" = "true" ];then
         IMAGICK_OR_GD="-dextension=imagick.so"
     fi
 
 fi
 
 # PHP >= 8.x.x
-if [ "$(php -r 'echo (PHP_MAJOR_VERSION >= 8) ? "true" : "false";')" = "true" ];then
+if [ "$(${PHP_BINARY} -r 'echo (PHP_MAJOR_VERSION >= 8) ? "true" : "false";')" = "true" ];then
     # The json ext is bundled into PHP 8.0
     JSON_EXT=""
 fi
 
 echo "Root folder: ${ROOT_DIR}"
 echo "Temporary folder: ${TEMP_FOLDER}"
+echo "PHP version: $(${PHP_BINARY} -v)"
 
 FAILED_FLAG=0
 
@@ -64,13 +67,13 @@ cd "${ROOT_DIR}/examples"
 
 for file in $EXAMPLE_FILES; do
     echo "File: $file"
-    php -l "${ROOT_DIR}/$file" > /dev/null
+    ${PHP_BINARY} -l "${ROOT_DIR}/$file" > /dev/null
     if [ $? -eq 0 ]; then
         echo "File-lint-passed: $file"
     fi
     set +e
     # Some examples load a bit more into memory (this is why the limit is set to 1G)
-    php -n \
+    ${PHP_BINARY} -n \
         -d date.timezone=UTC \
         ${IMAGICK_OR_GD} ${COVERAGE_EXTENSION} \
         ${BCMATH_EXT} \
@@ -131,12 +134,12 @@ done
 
 for file in $EXAMPLE_BARCODE_FILES; do
     echo "File: $file"
-    php -l "${ROOT_DIR}/$file" > /dev/null
+    ${PHP_BINARY} -l "${ROOT_DIR}/$file" > /dev/null
     if [ $? -eq 0 ]; then
         echo "File-lint-passed: $file"
     fi
     set +e
-    php -n \
+    ${PHP_BINARY} -n \
         -d date.timezone=UTC \
         ${BCMATH_EXT} ${COVERAGE_EXTENSION} \
         -d display_errors=on \
