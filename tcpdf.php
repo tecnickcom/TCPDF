@@ -2596,7 +2596,7 @@ class TCPDF {
 	 * @since 1.0
 	 * @see SetLeftMargin(), SetTopMargin(), SetRightMargin(), SetAutoPageBreak()
 	 */
-	public function SetMargins($left, $top, $right=null, $keepmargins=false) {
+	public function setMargins($left, $top, $right=null, $keepmargins=false) {
 		//Set left, top and right margins
 		$this->lMargin = $left;
 		$this->tMargin = $top;
@@ -2618,7 +2618,7 @@ class TCPDF {
 	 * @since 1.4
 	 * @see SetTopMargin(), SetRightMargin(), SetAutoPageBreak(), SetMargins()
 	 */
-	public function SetLeftMargin($margin) {
+	public function setLeftMargin($margin) {
 		//Set left margin
 		$this->lMargin = $margin;
 		if (($this->page > 0) AND ($this->x < $margin)) {
@@ -2633,7 +2633,7 @@ class TCPDF {
 	 * @since 1.5
 	 * @see SetLeftMargin(), SetRightMargin(), SetAutoPageBreak(), SetMargins()
 	 */
-	public function SetTopMargin($margin) {
+	public function setTopMargin($margin) {
 		//Set top margin
 		$this->tMargin = $margin;
 		if (($this->page > 0) AND ($this->y < $margin)) {
@@ -2648,7 +2648,7 @@ class TCPDF {
 	 * @since 1.5
 	 * @see SetLeftMargin(), SetTopMargin(), SetAutoPageBreak(), SetMargins()
 	 */
-	public function SetRightMargin($margin) {
+	public function setRightMargin($margin) {
 		$this->rMargin = $margin;
 		if (($this->page > 0) AND ($this->x > ($this->w - $margin))) {
 			$this->x = $this->w - $margin;
@@ -2662,7 +2662,7 @@ class TCPDF {
 	 * @since 2.1.000 (2008-01-09)
 	 * @see getCellPaddings(), setCellPaddings()
 	 */
-	public function SetCellPadding($pad) {
+	public function setCellPadding($pad) {
 		if ($pad >= 0) {
 			$this->cell_padding['L'] = $pad;
 			$this->cell_padding['T'] = $pad;
@@ -2852,7 +2852,7 @@ class TCPDF {
 	 * @since 1.0
 	 * @see Cell(), MultiCell(), AcceptPageBreak()
 	 */
-	public function SetAutoPageBreak($auto, $margin=0) {
+	public function setAutoPageBreak($auto, $margin=0) {
 		$this->AutoPageBreak = $auto ? true : false;
 		$this->bMargin = $margin;
 		$this->PageBreakTrigger = $this->h - $margin;
@@ -2876,7 +2876,7 @@ class TCPDF {
 	 * @public
 	 * @since 1.2
 	 */
-	public function SetDisplayMode($zoom, $layout='SinglePage', $mode='UseNone') {
+	public function setDisplayMode($zoom, $layout='SinglePage', $mode='UseNone') {
 		if (($zoom == 'fullpage') OR ($zoom == 'fullwidth') OR ($zoom == 'real') OR ($zoom == 'default') OR (!is_string($zoom))) {
 			$this->ZoomMode = $zoom;
 		} else {
@@ -2893,7 +2893,7 @@ class TCPDF {
 	 * @public
 	 * @since 1.4
 	 */
-	public function SetCompression($compress=true) {
+	public function setCompression($compress=true) {
 		$this->compress = false;
 		if (function_exists('gzcompress')) {
 			if ($compress) {
@@ -2921,7 +2921,7 @@ class TCPDF {
 	 * @since 5.9.027 (2010-12-01)
 	 * @public
 	 */
-	public function SetDocInfoUnicode($unicode=true) {
+	public function setDocInfoUnicode($unicode=true) {
 		$this->docinfounicode = $unicode ? true : false;
 	}
 
@@ -2932,7 +2932,7 @@ class TCPDF {
 	 * @since 1.2
 	 * @see SetAuthor(), SetCreator(), SetKeywords(), SetSubject()
 	 */
-	public function SetTitle($title) {
+	public function setTitle($title) {
 		$this->title = $title;
 	}
 
@@ -2943,7 +2943,7 @@ class TCPDF {
 	 * @since 1.2
 	 * @see SetAuthor(), SetCreator(), SetKeywords(), SetTitle()
 	 */
-	public function SetSubject($subject) {
+	public function setSubject($subject) {
 		$this->subject = $subject;
 	}
 
@@ -2954,7 +2954,7 @@ class TCPDF {
 	 * @since 1.2
 	 * @see SetCreator(), SetKeywords(), SetSubject(), SetTitle()
 	 */
-	public function SetAuthor($author) {
+	public function setAuthor($author) {
 		$this->author = $author;
 	}
 
@@ -2965,7 +2965,7 @@ class TCPDF {
 	 * @since 1.2
 	 * @see SetAuthor(), SetCreator(), SetSubject(), SetTitle()
 	 */
-	public function SetKeywords($keywords) {
+	public function setKeywords($keywords) {
 		$this->keywords = $keywords;
 	}
 
@@ -2976,7 +2976,7 @@ class TCPDF {
 	 * @since 1.2
 	 * @see SetAuthor(), SetKeywords(), SetSubject(), SetTitle()
 	 */
-	public function SetCreator($creator) {
+	public function setCreator($creator) {
 		$this->creator = $creator;
 	}
 
@@ -2987,7 +2987,7 @@ class TCPDF {
 	 * @public
 	 * @since 6.4
 	 */
-	public function SetAllowLocalFiles($allowLocalFiles) {
+	public function setAllowLocalFiles($allowLocalFiles) {
 		$this->allowLocalFiles = (bool) $allowLocalFiles;
 	}
 
@@ -3855,7 +3855,7 @@ class TCPDF {
 	 * @since 4.0.024 (2008-09-12)
 	 * @see AddSpotColor(), SetFillSpotColor(), SetTextSpotColor()
 	 */
-	public function SetDrawSpotColor($name, $tint=100) {
+	public function setDrawSpotColor($name, $tint=100) {
 		$this->setSpotColor('draw', $name, $tint);
 	}
 
@@ -3867,7 +3867,7 @@ class TCPDF {
 	 * @since 4.0.024 (2008-09-12)
 	 * @see AddSpotColor(), SetDrawSpotColor(), SetTextSpotColor()
 	 */
-	public function SetFillSpotColor($name, $tint=100) {
+	public function setFillSpotColor($name, $tint=100) {
 		$this->setSpotColor('fill', $name, $tint);
 	}
 
@@ -3879,7 +3879,7 @@ class TCPDF {
 	 * @since 4.0.024 (2008-09-12)
 	 * @see AddSpotColor(), SetDrawSpotColor(), SetFillSpotColor()
 	 */
-	public function SetTextSpotColor($name, $tint=100) {
+	public function setTextSpotColor($name, $tint=100) {
 		$this->setSpotColor('text', $name, $tint);
 	}
 
@@ -3925,7 +3925,7 @@ class TCPDF {
 	 * @since 3.1.000 (2008-06-11)
 	 * @see SetDrawColor()
 	 */
-	public function SetDrawColorArray($color, $ret=false) {
+	public function setDrawColorArray($color, $ret=false) {
 		return $this->setColorArray('draw', $color, $ret);
 	}
 
@@ -3939,7 +3939,7 @@ class TCPDF {
 	 * @since 3.1.000 (2008-6-11)
 	 * @see SetFillColor()
 	 */
-	public function SetFillColorArray($color, $ret=false) {
+	public function setFillColorArray($color, $ret=false) {
 		return $this->setColorArray('fill', $color, $ret);
 	}
 
@@ -3952,7 +3952,7 @@ class TCPDF {
 	 * @since 3.1.000 (2008-6-11)
 	 * @see SetFillColor()
 	 */
-	public function SetTextColorArray($color, $ret=false) {
+	public function setTextColorArray($color, $ret=false) {
 		return $this->setColorArray('text', $color, $ret);
 	}
 
@@ -4059,7 +4059,7 @@ class TCPDF {
 	 * @since 1.3
 	 * @see SetDrawColorArray(), SetFillColor(), SetTextColor(), Line(), Rect(), Cell(), MultiCell()
 	 */
-	public function SetDrawColor($col1=0, $col2=-1, $col3=-1, $col4=-1, $ret=false, $name='') {
+	public function setDrawColor($col1=0, $col2=-1, $col3=-1, $col4=-1, $ret=false, $name='') {
 		return $this->setColor('draw', $col1, $col2, $col3, $col4, $ret, $name);
 	}
 
@@ -4076,7 +4076,7 @@ class TCPDF {
 	 * @since 1.3
 	 * @see SetFillColorArray(), SetDrawColor(), SetTextColor(), Rect(), Cell(), MultiCell()
 	 */
-	public function SetFillColor($col1=0, $col2=-1, $col3=-1, $col4=-1, $ret=false, $name='') {
+	public function setFillColor($col1=0, $col2=-1, $col3=-1, $col4=-1, $ret=false, $name='') {
 		return $this->setColor('fill', $col1, $col2, $col3, $col4, $ret, $name);
 	}
 
@@ -4093,7 +4093,7 @@ class TCPDF {
 	 * @since 1.3
 	 * @see SetTextColorArray(), SetDrawColor(), SetFillColor(), Text(), Cell(), MultiCell()
 	 */
-	public function SetTextColor($col1=0, $col2=-1, $col3=-1, $col4=-1, $ret=false, $name='') {
+	public function setTextColor($col1=0, $col2=-1, $col3=-1, $col4=-1, $ret=false, $name='') {
 		return $this->setColor('text', $col1, $col2, $col3, $col4, $ret, $name);
 	}
 
@@ -4504,7 +4504,7 @@ class TCPDF {
 	 * @since 1.0
 	 * @see AddFont(), SetFontSize()
 	 */
-	public function SetFont($family, $style='', $size=null, $fontfile='', $subset='default', $out=true) {
+	public function setFont($family, $style='', $size=null, $fontfile='', $subset='default', $out=true) {
 		//Select a font; size given in points
 		if ($size === null) {
 			$size = $this->FontSizePt;
@@ -4532,7 +4532,7 @@ class TCPDF {
 	 * @since 1.0
 	 * @see SetFont()
 	 */
-	public function SetFontSize($size, $out=true) {
+	public function setFontSize($size, $out=true) {
 		$size = (float)$size;
 		// font size in points
 		$this->FontSizePt = $size;
@@ -4750,7 +4750,7 @@ class TCPDF {
 	 * @public
 	 * @since 4.5.025
 	 */
-	public function SetDefaultMonospacedFont($font) {
+	public function setDefaultMonospacedFont($font) {
 		$this->default_monospaced_font = $font;
 	}
 
@@ -4777,7 +4777,7 @@ class TCPDF {
 	 * @since 1.5
 	 * @see AddLink()
 	 */
-	public function SetLink($link, $y=0, $page=-1) {
+	public function setLink($link, $y=0, $page=-1) {
 		$fixed = false;
 		if (!empty($page) AND (substr($page, 0, 1) == '*')) {
 			$page = intval(substr($page, 1));
@@ -7504,7 +7504,7 @@ class TCPDF {
 	 * @since 1.2
 	 * @see GetX(), GetY(), SetY(), SetXY()
 	 */
-	public function SetX($x, $rtloff=false) {
+	public function setX($x, $rtloff=false) {
 		$x = floatval($x);
 		if (!$rtloff AND $this->rtl) {
 			if ($x >= 0) {
@@ -7537,7 +7537,7 @@ class TCPDF {
 	 * @since 1.0
 	 * @see GetX(), GetY(), SetY(), SetXY()
 	 */
-	public function SetY($y, $resetx=true, $rtloff=false) {
+	public function setY($y, $resetx=true, $rtloff=false) {
 		$y = floatval($y);
 		if ($resetx) {
 			//reset x
@@ -7570,7 +7570,7 @@ class TCPDF {
 	 * @since 1.2
 	 * @see SetX(), SetY()
 	 */
-	public function SetXY($x, $y, $rtloff=false) {
+	public function setXY($x, $y, $rtloff=false) {
 		$this->SetY($y, false, $rtloff);
 		$this->SetX($x, $rtloff);
 	}
@@ -7582,7 +7582,7 @@ class TCPDF {
 	 * @since 5.9.186 (2012-09-13)
 	 * @see setAbsX(), setAbsY(), SetAbsXY()
 	 */
-	public function SetAbsX($x) {
+	public function setAbsX($x) {
 		$this->x = floatval($x);
 	}
 
@@ -7593,7 +7593,7 @@ class TCPDF {
 	 * @since 5.9.186 (2012-09-13)
 	 * @see setAbsX(), setAbsY(), SetAbsXY()
 	 */
-	public function SetAbsY($y) {
+	public function setAbsY($y) {
 		$this->y = floatval($y);
 	}
 
@@ -7605,7 +7605,7 @@ class TCPDF {
 	 * @since 5.9.186 (2012-09-13)
 	 * @see setAbsX(), setAbsY(), SetAbsXY()
 	 */
-	public function SetAbsXY($x, $y) {
+	public function setAbsXY($x, $y) {
 		$this->SetAbsX($x);
 		$this->SetAbsY($y);
 	}
@@ -10951,7 +10951,7 @@ class TCPDF {
 	 * @since 2.0.000 (2008-01-02)
 	 * @author Nicola Asuni
 	 */
-	public function SetProtection($permissions=array('print', 'modify', 'copy', 'annot-forms', 'fill-forms', 'extract', 'assemble', 'print-high'), $user_pass='', $owner_pass=null, $mode=0, $pubkeys=null) {
+	public function setProtection($permissions=array('print', 'modify', 'copy', 'annot-forms', 'fill-forms', 'extract', 'assemble', 'print-high'), $user_pass='', $owner_pass=null, $mode=0, $pubkeys=null) {
 		if ($this->pdfa_mode) {
 			// encryption is not allowed in PDF/A mode
 			return;
@@ -11391,7 +11391,7 @@ class TCPDF {
 	 * @since 1.0
 	 * @see Line(), Rect(), Cell(), MultiCell()
 	 */
-	public function SetLineWidth($width) {
+	public function setLineWidth($width) {
 		//Set line width
 		$this->LineWidth = $width;
 		$this->linestyleWidth = sprintf('%F w', ($width * $this->k));
@@ -11434,7 +11434,7 @@ class TCPDF {
 	 * @public
 	 * @since 2.1.000 (2008-01-08)
 	 */
-	public function SetLineStyle($style, $ret=false) {
+	public function setLineStyle($style, $ret=false) {
 		$s = ''; // string to be returned
 		if (!is_array($style)) {
 			return $s;
@@ -20347,7 +20347,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @public
 	 * @since 4.2.000 (2008-10-29)
 	 */
-	public function SetBooklet($booklet=true, $inner=-1, $outer=-1) {
+	public function setBooklet($booklet=true, $inner=-1, $outer=-1) {
 		$this->booklet = $booklet;
 		if ($inner >= 0) {
 			$this->lMargin = $inner;
