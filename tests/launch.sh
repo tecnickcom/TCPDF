@@ -73,7 +73,9 @@ for file in $EXAMPLE_FILES; do
     fi
     set +e
     # Some examples load a bit more into memory (this is why the limit is set to 1G)
+    # Avoid side effects on classes installed on the system, set include_path to a folder wihout php classes (include_path)
     ${PHP_BINARY} -n \
+        -d include_path="${TEMP_FOLDER}" \
         -d date.timezone=UTC \
         ${IMAGICK_OR_GD} ${COVERAGE_EXTENSION} \
         ${BCMATH_EXT} \
@@ -139,7 +141,9 @@ for file in $EXAMPLE_BARCODE_FILES; do
         echo "File-lint-passed: $file"
     fi
     set +e
+    # Avoid side effects on classes installed on the system, set include_path to a folder wihout php classes (include_path)
     ${PHP_BINARY} -n \
+        -d include_path="${TEMP_FOLDER}" \
         -d date.timezone=UTC \
         ${BCMATH_EXT} ${COVERAGE_EXTENSION} \
         -d display_errors=on \
