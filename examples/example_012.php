@@ -91,7 +91,7 @@ $pdf->Rect(145, 10, 40, 20, 'D', array('all' => $style3));
 
 // Curve
 $pdf->Text(5, 34, 'Curve examples');
-$pdf->Curve(5, 40, 30, 55, 70, 45, 60, 75, null, $style6);
+$pdf->Curve(5, 40, 30, 55, 70, 45, 60, 75, '', $style6);
 $pdf->Curve(80, 40, 70, 75, 150, 45, 100, 75, 'F', $style6);
 $pdf->Curve(140, 40, 150, 55, 180, 45, 200, 75, 'DF', $style6, array(200, 220, 200));
 
@@ -99,18 +99,18 @@ $pdf->Curve(140, 40, 150, 55, 180, 45, 200, 75, 'DF', $style6, array(200, 220, 2
 $pdf->Text(5, 79, 'Circle and ellipse examples');
 $pdf->setLineStyle($style5);
 $pdf->Circle(25,105,20);
-$pdf->Circle(25,105,10, 90, 180, null, $style6);
+$pdf->Circle(25,105,10, 90, 180, '', $style6);
 $pdf->Circle(25,105,10, 270, 360, 'F');
 $pdf->Circle(25,105,10, 270, 360, 'C', $style6);
 
 $pdf->setLineStyle($style5);
 $pdf->Ellipse(100,103,40,20);
-$pdf->Ellipse(100,105,20,10, 0, 90, 180, null, $style6);
+$pdf->Ellipse(100,105,20,10, 0, 90, 180, '', $style6);
 $pdf->Ellipse(100,105,20,10, 0, 270, 360, 'DF', $style6);
 
 $pdf->setLineStyle($style5);
 $pdf->Ellipse(175,103,30,15,45);
-$pdf->Ellipse(175,105,15,7.50, 45, 90, 180, null, $style6);
+$pdf->Ellipse(175,105,15,7.50, 45, 90, 180, '', $style6);
 $pdf->Ellipse(175,105,15,7.50, 45, 270, 360, 'F', $style6, array(220, 200, 200));
 
 // Polygon
@@ -130,9 +130,9 @@ $pdf->Text(5, 169, 'Regular polygon examples');
 $pdf->setLineStyle($style5);
 $pdf->RegularPolygon(20, 190, 15, 6, 0, 1, 'F');
 $pdf->RegularPolygon(55, 190, 15, 6);
-$pdf->RegularPolygon(55, 190, 10, 6, 45, 0, 'DF', array($style6, 0, $style7, 0, $style7, $style7));
-$pdf->RegularPolygon(90, 190, 15, 3, 0, 1, 'DF', array('all' => $style5), array(200, 220, 200), 'F', array(255, 200, 200));
-$pdf->RegularPolygon(125, 190, 15, 4, 30, 1, null, array('all' => $style5), null, null, $style6);
+$pdf->RegularPolygon(55, 190, 10, 6, 45, false, 'DF', array($style6, 0, $style7, 0, $style7, $style7));
+$pdf->RegularPolygon(90, 190, 15, 3, 0, true, 'DF', array('all' => $style5), array(200, 220, 200), 'F', array(255, 200, 200));
+$pdf->RegularPolygon(125, 190, 15, 4, 30, true, '', array('all' => $style5), array(), '', $style6);
 $pdf->RegularPolygon(160, 190, 15, 10);
 
 // Star polygon
@@ -140,9 +140,9 @@ $pdf->Text(5, 209, 'Star polygon examples');
 $pdf->setLineStyle($style5);
 $pdf->StarPolygon(20, 230, 15, 20, 3, 0, 1, 'F');
 $pdf->StarPolygon(55, 230, 15, 12, 5);
-$pdf->StarPolygon(55, 230, 7, 12, 5, 45, 0, 'DF', array('all' => $style7), array(220, 220, 200), 'F', array(255, 200, 200));
-$pdf->StarPolygon(90, 230, 15, 20, 6, 0, 1, 'DF', array('all' => $style5), array(220, 220, 200), 'F', array(255, 200, 200));
-$pdf->StarPolygon(125, 230, 15, 5, 2, 30, 1, null, array('all' => $style5), null, null, $style6);
+$pdf->StarPolygon(55, 230, 7, 12, 5, 45, false, 'DF', array('all' => $style7), array(220, 220, 200), 'F', array(255, 200, 200));
+$pdf->StarPolygon(90, 230, 15, 20, 6, 0, true, 'DF', array('all' => $style5), array(220, 220, 200), 'F', array(255, 200, 200));
+$pdf->StarPolygon(125, 230, 15, 5, 2, 30, true, '', array('all' => $style5), array(), '', $style6);
 $pdf->StarPolygon(160, 230, 15, 10, 3);
 $pdf->StarPolygon(160, 230, 7, 50, 26);
 
@@ -151,7 +151,7 @@ $pdf->Text(5, 249, 'Rounded rectangle examples');
 $pdf->setLineStyle(array('width' => 0.5, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)));
 $pdf->RoundedRect(5, 255, 40, 30, 3.50, '1111', 'DF');
 $pdf->RoundedRect(50, 255, 40, 30, 6.50, '1000');
-$pdf->RoundedRect(95, 255, 40, 30, 10.0, '1111', null, $style6);
+$pdf->RoundedRect(95, 255, 40, 30, 10.0, '1111', '', $style6);
 $pdf->RoundedRect(140, 255, 40, 30, 8.0, '0101', 'DF', $style6, array(200, 200, 200));
 
 // Arrows

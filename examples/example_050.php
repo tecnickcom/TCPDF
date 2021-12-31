@@ -160,7 +160,7 @@ $pdf->Text(20, 205, 'QRCODE H');
  	o5 = File Size (numeric);
  	o6 = Checksum (numeric).
 
- Parameters t, s and f are required for a Macro Control Block, all other parametrs are optional.
+ Parameters t, s and f are required for a Macro Control Block, all other parameters are optional.
  To use a comma character ',' on text options, replace it with the character 255: "\xff".
 
 */
