@@ -16017,8 +16017,14 @@ class TCPDF {
 	 */
 	protected function getCSSBorderStyle($cssborder) {
 		$bprop = preg_split('/[\s]+/', trim($cssborder));
+		$count = count($bprop);
+		if ($count > 0 && $bprop[$count - 1] === '!important') {
+			unset($bprop[$count - 1]);
+			--$count;
+		}
+
 		$border = array(); // value to be returned
-		switch (count($bprop)) {
+		switch ($count) {
 			case 2: {
 				$width = 'medium';
 				$style = $bprop[0];
