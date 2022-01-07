@@ -16019,12 +16019,6 @@ class TCPDF {
 		$bprop = preg_split('/[\s]+/', trim($cssborder));
 		$border = array(); // value to be returned
 		switch (count($bprop)) {
-			case 3: {
-				$width = $bprop[0];
-				$style = $bprop[1];
-				$color = $bprop[2];
-				break;
-			}
 			case 2: {
 				$width = 'medium';
 				$style = $bprop[0];
@@ -16037,10 +16031,16 @@ class TCPDF {
 				$color = 'black';
 				break;
 			}
-			default: {
+			case 0: {
 				$width = 'medium';
 				$style = 'solid';
 				$color = 'black';
+				break;
+			}
+			default: {
+				$width = $bprop[0];
+				$style = $bprop[1];
+				$color = $bprop[2];
 				break;
 			}
 		}
