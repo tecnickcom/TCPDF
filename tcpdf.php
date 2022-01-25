@@ -177,12 +177,14 @@ class TCPDF {
 	/**
 	 * Page cache file
 	 * @protected
+	 * @var resource|null
 	 */
 	protected $pageCacheFile = null;
 
 	/**
 	 * Page cache file is readonly
 	 * @protected
+	 * @var bool
 	 */
 	protected $roPageCacheFile = false;
 
@@ -7916,14 +7918,16 @@ class TCPDF {
 	 * Update page cache file
 	 *
 	 * @param int $memSizeInBytes Memory size to use in bytes
+	 * @return void
 	 */
 	public function usePageCacheFile($memSizeInBytes)
 	{
 		$this->pageCacheFile = fopen('php://temp/maxmemory:' . $memSizeInBytes, 'w+');
-		if ($this->pageCacheFile === false)
+		if ($this->pageCacheFile === false) {
 			$this->pageCacheFile = null;
-		else
+		} else {
 			self::$pageCacheRefCnts[(int)$this->pageCacheFile] = 1;
+		}
 	}
 
 	/**
@@ -7934,8 +7938,9 @@ class TCPDF {
 		if ($this->pageCacheFile !== null)
 		{
 			self::$pageCacheRefCnts[(int)$this->pageCacheFile]--;
-			if (self::$pageCacheRefCnts[(int)$this->pageCacheFile] == 0)
+			if (self::$pageCacheRefCnts[(int)$this->pageCacheFile] == 0) {
 				@fclose($this->pageCacheFile); // Suppress error since this might be the end of the PHP script
+			}
 			$this->pageCacheFile = null;
 			$this->pageCacheIndex = [];
 		}
@@ -21030,10 +21035,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						$origPageCacheFile = $this->pageCacheFile;
 						self::$pageCacheRefCnts[(int)$this->pageCacheFile]--;
 						$this->pageCacheFile = fopen('php://temp', 'w+');
-						if ($this->pageCacheFile === false)
+						if ($this->pageCacheFile === false) {
 							$this->pageCacheFile = null;
-						else
-						{
+						} else {
 							self::$pageCacheRefCnts[(int)$this->pageCacheFile] = 1;
 							// Copy data
 							fseek($origPageCacheFile, 0, SEEK_SET);
@@ -21339,8 +21343,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			return false;
 		}
 		// delete current page
-		if (isset($this->pages[$page]))
+		if (isset($this->pages[$page])) {
 			unset($this->pages[$page]);
+		}
 		unset($this->pagedim[$page]);
 		unset($this->pagelen[$page]);
 		unset($this->intmrk[$page]);
@@ -21421,8 +21426,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				}
 			}
 			// remove last page
-			if (isset($this->pages[$this->numpages]))
+			if (isset($this->pages[$this->numpages])) {
 				unset($this->pages[$this->numpages]);
+			}
 			unset($this->pagedim[$this->numpages]);
 			unset($this->pagelen[$this->numpages]);
 			unset($this->intmrk[$this->numpages]);
