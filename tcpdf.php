@@ -7939,14 +7939,22 @@ class TCPDF {
 		{
 			self::$pageCacheRefCnts[(int)$this->pageCacheFile]--;
 			if (self::$pageCacheRefCnts[(int)$this->pageCacheFile] == 0) {
-				@fclose($this->pageCacheFile); // Suppress error since this might be the end of the PHP script
+				// This might be the end of the PHP script and the temporary file may be
+				// removed before this class, so check if it's still a valid resource.
+				if (is_resource($this->pageCacheFile)) {
+					fclose($this->pageCacheFile);
+				}
 			}
 			$this->pageCacheFile = null;
 			$this->pageCacheIndex = [];
 		}
 	}
 
-	/** Handle cloning */
+	/**
+	 * Handle cloning. We need to keep track of if the page cache file is shared
+	 * with cloned instances. Use copy-on-write, where we share the cache until we
+	 * need to write to it.
+	 */
 	public function __clone()
 	{
 		// Update ref count
@@ -21026,29 +21034,37 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			// Write last page to cache
 			if ($this->pageCacheFile !== null)
 			{
+				// If we still have the last page, write it to cache file and remove from memory
 				$lastPage = $page - 1;
 				if ($lastPage > 1 && isset($this->pages[$lastPage]))
 				{
-					// Duplicate file if needed
+					// Duplicate file if this page cache file was shared
 					if ($this->roPageCacheFile)
 					{
 						$origPageCacheFile = $this->pageCacheFile;
+						// Remove reference count to file and open a new page cache file
 						self::$pageCacheRefCnts[(int)$this->pageCacheFile]--;
 						$this->pageCacheFile = fopen('php://temp', 'w+');
 						if ($this->pageCacheFile === false) {
 							$this->pageCacheFile = null;
 						} else {
+							// Add reference to new page cache file
 							self::$pageCacheRefCnts[(int)$this->pageCacheFile] = 1;
-							// Copy data
+							// Copy data from old page cache file to new one
 							fseek($origPageCacheFile, 0, SEEK_SET);
-							while (($copyContent = fread($origPageCacheFile, 8192)) != false)
+							while (($copyContent = fread($origPageCacheFile, 8192)) != false) {
 								fwrite($this->pageCacheFile, $copyContent);
+							}
 						}
+						// Now that we copied it, the cache file is no longer read-only
 						$this->roPageCacheFile = false;
 					}
 
+					// Write the page to the end of the page cache
 					fseek($this->pageCacheFile, 0, SEEK_END);
+					// Keep track of where in the page cache this is
 					$this->pageCacheIndex[$lastPage] = [ftell($this->pageCacheFile), strlen($this->pages[$lastPage])];
+					// Write and remove from local memory
 					fwrite($this->pageCacheFile, $this->pages[$lastPage]);
 					unset($this->pages[$lastPage]);
 				}
