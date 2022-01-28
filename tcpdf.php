@@ -191,6 +191,7 @@ class TCPDF {
 	/**
 	 * Page cache index
 	 * @protected
+	 * @var array<int,int>
 	 */
 	protected $pageCacheIndex = array();
 
@@ -7912,7 +7913,7 @@ class TCPDF {
 	}
 
 	/** Page cache reference counts */
-	protected static $pageCacheRefCnts = [];
+	protected static $pageCacheRefCnts = array();
 
 	/**
 	 * Update page cache file
@@ -7946,7 +7947,7 @@ class TCPDF {
 				}
 			}
 			$this->pageCacheFile = null;
-			$this->pageCacheIndex = [];
+			$this->pageCacheIndex = array();
 		}
 	}
 
