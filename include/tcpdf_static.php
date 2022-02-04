@@ -7,7 +7,7 @@
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
-// Copyright (C) 2002-2015 Nicola Asuni - Tecnick.com LTD
+// Copyright (C) 2002-2021 Nicola Asuni - Tecnick.com LTD
 //
 // This file is part of TCPDF software library.
 //
@@ -55,7 +55,7 @@ class TCPDF_STATIC {
 	 * Current TCPDF version.
 	 * @private static
 	 */
-	private static $tcpdf_version = '6.4.2';
+	private static $tcpdf_version = '6.4.4';
 
 	/**
 	 * String alias for total number of pages.
@@ -506,7 +506,7 @@ class TCPDF_STATIC {
 			return $out;
 		}
 		if ($last_enc_key != $key) {
-			$k = str_repeat($key, ((256 / strlen($key)) + 1));
+			$k = str_repeat($key, (int) ((256 / strlen($key)) + 1));
 			$rc4 = range(0, 255);
 			$j = 0;
 			for ($i = 0; $i < 256; ++$i) {
