@@ -1151,7 +1151,7 @@ class TCPDF_FONTS {
 								$subsetglyphs[$g] = true;
 							}
 						}
-					}	
+					}
 					break;
 				}
 				case 6: { // Format 6: Trimmed table mapping
@@ -2000,10 +2000,10 @@ class TCPDF_FONTS {
 	public static function UTF8StringToArray($str, $isunicode, &$currentfont) {
 		if ($isunicode) {
 			// requires PCRE unicode support turned on
-			$chars = TCPDF_STATIC::pregSplit('//','u', $str, -1, PREG_SPLIT_NO_EMPTY);
+			$chars = TCPDF_STATIC::pregSplit('//','u', $str ?? '', -1, PREG_SPLIT_NO_EMPTY);
 			$carr = array_map(array('TCPDF_FONTS', 'uniord'), $chars);
 		} else {
-			$chars = str_split($str);
+			$chars = str_split($str ?? '');
 			$carr = array_map('ord', $chars);
 		}
 		if (is_array($currentfont['subsetchars']) && is_array($carr)) {
