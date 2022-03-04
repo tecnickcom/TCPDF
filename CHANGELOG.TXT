@@ -1,9 +1,40 @@
+6.4.4 (2021-12-31)
+	- PHP 8.1 fixes
 
-6.4.2 (2021-04-02)
+6.4.3 (2021-12-28)
+	- Fix MultiCell PHPDoc typehint (#407)
+	- Fix type hint for \TCPDF_STATIC::_freadint (#414)
+	- Footer and Header font phpdoc fixes + constructor $pdfa phpdoc fix + setHeaderData lw param fix (#402)
+	- Fix text-annotation state options (#412)
+	- Fix - Named links have been broken. This fixes. (#415)
+	- Fixed type in comment for $lw header image logo width in mm
+	- Change Set to set. Fixes #419 (#421)
+	- Fix failing tests and failing tests not marking exit code as 1 (#426)
+	- Fix phpdoc and prefer null as default value (#444)
+	- Run on PHP 8.1 normally and add nightly PHP as allowed to fail (#452)
+	- Fix AES128 encryption if the OpenSSL extension is installed (#453)
+	- Explicitly cast values to int for imagesetpixel (#460)
+	- Fix cell_height_ratio type (#405)
+	- Leave &NBSP; lowercase when using text-transform (#403)
+
+6.4.2 (2021-07-20)
 	- Fix PHP 8.1 type error with TCPDF_STATIC::pregSplit on preg_split
 	- Fix a PHP array offset error
 	- Fixed phpdoc blocks
 	- Drop a PHP 4 polyfill and add a .gitattributes file
+	- Added a test-suite
+	- Removed pointless assignments
+	- Fix docblock spelling error
+	- Update version info
+	- Fix color being filled to type 0 with PHP 8
+	- Fix warnings for undefined tags for $lineStyle
+	- Normalized composer.json
+	- Allowed transparency in PDF/A-2 and PDF/A-3
+	- Add a TCPDF composer example
+	- Fixed implicit conversion from float to int for PHP 8.1
+	- Removed status.txt from font directories, because of filesize
+	- Fixed type hints
+	- Removed "U" modifier from regexes
 
 6.4.1 (2021-03-27)
 	- Update tcpdf version (no code changes)

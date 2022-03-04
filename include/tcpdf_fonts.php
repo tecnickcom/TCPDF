@@ -1787,7 +1787,7 @@ class TCPDF_FONTS {
 
 	/**
 	 * Extract a slice of the $strarr array and return it as string.
-	 * @param string $strarr The input array of characters.
+	 * @param string[] $strarr The input array of characters.
 	 * @param int $start the starting element of $strarr.
 	 * @param int $end first element that will not be returned.
 	 * @param boolean $unicode True if we are in unicode mode, false otherwise.
@@ -1810,7 +1810,7 @@ class TCPDF_FONTS {
 
 	/**
 	 * Extract a slice of the $uniarr array and return it as string.
-	 * @param string $uniarr The input array of characters.
+	 * @param string[] $uniarr The input array of characters.
 	 * @param int $start the starting element of $strarr.
 	 * @param int $end first element that will not be returned.
 	 * @return string Return part of a string
@@ -1857,9 +1857,9 @@ class TCPDF_FONTS {
 	}
 
 	/**
-	 * Converts UTF-8 characters array to array of Latin1 string<br>
+	 * Converts UTF-8 characters array to Latin1 string<br>
 	 * @param array $unicode array containing UTF-8 unicode values
-	 * @return array
+	 * @return string
 	 * @author Nicola Asuni
 	 * @since 4.8.023 (2010-01-15)
 	 * @public static

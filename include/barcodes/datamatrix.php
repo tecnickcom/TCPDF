@@ -359,7 +359,7 @@ class Datamatrix {
 	 * @param int $b second number to multiply.
 	 * @param array $log Log table.
 	 * @param array $alog Anti-Log table.
-	 * @param array $gf Number of Factors of the Reed-Solomon polynomial.
+	 * @param int $gf Number of Factors of the Reed-Solomon polynomial.
 	 * @return int product
 	 * @protected
 	 */
@@ -686,7 +686,7 @@ class Datamatrix {
 	/**
 	 * Choose the minimum matrix size and return the max number of data codewords.
 	 * @param int $numcw Number of current codewords.
-	 * @return number of data codewords in matrix
+	 * @return int number of data codewords in matrix
 	 * @protected
 	 */
 	protected function getMaxDataCodewords($numcw) {
