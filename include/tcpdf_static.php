@@ -1887,7 +1887,8 @@ class TCPDF_STATIC {
 		if (isset($urlData['query']) && $urlData['query']) {
 			$urlQueryData = array();
 			parse_str(urldecode($urlData['query']), $urlQueryData);
-			$updatedUrl = $urlData['scheme'] . '://' . $urlData['host'] . $urlData['path'] . '?' . http_build_query($urlQueryData);
+			$port = isset($urlData['port']) ? ':'.$urlData['port'] : '';
+			$updatedUrl = $urlData['scheme'].'://'.$urlData['host'].$port.$urlData['path'].'?'.http_build_query($urlQueryData);
 		} else {
 			$updatedUrl = $url;
 		}
