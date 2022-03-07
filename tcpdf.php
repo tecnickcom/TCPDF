@@ -136,6 +136,14 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  */
 class TCPDF {
 
+	// constants
+	
+	const BASIC="BASIC";
+	const MINIMUM="MINIMUM";
+	const EXTENDED="EXTENDED";
+	const BASICWL="BASICWL";
+	const EN16931="EN16931";
+
 	// Protected properties
 
 	/**
@@ -9613,6 +9621,73 @@ class TCPDF {
 		}else{
 			$this->custom_xmp_rdf = $xmp;
 		}
+	}
+
+	/**
+	 * Configure Factur X pdfaExtension:schemas in xml rdf
+	 * Set it as custom_xmp_rdf
+	 * Return it if you want to complete it and set it again into custom_xmp_rdf with TCPDF::setExtraXMPRDF
+	 * @param string $xmlAttachmentFileName the file name of the xml that you attached to this file for Factur X
+	 * @param string $conformanceLevel the Factur X Conformance Level you want to use, some of them are purposed in const in the class
+	 * @param string $xmlnsZf the url of xmlns:zf you want to use
+	 * @param string $version the version of Factur X you are targetting
+	 * @param string $documentType the of document your Factur X is, probably an Invoice
+	 */
+	public function setFacturXXMPRDF(
+		$xmlAttachmentFileName,
+		$conformanceLevel = self::BASIC,
+		$xmlnsZf="urn:factur-x:pdfa:CrossIndustryDocument:invoice:1p0#",
+		$version="1.0",
+		$documentType = "INVOICE"
+	){
+		$xmp = "\t\t" . '<rdf:Description rdf:about="" xmlns:pdfaExtension="http://www.aiim.org/pdfa/ns/extension/" xmlns:pdfaSchema="http://www.aiim.org/pdfa/ns/schema#" xmlns:pdfaProperty="http://www.aiim.org/pdfa/ns/property#">' . "\n";
+        $xmp .= "\t\t\t" . '<pdfaExtension:schemas>' . "\n";
+        $xmp .= "\t\t\t\t" . '<rdf:Bag>' . "\n";
+        $xmp .= "\t\t\t\t\t" . '<rdf:li rdf:parseType="Resource">' . "\n";
+        $xmp .= "\t\t\t\t\t\t" . '<pdfaSchema:schema>Factur-X PDFA Extension Schema</pdfaSchema:schema>' . "\n";
+        $xmp .= "\t\t\t\t\t\t" . '<pdfaSchema:namespaceURI>urn:factur-x:pdfa:CrossIndustryDocument:invoice:1p0#</pdfaSchema:namespaceURI>' . "\n";
+        $xmp .= "\t\t\t\t\t\t" . '<pdfaSchema:prefix>fx</pdfaSchema:prefix>' . "\n";
+        $xmp .= "\t\t\t\t\t\t" . '<pdfaSchema:property>' . "\n";
+        $xmp .= "\t\t\t\t\t\t\t" . '<rdf:Seq>' . "\n";
+        $xmp .= "\t\t\t\t\t\t\t\t" . '<rdf:li rdf:parseType="Resource">' . "\n";
+        $xmp .= "\t\t\t\t\t\t\t\t\t" . '<pdfaProperty:name>DocumentFileName</pdfaProperty:name>' . "\n";
+        $xmp .= "\t\t\t\t\t\t\t\t\t" . '<pdfaProperty:valueType>Text</pdfaProperty:valueType>' . "\n";
+        $xmp .= "\t\t\t\t\t\t\t\t\t" . '<pdfaProperty:category>external</pdfaProperty:category>' . "\n";
+        $xmp .= "\t\t\t\t\t\t\t\t\t" . '<pdfaProperty:description>name of the embedded XML invoice file</pdfaProperty:description>' . "\n";
+        $xmp .= "\t\t\t\t\t\t\t\t" . '</rdf:li>' . "\n";
+        $xmp .= "\t\t\t\t\t\t\t\t" . '<rdf:li rdf:parseType="Resource">' . "\n";
+        $xmp .= "\t\t\t\t\t\t\t\t\t" . '<pdfaProperty:name>DocumentType</pdfaProperty:name>' . "\n";
+        $xmp .= "\t\t\t\t\t\t\t\t\t" . '<pdfaProperty:valueType>Text</pdfaProperty:valueType>' . "\n";
+        $xmp .= "\t\t\t\t\t\t\t\t\t" . '<pdfaProperty:category>external</pdfaProperty:category>' . "\n";
+        $xmp .= "\t\t\t\t\t\t\t\t\t" . '<pdfaProperty:description>INVOICE</pdfaProperty:description>' . "\n";
+        $xmp .= "\t\t\t\t\t\t\t\t" . '</rdf:li>' . "\n";
+        $xmp .= "\t\t\t\t\t\t\t\t" . '<rdf:li rdf:parseType="Resource">' . "\n";
+        $xmp .= "\t\t\t\t\t\t\t\t\t" . '<pdfaProperty:name>Version</pdfaProperty:name>' . "\n";
+        $xmp .= "\t\t\t\t\t\t\t\t\t" . '<pdfaProperty:valueType>Text</pdfaProperty:valueType>' . "\n";
+        $xmp .= "\t\t\t\t\t\t\t\t\t" . '<pdfaProperty:category>external</pdfaProperty:category>' . "\n";
+        $xmp .= "\t\t\t\t\t\t\t\t\t" . '<pdfaProperty:description>The actual version of the Factur-X XML schema</pdfaProperty:description>' . "\n";
+        $xmp .= "\t\t\t\t\t\t\t\t" . '</rdf:li>' . "\n";
+        $xmp .= "\t\t\t\t\t\t\t\t" . '<rdf:li rdf:parseType="Resource">' . "\n";
+        $xmp .= "\t\t\t\t\t\t\t\t\t" . '<pdfaProperty:name>ConformanceLevel</pdfaProperty:name>' . "\n";
+        $xmp .= "\t\t\t\t\t\t\t\t\t" . '<pdfaProperty:valueType>Text</pdfaProperty:valueType>' . "\n";
+        $xmp .= "\t\t\t\t\t\t\t\t\t" . '<pdfaProperty:category>external</pdfaProperty:category>' . "\n";
+        $xmp .= "\t\t\t\t\t\t\t\t\t" . '<pdfaProperty:description>The conformance level of the embedded Factur-X data</pdfaProperty:description>' . "\n";
+        $xmp .= "\t\t\t\t\t\t\t\t" . '</rdf:li>' . "\n";
+        $xmp .= "\t\t\t\t\t\t\t" . '</rdf:Seq>' . "\n";
+        $xmp .= "\t\t\t\t\t\t" . '</pdfaSchema:property>' . "\n";
+        $xmp .= "\t\t\t\t\t" . '</rdf:li>' . "\n";
+        $xmp .= "\t\t\t\t" . '</rdf:Bag>' . "\n";
+        $xmp .= "\t\t\t" . '</pdfaExtension:schemas>' . "\n";
+        $xmp .= "\t\t" . '</rdf:Description>' . "\n";
+        // Values
+        $xmp .= "\t\t" . '<rdf:Description rdf:about="" xmlns:zf="'.$xmlnsZf.'">' . "\n";
+        $xmp .= "\t\t\t" . '<zf:ConformanceLevel>' . $conformanceLevel . '</zf:ConformanceLevel>' . "\n";
+        $xmp .= "\t\t\t" . '<zf:DocumentType>' . $documentType . '</zf:DocumentType>' . "\n";
+        $xmp .= "\t\t\t" . '<zf:DocumentFileName>' . $xmlAttachmentFileName . '</zf:DocumentFileName>' . "\n";
+        $xmp .= "\t\t\t" . '<zf:Version>' . $version . '</zf:Version>' . "\n";
+        $xmp .= "\t\t" . '</rdf:Description>' . "\n";
+		$this->custom_xmp_rdf = $xmp;
+		return $xmp;
 	}
 
 	/**
