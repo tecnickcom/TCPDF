@@ -9600,14 +9600,19 @@ class TCPDF {
 	}
 
 	/**
-	 * Set additional XMP data to be added on the default XMP data just before the end of "rdf:RDF" tag.
+	 * Set additional XMP data to be added on the default XMP data just before the end of "rdf:RDF" tag or replace it.
 	 * IMPORTANT: This data is added as-is without controls, so you have to validate your data before using this method!
 	 * @param string $xmp Custom XMP RDF data.
+	 * @param boolean $useBaseXmpRdf By default your extra xmp rdf is added after pdfaExtension:schemas but you can replace it by setting false here
 	 * @since 6.3.0 (2019-09-19)
 	 * @public
 	 */
-	public function setExtraXMPRDF($xmp) {
-		$this->custom_xmp_rdf = $xmp;
+	public function setExtraXMPRDF($xmp, $useBaseXmpRdf = true) {
+		if($useBaseXmpRdf){
+			$this->custom_xmp_rdf = $this->getBasePdfaExtensionSchemas() . $xmp;
+		}else{
+			$this->custom_xmp_rdf = $xmp;
+		}
 	}
 
 	/**
