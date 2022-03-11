@@ -17359,6 +17359,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					++$key;
 				}
 			}
+			if ($key == $maxel) break;
 			if ($dom[$key]['tag'] AND isset($dom[$key]['attribute']['pagebreak'])) {
 				// check for pagebreak
 				if (($dom[$key]['attribute']['pagebreak'] == 'true') OR ($dom[$key]['attribute']['pagebreak'] == 'left') OR ($dom[$key]['attribute']['pagebreak'] == 'right')) {
