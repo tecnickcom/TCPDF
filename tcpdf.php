@@ -6854,8 +6854,8 @@ class TCPDF {
 		}
 		// resize the block to be contained on the remaining available page or column space
 		if ($fitonpage) {
-            // fallback to avoid division by zero
-            $h = $h == 0 ? 1 : $h;
+			// fallback to avoid division by zero
+			$h = $h == 0 ? 1 : $h;
 			$ratio_wh = ($w / $h);
 			if (($y + $h) > $this->PageBreakTrigger) {
 				$h = $this->PageBreakTrigger - $y;

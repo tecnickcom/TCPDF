@@ -1812,7 +1812,7 @@ class TCPDF_STATIC {
 		// the bug only happens on PHP 5.2 when using the u modifier
 		if ((strpos($modifiers, 'u') === FALSE) OR (count(preg_split('//u', "\n\t", -1, PREG_SPLIT_NO_EMPTY)) == 2)) {
 			$ret = preg_split($pattern.$modifiers, $subject, $limit, $flags);
-            return is_array($ret) ? $ret : array();
+			return is_array($ret) ? $ret : array();
 		}
 		// preg_split is bugged - try alternative solution
 		$ret = array();
