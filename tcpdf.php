@@ -6395,7 +6395,7 @@ class TCPDF {
 		// calculate maximum width for a single character on string
 		$chrw = $this->GetArrStringWidth($chars, '', '', 0, true);
 		array_walk($chrw, array($this, 'getRawCharWidth'));
-		$maxchwidth = max($chrw);
+		$maxchwidth = (is_array($chrw) || $chrw instanceof Countable) ? max($chrw) : 0;
 		// get array of chars
 		$uchars = TCPDF_FONTS::UTF8ArrayToUniArray($chars, $this->isunicode);
 		// get the number of characters
@@ -6854,6 +6854,8 @@ class TCPDF {
 		}
 		// resize the block to be contained on the remaining available page or column space
 		if ($fitonpage) {
+            // fallback to avoid division by zero
+            $h = $h == 0 ? 1 : $h;
 			$ratio_wh = ($w / $h);
 			if (($y + $h) > $this->PageBreakTrigger) {
 				$h = $this->PageBreakTrigger - $y;
@@ -8429,7 +8431,7 @@ class TCPDF {
 								$annots .= ' /Name /Note';
 							}
 							$hasStateModel = isset($pl['opt']['statemodel']);
-							$hasState = isset($pl['opt']['state']); 
+							$hasState = isset($pl['opt']['state']);
 							$statemodels = array('Marked', 'Review');
 							if (!$hasStateModel && !$hasState) {
 								break;

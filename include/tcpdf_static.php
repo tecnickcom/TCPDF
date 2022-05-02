@@ -1811,7 +1811,8 @@ class TCPDF_STATIC {
 		$flags = $flags === null ? 0 : $flags;
 		// the bug only happens on PHP 5.2 when using the u modifier
 		if ((strpos($modifiers, 'u') === FALSE) OR (count(preg_split('//u', "\n\t", -1, PREG_SPLIT_NO_EMPTY)) == 2)) {
-			return preg_split($pattern.$modifiers, $subject, $limit, $flags);
+			$ret = preg_split($pattern.$modifiers, $subject, $limit, $flags);
+            return is_array($ret) ? $ret : array();
 		}
 		// preg_split is bugged - try alternative solution
 		$ret = array();
@@ -2154,7 +2155,7 @@ class TCPDF_STATIC {
 	 * Array of page formats
 	 * measures are calculated in this way: (inches * 72) or (millimeters * 72 / 25.4)
 	 * @public static
-	 * 
+	 *
      * @var array<string,float[]>
 	 */
 	public static $page_formats = array(
