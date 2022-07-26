@@ -99,7 +99,8 @@ $style = array(
 	'text' => true,
 	'font' => 'helvetica',
 	'fontsize' => 8,
-	'stretchtext' => 4
+	'stretchtext' => 4,
+	'bwr' => .0 // bar width reduction
 );
 
 // PRINT VARIOUS 1D BARCODES
@@ -175,6 +176,12 @@ $pdf->Ln();
 // CODE 128 B
 $pdf->Cell(0, 0, 'CODE 128 B', 0, 1);
 $pdf->write1DBarcode('CODE 128 B', 'C128B', '', '', '', 18, 0.4, $style, 'N');
+
+$pdf->Ln();
+
+// CODE 128 B + BAR WIDTH REDUCTION
+$pdf->Cell(0, 0, 'CODE 128 B + BAR WIDTH REDUCTION', 0, 1);
+$pdf->write1DBarcode('CODE 128 B', 'C128B', '', '', '', 18, 0.4, array('bwr' => .5) + $style, 'N');
 
 $pdf->Ln();
 
