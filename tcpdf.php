@@ -15548,12 +15548,13 @@ class TCPDF {
 		$this->setDrawColorArray($style['fgcolor']);
 		$this->setTextColorArray($style['fgcolor']);
 		// print bars
+		$style += array('bwr' => .0);
 		foreach ($arrcode['bcode'] as $k => $v) {
 			$bw = ($v['w'] * $xres);
 			if ($v['t']) {
 				// draw a vertical bar
 				$ypos = $y + $vpadding + ($v['p'] * $barh / $arrcode['maxh']);
-				$this->Rect($xpos, $ypos, $bw, ($v['h'] * $barh / $arrcode['maxh']), 'F', array(), $style['fgcolor']);
+				$this->Rect($xpos + ($style['bwr'] / 2), $ypos, $bw - $style['bwr'], ($v['h'] * $barh / $arrcode['maxh']), 'F', array(), $style['fgcolor']);
 			}
 			$xpos += $bw;
 		}
