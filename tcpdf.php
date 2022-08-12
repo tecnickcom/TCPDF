@@ -5151,6 +5151,7 @@ class TCPDF {
 	 */
 	protected function getCellCode($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=false, $link='', $stretch=0, $ignore_min_height=false, $calign='T', $valign='M') {
 		// replace 'NO-BREAK SPACE' (U+00A0) character with a simple space
+		$txt = is_null($txt) ? '' : $txt;
 		$txt = str_replace(TCPDF_FONTS::unichr(160, $this->isunicode), ' ', $txt);
 		$prev_cell_margin = $this->cell_margin;
 		$prev_cell_padding = $this->cell_padding;
@@ -8433,7 +8434,7 @@ class TCPDF {
 								$annots .= ' /Name /Note';
 							}
 							$hasStateModel = isset($pl['opt']['statemodel']);
-							$hasState = isset($pl['opt']['state']); 
+							$hasState = isset($pl['opt']['state']);
 							$statemodels = array('Marked', 'Review');
 							if (!$hasStateModel && !$hasState) {
 								break;
