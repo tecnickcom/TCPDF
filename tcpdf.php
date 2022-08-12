@@ -3,11 +3,11 @@
 // File name   : tcpdf.php
 // Version     : 6.4.4
 // Begin       : 2002-08-03
-// Last Update : 2021-12-31
+// Last Update : 2022-08-12
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
-// Copyright (C) 2002-2021 Nicola Asuni - Tecnick.com LTD
+// Copyright (C) 2002-2022 Nicola Asuni - Tecnick.com LTD
 //
 // This file is part of TCPDF software library.
 //
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.3.2
+ * @version 6.5.0
  */
 
 // TCPDF configuration
