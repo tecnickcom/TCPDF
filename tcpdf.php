@@ -6495,14 +6495,16 @@ class TCPDF {
 				$shy = false;
 				// account for margin changes
 				if ((($this->y + $this->lasth) > $this->PageBreakTrigger) AND ($this->inPageBody())) {
-					$this->AcceptPageBreak();
-					if ($this->rtl) {
-						$this->x -= $margin['R'];
-					} else {
-						$this->x += $margin['L'];
+					if ($this->AcceptPageBreak())
+					{
+						if ($this->rtl) {
+							$this->x -= $margin['R'];
+						} else {
+							$this->x += $margin['L'];
+						}
+						$this->lMargin += $margin['L'];
+						$this->rMargin += $margin['R'];
 					}
-					$this->lMargin += $margin['L'];
-					$this->rMargin += $margin['R'];
 				}
 				$w = $this->getRemainingWidth();
 				$wmax = ($w - $this->cell_padding['L'] - $this->cell_padding['R']);
@@ -6700,14 +6702,16 @@ class TCPDF {
 					}
 					// account for margin changes
 					if ((($this->y + $this->lasth) > $this->PageBreakTrigger) AND ($this->inPageBody())) {
-						$this->AcceptPageBreak();
-						if ($this->rtl) {
-							$this->x -= $margin['R'];
-						} else {
-							$this->x += $margin['L'];
+						if ($this->AcceptPageBreak())
+						{
+							if ($this->rtl) {
+								$this->x -= $margin['R'];
+							} else {
+								$this->x += $margin['L'];
+							}
+							$this->lMargin += $margin['L'];
+							$this->rMargin += $margin['R'];
 						}
-						$this->lMargin += $margin['L'];
-						$this->rMargin += $margin['R'];
 					}
 					$w = $this->getRemainingWidth();
 					$wmax = $w - $this->cell_padding['L'] - $this->cell_padding['R'];
@@ -16017,14 +16021,14 @@ class TCPDF {
 	 */
 	protected function getCSSBorderStyle($cssborder) {
 		$bprop = preg_split('/[\s]+/', trim($cssborder));
+		$count = count($bprop);
+		if ($count > 0 && $bprop[$count - 1] === '!important') {
+			unset($bprop[$count - 1]);
+			--$count;
+		}
+
 		$border = array(); // value to be returned
-		switch (count($bprop)) {
-			case 3: {
-				$width = $bprop[0];
-				$style = $bprop[1];
-				$color = $bprop[2];
-				break;
-			}
+		switch ($count) {
 			case 2: {
 				$width = 'medium';
 				$style = $bprop[0];
@@ -16037,10 +16041,16 @@ class TCPDF {
 				$color = 'black';
 				break;
 			}
-			default: {
+			case 0: {
 				$width = 'medium';
 				$style = 'solid';
 				$color = 'black';
+				break;
+			}
+			default: {
+				$width = $bprop[0];
+				$style = $bprop[1];
+				$color = $bprop[2];
 				break;
 			}
 		}
