@@ -3,11 +3,11 @@
 // File name   : tcpdf.php
 // Version     : 6.4.4
 // Begin       : 2002-08-03
-// Last Update : 2021-12-31
+// Last Update : 2022-08-12
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
-// Copyright (C) 2002-2021 Nicola Asuni - Tecnick.com LTD
+// Copyright (C) 2002-2022 Nicola Asuni - Tecnick.com LTD
 //
 // This file is part of TCPDF software library.
 //
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.3.2
+ * @version 6.5.0
  */
 
 // TCPDF configuration
@@ -2530,7 +2530,7 @@ class TCPDF {
 	/**
 	 * Returns the page width in units.
 	 * @param int|null $pagenum page number (empty = current page)
-	 * @return int page width.
+	 * @return int|float page width.
 	 * @author Nicola Asuni
 	 * @public
 	 * @since 1.5.2
@@ -2546,7 +2546,7 @@ class TCPDF {
 	/**
 	 * Returns the page height in units.
 	 * @param int|null $pagenum page number (empty = current page)
-	 * @return int page height.
+	 * @return int|float page height.
 	 * @author Nicola Asuni
 	 * @public
 	 * @since 1.5.2
@@ -2562,7 +2562,7 @@ class TCPDF {
 	/**
 	 * Returns the page break margin.
 	 * @param int|null $pagenum page number (empty = current page)
-	 * @return int page break margin.
+	 * @return int|float page break margin.
 	 * @author Nicola Asuni
 	 * @public
 	 * @since 1.5.2
@@ -2588,9 +2588,9 @@ class TCPDF {
 
 	/**
 	 * Defines the left, top and right margins.
-	 * @param float $left Left margin.
-	 * @param float $top Top margin.
-	 * @param float $right Right margin. Default value is the left one.
+	 * @param int|float $left Left margin.
+	 * @param int|float $top Top margin.
+	 * @param int|float|null $right Right margin. Default value is the left one.
 	 * @param boolean $keepmargins if true overwrites the default page margins
 	 * @public
 	 * @since 1.0
@@ -2613,7 +2613,7 @@ class TCPDF {
 
 	/**
 	 * Defines the left margin. The method can be called before creating the first page. If the current abscissa gets out of page, it is brought back to the margin.
-	 * @param float $margin The margin.
+	 * @param int|float $margin The margin.
 	 * @public
 	 * @since 1.4
 	 * @see SetTopMargin(), SetRightMargin(), SetAutoPageBreak(), SetMargins()
@@ -2628,7 +2628,7 @@ class TCPDF {
 
 	/**
 	 * Defines the top margin. The method can be called before creating the first page.
-	 * @param float $margin The margin.
+	 * @param int|float $margin The margin.
 	 * @public
 	 * @since 1.5
 	 * @see SetLeftMargin(), SetRightMargin(), SetAutoPageBreak(), SetMargins()
@@ -2643,7 +2643,7 @@ class TCPDF {
 
 	/**
 	 * Defines the right margin. The method can be called before creating the first page.
-	 * @param float $margin The margin.
+	 * @param int|float $margin The margin.
 	 * @public
 	 * @since 1.5
 	 * @see SetLeftMargin(), SetTopMargin(), SetAutoPageBreak(), SetMargins()
@@ -2657,7 +2657,7 @@ class TCPDF {
 
 	/**
 	 * Set the same internal Cell padding for top, right, bottom, left-
-	 * @param float $pad internal padding.
+	 * @param int|float $pad internal padding.
 	 * @public
 	 * @since 2.1.000 (2008-01-09)
 	 * @see getCellPaddings(), setCellPaddings()
@@ -2673,10 +2673,10 @@ class TCPDF {
 
 	/**
 	 * Set the internal Cell paddings.
-	 * @param float|null $left left padding
-	 * @param float|null $top top padding
-	 * @param float|null $right right padding
-	 * @param float|null $bottom bottom padding
+	 * @param int|float|null $left left padding
+	 * @param int|float|null $top top padding
+	 * @param int|float|null $right right padding
+	 * @param int|float|null $bottom bottom padding
 	 * @public
 	 * @since 5.9.000 (2010-10-03)
 	 * @see getCellPaddings(), SetCellPadding()
@@ -2709,10 +2709,10 @@ class TCPDF {
 
 	/**
 	 * Set the internal Cell margins.
-	 * @param float|null $left left margin
-	 * @param float|null $top top margin
-	 * @param float|null $right right margin
-	 * @param float|null $bottom bottom margin
+	 * @param int|float|null $left left margin
+	 * @param int|float|null $top top margin
+	 * @param int|float|null $right right margin
+	 * @param int|float|null $bottom bottom margin
 	 * @public
 	 * @since 5.9.000 (2010-10-03)
 	 * @see getCellMargins()
@@ -2745,7 +2745,7 @@ class TCPDF {
 
 	/**
 	 * Adjust the internal Cell padding array to take account of the line width.
-	 * @param string|array|int $brd Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
+	 * @param string|array|int|bool $brd Indicates if borders must be drawn around the cell. The value can be a number:<ul><li>0: no border (default)</li><li>1: frame</li></ul> or a string containing some or all of the following characters (in any order):<ul><li>L: left</li><li>T: top</li><li>R: right</li><li>B: bottom</li></ul> or an array of line styles for each border group - for example: array('LTRB' => array('width' => 2, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)))
 	 * @return void|array array of adjustments
 	 * @public
 	 * @since 5.9.000 (2010-10-03)
@@ -5151,6 +5151,7 @@ class TCPDF {
 	 */
 	protected function getCellCode($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=false, $link='', $stretch=0, $ignore_min_height=false, $calign='T', $valign='M') {
 		// replace 'NO-BREAK SPACE' (U+00A0) character with a simple space
+		$txt = is_null($txt) ? '' : $txt;
 		$txt = str_replace(TCPDF_FONTS::unichr(160, $this->isunicode), ' ', $txt);
 		$prev_cell_margin = $this->cell_margin;
 		$prev_cell_padding = $this->cell_padding;
@@ -6495,14 +6496,16 @@ class TCPDF {
 				$shy = false;
 				// account for margin changes
 				if ((($this->y + $this->lasth) > $this->PageBreakTrigger) AND ($this->inPageBody())) {
-					$this->AcceptPageBreak();
-					if ($this->rtl) {
-						$this->x -= $margin['R'];
-					} else {
-						$this->x += $margin['L'];
+					if ($this->AcceptPageBreak())
+					{
+						if ($this->rtl) {
+							$this->x -= $margin['R'];
+						} else {
+							$this->x += $margin['L'];
+						}
+						$this->lMargin += $margin['L'];
+						$this->rMargin += $margin['R'];
 					}
-					$this->lMargin += $margin['L'];
-					$this->rMargin += $margin['R'];
 				}
 				$w = $this->getRemainingWidth();
 				$wmax = ($w - $this->cell_padding['L'] - $this->cell_padding['R']);
@@ -6700,14 +6703,16 @@ class TCPDF {
 					}
 					// account for margin changes
 					if ((($this->y + $this->lasth) > $this->PageBreakTrigger) AND ($this->inPageBody())) {
-						$this->AcceptPageBreak();
-						if ($this->rtl) {
-							$this->x -= $margin['R'];
-						} else {
-							$this->x += $margin['L'];
+						if ($this->AcceptPageBreak())
+						{
+							if ($this->rtl) {
+								$this->x -= $margin['R'];
+							} else {
+								$this->x += $margin['L'];
+							}
+							$this->lMargin += $margin['L'];
+							$this->rMargin += $margin['R'];
 						}
-						$this->lMargin += $margin['L'];
-						$this->rMargin += $margin['R'];
 					}
 					$w = $this->getRemainingWidth();
 					$wmax = $w - $this->cell_padding['L'] - $this->cell_padding['R'];
@@ -7632,7 +7637,7 @@ class TCPDF {
 			$dest = $dest ? 'D' : 'F';
 		}
 		$dest = strtoupper($dest);
-		if ($dest[0] != 'F') {
+		if ($dest[0] != 'F' && $name !== null) {
 			$name = preg_replace('/[\s]+/', '_', $name);
 			$name = preg_replace('/[^a-zA-Z0-9_\.-]/', '', $name);
 		}
@@ -8429,7 +8434,7 @@ class TCPDF {
 								$annots .= ' /Name /Note';
 							}
 							$hasStateModel = isset($pl['opt']['statemodel']);
-							$hasState = isset($pl['opt']['state']); 
+							$hasState = isset($pl['opt']['state']);
 							$statemodels = array('Marked', 'Review');
 							if (!$hasStateModel && !$hasState) {
 								break;
@@ -16017,14 +16022,14 @@ class TCPDF {
 	 */
 	protected function getCSSBorderStyle($cssborder) {
 		$bprop = preg_split('/[\s]+/', trim($cssborder));
+		$count = count($bprop);
+		if ($count > 0 && $bprop[$count - 1] === '!important') {
+			unset($bprop[$count - 1]);
+			--$count;
+		}
+
 		$border = array(); // value to be returned
-		switch (count($bprop)) {
-			case 3: {
-				$width = $bprop[0];
-				$style = $bprop[1];
-				$color = $bprop[2];
-				break;
-			}
+		switch ($count) {
 			case 2: {
 				$width = 'medium';
 				$style = $bprop[0];
@@ -16037,10 +16042,16 @@ class TCPDF {
 				$color = 'black';
 				break;
 			}
-			default: {
+			case 0: {
 				$width = 'medium';
 				$style = 'solid';
 				$color = 'black';
+				break;
+			}
+			default: {
+				$width = $bprop[0];
+				$style = $bprop[1];
+				$color = $bprop[2];
 				break;
 			}
 		}
@@ -17359,6 +17370,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					++$key;
 				}
 			}
+			if ($key == $maxel) break;
 			if ($dom[$key]['tag'] AND isset($dom[$key]['attribute']['pagebreak'])) {
 				// check for pagebreak
 				if (($dom[$key]['attribute']['pagebreak'] == 'true') OR ($dom[$key]['attribute']['pagebreak'] == 'left') OR ($dom[$key]['attribute']['pagebreak'] == 'right')) {
