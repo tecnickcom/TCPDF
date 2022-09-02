@@ -3,11 +3,11 @@
 // File name   : tcpdf_static.php
 // Version     : 1.1.4
 // Begin       : 2002-08-03
-// Last Update : 2019-11-01
+// Last Update : 2022-08-12
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
-// Copyright (C) 2002-2021 Nicola Asuni - Tecnick.com LTD
+// Copyright (C) 2002-2022 Nicola Asuni - Tecnick.com LTD
 //
 // This file is part of TCPDF software library.
 //
@@ -55,7 +55,7 @@ class TCPDF_STATIC {
 	 * Current TCPDF version.
 	 * @private static
 	 */
-	private static $tcpdf_version = '6.4.4';
+	private static $tcpdf_version = '6.5.0';
 
 	/**
 	 * String alias for total number of pages.
@@ -1887,7 +1887,8 @@ class TCPDF_STATIC {
 		if (isset($urlData['query']) && $urlData['query']) {
 			$urlQueryData = array();
 			parse_str(urldecode($urlData['query']), $urlQueryData);
-			$updatedUrl = $urlData['scheme'] . '://' . $urlData['host'] . $urlData['path'] . '?' . http_build_query($urlQueryData);
+			$port = isset($urlData['port']) ? ':'.$urlData['port'] : '';
+			$updatedUrl = $urlData['scheme'].'://'.$urlData['host'].$port.$urlData['path'].'?'.http_build_query($urlQueryData);
 		} else {
 			$updatedUrl = $url;
 		}
