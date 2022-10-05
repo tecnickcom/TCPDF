@@ -19715,7 +19715,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					$table_el = $dom[($dom[$key]['parent'])];
 				}
 				// for each row
-				if (count($table_el['trids']) > 0) {
+				if (!empty($table_el['trids'])) {
 					unset($xmax);
 				}
 				foreach ($table_el['trids'] as $j => $trkey) {
