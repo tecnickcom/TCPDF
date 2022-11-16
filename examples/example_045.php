@@ -22,6 +22,9 @@
  * @abstract TCPDF - Example: Bookmarks and Table of Content
  * @author Nicola Asuni
  * @since 2008-03-04
+ * @group toc
+ * @group bookmark
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).

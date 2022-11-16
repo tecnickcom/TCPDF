@@ -22,6 +22,9 @@
  * @abstract TCPDF - Example: Two independent columns with MultiCell
  * @author Nicola Asuni
  * @since 2008-03-04
+ * @group column
+ * @group cell
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).

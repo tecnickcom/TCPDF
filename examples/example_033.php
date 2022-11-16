@@ -22,6 +22,8 @@
  * @abstract TCPDF - Example: Mixed font types
  * @author Nicola Asuni
  * @since 2008-06-24
+ * @group font
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).

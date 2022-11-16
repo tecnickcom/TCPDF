@@ -14,6 +14,8 @@
  * @abstract TCPDF - Example: PDF/A-1b mode
  * @author Nicola Asuni
  * @since 2021-03-26
+ * @group A-1b
+ * @group pdf
  */
 
 // Load the autoloader, move one folder back from examples

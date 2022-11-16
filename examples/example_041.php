@@ -22,6 +22,9 @@
  * @abstract TCPDF - Annotation - FileAttachment
  * @author Nicola Asuni
  * @since 2008-12-07
+ * @group annotation
+ * @group attachment
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).

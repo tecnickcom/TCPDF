@@ -22,6 +22,8 @@
  * @abstract TCPDF - Example: Cell vertical alignments
  * @author Nicola Asuni
  * @since 2008-03-04
+ * @group cell
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).

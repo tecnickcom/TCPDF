@@ -22,6 +22,8 @@
  * @abstract TCPDF - Example: Move, copy and delete pages
  * @author Nicola Asuni
  * @since 2009-01-02
+ * @group page
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).

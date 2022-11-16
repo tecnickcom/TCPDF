@@ -22,6 +22,9 @@
  * @abstract TCPDF - Example: Javascript Form and user rights (only works on Adobe Acrobat)
  * @author Nicola Asuni
  * @since 2008-03-04
+ * @group javascript
+ * @group form
+ * @group pdf
  */
 
 

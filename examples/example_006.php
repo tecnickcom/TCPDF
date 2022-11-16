@@ -22,6 +22,9 @@
  * @abstract TCPDF - Example: WriteHTML and RTL support
  * @author Nicola Asuni
  * @since 2008-03-04
+ * @group html
+ * @group rtl
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).

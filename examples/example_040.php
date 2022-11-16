@@ -22,6 +22,8 @@
  * @abstract TCPDF - Example: Booklet mode (double-sided pages)
  * @author Nicola Asuni
  * @since 2008-10-28
+ * @group page
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).

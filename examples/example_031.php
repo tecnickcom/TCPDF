@@ -22,6 +22,8 @@
  * @abstract TCPDF - Example: Pie Chart
  * @author Nicola Asuni
  * @since 2008-06-09
+ * @group drawing
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).

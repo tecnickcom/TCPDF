@@ -22,6 +22,8 @@
  * @abstract TCPDF - Example: No-write page regions
  * @author Nicola Asuni
  * @since 2010-10-14
+ * @group page
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).

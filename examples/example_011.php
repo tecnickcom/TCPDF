@@ -22,6 +22,9 @@
  * @abstract TCPDF - Example: Colored Table
  * @author Nicola Asuni
  * @since 2008-03-04
+ * @group table
+ * @group color
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).

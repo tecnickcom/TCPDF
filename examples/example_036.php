@@ -22,6 +22,8 @@
  * @abstract TCPDF - Example: Annotations
  * @author Nicola Asuni
  * @since 2008-08-08
+ * @group annotation
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).
