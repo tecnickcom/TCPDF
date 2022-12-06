@@ -16363,6 +16363,7 @@ class TCPDF {
 				break;
 			}
 			default: {
+				$parentSize = $this->getHTMLUnitToUnits($parent_size, $refsize, $defaultunit, true);
 				$size = $this->getHTMLUnitToUnits($val, $parent_size, $defaultunit, true);
 			}
 		}
@@ -19002,6 +19003,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					// data stream
 					$imgsrc = '@'.base64_decode(substr($imgsrc, 1));
 					$type = '';
+				} else if (preg_match('@^data:image/([^;]*);base64,(.*)@', $imgsrc, $reg)) {
+					$imgsrc = '@'.base64_decode($reg[2]);
+					$type = $reg[1];
 				} elseif ( $this->allowLocalFiles && substr($imgsrc, 0, 7) === 'file://') {
                     // get image type from a local file path
                     $imgsrc = substr($imgsrc, 7);
