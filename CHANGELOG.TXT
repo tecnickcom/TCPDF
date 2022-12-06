@@ -1,3 +1,14 @@
+6.5.0 (2022-08-12)
+	- encodeUrlQuery takes into account the port (#493)
+	- Fixing undefined offset error in writeHTML() when last DOM element ha…
+	- correct some type hints (#495)
+	- fix: php 8.1 notices (#481)
+	- Fixed: null check for PHP 8.1 (#476)
+	- Fix Infinite Loop in Multicell with Auto Page Breaks Off (#473)
+	- GetCssBorderStyle Has Problem When !important Is Specified (#467)
+	- Support Apache 2.4 directives in htaccess file (#530)
+	- Remove examples from dist package (#542)
+
 6.4.4 (2021-12-31)
 	- PHP 8.1 fixes
 

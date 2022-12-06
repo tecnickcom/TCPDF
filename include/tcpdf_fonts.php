@@ -1151,7 +1151,7 @@ class TCPDF_FONTS {
 								$subsetglyphs[$g] = true;
 							}
 						}
-					}	
+					}
 					break;
 				}
 				case 6: { // Format 6: Trimmed table mapping
@@ -1998,6 +1998,7 @@ class TCPDF_FONTS {
 	 * @public static
 	 */
 	public static function UTF8StringToArray($str, $isunicode, &$currentfont) {
+		$str = is_null($str) ? '' : $str;
 		if ($isunicode) {
 			// requires PCRE unicode support turned on
 			$chars = TCPDF_STATIC::pregSplit('//','u', $str, -1, PREG_SPLIT_NO_EMPTY);
