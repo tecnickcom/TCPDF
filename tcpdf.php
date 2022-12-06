@@ -4283,7 +4283,7 @@ class TCPDF {
 			// all fonts must be embedded
 			$family = 'pdfa'.$family;
 		}
-		$tempstyle = strtoupper($style);
+		$tempstyle = strtoupper($style === null ? '' : $style);
 		$style = '';
 		// underline
 		if (strpos($tempstyle, 'U') !== false) {
