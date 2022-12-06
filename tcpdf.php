@@ -7235,7 +7235,7 @@ class TCPDF {
 		} elseif ($palign == 'R') {
 			$ximg = $this->w - $this->rMargin - $w;
 		} else {
-			$ximg = $x;
+			$ximg = $this->rtl ? $x - $w : $x;
 		}
 
 		if ($ismask OR $hidden) {
