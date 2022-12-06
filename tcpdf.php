@@ -2024,9 +2024,6 @@ class TCPDF {
 		$this->header_xobj_autoreset = false;
 		$this->custom_xmp = '';
 		$this->custom_xmp_rdf = '';
-		// Call cleanup method after script execution finishes or exit() is called.
-		// NOTE: This will not be executed if the process is killed with a SIGTERM or SIGKILL signal.
-		register_shutdown_function(array($this, '_destroy'), true);
 	}
 
 	/**
@@ -4283,7 +4280,7 @@ class TCPDF {
 			// all fonts must be embedded
 			$family = 'pdfa'.$family;
 		}
-		$tempstyle = strtoupper($style);
+		$tempstyle = strtoupper($style === null ? '' : $style);
 		$style = '';
 		// underline
 		if (strpos($tempstyle, 'U') !== false) {
@@ -7235,7 +7232,7 @@ class TCPDF {
 		} elseif ($palign == 'R') {
 			$ximg = $this->w - $this->rMargin - $w;
 		} else {
-			$ximg = $x;
+			$ximg = $this->rtl ? $x - $w : $x;
 		}
 
 		if ($ismask OR $hidden) {
@@ -16362,6 +16359,7 @@ class TCPDF {
 				break;
 			}
 			default: {
+				$parentSize = $this->getHTMLUnitToUnits($parent_size, $refsize, $defaultunit, true);
 				$size = $this->getHTMLUnitToUnits($val, $parent_size, $defaultunit, true);
 			}
 		}
@@ -19001,6 +18999,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					// data stream
 					$imgsrc = '@'.base64_decode(substr($imgsrc, 1));
 					$type = '';
+				} else if (preg_match('@^data:image/([^;]*);base64,(.*)@', $imgsrc, $reg)) {
+					$imgsrc = '@'.base64_decode($reg[2]);
+					$type = $reg[1];
 				} elseif ( $this->allowLocalFiles && substr($imgsrc, 0, 7) === 'file://') {
                     // get image type from a local file path
                     $imgsrc = substr($imgsrc, 7);
@@ -19714,7 +19715,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					$table_el = $dom[($dom[$key]['parent'])];
 				}
 				// for each row
-				if (count($table_el['trids']) > 0) {
+				if (!empty($table_el['trids'])) {
 					unset($xmax);
 				}
 				foreach ($table_el['trids'] as $j => $trkey) {
