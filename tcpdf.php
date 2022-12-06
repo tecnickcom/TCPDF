@@ -16363,6 +16363,7 @@ class TCPDF {
 				break;
 			}
 			default: {
+				$parentSize = $this->getHTMLUnitToUnits($parent_size, $refsize, $defaultunit, true);
 				$size = $this->getHTMLUnitToUnits($val, $parent_size, $defaultunit, true);
 			}
 		}
