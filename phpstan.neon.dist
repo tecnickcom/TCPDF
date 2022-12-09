@@ -11,7 +11,7 @@ parameters:
       - tcpdf_autoconfig.php
 
     ignoreErrors:
-        - '~^Constant (K_PATH_URL|K_PATH_FONTS) not found\.$~'
+        - '~^Constant (PDF_HEADER_LOGO|K_PATH_CACHE|K_PATH_FONTS|K_PATH_IMAGES|K_PATH_URL) not found\.$~'
         - '~^Constructor of class TCPDF has an unused parameter \$diskcache\.$~'
         - '~^Variable \$\w+ might not be defined\.$~'
         - '~^Method TCPDF(_FILTERS)?::\w+\(\) should return .+ but return statement is missing\.$~'
