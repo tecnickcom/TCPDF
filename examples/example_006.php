@@ -224,6 +224,20 @@ $html = '<h1>Image alignments on HTML table</h1>
 // output the HTML content
 $pdf->writeHTML($html, true, false, true, false, '');
 
+// create some HTML content
+$html = '<h1>Embedded Images</h1>
+<table cellpadding="1" cellspacing="1" border="1" style="text-align:center;">
+<tr><td>src="@..." </td><td><img src="@DATA1@" border="0" height="41" width="41" /></td></tr>
+<tr><td>src="data..."</td><td><img src="@DATA2@" border="0" height="41" width="41" /></td></tr>
+</table>';
+
+$data = base64_encode(file_get_contents("images/logo_example.png"));
+$html = str_replace("@DATA1@", "@" . $data, $html);
+$html = str_replace("@DATA2@", "data:image/png;base64," . $data, $html);
+
+// output the HTML content
+$pdf->writeHTML($html, true, false, true, false, '');
+
 // reset pointer to the last page
 $pdf->lastPage();
 
