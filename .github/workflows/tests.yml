@@ -54,3 +54,23 @@ jobs:
               with:
                 flags: php-${{ matrix.php-version }}-${{ matrix.os }}
                 name: php-${{ matrix.php-version }}-${{ matrix.os }}
+
+    analyse-php:
+        name: Static Analysis
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - name: Use php 8.0
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: 8.0
+                  tools: composer:v2
+            - name: Cache module
+              uses: actions/cache@v2
+              with:
+                  path: ~/.composer/cache/
+                  key: composer-cache
+            - name: Install phpstan
+              run: composer require --dev phpstan/phpstan
+            - name: Analyse files
+              run: ./vendor/bin/phpstan --memory-limit=2G
