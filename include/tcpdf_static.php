@@ -286,7 +286,7 @@ class TCPDF_STATIC {
 	 */
 	public static function _escapeXML($str) {
 		$replaceTable = array("\0" => '', '&' => '&amp;', '<' => '&lt;', '>' => '&gt;');
-		$str = strtr($str, $replaceTable);
+		$str = strtr(strval($str), $replaceTable);
 		return $str;
 	}
 
