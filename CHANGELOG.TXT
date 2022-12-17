@@ -1,3 +1,6 @@
+6.6.2 (2022-12-17)
+	- Ensure pregSplit return type is always array.
+
 6.6.1 (2022-12-12)
 	- Add PHPStan and fix level 1 errors (#307)
 
