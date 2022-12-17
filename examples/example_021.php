@@ -22,6 +22,8 @@
  * @abstract TCPDF - Example: WriteHTML text flow.
  * @author Nicola Asuni
  * @since 2008-03-04
+ * @group html
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).

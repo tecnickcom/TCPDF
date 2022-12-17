@@ -22,6 +22,9 @@
  * @abstract TCPDF - Example: Table Of Content using HTML templates.
  * @author Nicola Asuni
  * @since 2010-05-06
+ * @group toc
+ * @group html
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).

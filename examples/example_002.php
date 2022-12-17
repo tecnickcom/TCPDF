@@ -22,6 +22,10 @@
  * @abstract TCPDF - Example: Removing Header and Footer
  * @author Nicola Asuni
  * @since 2008-03-04
+ * @group header
+ * @group footer
+ * @group page
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).

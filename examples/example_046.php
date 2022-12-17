@@ -22,6 +22,8 @@
  * @abstract TCPDF - Example: text Hyphenation
  * @author Nicola Asuni
  * @since 2009-02-28
+ * @group text
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).

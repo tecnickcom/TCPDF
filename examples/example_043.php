@@ -22,6 +22,8 @@
  * @abstract TCPDF - Example: Disk caching
  * @author Nicola Asuni
  * @since 2009-01-02
+ * @group cache
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).

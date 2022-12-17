@@ -22,6 +22,8 @@
  * @abstract TCPDF - Example: Include external UTF-8 text file
  * @author Nicola Asuni
  * @since 2008-03-04
+ * @group unicode
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).
@@ -75,7 +77,7 @@ $pdf->setFont('freeserif', '', 12);
 // add a page
 $pdf->AddPage();
 
-// get esternal file content
+// get external file content
 $utf8text = file_get_contents('data/utf8test.txt', false);
 
 // set color for text

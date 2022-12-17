@@ -37,6 +37,9 @@
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
  * @version 1.0.000
+ * @group barcode
+ * @group 1d
+ * @group png
  */
 
 // include 1D barcode class (search for installation path)

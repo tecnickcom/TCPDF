@@ -22,6 +22,8 @@
  * @abstract TCPDF - Example: XObject Template
  * @author Nicola Asuni
  * @since 2010-08-25
+ * @group object
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).

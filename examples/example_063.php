@@ -22,6 +22,8 @@
  * @abstract TCPDF - Example: Text stretching and spacing (tracking)
  * @author Nicola Asuni
  * @since 2010-09-29
+ * @group text
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).

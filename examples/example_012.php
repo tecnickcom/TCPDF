@@ -22,6 +22,8 @@
  * @abstract TCPDF - Example: Graphic Functions
  * @author Nicola Asuni
  * @since 2008-03-04
+ * @group drawing
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).

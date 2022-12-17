@@ -22,6 +22,9 @@
  * @abstract TCPDF - Example: HTML tables and table headers
  * @author Nicola Asuni
  * @since 2009-03-20
+ * @group html
+ * @group table
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).

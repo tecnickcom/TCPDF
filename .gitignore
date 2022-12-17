@@ -3,3 +3,4 @@
 *.bak
 /vendor/
 /composer.lock
+/composer.phar
