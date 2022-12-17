@@ -2,10 +2,11 @@ name: Run tests
 
 on:
   push:
-  pull_request:
-    types: [opened, synchronize, reopened]
     branches:
-      - main
+      - 'main'
+  pull_request:
+    branches:
+      - 'main'
 
 jobs:
     test-php:
