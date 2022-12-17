@@ -1,5 +1,7 @@
 6.6.2 (2022-12-17)
 	- Ensure pregSplit return type is always array.
+	- Add ability to run tests on various operating systems (#566)
+	- Avoid a deprecated error from PHP8.1 (#573)
 
 6.6.1 (2022-12-12)
 	- Add PHPStan and fix level 1 errors (#307)
