@@ -1323,14 +1323,9 @@ class TCPDF_FONTS {
 					// set the checkSumAdjustment to 0
 					$table[$tag]['data'] = substr($table[$tag]['data'], 0, 8)."\x0\x0\x0\x0".substr($table[$tag]['data'], 12);
 				}
-				$pad = 4 - ($table[$tag]['length'] % 4);
-				if ($pad != 4) {
-					// the length of a table must be a multiple of four bytes
-					$table[$tag]['length'] += $pad;
-					$table[$tag]['data'] .= str_repeat("\x0", $pad);
-				}
 				$table[$tag]['offset'] = $offset;
 				$offset += $table[$tag]['length'];
+				$offset = $offset + 3 & ~3;
 				// check sum is not changed (so keep the following line commented)
 				//$table[$tag]['checkSum'] = self::_getTTFtableChecksum($table[$tag]['data'], $table[$tag]['length']);
 			} else {
@@ -1338,26 +1333,17 @@ class TCPDF_FONTS {
 			}
 		}
 		// add loca
+		$table['loca'] = array();
 		$table['loca']['data'] = $loca;
 		$table['loca']['length'] = strlen($loca);
-		$pad = 4 - ($table['loca']['length'] % 4);
-		if ($pad != 4) {
-			// the length of a table must be a multiple of four bytes
-			$table['loca']['length'] += $pad;
-			$table['loca']['data'] .= str_repeat("\x0", $pad);
-		}
 		$table['loca']['offset'] = $offset;
 		$table['loca']['checkSum'] = self::_getTTFtableChecksum($table['loca']['data'], $table['loca']['length']);
 		$offset += $table['loca']['length'];
+		$offset = $offset + 3 & ~3;
 		// add glyf
+		$table['glyf'] = array();
 		$table['glyf']['data'] = $glyf;
 		$table['glyf']['length'] = strlen($glyf);
-		$pad = 4 - ($table['glyf']['length'] % 4);
-		if ($pad != 4) {
-			// the length of a table must be a multiple of four bytes
-			$table['glyf']['length'] += $pad;
-			$table['glyf']['data'] .= str_repeat("\x0", $pad);
-		}
 		$table['glyf']['offset'] = $offset;
 		$table['glyf']['checkSum'] = self::_getTTFtableChecksum($table['glyf']['data'], $table['glyf']['length']);
 		// rebuild font
@@ -1379,11 +1365,12 @@ class TCPDF_FONTS {
 			$font .= pack('N', $data['length']); // length
 		}
 		foreach ($table as $data) {
-			$font .= $data['data'];
+			$pad = (4 - $data['length'] % 4) % 4;
+			$font .= $data['data'].str_repeat("\x0", $pad);
 		}
 		// set checkSumAdjustment on head table
 		$checkSumAdjustment = 0xB1B0AFBA - self::_getTTFtableChecksum($font, strlen($font));
-		$font = substr($font, 0, $table['head']['offset'] + 8).pack('N', $checkSumAdjustment).substr($font, $table['head']['offset'] + 12);
+		$font = substr($font, 0, $table['head']['offset'] + $offset + 8).pack('N', $checkSumAdjustment).substr($font, $table['head']['offset'] + $offset + 12);
 		return $font;
 	}
 
