@@ -13,7 +13,7 @@
 
 
 ## NOTE
-A new version of this library is under development at https://github.com/tecnickcom/tc-lib-pdf and as a consequence this version will not receive any additional development or support once that version will become stable.
+A new version of this library is under development at https://github.com/tecnickcom/tc-lib-pdf and as a consequence this library is in support only mode.
 
 
 
