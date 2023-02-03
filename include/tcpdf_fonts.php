@@ -2004,7 +2004,7 @@ class TCPDF_FONTS {
 			$chars = TCPDF_STATIC::pregSplit('//','u', $str, -1, PREG_SPLIT_NO_EMPTY);
 			$carr = array_map(array('TCPDF_FONTS', 'uniord'), $chars);
 		} else {
-			$chars = str_split($str);
+            $chars = function_exists('mb_str_split') ? mb_str_split($str) : str_split($str);
 			$carr = array_map('ord', $chars);
 		}
 		if (is_array($currentfont['subsetchars']) && is_array($carr)) {

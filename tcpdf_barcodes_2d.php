@@ -320,8 +320,8 @@ class TCPDF2DBarcode {
 				$this->barcode_array['num_cols'] = strlen($rows[0]);
 				$this->barcode_array['bcode'] = array();
 				foreach ($rows as $r) {
-					$this->barcode_array['bcode'][] = str_split($r, 1);
-				}
+                    $this->barcode_array['bcode'][] = function_exists('mb_str_split') ? mb_str_split($r, 1) : str_split($r, 1);
+                }
 				$this->barcode_array['code'] = $code;
 				break;
 			}
