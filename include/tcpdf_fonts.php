@@ -2002,7 +2002,11 @@ class TCPDF_FONTS {
 		if ($isunicode) {
 			// requires PCRE unicode support turned on
 			$chars = TCPDF_STATIC::pregSplit('//','u', $str, -1, PREG_SPLIT_NO_EMPTY);
-			$carr = array_map(array('TCPDF_FONTS', 'uniord'), $chars);
+			if(empty($chars)){
+				die('TCPDF Error: Incorrect encoding: '.$str);
+			}else{
+				$carr = array_map(array('TCPDF_FONTS', 'uniord'), $chars);
+			}
 		} else {
 			$chars = str_split($str);
 			$carr = array_map('ord', $chars);
