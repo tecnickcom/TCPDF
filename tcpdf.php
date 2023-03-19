@@ -3372,7 +3372,7 @@ class TCPDF {
 	/**
 	 * Set header margin.
 	 * (minimum distance between header and top page margin)
-	 * @param int $hm distance in user units
+	 * @param float $hm distance in user units
 	 * @public
 	 */
 	public function setHeaderMargin($hm=10) {
@@ -3392,7 +3392,7 @@ class TCPDF {
 	/**
 	 * Set footer margin.
 	 * (minimum distance between footer and bottom page margin)
-	 * @param int $fm distance in user units
+	 * @param float $fm distance in user units
 	 * @public
 	 */
 	public function setFooterMargin($fm=10) {
