@@ -574,12 +574,14 @@ class TCPDF {
 	/**
 	 * Minimum distance between header and top page margin.
 	 * @protected
+	 * @var float
 	 */
 	protected $header_margin;
 
 	/**
 	 * Minimum distance between footer and bottom page margin.
 	 * @protected
+	 * @var float
 	 */
 	protected $footer_margin;
 
