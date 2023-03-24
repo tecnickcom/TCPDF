@@ -7121,6 +7121,11 @@ class TCPDF {
 			$mtd = '_parse'.$type;
 			// GD image handler function
 			$gdfunction = 'imagecreatefrom'.$type;
+			
+			if ($type === 'png') {
+				$gdfunction = '@' . $gdfunction;
+			}
+
 			$info = false;
 			if ((method_exists('TCPDF_IMAGES', $mtd)) AND (!($resize AND (function_exists($gdfunction) OR extension_loaded('imagick'))))) {
 				// TCPDF image functions
@@ -7372,7 +7377,7 @@ class TCPDF {
 		if (($parsed === false) AND function_exists('imagecreatefrompng')) {
 			try {
 				// generate images
-				$img = imagecreatefrompng($file);
+				$img = @imagecreatefrompng($file);
 				$imgalpha = imagecreate($wpx, $hpx);
 				// generate gray scale palette (0 -> 255)
 				for ($c = 0; $c < 256; ++$c) {
