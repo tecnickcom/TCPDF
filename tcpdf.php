@@ -4101,7 +4101,7 @@ class TCPDF {
 	 * @param string $fontstyle Font style. Possible values are (case insensitive):<ul><li>empty string: regular</li><li>B: bold</li><li>I: italic</li><li>U: underline</li><li>D: line-through</li><li>O: overline</li></ul> or any combination. The default value is regular.
 	 * @param float $fontsize Font size in points. The default value is the current size.
 	 * @param boolean $getarray if true returns an array of characters widths, if false returns the total length.
-	 * @return float[]|float total string length or array of characted widths
+	 * @return ($getarray is true ? float[] : float) total string length or array of characted widths
 	 * @author Nicola Asuni
 	 * @public
 	 * @since 1.2
@@ -4117,7 +4117,7 @@ class TCPDF {
 	 * @param string $fontstyle Font style. Possible values are (case insensitive):<ul><li>empty string: regular</li><li>B: bold</li><li>I: italic</li><li>U: underline</li><li>D: line through</li><li>O: overline</li></ul> or any combination. The default value is regular.
 	 * @param float $fontsize Font size in points. The default value is the current size.
 	 * @param boolean $getarray if true returns an array of characters widths, if false returns the total length.
-	 * @return float[]|float total string length or array of characted widths
+	 * @return ($getarray is true ? float[] : float) total string length or array of characted widths
 	 * @author Nicola Asuni
 	 * @public
 	 * @since 2.4.000 (2008-03-06)
