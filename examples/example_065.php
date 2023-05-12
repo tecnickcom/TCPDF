@@ -22,6 +22,8 @@
  * @abstract TCPDF - Example: PDF/A-1b mode
  * @author Nicola Asuni
  * @since 2011-09-28
+ * @group A-1b
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).

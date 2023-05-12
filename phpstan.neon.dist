@@ -1,0 +1,33 @@
+parameters:
+    level: 1
+    paths:
+        - ./
+    excludePaths:
+        - vendor/
+        # remove once https://github.com/phpstan/phpstan/issues/7955 is fixed
+        - fonts/
+        - tests/
+
+    scanFiles:
+      - tcpdf_autoconfig.php
+
+    ignoreErrors:
+        - '~^Constant (PDF_HEADER_LOGO|K_PATH_CACHE|K_PATH_FONTS|K_PATH_IMAGES|K_PATH_URL) not found\.$~'
+        - '~^Constructor of class TCPDF has an unused parameter \$diskcache\.$~'
+        - '~^Variable \$\w+ might not be defined\.$~'
+        - '~^Method TCPDF(_FILTERS)?::\w+\(\) should return .+ but return statement is missing\.$~'
+
+        # mcrypt does not support PHP 7.2 or later
+        -
+            message: '~^(Constant MCRYPT_RIJNDAEL_128 not found\.|Function mcrypt_get_cipher_name not found\.)$~'
+            path: tcpdf.php
+            count: 2
+        -
+            message: '~^(Constant (MCRYPT_ARCFOUR|MCRYPT_MODE_CBC|MCRYPT_MODE_STREAM|MCRYPT_RAND|MCRYPT_RIJNDAEL_128) not found\.|Function (mcrypt_create_iv|mcrypt_encrypt|mcrypt_get_iv_size) not found\.)$~'
+            path: include/tcpdf_static.php
+            count: 16
+
+        -
+            message: '~^(Call to static method create\(\) on an unknown class Symfony\\Component\\Finder\\Finder\.|Instantiated class Doctum\\(Doctum|RemoteRepository\\GitHubRemoteRepository) not found\.)$~'
+            path: scripts/doctum.php
+            count: 3

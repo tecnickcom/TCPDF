@@ -22,6 +22,8 @@
  * @abstract TCPDF - Example: CID-0 CJK unembedded font
  * @author Nicola Asuni
  * @since 2008-09-15
+ * @group font
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).

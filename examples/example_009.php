@@ -22,6 +22,8 @@
  * @abstract TCPDF - Example: Test Image
  * @author Nicola Asuni
  * @since 2008-03-04
+ * @group image
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).

@@ -22,6 +22,8 @@
  * @abstract TCPDF - Example: Javascript example.
  * @author Nicola Asuni
  * @since 2009-09-02
+ * @group javascript
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).

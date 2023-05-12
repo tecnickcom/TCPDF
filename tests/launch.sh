@@ -51,6 +51,13 @@ if [ "$(${PHP_BINARY} -r 'echo PHP_MAJOR_VERSION;')" = "5" ];then
 
 fi
 
+if [ "$(${PHP_BINARY} -r 'echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION;')" = "70" ];then
+    X_DEBUG_EXT="$(find ${PHP_EXT_DIR} -type f -name 'xdebug.so' || '')"
+    echo "Xdebug found at: ${X_DEBUG_EXT}"
+    # pcov does not exist for PHP 7.0
+    COVERAGE_EXTENSION="-d zend_extension=${X_DEBUG_EXT} -d xdebug.mode=coverage"
+fi
+
 # PHP >= 8.x.x
 if [ "$(${PHP_BINARY} -r 'echo (PHP_MAJOR_VERSION >= 8) ? "true" : "false";')" = "true" ];then
     # The json ext is bundled into PHP 8.0

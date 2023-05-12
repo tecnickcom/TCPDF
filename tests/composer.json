@@ -1,0 +1,36 @@
+{
+    "name": "tecnickcom/tcpdf-tests",
+    "type": "metapackage",
+    "description": "Dependencies for the test suite",
+    "keywords": [
+        "PDF",
+        "tcpdf",
+        "test"
+    ],
+    "homepage": "http://www.tcpdf.org/",
+    "license": "LGPL-3.0-only",
+    "authors": [
+        {
+            "name": "Philippe Jausions",
+            "email": "jausions@11abacus.com",
+            "role": "contributor"
+        }
+    ],
+    "require": {
+        "PHP": ">=5.3.0",
+        "cs278/mktemp": "*"
+    },
+    "suggest": {
+        "rosell-dk/locate-binaries": "Allows to detect executables such as pdfinfo"
+    },
+    "autoload": {
+        "psr-4": {
+            "Tecnickcom\\TCPDF\\Tests\\": "src/"
+        }
+    },
+    "archive": {
+        "exclude": [
+            "/examples"
+        ]
+    }
+}

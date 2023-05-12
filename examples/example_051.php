@@ -22,6 +22,9 @@
  * @abstract TCPDF - Example: Full page background
  * @author Nicola Asuni
  * @since 2009-04-16
+ * @group background
+ * @group page
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).

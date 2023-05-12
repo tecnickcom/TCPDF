@@ -22,6 +22,8 @@
  * @abstract TCPDF - Example: Transactions
  * @author Nicola Asuni
  * @since 2009-03-19
+ * @group transaction
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).

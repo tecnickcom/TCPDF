@@ -22,6 +22,8 @@
  * @abstract TCPDF - Example: Test Image with alpha channel
  * @author Nicola Asuni
  * @since 2008-12-23
+ * @group image
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).

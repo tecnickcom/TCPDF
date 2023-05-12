@@ -22,6 +22,9 @@
  * @abstract TCPDF - Example: XHTML Forms
  * @author Nicola Asuni
  * @since 2009-09-07
+ * @group html
+ * @group form
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).

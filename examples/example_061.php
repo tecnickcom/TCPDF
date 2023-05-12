@@ -22,6 +22,9 @@
  * @abstract TCPDF - Example: XHTML + CSS
  * @author Nicola Asuni
  * @since 2010-05-25
+ * @group html
+ * @group css
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).

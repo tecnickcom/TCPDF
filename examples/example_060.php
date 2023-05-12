@@ -22,6 +22,8 @@
  * @abstract TCPDF - Example: Advanced page settings.
  * @author Nicola Asuni
  * @since 2010-05-17
+ * @group page
+ * @group pdf
  */
 
 // Include the main TCPDF library (search for installation path).
