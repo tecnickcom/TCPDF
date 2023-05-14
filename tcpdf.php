@@ -1274,7 +1274,8 @@ class TCPDF {
 	 * @protected
 	 * @since 4.6.005 (2009-04-24)
 	 */
-	protected $signature_max_length = 11742;
+	// protected $signature_max_length = 11742;
+	protected $signature_max_length = 20742;
 
 	/**
 	 * Data for digital signature appearance.
@@ -7692,12 +7693,14 @@ class TCPDF {
 			$signature = $tmparr[1];
 			// decode signature
 			$signature = base64_decode(trim($signature));
-			// add TSA timestamp to signature
-			$signature = $this->applyTSA($signature);
 			// convert signature to hex
 			$signature = current(unpack('H*', $signature));
+			// add TSA timestamp to signature
+			$signature = $this->applyTSA($signature);
+
 			$signature = str_pad($signature, $this->signature_max_length, '0');
 			// Add signature to the document
+			
 			$this->buffer = substr($pdfdoc, 0, $byte_range[1]).'<'.$signature.'>'.substr($pdfdoc, $byte_range[1]);
 			$this->bufferlen = strlen($this->buffer);
 		}
@@ -13675,6 +13678,90 @@ class TCPDF {
 			return $signature;
 		}
 		//@TODO: implement this feature
+		// start timestamping
+		// by Hida since 5.9.128 (2011-10-06)
+		if($this->tsa_timestamp) {
+			//Include asn1 fuction script
+			require_once(dirname(__FILE__).'/include/asn1_parser_tcpdf.php');
+			require_once(dirname(__FILE__).'/include/asn1_function_tcpdf.php');
+			require_once(dirname(__FILE__).'/include/functionLog_tcpdf.php');
+
+			$tsaLog = __FILE__." line:(".__LINE__."). Perform timestamping...\n";
+			//Parse TCPDF Signature structure to get signed hash sequence
+			$p = asn1parse($signature);
+			$p1 = asn1parse($p[0][1]);
+			$p2 = asn1parse($p1[1][1]);
+			$p3 = asn1parse($p2[0][1]);
+			$p2 = asn1parse($p3[4][1]);
+			$pa1 = asn1parse($p2[0][1]);
+			$pa2 = asn1parse($pa1[3][1]);
+
+			//Create timestamp request
+
+			//Create hash of encrypted contents TCPDF signature
+			$hash = hash('sha1', hex2bin($pa1[5][1]));
+			//Build timestamp request data
+			$tsReqData = seq(
+											int(1).
+											seq(
+													seq(
+															"06052B0E03021A". // Obj_sha1
+															"0500" // Null
+															).
+													oct($hash)
+													).
+											int(hash('crc32', rand())).
+											'0101ff'
+											);
+			$raw_data = hex2bin($tsReqData);
+
+			//Send request to TSA Server with Curl
+			if(extension_loaded('curl')) {
+				$tsaLog .= __FILE__." line:(".__LINE__."). Curl was already Loaded\n".__FILE__." line:(".__LINE__."). Curl is sending tsRequest to \"".$this->tsa_data['tsa_host']."\" ...\n";
+				$ch = curl_init();
+				curl_setopt($ch, CURLOPT_URL, $this->tsa_data['tsa_host']);
+				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+				curl_setopt($ch, CURLOPT_POST, 1);
+				curl_setopt($ch, CURLOPT_USERAGENT, '1');
+				curl_setopt($ch, CURLOPT_POSTFIELDS, $raw_data);
+
+				$tsResponse = curl_exec($ch);
+				if($tsResponse != false) {
+					$tsaLog .= __FILE__." line:(".__LINE__."). tsRequest is sent.\n";
+				} else {
+					tsaLog("$tsaLog".__FILE__." line:(".__LINE__."). can't send tsRequest, Timestamp failed!\n",'w');
+				}
+				//parse ts response
+				$hexTs = bin2hex($tsResponse);
+				$tsparse = asn1parse($hexTs);
+
+				$tsparse0 = asn1parse($tsparse[0][1]);
+				if(count($tsparse0) > 1) { //Remove response status data, only take timeStampToken
+					$timeStamp = seq($tsparse0[1][1]);
+				} else {
+					$timeStamp = seq($tsparse0[0][1]);
+				}
+
+				//Add timestamp to TCPDF Signature
+				$timeStamp = seq("060B2A864886F70D010910020E".set($timeStamp));
+				$pkcs7 = int($pa1[0][1]).seq($pa1[1][1]).seq($pa1[2][1]).explicit(0, $pa1[3][1]).seq($pa1[4][1]).oct($pa1[5][1]);
+				$time = seq($pkcs7.explicit(1,$timeStamp));
+				$aa=seq(int(1). set($p3[1][1]).seq($p3[2][1]).explicit(0, $p3[3][1]).set($time));
+				$hdaSignature = seq("06092A864886F70D010702".explicit(0,($aa)))."0000";
+				
+				$signature = $hdaSignature;
+				// $tsaLog .= $signature;
+				tsaLog("$tsaLog".__FILE__." line:(".__LINE__."). Timestamp Success.\n");
+			} else {
+				$tsaLog .= __FILE__." line:(".__LINE__."). Curl was not loaded, trying to load it...\n";
+				if(@dl('php_curl.dll')) {
+					$tsaLog .= __FILE__." line:(".__LINE__."). Curl successfully Loaded.\n";
+				} else {
+					tsaLog("$tsaLog\n".__FILE__." line:(".__LINE__."). Curl failed to load. Timestamping failed!", 'w');
+				}
+			}
+		}
+		// end timestamping
 		return $signature;
 	}
 
