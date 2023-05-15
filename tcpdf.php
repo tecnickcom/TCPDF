@@ -13722,7 +13722,9 @@ class TCPDF {
 				curl_setopt($ch, CURLOPT_URL, $this->tsa_data['tsa_host']);
 				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 				curl_setopt($ch, CURLOPT_POST, 1);
-				curl_setopt($ch, CURLOPT_USERAGENT, '1');
+				curl_setopt($ch, CURLOPT_HTTPHEADER, [
+						'Content-Type: application/timestamp-query',
+						'User-Agent: TCPDF'
 				curl_setopt($ch, CURLOPT_POSTFIELDS, $raw_data);
 
 				$tsResponse = curl_exec($ch);
