@@ -90,7 +90,7 @@ $info = array(
 
 echo "<pre>";
 // $pdf->setTimeStamp($tsa_host='', $tsa_username='', $tsa_password='', $tsa_cert='');
-$pdf->setTimeStamp('http://localhost/tsa/');
+$pdf->setTimeStamp('http://timestamp.apple.com/ts01');
 
 
 // set document signature
