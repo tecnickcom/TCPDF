@@ -2461,7 +2461,7 @@ class TCPDF {
 	 */
 	public function getCellHeight($fontsize, $padding=TRUE) {
 		$height = ($fontsize * $this->cell_height_ratio);
-		if ($padding) {
+		if ($padding && !empty($this->cell_padding)) {
 			$height += ($this->cell_padding['T'] + $this->cell_padding['B']);
 		}
 		return round($height, 6);
