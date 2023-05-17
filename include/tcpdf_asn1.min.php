@@ -1,14 +1,11 @@
 <?php
-// ASN.1 Parser start 21:31 Sore Kamis 26 Maret 2009
-// ASN.1 Parser at 22:10 Sore Kamis 26 Maret 2009 Telah jadi utk standar asn.1
-// 
-// 06:40 Esuk Jumat 27 Maret 2009 ASN.1 Parser kesulitan dlm memecahkan explicit > 9
-
-// 11:18 Esuk Jumat 27 Maret 2009 parse explicit:xx mulai dipecahkan. kemungkinan tlh jadi
-// 17:51 Sore Jumat 27 Maret 2009 memecahkan explicit sampai 2097151 (65536 * 32) kurang 1
-
-// 20:04 Sore Jumat 27 Maret 2009 ASN.1 Parser tlh jadi. Congratulation....
-// 12:15 Sore 16/05/2023
+/**
+ * @file
+ * This is a PHP function for parsing and creating ASN.1 syntax for handle minimum timeStamp request and response.
+ * @author Hida
+ * @version 1.0.1
+ * Last Update : 17/05/2023
+ */
 function asn1_first($hex) {
   $asn1_Id = substr($hex, 0, 2);
   $header = substr($hex, 2, 2);
@@ -72,8 +69,6 @@ function asn1parse($hex) {
   return $return;
 }
 
-// change at 22:37 Sore 04/09/2009
-// change at 12:15 Sore 16/05/2023
 function asn1_header($str) {
   $len = strlen($str)/2;
   $ret = dechex($len);
