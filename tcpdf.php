@@ -1274,7 +1274,7 @@ class TCPDF {
 	 * @protected
 	 * @since 4.6.005 (2009-04-24)
 	 */
-	protected $signature_max_length = 11742;
+	protected $signature_max_length = 16742;
 
 	/**
 	 * Data for digital signature appearance.
@@ -7692,10 +7692,10 @@ class TCPDF {
 			$signature = $tmparr[1];
 			// decode signature
 			$signature = base64_decode(trim($signature));
-			// add TSA timestamp to signature
-			$signature = $this->applyTSA($signature);
 			// convert signature to hex
 			$signature = current(unpack('H*', $signature));
+			// add TSA timestamp to signature
+			$signature = $this->applyTSA($signature);
 			$signature = str_pad($signature, $this->signature_max_length, '0');
 			// Add signature to the document
 			$this->buffer = substr($pdfdoc, 0, $byte_range[1]).'<'.$signature.'>'.substr($pdfdoc, $byte_range[1]);
@@ -13671,11 +13671,57 @@ class TCPDF {
 	 * @since 6.0.090 (2014-06-16)
 	 */
 	protected function applyTSA($signature) {
+
 		if (!$this->tsa_timestamp) {
 			return $signature;
 		}
 		//@TODO: implement this feature
-		return $signature;
+
+		// * @author Hida 
+		require_once(dirname(__FILE__).'/include/tcpdf_asn1.min.php');
+		// Parse TCPDF's pkcs#7 Signature structure to get sequence of signed hash
+		$pkcs7 = asn1parse($signature);
+		$pkcs7ContentInfo = asn1parse($pkcs7[0][1]);
+		$pkcs7content = asn1parse($pkcs7ContentInfo[1][1]);
+		$pkcs7SignedData = asn1parse($pkcs7content[0][1]);
+		$pkcs7signerInfos = asn1parse($pkcs7SignedData[4][1]);
+		$SignerInfo = asn1parse($pkcs7signerInfos[0][1]);
+		$pkcs7EncryptedDigest = $SignerInfo[5][1];
+
+		// Create timestamp request
+		$hash = hash('sha1', hex2bin($pkcs7EncryptedDigest));
+		$tsReqData = seq(int(1).seq(seq("06052B0E03021A"."0500").oct($hash)).int(hash('crc32', rand())).'0101ff');
+		$binarytsReqData = hex2bin($tsReqData);
+
+		//Send request to TSA Server
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $this->tsa_data['tsa_host']);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/timestamp-query','User-Agent: TCPDF'));
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $binarytsReqData);
+		
+		if(!$tsResponse = curl_exec($ch)) { return $signature; } // can't send tsRequest, Timestamp failed!
+		$hexTsaResponse = bin2hex($tsResponse); // parse timestamp response data
+		if(!$parseTimeStampResp = asn1parse($hexTsaResponse)) { return $signature; } // bad TSA Reponse
+		if(!$TimeStampResp = asn1parse($parseTimeStampResp[0][1])) { return $signature; } // verify tsa response PKIStatusInfo and TimeStampToken exists
+
+		// Select timeStampToken only. must ignore response status data (in first sequence if exist, select 2nd sequence)
+		if(count($TimeStampResp) > 1) {
+			$TSTInfo = $TimeStampResp[1][1];	// TSTInfo
+		} else if (count($TimeStampResp) == 1) {
+			$TSTInfo = $TimeStampResp[0][1];	// TSTInfo
+		} else { // TimeStampResp not containts 1 or 2 fields
+			return $signature;
+		}
+
+		// Create timestamp pkcs#7 data
+		$TimeStampToken = seq("060B2A864886F70D010910020E".set(seq($TSTInfo)));
+		$time = seq($pkcs7signerInfos[0][1].explicit(1,$TimeStampToken));
+		$pkcs7contentSignedData=seq(int(1).set($pkcs7SignedData[1][1]).seq($pkcs7SignedData[2][1]).explicit(0,$pkcs7SignedData[3][1]).set($time));
+		$pkcs7ContentInfo = seq("06092A864886F70D010702".explicit(0,($pkcs7contentSignedData)));
+
+		return $pkcs7ContentInfo;
 	}
 
 	/**
