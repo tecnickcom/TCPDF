@@ -13666,16 +13666,6 @@ class TCPDF {
 	}
 
 	/**
-	 * NOT YET IMPLEMENTED
-	 * Request TSA for a timestamp
-	 * @param string $signature Digital signature as binary string
-	 * @return string Timestamped digital signature
-	 * @protected
-	 * @author Richard Stockinger
-	 * @since 6.0.090 (2014-06-16)
-	 */
-	
-	/**
 	 * Applying TSA for a timestamp.
 	 * @param string $signature Digital signature as hex string
 	 * @return hex string Timestamped digital signature
