@@ -119,6 +119,8 @@ require_once(dirname(__FILE__).'/include/tcpdf_colors.php');
 require_once(dirname(__FILE__).'/include/tcpdf_images.php');
 // TCPDF static methods and data
 require_once(dirname(__FILE__).'/include/tcpdf_static.php');
+// TCPDF page cache reference counts
+require_once(dirname(__FILE__).'/include/tcpdf_page_cache_reference_counts.php');
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -194,6 +196,13 @@ class TCPDF {
 	 * @var array<int,int>
 	 */
 	protected $pageCacheIndex = array();
+
+	/**
+	 * Page cache reference counts
+	 * @protected
+	 * @var TCPDF_PAGE_CACHE_REFERENCE_COUNTS|null
+	 */
+	protected $pageCacheRefCnts = null;
 
 	/**
 	 * Current document state.
@@ -7912,9 +7921,6 @@ class TCPDF {
 		}
 	}
 
-	/** Page cache reference counts */
-	protected static $pageCacheRefCnts = array();
-
 	/**
 	 * Update page cache file
 	 *
@@ -7927,7 +7933,9 @@ class TCPDF {
 		if ($this->pageCacheFile === false) {
 			$this->pageCacheFile = null;
 		} else {
-			self::$pageCacheRefCnts[(int)$this->pageCacheFile] = 1;
+			if ($this->pageCacheRefCnts == null)
+				$this->pageCacheRefCnts = new TCPDF_PAGE_CACHE_REFERENCE_COUNTS();
+			$this->pageCacheRefCnts->incrementReferenceCount();
 		}
 	}
 
@@ -7938,8 +7946,8 @@ class TCPDF {
 	{
 		if ($this->pageCacheFile !== null)
 		{
-			self::$pageCacheRefCnts[(int)$this->pageCacheFile]--;
-			if (self::$pageCacheRefCnts[(int)$this->pageCacheFile] == 0) {
+			$this->pageCacheRefCnts->decrementReferenceCount();
+			if ($this->pageCacheRefCnts->getReferenceCount() == 0) {
 				// This might be the end of the PHP script and the temporary file may be
 				// removed before this class, so check if it's still a valid resource.
 				if (is_resource($this->pageCacheFile)) {
@@ -7961,7 +7969,7 @@ class TCPDF {
 		// Update ref count
 		if ($this->pageCacheFile !== null)
 		{
-			self::$pageCacheRefCnts[(int)$this->pageCacheFile]++;
+			$this->pageCacheRefCnts->incrementReferenceCount();
 			$this->roPageCacheFile = true;
 		}
 	}
@@ -21044,13 +21052,15 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					{
 						$origPageCacheFile = $this->pageCacheFile;
 						// Remove reference count to file and open a new page cache file
-						self::$pageCacheRefCnts[(int)$this->pageCacheFile]--;
+						$this->pageCacheRefCnts->decrementReferenceCount();
 						$this->pageCacheFile = fopen('php://temp', 'w+');
 						if ($this->pageCacheFile === false) {
 							$this->pageCacheFile = null;
+							$this->pageCacheRefCnts = null;
 						} else {
 							// Add reference to new page cache file
-							self::$pageCacheRefCnts[(int)$this->pageCacheFile] = 1;
+							$this->pageCacheRefCnts = new TCPDF_PAGE_CACHE_REFERENCE_COUNTS();
+							$this->pageCacheRefCnts->incrementReferenceCount();
 							// Copy data from old page cache file to new one
 							fseek($origPageCacheFile, 0, SEEK_SET);
 							while (($copyContent = fread($origPageCacheFile, 8192)) != false) {
