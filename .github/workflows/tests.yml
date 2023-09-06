@@ -132,4 +132,4 @@ jobs:
             - name: Install phpstan
               run: composer require --dev phpstan/phpstan
             - name: Analyse files
-              run: ./vendor/bin/phpstan --memory-limit=2G
+              run: ./vendor/bin/phpstan --memory-limit=6G

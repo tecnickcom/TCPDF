@@ -2463,7 +2463,7 @@ class TCPDF {
 	 */
 	public function getCellHeight($fontsize, $padding=TRUE) {
 		$height = ($fontsize * $this->cell_height_ratio);
-		if ($padding) {
+		if ($padding && !empty($this->cell_padding)) {
 			$height += ($this->cell_padding['T'] + $this->cell_padding['B']);
 		}
 		return round($height, 6);
@@ -4104,6 +4104,7 @@ class TCPDF {
 	 * @param float $fontsize Font size in points. The default value is the current size.
 	 * @param boolean $getarray if true returns an array of characters widths, if false returns the total length.
 	 * @return float[]|float total string length or array of characted widths
+	 * @phpstan-return ($getarray is true ? float[] : float) total string length or array of characted widths
 	 * @author Nicola Asuni
 	 * @public
 	 * @since 1.2
@@ -4120,6 +4121,7 @@ class TCPDF {
 	 * @param float $fontsize Font size in points. The default value is the current size.
 	 * @param boolean $getarray if true returns an array of characters widths, if false returns the total length.
 	 * @return float[]|float total string length or array of characted widths
+	 * @phpstan-return ($getarray is true ? float[] : float) total string length or array of characted widths
 	 * @author Nicola Asuni
 	 * @public
 	 * @since 2.4.000 (2008-03-06)
@@ -6411,7 +6413,7 @@ class TCPDF {
 		// calculate maximum width for a single character on string
 		$chrw = $this->GetArrStringWidth($chars, '', '', 0, true);
 		array_walk($chrw, array($this, 'getRawCharWidth'));
-		$maxchwidth = max($chrw);
+		$maxchwidth = ((is_array($chrw) || $chrw instanceof Countable) && count($chrw) > 0) ? max($chrw) : 0;
 		// get array of chars
 		$uchars = TCPDF_FONTS::UTF8ArrayToUniArray($chars, $this->isunicode);
 		// get the number of characters
@@ -6874,6 +6876,8 @@ class TCPDF {
 		}
 		// resize the block to be contained on the remaining available page or column space
 		if ($fitonpage) {
+			// fallback to avoid division by zero
+			$h = $h == 0 ? 1 : $h;
 			$ratio_wh = ($w / $h);
 			if (($y + $h) > $this->PageBreakTrigger) {
 				$h = $this->PageBreakTrigger - $y;
@@ -9927,7 +9931,7 @@ class TCPDF {
 				}
 				$out .= ' >> >>';
 			}
-			$font = $this->getFontBuffer('helvetica');
+			$font = $this->getFontBuffer((($this->pdfa_mode) ? 'pdfa' : '') .'helvetica');
 			$out .= ' /DA (/F'.$font['i'].' 0 Tf 0 g)';
 			$out .= ' /Q '.(($this->rtl)?'2':'0');
 			//$out .= ' /XFA ';
@@ -22057,7 +22061,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	public function setTextRenderingMode($stroke=0, $fill=true, $clip=false) {
 		// Ref.: PDF 32000-1:2008 - 9.3.6 Text Rendering Mode
 		// convert text rendering parameters
-		if ($stroke < 0) {
+		if ($stroke < 0 || !is_numeric($stroke)) {
 			$stroke = 0;
 		}
 		if ($fill === true) {
