@@ -4102,6 +4102,7 @@ class TCPDF {
 	 * @param float $fontsize Font size in points. The default value is the current size.
 	 * @param boolean $getarray if true returns an array of characters widths, if false returns the total length.
 	 * @return float[]|float total string length or array of characted widths
+	 * @phpstan-return ($getarray is true ? float[] : float) total string length or array of characted widths
 	 * @author Nicola Asuni
 	 * @public
 	 * @since 1.2
@@ -4118,6 +4119,7 @@ class TCPDF {
 	 * @param float $fontsize Font size in points. The default value is the current size.
 	 * @param boolean $getarray if true returns an array of characters widths, if false returns the total length.
 	 * @return float[]|float total string length or array of characted widths
+	 * @phpstan-return ($getarray is true ? float[] : float) total string length or array of characted widths
 	 * @author Nicola Asuni
 	 * @public
 	 * @since 2.4.000 (2008-03-06)
