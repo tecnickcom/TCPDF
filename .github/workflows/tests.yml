@@ -16,7 +16,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php-version: ["5.3", "5.4", "5.5", "5.6", "7.0", "7.1", "7.2", "7.3", "7.4", "8.0", "8.1", "8.2"]
+                php-version: ["5.3", "5.4", "5.5", "5.6", "7.0", "7.1", "7.2", "7.3", "7.4", "8.0", "8.1", "8.2", "8.3"]
                 os: [macos-latest, windows-latest]
                 experimental: [false]
                 php-extensions: ["bcmath, imagick, gd"]
@@ -50,11 +50,12 @@ jobs:
                   - { php-version: '8.0', os: ubuntu-latest, experimental: false, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'pcov' }
                   - { php-version: '8.1', os: ubuntu-latest, experimental: false, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'pcov' }
                   - { php-version: '8.2', os: ubuntu-latest, experimental: false, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'pcov' }
+                  - { php-version: '8.3', os: ubuntu-latest, experimental: false, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'pcov' }
                   - { php-version: 'nightly', os: ubuntu-latest, experimental: true, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'pcov' }
         env:
             PDFINFO_BINARY: ${{ (matrix.os == 'ubuntu-latest') && '/usr/bin/pdfinfo' || ((matrix.os == 'macos-latest') && '/usr/local/bin/pdfinfo' || 'C:\ProgramData\Chocolatey\bin\pdfinfo.exe') }}
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - name: Install pdfinfo, pdftopng or pdftoppm
               uses: ConorMacBride/install-package@v1
               with:
@@ -118,12 +119,11 @@ jobs:
         name: Static Analysis
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - name: Use php 8.0
               uses: shivammathur/setup-php@v2
               with:
                   php-version: 8.0
-                  tools: composer:v2
             - name: Cache module
               uses: actions/cache@v3
               with:
