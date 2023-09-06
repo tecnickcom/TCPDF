@@ -87,9 +87,9 @@ jobs:
                   path: ~/.composer/cache/
                   key: composer-cache
             - name: Install dependencies
-              run: composer install --no-interaction
+              run: composer update --no-interaction
             - name: Install test dependencies
-              run: cd ./tests && composer install --no-interaction && cd ../
+              run: cd ./tests && composer update --no-interaction && cd ../
             - name: Run shell-based test suite
               if: runner.os == 'Linux'
               run: ./tests/launch.sh
