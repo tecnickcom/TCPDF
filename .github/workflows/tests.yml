@@ -26,18 +26,18 @@ jobs:
                 os: [ubuntu-latest]
                 experimental: [false]
                 php-extensions: ["bcmath, imagick, gd"]
-                coverage-extension: ["pcov"]
+                coverage-extension: ["none"]
                 # Add more specific tests
                 include:
-                  - { php-version: '5.3', coverage-extension: 'xdebug' }
-                  - { php-version: '5.4', coverage-extension: 'xdebug' }
-                  - { php-version: '5.5', coverage-extension: 'xdebug' }
-                  - { php-version: '5.6', coverage-extension: 'xdebug' }
-                  - { php-version: '7.0', coverage-extension: 'xdebug' }
-                  - { php-version: '8.2', os: macos-latest, coverage-extension: 'none' }
-                  - { php-version: '8.2', os: windows-latest, coverage-extension: 'none' }
-                  - { php-version: '8.3', experimental: true}
-                  - { php-version: 'nightly', experimental: true}
+                  - { php-version: '5.3', experimental: false, os: ubuntu-latest, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'xdebug' }
+                  - { php-version: '5.4', experimental: false, os: ubuntu-latest, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'xdebug' }
+                  - { php-version: '5.5', experimental: false, os: ubuntu-latest, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'xdebug' }
+                  - { php-version: '5.6', experimental: false, os: ubuntu-latest, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'xdebug' }
+                  - { php-version: '7.0', experimental: false, os: ubuntu-latest, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'xdebug' }
+                  - { php-version: '8.2', experimental: false, os: macos-latest, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'none' }
+                  - { php-version: '8.2', experimental: false, os: windows-latest, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'none' }
+                  - { php-version: '8.3', experimental: true, os: ubuntu-latest, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'pcov' }
+                  - { php-version: 'nightly', experimental: true, os: ubuntu-latest, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'pcov' }
         env:
             PDFINFO_BINARY: ${{ (matrix.os == 'ubuntu-latest') && '/usr/bin/pdfinfo' || ((matrix.os == 'macos-latest') && '/usr/local/bin/pdfinfo' || 'C:\ProgramData\Chocolatey\bin\pdfinfo.exe') }}
         steps:
