@@ -1,3 +1,6 @@
+6.6.3 (2023-09-06)
+	- See https://github.com/tecnickcom/TCPDF/commits/main
+
 6.6.2 (2022-12-17)
 	- Ensure pregSplit return type is always array.
 	- Add ability to run tests on various operating systems (#566)
