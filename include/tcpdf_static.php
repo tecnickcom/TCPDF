@@ -1780,7 +1780,7 @@ class TCPDF_STATIC {
 			if ($ret === false) {
 				return array();
 			}
-			return $ret;
+			return is_array($ret) ? $ret : array();
 		}
 		// preg_split is bugged - try alternative solution
 		$ret = array();
@@ -2124,7 +2124,7 @@ class TCPDF_STATIC {
 	 * Array of page formats
 	 * measures are calculated in this way: (inches * 72) or (millimeters * 72 / 25.4)
 	 * @public static
-	 * 
+	 *
      * @var array<string,float[]>
 	 */
 	public static $page_formats = array(
