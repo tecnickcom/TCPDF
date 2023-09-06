@@ -22057,7 +22057,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	public function setTextRenderingMode($stroke=0, $fill=true, $clip=false) {
 		// Ref.: PDF 32000-1:2008 - 9.3.6 Text Rendering Mode
 		// convert text rendering parameters
-		if ($stroke < 0) {
+		if ($stroke < 0 || !is_numeric($stroke)) {
 			$stroke = 0;
 		}
 		if ($fill === true) {
