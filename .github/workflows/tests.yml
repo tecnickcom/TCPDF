@@ -29,14 +29,15 @@ jobs:
                 coverage-extension: ["pcov"]
                 # Add more specific tests
                 include:
-                  - { php-version: '5.3', os: ubuntu-latest, experimental: false, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'xdebug' }
-                  - { php-version: '5.4', os: ubuntu-latest, experimental: false, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'xdebug' }
-                  - { php-version: '5.5', os: ubuntu-latest, experimental: false, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'xdebug' }
-                  - { php-version: '5.6', os: ubuntu-latest, experimental: false, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'xdebug' }
-                  - { php-version: '7.0', os: ubuntu-latest, experimental: false, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'xdebug' }
-                  # pcov is available from PHP 7.1
-                  - { php-version: '8.3', os: ubuntu-latest, experimental: true, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'pcov' }
-                  - { php-version: 'nightly', os: ubuntu-latest, experimental: true, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'pcov' }
+                  - { php-version: '5.3', coverage-extension: 'xdebug' }
+                  - { php-version: '5.4', coverage-extension: 'xdebug' }
+                  - { php-version: '5.5', coverage-extension: 'xdebug' }
+                  - { php-version: '5.6', coverage-extension: 'xdebug' }
+                  - { php-version: '7.0', coverage-extension: 'xdebug' }
+                  - { php-version: '8.2', os: macos-latest, coverage-extension: 'none' }
+                  - { php-version: '8.2', os: windows-latest, coverage-extension: 'none' }
+                  - { php-version: '8.3', experimental: true}
+                  - { php-version: 'nightly', experimental: true}
         env:
             PDFINFO_BINARY: ${{ (matrix.os == 'ubuntu-latest') && '/usr/bin/pdfinfo' || ((matrix.os == 'macos-latest') && '/usr/local/bin/pdfinfo' || 'C:\ProgramData\Chocolatey\bin\pdfinfo.exe') }}
         steps:
