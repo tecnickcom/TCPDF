@@ -1708,7 +1708,10 @@ class TCPDF_FONTS {
 
 	/**
 	 * Converts array of UTF-8 characters to UTF16-BE string.<br>
-	 * Based on: http://www.faqs.org/rfcs/rfc2781.html
+	 * Based permissions:
+  contents: read
+
+on: http://www.faqs.org/rfcs/rfc2781.html
 	 * <pre>
 	 *   Encoding UTF-16:
 	 *
@@ -1898,7 +1901,10 @@ class TCPDF_FONTS {
 	/**
 	 * Converts UTF-8 character to integer value.<br>
 	 * Invalid byte sequences will be replaced with 0xFFFD (replacement character)<br>
-	 * Based on: http://www.faqs.org/rfcs/rfc3629.html
+	 * Based permissions:
+  contents: read
+
+on: http://www.faqs.org/rfcs/rfc3629.html
 	 * <pre>
 	 *    Char. number range  |        UTF-8 octet sequence
 	 *       (hexadecimal)    |              (binary)
@@ -1909,7 +1915,13 @@ class TCPDF_FONTS {
 	 *    0001 0000-0010 FFFF | 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
 	 *    ---------------------------------------------------------------------
 	 *
-	 *   ABFN notation:
+	 *   ABFN notatipermissions:
+  contents: read
+
+permissions:
+  contents: read
+
+on:
 	 *   ---------------------------------------------------------------------
 	 *   UTF8-octets = *( UTF8-char )
 	 *   UTF8-char   = UTF8-1 / UTF8-2 / UTF8-3 / UTF8-4
