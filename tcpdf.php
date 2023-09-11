@@ -1,13 +1,13 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.6.2
+// Version     : 6.6.5
 // Begin       : 2002-08-03
-// Last Update : 2022-12-06
+// Last Update : 2023-09-06
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
-// Copyright (C) 2002-2022 Nicola Asuni - Tecnick.com LTD
+// Copyright (C) 2002-2023 Nicola Asuni - Tecnick.com LTD
 //
 // This file is part of TCPDF software library.
 //
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.6.2
+ * @version 6.6.5
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.6.2
+ * @version 6.6.5
  * @author Nicola Asuni - info@tecnick.com
  * @IgnoreAnnotation("protected")
  * @IgnoreAnnotation("public")
@@ -574,12 +574,14 @@ class TCPDF {
 	/**
 	 * Minimum distance between header and top page margin.
 	 * @protected
+	 * @var float
 	 */
 	protected $header_margin;
 
 	/**
 	 * Minimum distance between footer and bottom page margin.
 	 * @protected
+	 * @var float
 	 */
 	protected $footer_margin;
 
@@ -3372,7 +3374,7 @@ class TCPDF {
 	/**
 	 * Set header margin.
 	 * (minimum distance between header and top page margin)
-	 * @param int $hm distance in user units
+	 * @param float $hm distance in user units
 	 * @public
 	 */
 	public function setHeaderMargin($hm=10) {
@@ -3392,7 +3394,7 @@ class TCPDF {
 	/**
 	 * Set footer margin.
 	 * (minimum distance between footer and bottom page margin)
-	 * @param int $fm distance in user units
+	 * @param float $fm distance in user units
 	 * @public
 	 */
 	public function setFooterMargin($fm=10) {
@@ -4102,6 +4104,7 @@ class TCPDF {
 	 * @param float $fontsize Font size in points. The default value is the current size.
 	 * @param boolean $getarray if true returns an array of characters widths, if false returns the total length.
 	 * @return float[]|float total string length or array of characted widths
+	 * @phpstan-return ($getarray is true ? float[] : float) total string length or array of characted widths
 	 * @author Nicola Asuni
 	 * @public
 	 * @since 1.2
@@ -4118,6 +4121,7 @@ class TCPDF {
 	 * @param float $fontsize Font size in points. The default value is the current size.
 	 * @param boolean $getarray if true returns an array of characters widths, if false returns the total length.
 	 * @return float[]|float total string length or array of characted widths
+	 * @phpstan-return ($getarray is true ? float[] : float) total string length or array of characted widths
 	 * @author Nicola Asuni
 	 * @public
 	 * @since 2.4.000 (2008-03-06)
@@ -9927,7 +9931,7 @@ class TCPDF {
 				}
 				$out .= ' >> >>';
 			}
-			$font = $this->getFontBuffer('helvetica');
+			$font = $this->getFontBuffer((($this->pdfa_mode) ? 'pdfa' : '') .'helvetica');
 			$out .= ' /DA (/F'.$font['i'].' 0 Tf 0 g)';
 			$out .= ' /Q '.(($this->rtl)?'2':'0');
 			//$out .= ' /XFA ';
@@ -22057,7 +22061,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	public function setTextRenderingMode($stroke=0, $fill=true, $clip=false) {
 		// Ref.: PDF 32000-1:2008 - 9.3.6 Text Rendering Mode
 		// convert text rendering parameters
-		if ($stroke < 0) {
+		if ($stroke < 0 || !is_numeric($stroke)) {
 			$stroke = 0;
 		}
 		if ($fill === true) {
