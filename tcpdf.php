@@ -23407,8 +23407,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				$cy -= $h;
 			}
 			$this->_out(sprintf('%F 0 0 %F %F %F cm', ($w * $this->k), ($h * $this->k), ($x * $this->k), ($cy * $this->k)));
-			if (count($gradient['stops']) > 1) {
-				$this->Gradient($gradient['type'], $gradient['coords'], $gradient['stops'], array(), false);
+			if ((is_array($gradient['stops']) || $gradient['stops'] instanceof Countable) && count($gradient['stops']) > 1) {
+				$this->Gradient($gradient['type'], $gradient['coords'], $gradient['stops']);
 			}
 		} elseif ($svgstyle['fill'] != 'none') {
 			$fill_color = TCPDF_COLORS::convertHTMLColorToDec($svgstyle['fill'], $this->spot_colors);
