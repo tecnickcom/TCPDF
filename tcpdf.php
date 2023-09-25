@@ -23939,6 +23939,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 */
 	protected function startSVGElementHandler($parser, $name, $attribs, $ctm=array()) {
 		$name = $this->removeTagNamespace($name);
+        if (array_key_exists('xlink:href', $attribs)) {
+            $attribs['href'] = $attribs['xlink:href'];
+            unset($attribs['xlink:href']);
+        }
 		// check if we are in clip mode
 		if ($this->svgclipmode) {
 			$this->svgclippaths[$this->svgclipid][] = array('name' => $name, 'attribs' => $attribs, 'tm' => $this->svgcliptm[$this->svgclipid]);
@@ -24160,9 +24164,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					$this->svggradients[$this->svggradientid]['gradientTransform'] = TCPDF_STATIC::getSVGTransformMatrix($attribs['gradientTransform']);
 				}
 				$this->svggradients[$this->svggradientid]['coords'] = array($x1, $y1, $x2, $y2);
-				if (isset($attribs['xlink:href']) AND !empty($attribs['xlink:href'])) {
+				if (isset($attribs['href']) AND !empty($attribs['href'])) {
 					// gradient is defined on another place
-					$this->svggradients[$this->svggradientid]['xref'] = substr($attribs['xlink:href'], 1);
+					$this->svggradients[$this->svggradientid]['xref'] = substr($attribs['href'], 1);
 				}
 				break;
 			}
@@ -24201,9 +24205,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					$this->svggradients[$this->svggradientid]['gradientTransform'] = TCPDF_STATIC::getSVGTransformMatrix($attribs['gradientTransform']);
 				}
 				$this->svggradients[$this->svggradientid]['coords'] = array($cx, $cy, $fx, $fy, $r);
-				if (isset($attribs['xlink:href']) AND !empty($attribs['xlink:href'])) {
+				if (isset($attribs['href']) AND !empty($attribs['href'])) {
 					// gradient is defined on another place
-					$this->svggradients[$this->svggradientid]['xref'] = substr($attribs['xlink:href'], 1);
+					$this->svggradients[$this->svggradientid]['xref'] = substr($attribs['href'], 1);
 				}
 				break;
 			}
@@ -24410,14 +24414,14 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				if ($invisible) {
 					break;
 				}
-				if (!isset($attribs['xlink:href']) OR empty($attribs['xlink:href'])) {
+				if (!isset($attribs['href']) OR empty($attribs['href'])) {
 					break;
 				}
 				$x = (isset($attribs['x'])?$this->getHTMLUnitToUnits($attribs['x'], 0, $this->svgunit, false):0);
 				$y = (isset($attribs['y'])?$this->getHTMLUnitToUnits($attribs['y'], 0, $this->svgunit, false):0);
 				$w = (isset($attribs['width'])?$this->getHTMLUnitToUnits($attribs['width'], 0, $this->svgunit, false):0);
 				$h = (isset($attribs['height'])?$this->getHTMLUnitToUnits($attribs['height'], 0, $this->svgunit, false):0);
-				$img = $attribs['xlink:href'];
+				$img = $attribs['href'];
 				if (!$clipping) {
 					$this->StartTransform();
 					$this->SVGTransform($tm);
@@ -24548,12 +24552,12 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			}
 			// use
 			case 'use': {
-				if (isset($attribs['xlink:href']) AND !empty($attribs['xlink:href'])) {
-					$svgdefid = substr($attribs['xlink:href'], 1);
+				if (isset($attribs['href']) AND !empty($attribs['href'])) {
+					$svgdefid = substr($attribs['href'], 1);
 					if (isset($this->svgdefs[$svgdefid])) {
 						$use = $this->svgdefs[$svgdefid];
-						if (isset($attribs['xlink:href'])) {
-							unset($attribs['xlink:href']);
+						if (isset($attribs['href'])) {
+							unset($attribs['href']);
 						}
 						if (isset($attribs['id'])) {
 							unset($attribs['id']);
