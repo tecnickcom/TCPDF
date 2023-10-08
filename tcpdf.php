@@ -23940,7 +23940,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	protected function startSVGElementHandler($parser, $name, $attribs, $ctm=array()) {
 		$name = $this->removeTagNamespace($name);
         if (array_key_exists('xlink:href', $attribs)) {
-            $attribs['href'] = $attribs['xlink:href'];
+            if (!array_key_exists('href', $attribs)) {
+                $attribs['href'] = $attribs['xlink:href'];
+            }
             unset($attribs['xlink:href']);
         }
 		// check if we are in clip mode
