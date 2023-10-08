@@ -1641,6 +1641,20 @@ class TCPDF {
 	 */
 	protected $svgdefs = array();
 
+    /**
+     * Counter to keep track of recursion depth.
+     * @protected
+     * @since x.x.x
+     */
+    protected $svgusedepth = 0;
+
+    /**
+     * Path to current SVG def scope.
+     * @protected
+     * @since x.x.x
+     */
+    protected string $svgdefpath = '';
+
 	/**
 	 * Boolean value true when in SVG clipPath tag.
 	 * @protected
@@ -23944,21 +23958,33 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			$this->svgclippaths[$this->svgclipid][] = array('name' => $name, 'attribs' => $attribs, 'tm' => $this->svgcliptm[$this->svgclipid]);
 			return;
 		}
-		if ($this->svgdefsmode AND !in_array($name, array('clipPath', 'linearGradient', 'radialGradient', 'stop'))) {
+		if (!in_array($name, array('clipPath', 'linearGradient', 'radialGradient', 'stop')) AND $this->svgusedepth == 0) {
 			if (isset($attribs['id'])) {
 				$attribs['child_elements'] = array();
 				$this->svgdefs[$attribs['id']] = array('name' => $name, 'attribs' => $attribs);
-				return;
 			}
-			if (end($this->svgdefs) !== FALSE) {
-				$last_svgdefs_id = key($this->svgdefs);
-				if (isset($this->svgdefs[$last_svgdefs_id]['attribs']['child_elements'])) {
-					$attribs['id'] = 'DF_'.(count($this->svgdefs[$last_svgdefs_id]['attribs']['child_elements']) + 1);
-					$this->svgdefs[$last_svgdefs_id]['attribs']['child_elements'][$attribs['id']] = array('name' => $name, 'attribs' => $attribs);
-					return;
-				}
+            $svgpath = explode('/', $this->svgdefpath);
+            $root = next($svgpath);
+            $svgpathpos = end($svgpath);
+			if ((end($this->svgdefs) !== FALSE) AND (!empty($svgpathpos))) {
+				$last_svgdefs_id = $svgpathpos;
+                // add element to all parents
+                while ($last_svgdefs_id != "") {
+                    if (isset($this->svgdefs[$last_svgdefs_id]['attribs']['child_elements'])) {
+                        $attribs['id'] = $attribs['id'] ?? 'DF_' . (count($this->svgdefs[$root]['attribs']['child_elements']) + 1);
+                        if ($attribs['id'] != $svgpathpos) {
+                            $this->svgdefs[$last_svgdefs_id]['attribs']['child_elements'][$attribs['id']] = array('name' => $name, 'attribs' => $attribs);
+                        }
+                    }
+                    $last_svgdefs_id = prev($svgpath);
+                }
 			}
-			return;
+            if (isset($attribs['id'])) {
+                $this->svgdefpath .= '/' . $attribs['id'];
+            }
+            if ($this->svgdefsmode) {
+                return;
+            }
 		}
 		$clipping = false;
 		if ($parser == 'clip-path') {
@@ -24572,7 +24598,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 							$attribs['style'] = str_replace(';;',';',';'.$use['attribs']['style'].$attribs['style']);
 						}
 						$attribs = array_merge($use['attribs'], $attribs);
+                        $this->svgusedepth += 1;
 						$this->startSVGElementHandler($parser, $use['name'], $attribs);
+                        $this->svgusedepth -= 1;
 						return;
 					}
 				}
@@ -24609,23 +24637,38 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 */
 	protected function endSVGElementHandler($parser, $name) {
 		$name = $this->removeTagNamespace($name);
-		if ($this->svgdefsmode AND !in_array($name, array('defs', 'clipPath', 'linearGradient', 'radialGradient', 'stop'))) {;
+        if (!in_array($name, array('defs', 'clipPath', 'linearGradient', 'radialGradient', 'stop')) AND ($parser != 'child-tag')) {
 			if (end($this->svgdefs) !== FALSE) {
-				$last_svgdefs_id = key($this->svgdefs);
-				if (isset($this->svgdefs[$last_svgdefs_id]['attribs']['child_elements'])) {
-					foreach($this->svgdefs[$last_svgdefs_id]['attribs']['child_elements'] as $child_element) {
-						if (isset($child_element['attribs']['id']) AND ($child_element['name'] == $name)) {
-							$this->svgdefs[$last_svgdefs_id]['attribs']['child_elements'][$child_element['attribs']['id'].'_CLOSE'] = array('name' => $name, 'attribs' => array('closing_tag' => TRUE, 'content' => $this->svgtext));
-							return;
-						}
-					}
-					if ($this->svgdefs[$last_svgdefs_id]['name'] == $name) {
-						$this->svgdefs[$last_svgdefs_id]['attribs']['child_elements'][$last_svgdefs_id.'_CLOSE'] = array('name' => $name, 'attribs' => array('closing_tag' => TRUE, 'content' => $this->svgtext));
-						return;
-					}
-				}
+                $svgpath = explode('/', $this->svgdefpath);
+                $last_svgdefs_id = end($svgpath);
+                $parent_svgdefs_id = prev($svgpath);
+                $remove_from_path = false;
+                $original_id = $last_svgdefs_id;
+                // add closing tag to all parents
+                while ($last_svgdefs_id != "") {
+                    if (isset($this->svgdefs[$parent_svgdefs_id]['attribs']['child_elements'])) {
+                        foreach($this->svgdefs[$parent_svgdefs_id]['attribs']['child_elements'] as $child_element) {
+                            if (isset($child_element['attribs']['id']) AND ($child_element['name'] == $name)) {
+                                $this->svgdefs[$parent_svgdefs_id]['attribs']['child_elements'][$child_element['attribs']['id'].'_CLOSE'] = array('name' => $name, 'attribs' => array('closing_tag' => TRUE, 'content' => $this->svgtext));
+                                $remove_from_path = true;
+                            }
+                        }
+                    }
+                    if (isset($this->svgdefs[$last_svgdefs_id])) {
+                        $this->svgdefs[$last_svgdefs_id]['attribs']['child_elements'][$original_id.'_CLOSE'] = array('name' => $name, 'attribs' => array('closing_tag' => TRUE, 'content' => $this->svgtext));
+                        $remove_from_path = true;
+                    }
+                    $last_svgdefs_id = prev($svgpath);
+                    $parent_svgdefs_id = prev($svgpath);
+                }
+                if ($remove_from_path) {
+                    array_pop($svgpath);
+                    $this->svgdefpath = implode('/', $svgpath);
+                }
 			}
-			return;
+            if ($this->svgdefsmode) {
+                return;
+            }
 		}
 		switch($name) {
 			case 'defs': {
