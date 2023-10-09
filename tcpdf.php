@@ -23958,7 +23958,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			$this->svgclippaths[$this->svgclipid][] = array('name' => $name, 'attribs' => $attribs, 'tm' => $this->svgcliptm[$this->svgclipid]);
 			return;
 		}
-		if (!in_array($name, array('clipPath', 'linearGradient', 'radialGradient', 'stop')) AND $this->svgusedepth == 0) {
+		if (!in_array($name, array('clipPath', 'linearGradient', 'radialGradient', 'stop')) AND $this->svgusedepth === 0) {
 			if (isset($attribs['id'])) {
 				$attribs['child_elements'] = array();
 				$this->svgdefs[$attribs['id']] = array('name' => $name, 'attribs' => $attribs);
