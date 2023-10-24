@@ -100,8 +100,9 @@ $pdf->copyPage(1);
 $pdf->Output('example_068.pdf', 'I');
 
 // Show memory usage
-fputs(STDERR, 'Page cache size: ' . $pageCacheSize . 'MB' . PHP_EOL);
-fputs(STDERR, sprintf('Peak memory: %0.03fMB', memory_get_peak_usage() / 1024 / 1024) . PHP_EOL);
+// These will cause tests to fail, so leave them commented out, but you can use them to debug.
+// fputs(STDERR, 'Page cache size: ' . $pageCacheSize . 'MB' . PHP_EOL);
+// fputs(STDERR, sprintf('Peak memory: %0.03fMB', memory_get_peak_usage() / 1024 / 1024) . PHP_EOL);
 
 //============================================================+
 // END OF FILE
