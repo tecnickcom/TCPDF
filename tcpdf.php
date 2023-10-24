@@ -21074,7 +21074,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					// Write the page to the end of the page cache
 					fseek($this->pageCacheFile, 0, SEEK_END);
 					// Keep track of where in the page cache this is
-					$this->pageCacheIndex[$lastPage] = [ftell($this->pageCacheFile), strlen($this->pages[$lastPage])];
+					$this->pageCacheIndex[$lastPage] = array(ftell($this->pageCacheFile), strlen($this->pages[$lastPage]));
 					// Write and remove from local memory
 					fwrite($this->pageCacheFile, $this->pages[$lastPage]);
 					unset($this->pages[$lastPage]);
