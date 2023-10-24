@@ -64,7 +64,7 @@ $pageCacheSize = 2;
 $pdf->usePageCacheFile($pageCacheSize);
 
 // Write a lot of cells
-$cols = ['A', 'B', 'C', 'D', 'E'];
+$cols = array('A', 'B', 'C', 'D', 'E');
 $colWidth = 160 / count($cols);
 $lastColIdx = count($cols) - 1;
 for ($i = 0; $i < 5000; $i++)
