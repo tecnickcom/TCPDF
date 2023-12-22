@@ -18,7 +18,7 @@ class tcpdf_cms_signature {
 	 * Catch error.
 	 * @public
 	 */
-	public string $errorMsg;
+	public $errorMsg;
 	
 	/**
 	 * result value of pkcs7 EncryptedDigest.
