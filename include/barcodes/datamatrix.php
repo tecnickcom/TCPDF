@@ -3,8 +3,9 @@
 // File name   : datamatrix.php
 // Version     : 1.0.008
 // Begin       : 2010-06-07
-// Last Update : 2014-05-06
+// Last Update : 2024-01-19
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
+// Author      : Urs Wettstein (implementation of rectangular code)
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
 // Copyright (C) 2010-2014  Nicola Asuni - Tecnick.com LTD
@@ -122,6 +123,12 @@ class Datamatrix {
 	protected $last_enc = ENC_ASCII;
 
 	/**
+	 * Store whether the code is rectangular or not (square).
+	 * @protected
+	 */
+	protected $rectangular = false;
+
+	/**
 	 * Table of Data Matrix ECC 200 Symbol Attributes:<ul>
 	 * <li>total matrix rows (including finder pattern)</li>
 	 * <li>total matrix cols (including finder pattern)</li>
@@ -168,13 +175,13 @@ class Datamatrix {
 		array(0x078,0x078,0x06c,0x06c,0x014,0x014,0x012,0x012,0x006,0x006,0x024,0x41a,0x198,0x006,0x0af,0x044), // 120x120
 		array(0x084,0x084,0x078,0x078,0x016,0x016,0x014,0x014,0x006,0x006,0x024,0x518,0x1f0,0x008,0x0a3,0x03e), // 132x132
 		array(0x090,0x090,0x084,0x084,0x018,0x018,0x016,0x016,0x006,0x006,0x024,0x616,0x26c,0x00a,0x09c,0x03e), // 144x144
-		// rectangular form (currently unused) ---------------------------------------------------------------------------
+		// rectangular form ----------------------------------------------------------------------------------------------
 		array(0x008,0x012,0x006,0x010,0x008,0x012,0x006,0x010,0x001,0x001,0x001,0x005,0x007,0x001,0x005,0x007), // 8x18
-		array(0x008,0x020,0x006,0x01c,0x008,0x010,0x006,0x00e,0x001,0x002,0x002,0x00a,0x00b,0x001,0x00a,0x00b), // 8x32
+		array(0x008,0x020,0x006,0x01c,0x008,0x010,0x006,0x00e,0x002,0x001,0x002,0x00a,0x00b,0x001,0x00a,0x00b), // 8x32
 		array(0x00c,0x01a,0x00a,0x018,0x00c,0x01a,0x00a,0x018,0x001,0x001,0x001,0x010,0x00e,0x001,0x010,0x00e), // 12x26
-		array(0x00c,0x024,0x00a,0x020,0x00c,0x012,0x00a,0x010,0x001,0x002,0x002,0x00c,0x012,0x001,0x00c,0x012), // 12x36
-		array(0x010,0x024,0x00e,0x020,0x010,0x012,0x00e,0x010,0x001,0x002,0x002,0x020,0x018,0x001,0x020,0x018), // 16x36
-		array(0x010,0x030,0x00e,0x02c,0x010,0x018,0x00e,0x016,0x001,0x002,0x002,0x031,0x01c,0x001,0x031,0x01c)  // 16x48
+		array(0x00c,0x024,0x00a,0x020,0x00c,0x012,0x00a,0x010,0x002,0x001,0x002,0x016,0x012,0x001,0x016,0x012), // 12x36
+		array(0x010,0x024,0x00e,0x020,0x010,0x012,0x00e,0x010,0x002,0x001,0x002,0x020,0x018,0x001,0x020,0x018), // 16x36
+		array(0x010,0x030,0x00e,0x02c,0x010,0x018,0x00e,0x016,0x002,0x001,0x002,0x031,0x01c,0x001,0x031,0x01c)  // 16x48
 	);
 
 	/**
@@ -230,27 +237,47 @@ class Datamatrix {
 	 * This is the class constructor.
 	 * Creates a datamatrix object
 	 * @param string $code Code to represent using Datamatrix.
+	 * @param string $shape Shape of datamatrix code (R = rectangular, S = square)
 	 * @public
 	 */
-	public function __construct($code) {
+	public function __construct($code, $shape = 'S') {
 		$barcode_array = array();
 		if ((is_null($code)) OR ($code == '\0') OR ($code == '')) {
 			return false;
+		}
+		// store code shape
+		if($shape == 'R') {
+			$this->rectangular = true;
 		}
 		// get data codewords
 		$cw = $this->getHighLevelEncoding($code);
 		// number of data codewords
 		$nd = count($cw);
-		// check size
-		if ($nd > 1558) {
-			return false;
-		}
-		// get minimum required matrix size.
-		foreach ($this->symbattr as $params) {
-			if ($params[11] >= $nd) {
-				break;
+		if($this->rectangular === false) {
+			// check size
+			if ($nd > 1558) {
+				return false;
+			}
+			// get minimum required matrix size.
+			foreach ($this->symbattr as $params) {
+				if ($params[11] >= $nd) {
+					break;
+				}
+			}
+		} else {
+			// check size
+			if ($nd > 49) {
+				return false;
+			}
+			// get minimum required matrix size.
+			for($i = 24; $i < sizeof($this->symbattr); $i++) {
+				$params = $this->symbattr[$i];
+				if ($params[11] >= $nd) {
+					break;
+				}
 			}
 		}
+
 		if ($params[11] < $nd) {
 			// too much data
 			return false;
@@ -280,11 +307,14 @@ class Datamatrix {
 		// add error correction codewords
 		$cw = $this->getErrorCorrection($cw, $params[13], $params[14], $params[15]);
 		// initialize empty arrays
-		$grid = array_fill(0, ($params[2] * $params[3]), 0);
+		$grid = array();
+		for($r = 0; $r < $params[0]; $r++)
+		{
+			$grid[] = array_fill(0, $params[1], 0);
+		}
 		// get placement map
 		$places = $this->getPlacementMap($params[2], $params[3]);
 		// fill the grid with data
-		$grid = array();
 		$i = 0;
 		// region data row max index
 		$rdri = ($params[4] - 1);
@@ -445,7 +475,7 @@ class Datamatrix {
 	 */
 	protected function get253StateCodeword($cwpad, $cwpos) {
 		$pad = ($cwpad + (((149 * $cwpos) % 253) + 1));
-		if ($pad > 254) {
+		if ($pad > 253) {
 			$pad -= 254;
 		}
 		return $pad;
@@ -690,9 +720,18 @@ class Datamatrix {
 	 * @protected
 	 */
 	protected function getMaxDataCodewords($numcw) {
-		foreach ($this->symbattr as $key => $matrix) {
-			if ($matrix[11] >= $numcw) {
-				return $matrix[11];
+		if($this->rectangular === false) {
+			foreach ($this->symbattr as $key => $matrix) {
+				if ($matrix[11] >= $numcw) {
+					return $matrix[11];
+				}
+			}
+		} else {
+			for($i = 24; $i < sizeof($this->symbattr); $i++) {
+				$params = $this->symbattr[$i];
+				if ($params[11] >= $numcw) {
+					return $params[11];
+				}
 			}
 		}
 		return 0;
