@@ -3,7 +3,7 @@
 // File name   : datamatrix.php
 // Version     : 1.0.008
 // Begin       : 2010-06-07
-// Last Update : 2024-01-19
+// Last Update : 2024-01-22
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // Author      : Urs Wettstein (implementation of rectangular code)
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
@@ -283,12 +283,16 @@ class Datamatrix {
 			return false;
 		} elseif ($params[11] > $nd) {
 			// add padding
-			if ((($params[11] - $nd) > 1) AND ($cw[($nd - 1)] != 254)) {
-				if ($this->last_enc == ENC_EDF) {
+			if ($this->last_enc == ENC_EDF) {
+				// For EDIFACT encoding, the last two remaining code words are automatically switched to ASCII mode (without unlatch).
+				// Otherwise switch manually.
+				if (($params[11] - $nd) > 2) {
 					// switch to ASCII encoding
 					$cw[] = 124;
 					++$nd;
-				} elseif (($this->last_enc != ENC_ASCII) AND ($this->last_enc != ENC_BASE256)) {
+				}
+			} elseif ((($params[11] - $nd) > 1) AND ($cw[($nd - 1)] != 254)) {
+				if (($this->last_enc != ENC_ASCII) AND ($this->last_enc != ENC_BASE256)) {
 					// switch to ASCII encoding
 					$cw[] = 254;
 					++$nd;
@@ -685,7 +689,7 @@ class Datamatrix {
 			case ENC_ASCII: { // ASCII character 0 to 127
 				$cw = 254;
 				if ($this->last_enc == ENC_EDF) {
-					$cw = 124;
+					$cw = 124; // 31 coded in the first 6 bits
 				}
 				break;
 			}
@@ -934,26 +938,21 @@ class Datamatrix {
 								$temp_cw[] = 0x1f;
 								++$field_length;
 								// fill empty characters
-								for ($i = $field_length; $i < 4; ++$i) {
-									$temp_cw[] = 0;
-								}
+								$temp_cw[] = 0; // avoid index out of bounds access below
 								$enc = ENC_ASCII;
 								$this->last_enc = $enc;
 							}
 							// encodes four data characters in three codewords
-							$tcw = (($temp_cw[0] & 0x3F) << 2) + (($temp_cw[1] & 0x30) >> 4);
-							if ($tcw > 0) {
-								$cw[] = $tcw;
+							if($field_length >= 1) {
+								$cw[] = (($temp_cw[0] & 0x3F) << 2) + (($temp_cw[1] & 0x30) >> 4);
 								$cw_num++;
 							}
-							$tcw= (($temp_cw[1] & 0x0F) << 4) + (($temp_cw[2] & 0x3C) >> 2);
-							if ($tcw > 0) {
-								$cw[] = $tcw;
+							if($field_length >= 2) {
+								$cw[] = (($temp_cw[1] & 0x0F) << 4) + (($temp_cw[2] & 0x3C) >> 2);
 								$cw_num++;
 							}
-							$tcw = (($temp_cw[2] & 0x03) << 6) + ($temp_cw[3] & 0x3F);
-							if ($tcw > 0) {
-								$cw[] = $tcw;
+							if($field_length >= 3) {
+								$cw[] = (($temp_cw[2] & 0x03) << 6) + ($temp_cw[3] & 0x3F);
 								$cw_num++;
 							}
 							$temp_cw = array();
