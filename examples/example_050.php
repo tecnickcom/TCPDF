@@ -2,12 +2,12 @@
 //============================================================+
 // File name   : example_050.php
 // Begin       : 2009-04-09
-// Last Update : 2013-05-14
+// Last Update : 2024-01-23
 //
 // Description : Example 050 for TCPDF class
 //               2D Barcodes
 //
-// Author: Nicola Asuni
+// Author: Nicola Asuni, Urs Wettstein
 //
 // (c) Copyright:
 //               Nicola Asuni
@@ -131,8 +131,8 @@ $pdf->write2DBarcode('www.tcpdf.org', 'QRCODE,Q', 20, 150, 50, 50, $style, 'N');
 $pdf->Text(20, 145, 'QRCODE Q');
 
 // QRCODE,H : QR-CODE Best error correction
-$pdf->write2DBarcode('www.tcpdf.org', 'QRCODE,H', 20, 210, 50, 50, $style, 'N');
-$pdf->Text(20, 205, 'QRCODE H');
+$pdf->write2DBarcode('www.tcpdf.org', 'QRCODE,H', 20, 215, 50, 50, $style, 'N');
+$pdf->Text(20, 210, 'QRCODE H');
 
 // -------------------------------------------------------------------
 // PDF417 (ISO/IEC 15438:2006)
@@ -177,8 +177,12 @@ $pdf->write2DBarcode('http://www.tcpdf.org', 'DATAMATRIX', 80, 150, 50, 50, $sty
 $pdf->Text(80, 145, 'DATAMATRIX (ISO/IEC 16022:2006)');
 
 // DATAMATRIX,R : rectangular code variant
-$pdf->write2DBarcode('http://www.tcpdf.org', 'DATAMATRIX,R', 140, 160, 50, 50, $style, 'N');
-$pdf->Text(140, 155, 'DATAMATRIX rectangular');
+$pdf->write2DBarcode('http://www.tcpdf.org', 'DATAMATRIX,R', 140, 150, 50, 50, $style, 'N');
+$pdf->Text(140, 145, 'DATAMATRIX,R (rectangular)');
+
+// DATAMATRIX,16x48 : rectangular code variant
+$pdf->write2DBarcode('http://www.tcpdf.org', 'DATAMATRIX,16x48', 140, 181, 50, 50, $style, 'N');
+$pdf->Text(140, 176, 'DATAMATRIX,16x48');
 
 // -------------------------------------------------------------------
 
@@ -191,8 +195,8 @@ $style = array(
 );
 
 // QRCODE,H : QR-CODE Best error correction
-$pdf->write2DBarcode('www.tcpdf.org', 'QRCODE,H', 80, 210, 50, 50, $style, 'N');
-$pdf->Text(80, 205, 'QRCODE H - COLORED');
+$pdf->write2DBarcode('www.tcpdf.org', 'QRCODE,H', 80, 215, 50, 50, $style, 'N');
+$pdf->Text(80, 210, 'QRCODE H - COLORED');
 
 // new style
 $style = array(
@@ -203,8 +207,8 @@ $style = array(
 );
 
 // QRCODE,H : QR-CODE Best error correction
-$pdf->write2DBarcode('www.tcpdf.org', 'QRCODE,H', 140, 210, 50, 50, $style, 'N');
-$pdf->Text(140, 205, 'QRCODE H - NO PADDING');
+$pdf->write2DBarcode('www.tcpdf.org', 'QRCODE,H', 140, 215, 50, 50, $style, 'N');
+$pdf->Text(140, 210, 'QRCODE H - NO PADDING');
 
 // ---------------------------------------------------------
 

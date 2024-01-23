@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : datamatrix.php
-// Version     : 1.0.008
+// Version     : 1.0.008 tbd.
 // Begin       : 2010-06-07
-// Last Update : 2024-01-22
+// Last Update : 2024-01-23
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // Author      : Urs Wettstein (implementation of rectangular code)
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
@@ -129,6 +129,18 @@ class Datamatrix {
 	protected $rectangular = false;
 
 	/**
+	 * Dimension selection
+	 * @protected
+	 */
+	protected $dimension = null;
+
+	/**
+	 * Index of the selected symbol or -1 for detection according data size
+	 * @protected
+	 */
+	protected $selected_symbol = -1;
+
+	/**
 	 * Table of Data Matrix ECC 200 Symbol Attributes:<ul>
 	 * <li>total matrix rows (including finder pattern)</li>
 	 * <li>total matrix cols (including finder pattern)</li>
@@ -241,19 +253,47 @@ class Datamatrix {
 	 * @public
 	 */
 	public function __construct($code, $shape = 'S') {
-		$barcode_array = array();
 		if ((is_null($code)) OR ($code == '\0') OR ($code == '')) {
 			return false;
 		}
-		// store code shape
 		if($shape == 'R') {
 			$this->rectangular = true;
+		} elseif($shape == 'S') {
+			/* do nothing */
+		} else {
+			/* shape given in <rows>x<cols> form */
+			$this->dimension = explode('x', $shape);
+			if(count($this->dimension) != 2) {
+				trigger_error('Desired shape is invalid.');
+				return false;
+			}
+			// search required size in symbattr table
+			foreach($this->symbattr as $idx => $attr) {
+				if($attr[0] == $this->dimension[0] AND $attr[1] == $this->dimension[1]) {
+					$this->selected_symbol = $idx;
+					break;
+				}
+			}
+			if($this->selected_symbol < 0) { // symbol size not found
+				trigger_error("Desired symbol size '$shape' is invalid.");
+				return false;
+			}
+
+			if($this->dimension[0] == $this->dimension[1]) {
+				$this->rectangular = true;
+			}
 		}
 		// get data codewords
 		$cw = $this->getHighLevelEncoding($code);
 		// number of data codewords
 		$nd = count($cw);
-		if($this->rectangular === false) {
+		if($this->selected_symbol >= 0) {
+			if ($nd > $this->symbattr[$this->selected_symbol][11]) {
+				trigger_error('Too much data for symbol.');
+				return false;
+			}
+			$params = $this->symbattr[$this->selected_symbol];
+		} elseif($this->rectangular === false) {
 			// check size
 			if ($nd > 1558) {
 				return false;
@@ -724,7 +764,9 @@ class Datamatrix {
 	 * @protected
 	 */
 	protected function getMaxDataCodewords($numcw) {
-		if($this->rectangular === false) {
+		if($this->selected_symbol >= 0) {
+			return $this->symbattr[$this->selected_symbol][11];
+		} elseif($this->rectangular === false) {
 			foreach ($this->symbattr as $key => $matrix) {
 				if ($matrix[11] >= $numcw) {
 					return $matrix[11];
