@@ -2456,7 +2456,6 @@ class TCPDF {
 	/**
 	 * Allow to disable/enable TCPDF meta link
 	 * @param bool $tcpdflink
-	 * @public
 	 */
 	public function setTcpdfLink($tcpdflink) {
 		$this->tcpdflink = $tcpdflink;
