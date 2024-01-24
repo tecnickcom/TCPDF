@@ -1973,6 +1973,7 @@ class TCPDF {
 		$this->setCompression();
 		// set default PDF version number
 		$this->setPDFVersion();
+		$this->tcpdflink = true;
 		$this->encoding = $encoding;
 		$this->HREF = array();
 		$this->getFontsList();
