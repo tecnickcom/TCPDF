@@ -1973,7 +1973,6 @@ class TCPDF {
 		$this->setCompression();
 		// set default PDF version number
 		$this->setPDFVersion();
-		$this->tcpdflink = true;
 		$this->encoding = $encoding;
 		$this->HREF = array();
 		$this->getFontsList();
@@ -2452,6 +2451,15 @@ class TCPDF {
 	 */
 	public function setLastH($h) {
 		$this->lasth = $h;
+	}
+
+	/**
+	 * Allow to disable/enable TCPDF meta link
+	 * @param bool $tcpdflink
+	 * @public
+	 */
+	public function setTcpdfLink($tcpdflink) {
+		$this->tcpdflink = $tcpdflink;
 	}
 
 	/**
