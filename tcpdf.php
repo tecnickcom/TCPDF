@@ -6924,7 +6924,8 @@ class TCPDF {
 	 * @param boolean $fitonpage If true the image is resized to not exceed page dimensions.
 	 * @param boolean $alt If true the image will be added as alternative and not directly printed (the ID of the image will be returned).
 	 * @param array $altimgs Array of alternate images IDs. Each alternative image must be an array with two values: an integer representing the image ID (the value returned by the Image method) and a boolean value to indicate if the image is the default for printing.
-	 * @return mixed|false image information
+	 * @param int $padding if not 0 it will add padding on all side between image and their border
+  	 * @return mixed|false image information
 	 * @public
 	 * @since 1.1
 	 */
