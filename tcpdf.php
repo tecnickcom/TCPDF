@@ -6928,7 +6928,7 @@ class TCPDF {
 	 * @public
 	 * @since 1.1
 	 */
-	public function Image($file, $x=null, $y=null, $w=0, $h=0, $type='', $link='', $align='', $resize=false, $dpi=300, $palign='', $ismask=false, $imgmask=false, $border=0, $fitbox=false, $hidden=false, $fitonpage=false, $alt=false, $altimgs=array()) {
+	public function Image($file, $x=null, $y=null, $w=0, $h=0, $type='', $link='', $align='', $resize=false, $dpi=300, $palign='', $ismask=false, $imgmask=false, $border=0, $fitbox=false, $hidden=false, $fitonpage=false, $alt=false, $altimgs=array(), $padding = 0) {
 		if ($this->state != 2) {
 			return false;
 		}
@@ -7271,6 +7271,12 @@ class TCPDF {
 				$this->x += $w;
 			}
 			$this->y = $y;
+			if($padding !== 0){
+				$this->x -= $padding;
+				$this->y -= $padding;
+				$h += $padding + $padding;
+				$w += $padding + $padding;
+			}
 			$this->Cell($w, $h, '', $border, 0, '', 0, '', 0, true);
 			$this->x = $bx;
 			$this->y = $by;
