@@ -1,3 +1,8 @@
+6.7.0 (2024-03-18)
+	- Fix security issue.
+	- [BREAKING CHANGE] The tcpdf HTML tag syntax has changed, see example_049.php.
+	- New K_ALLOWED_TCPDF_TAGS configuration constant to set the allowed methods for the tcdpf HTML tag.
+
 6.6.5 (2023-09-06)
 	- Fix corrupted file.
 
