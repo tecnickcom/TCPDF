@@ -4470,7 +4470,7 @@ class TCPDF {
 			// we are inside an XObject template
 			$this->xobjects[$this->xobjid]['fonts'][$fontkey] = $this->numfonts;
 		}
-		if (isset($diff) AND (!empty($diff))) {
+		if (!empty($diff)) {
 			//Search existing encodings
 			$d = 0;
 			$nb = count($this->diffs);
@@ -17237,7 +17237,7 @@ class TCPDF {
 	 * @protected
 	 */
 	protected function allowedTCPDFtag($method) {
-		if (!defined('K_ALLOWED_TCPDF_TAGS') || empty(K_ALLOWED_TCPDF_TAGS)) {
+		if ((!defined('K_ALLOWED_TCPDF_TAGS')) OR (empty(K_ALLOWED_TCPDF_TAGS))) {
 			return false;
 		}
 		return (strpos(K_ALLOWED_TCPDF_TAGS, '|'.$method.'|') !== false);
