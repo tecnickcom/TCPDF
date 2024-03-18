@@ -17237,10 +17237,10 @@ class TCPDF {
 	 * @protected
 	 */
 	protected function allowedTCPDFtag($method) {
-		if ((!defined('K_ALLOWED_TCPDF_TAGS')) OR (empty(K_ALLOWED_TCPDF_TAGS))) {
-			return false;
+		if (defined('K_ALLOWED_TCPDF_TAGS')) {
+			return (strpos(K_ALLOWED_TCPDF_TAGS, '|'.$method.'|') !== false);
 		}
-		return (strpos(K_ALLOWED_TCPDF_TAGS, '|'.$method.'|') !== false);
+		return false;
 	}
 
 	/**
