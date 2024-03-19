@@ -87,6 +87,7 @@ echo '<'.'?'.'xml version="1.0" encoding="UTF-8"'.'?'.'>';
 <li>PDF/A-1b (ISO 19005-1:2005) document: [<a href="example_065.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Using WriteHTMLCell: [<a href="example_066.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 <li>Shorthand border styles including !important: [<a href="example_067.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
+<li>Using page cache to reduce memory usage: [<a href="example_068.php" title="PDF [new window]" target="_blank">PDF</a>]</li>
 </ol>
 
 <h2>Barcodes</h2>

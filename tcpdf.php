@@ -119,6 +119,8 @@ require_once(dirname(__FILE__).'/include/tcpdf_colors.php');
 require_once(dirname(__FILE__).'/include/tcpdf_images.php');
 // TCPDF static methods and data
 require_once(dirname(__FILE__).'/include/tcpdf_static.php');
+// TCPDF page cache reference counts
+require_once(dirname(__FILE__).'/include/tcpdf_page_cache_reference_counts.php');
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -173,6 +175,34 @@ class TCPDF {
 	 * @protected
 	 */
 	protected $pages = array();
+
+	/**
+	 * Page cache file
+	 * @protected
+	 * @var resource|null
+	 */
+	protected $pageCacheFile = null;
+
+	/**
+	 * Page cache file is readonly
+	 * @protected
+	 * @var bool
+	 */
+	protected $roPageCacheFile = false;
+
+	/**
+	 * Page cache index
+	 * @protected
+	 * @var array<int,int>
+	 */
+	protected $pageCacheIndex = array();
+
+	/**
+	 * Page cache reference counts
+	 * @protected
+	 * @var TCPDF_PAGE_CACHE_REFERENCE_COUNTS|null
+	 */
+	protected $pageCacheRefCnts = null;
 
 	/**
 	 * Current document state.
@@ -7863,6 +7893,10 @@ class TCPDF {
 				}
 			}
 		}
+
+		// Close page cache file
+		$this->_closePageCacheFile();
+
 		$preserve = array(
 			'file_id',
 			'state',
@@ -7875,7 +7909,8 @@ class TCPDF {
 			'signature_max_length',
 			'byterange_string',
 			'tsa_timestamp',
-			'tsa_data'
+			'tsa_data',
+			'pageCacheFile'
 		);
 		foreach (array_keys(get_object_vars($this)) as $val) {
 			if ($destroyall OR !in_array($val, $preserve)) {
@@ -7883,6 +7918,59 @@ class TCPDF {
 					unset($this->$val);
 				}
 			}
+		}
+	}
+
+	/**
+	 * Update page cache file
+	 *
+	 * @param int $memSizeInBytes Memory size to use in bytes
+	 * @return void
+	 */
+	public function usePageCacheFile($memSizeInBytes)
+	{
+		$this->pageCacheFile = fopen('php://temp/maxmemory:' . $memSizeInBytes, 'w+');
+		if ($this->pageCacheFile === false) {
+			$this->pageCacheFile = null;
+		} else {
+			if ($this->pageCacheRefCnts == null)
+				$this->pageCacheRefCnts = new TCPDF_PAGE_CACHE_REFERENCE_COUNTS();
+			$this->pageCacheRefCnts->incrementReferenceCount();
+		}
+	}
+
+	/**
+	 * Close page cache file
+	 */
+	private function _closePageCacheFile()
+	{
+		if ($this->pageCacheFile !== null)
+		{
+			$this->pageCacheRefCnts->decrementReferenceCount();
+			if ($this->pageCacheRefCnts->getReferenceCount() == 0) {
+				// This might be the end of the PHP script and the temporary file may be
+				// removed before this class, so check if it's still a valid resource.
+				if (is_resource($this->pageCacheFile)) {
+					fclose($this->pageCacheFile);
+				}
+			}
+			$this->pageCacheFile = null;
+			$this->pageCacheIndex = array();
+		}
+	}
+
+	/**
+	 * Handle cloning. We need to keep track of if the page cache file is shared
+	 * with cloned instances. Use copy-on-write, where we share the cache until we
+	 * need to write to it.
+	 */
+	public function __clone()
+	{
+		// Update ref count
+		if ($this->pageCacheFile !== null)
+		{
+			$this->pageCacheRefCnts->incrementReferenceCount();
+			$this->roPageCacheFile = true;
 		}
 	}
 
@@ -20931,6 +21019,13 @@ class TCPDF {
 	 * @since 4.5.000 (2008-12-31)
 	 */
 	protected function setPageBuffer($page, $data, $append=false) {
+		// Populate from page cache
+		if ($this->pageCacheFile !== null && isset($this->pageCacheIndex[$page]))
+		{
+			fseek($this->pageCacheFile, $this->pageCacheIndex[$page][0], SEEK_SET);
+			$this->pages[$page] = fread($this->pageCacheFile, $this->pageCacheIndex[$page][1]);
+		}
+
 		if ($append) {
 			$this->pages[$page] .= $data;
 		} else {
@@ -20952,7 +21047,54 @@ class TCPDF {
 	 */
 	protected function getPageBuffer($page) {
 		if (isset($this->pages[$page])) {
+			// Write last page to cache
+			if ($this->pageCacheFile !== null)
+			{
+				// If we still have the last page, write it to cache file and remove from memory
+				$lastPage = $page - 1;
+				if ($lastPage > 1 && isset($this->pages[$lastPage]))
+				{
+					// Duplicate file if this page cache file was shared
+					if ($this->roPageCacheFile)
+					{
+						$origPageCacheFile = $this->pageCacheFile;
+						// Remove reference count to file and open a new page cache file
+						$this->pageCacheRefCnts->decrementReferenceCount();
+						$this->pageCacheFile = fopen('php://temp', 'w+');
+						if ($this->pageCacheFile === false) {
+							$this->pageCacheFile = null;
+							$this->pageCacheRefCnts = null;
+						} else {
+							// Add reference to new page cache file
+							$this->pageCacheRefCnts = new TCPDF_PAGE_CACHE_REFERENCE_COUNTS();
+							$this->pageCacheRefCnts->incrementReferenceCount();
+							// Copy data from old page cache file to new one
+							fseek($origPageCacheFile, 0, SEEK_SET);
+							while (($copyContent = fread($origPageCacheFile, 8192)) != false) {
+								fwrite($this->pageCacheFile, $copyContent);
+							}
+						}
+						// Now that we copied it, the cache file is no longer read-only
+						$this->roPageCacheFile = false;
+					}
+
+					// Write the page to the end of the page cache
+					fseek($this->pageCacheFile, 0, SEEK_END);
+					// Keep track of where in the page cache this is
+					$this->pageCacheIndex[$lastPage] = array(ftell($this->pageCacheFile), strlen($this->pages[$lastPage]));
+					// Write and remove from local memory
+					fwrite($this->pageCacheFile, $this->pages[$lastPage]);
+					unset($this->pages[$lastPage]);
+				}
+			}
+
 			return $this->pages[$page];
+		}
+		// Check page cache
+		else if ($this->pageCacheFile !== null && isset($this->pageCacheIndex[$page]))
+		{
+			fseek($this->pageCacheFile, $this->pageCacheIndex[$page][0], SEEK_SET);
+			return fread($this->pageCacheFile, $this->pageCacheIndex[$page][1]);
 		}
 		return false;
 	}
@@ -21235,7 +21377,9 @@ class TCPDF {
 			return false;
 		}
 		// delete current page
-		unset($this->pages[$page]);
+		if (isset($this->pages[$page])) {
+			unset($this->pages[$page]);
+		}
 		unset($this->pagedim[$page]);
 		unset($this->pagelen[$page]);
 		unset($this->intmrk[$page]);
@@ -21316,7 +21460,9 @@ class TCPDF {
 				}
 			}
 			// remove last page
-			unset($this->pages[$this->numpages]);
+			if (isset($this->pages[$this->numpages])) {
+				unset($this->pages[$this->numpages]);
+			}
 			unset($this->pagedim[$this->numpages]);
 			unset($this->pagelen[$this->numpages]);
 			unset($this->intmrk[$this->numpages]);
