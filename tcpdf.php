@@ -6931,11 +6931,12 @@ class TCPDF {
 	 * @param boolean $fitonpage If true the image is resized to not exceed page dimensions.
 	 * @param boolean $alt If true the image will be added as alternative and not directly printed (the ID of the image will be returned).
 	 * @param array $altimgs Array of alternate images IDs. Each alternative image must be an array with two values: an integer representing the image ID (the value returned by the Image method) and a boolean value to indicate if the image is the default for printing.
-	 * @return mixed|false image information
+	 * @param int $padding if not 0 it will add padding on all side between image and their border
+  	 * @return mixed|false image information
 	 * @public
 	 * @since 1.1
 	 */
-	public function Image($file, $x=null, $y=null, $w=0, $h=0, $type='', $link='', $align='', $resize=false, $dpi=300, $palign='', $ismask=false, $imgmask=false, $border=0, $fitbox=false, $hidden=false, $fitonpage=false, $alt=false, $altimgs=array()) {
+	public function Image($file, $x=null, $y=null, $w=0, $h=0, $type='', $link='', $align='', $resize=false, $dpi=300, $palign='', $ismask=false, $imgmask=false, $border=0, $fitbox=false, $hidden=false, $fitonpage=false, $alt=false, $altimgs=array(), $padding = 0) {
 		if ($this->state != 2) {
 			return false;
 		}
@@ -7278,6 +7279,12 @@ class TCPDF {
 				$this->x += $w;
 			}
 			$this->y = $y;
+			if($padding !== 0){
+				$this->x -= $padding;
+				$this->y -= $padding;
+				$h += $padding + $padding;
+				$w += $padding + $padding;
+			}
 			$this->Cell($w, $h, '', $border, 0, '', 0, '', 0, true);
 			$this->x = $bx;
 			$this->y = $by;
