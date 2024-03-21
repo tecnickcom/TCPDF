@@ -2462,6 +2462,15 @@ class TCPDF {
 	}
 
 	/**
+	 * Allow to disable/enable TCPDF meta link
+	 * @param bool $tcpdflink
+	 * @return void
+	 */
+	public function setTcpdfLink($tcpdflink) {
+		$this->tcpdflink = $tcpdflink;
+	}
+
+	/**
 	 * Return the cell height
 	 * @param int $fontsize Font size in internal units
 	 * @param boolean $padding If true add cell padding
