@@ -1,10 +1,11 @@
 <?php
 //============================================================+
 // File name   : datamatrix.php
-// Version     : 1.0.008
+// Version     : 1.0.008 tbd.
 // Begin       : 2010-06-07
-// Last Update : 2014-05-06
+// Last Update : 2024-01-23
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
+// Author      : Urs Wettstein (implementation of rectangular code)
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
 // Copyright (C) 2010-2014  Nicola Asuni - Tecnick.com LTD
@@ -122,6 +123,24 @@ class Datamatrix {
 	protected $last_enc = ENC_ASCII;
 
 	/**
+	 * Store whether the code is rectangular or not (square).
+	 * @protected
+	 */
+	protected $rectangular = false;
+
+	/**
+	 * Dimension selection
+	 * @protected
+	 */
+	protected $dimension = null;
+
+	/**
+	 * Index of the selected symbol or -1 for detection according data size
+	 * @protected
+	 */
+	protected $selected_symbol = -1;
+
+	/**
 	 * Table of Data Matrix ECC 200 Symbol Attributes:<ul>
 	 * <li>total matrix rows (including finder pattern)</li>
 	 * <li>total matrix cols (including finder pattern)</li>
@@ -168,13 +187,13 @@ class Datamatrix {
 		array(0x078,0x078,0x06c,0x06c,0x014,0x014,0x012,0x012,0x006,0x006,0x024,0x41a,0x198,0x006,0x0af,0x044), // 120x120
 		array(0x084,0x084,0x078,0x078,0x016,0x016,0x014,0x014,0x006,0x006,0x024,0x518,0x1f0,0x008,0x0a3,0x03e), // 132x132
 		array(0x090,0x090,0x084,0x084,0x018,0x018,0x016,0x016,0x006,0x006,0x024,0x616,0x26c,0x00a,0x09c,0x03e), // 144x144
-		// rectangular form (currently unused) ---------------------------------------------------------------------------
+		// rectangular form ----------------------------------------------------------------------------------------------
 		array(0x008,0x012,0x006,0x010,0x008,0x012,0x006,0x010,0x001,0x001,0x001,0x005,0x007,0x001,0x005,0x007), // 8x18
-		array(0x008,0x020,0x006,0x01c,0x008,0x010,0x006,0x00e,0x001,0x002,0x002,0x00a,0x00b,0x001,0x00a,0x00b), // 8x32
+		array(0x008,0x020,0x006,0x01c,0x008,0x010,0x006,0x00e,0x002,0x001,0x002,0x00a,0x00b,0x001,0x00a,0x00b), // 8x32
 		array(0x00c,0x01a,0x00a,0x018,0x00c,0x01a,0x00a,0x018,0x001,0x001,0x001,0x010,0x00e,0x001,0x010,0x00e), // 12x26
-		array(0x00c,0x024,0x00a,0x020,0x00c,0x012,0x00a,0x010,0x001,0x002,0x002,0x00c,0x012,0x001,0x00c,0x012), // 12x36
-		array(0x010,0x024,0x00e,0x020,0x010,0x012,0x00e,0x010,0x001,0x002,0x002,0x020,0x018,0x001,0x020,0x018), // 16x36
-		array(0x010,0x030,0x00e,0x02c,0x010,0x018,0x00e,0x016,0x001,0x002,0x002,0x031,0x01c,0x001,0x031,0x01c)  // 16x48
+		array(0x00c,0x024,0x00a,0x020,0x00c,0x012,0x00a,0x010,0x002,0x001,0x002,0x016,0x012,0x001,0x016,0x012), // 12x36
+		array(0x010,0x024,0x00e,0x020,0x010,0x012,0x00e,0x010,0x002,0x001,0x002,0x020,0x018,0x001,0x020,0x018), // 16x36
+		array(0x010,0x030,0x00e,0x02c,0x010,0x018,0x00e,0x016,0x002,0x001,0x002,0x031,0x01c,0x001,0x031,0x01c)  // 16x48
 	);
 
 	/**
@@ -230,38 +249,90 @@ class Datamatrix {
 	 * This is the class constructor.
 	 * Creates a datamatrix object
 	 * @param string $code Code to represent using Datamatrix.
+	 * @param string $shape Shape of datamatrix code (R = rectangular, S = square)
 	 * @public
 	 */
-	public function __construct($code) {
-		$barcode_array = array();
+	public function __construct($code, $shape = 'S') {
 		if ((is_null($code)) OR ($code == '\0') OR ($code == '')) {
 			return false;
+		}
+		if($shape == 'R') {
+			$this->rectangular = true;
+		} elseif($shape == 'S') {
+			/* do nothing */
+		} else {
+			/* shape given in <rows>x<cols> form */
+			$this->dimension = explode('x', $shape);
+			if(count($this->dimension) != 2) {
+				trigger_error('Desired shape is invalid.');
+				return false;
+			}
+			// search required size in symbattr table
+			foreach($this->symbattr as $idx => $attr) {
+				if($attr[0] == $this->dimension[0] AND $attr[1] == $this->dimension[1]) {
+					$this->selected_symbol = $idx;
+					break;
+				}
+			}
+			if($this->selected_symbol < 0) { // symbol size not found
+				trigger_error("Desired symbol size '$shape' is invalid.");
+				return false;
+			}
+
+			if($this->dimension[0] == $this->dimension[1]) {
+				$this->rectangular = true;
+			}
 		}
 		// get data codewords
 		$cw = $this->getHighLevelEncoding($code);
 		// number of data codewords
 		$nd = count($cw);
-		// check size
-		if ($nd > 1558) {
-			return false;
-		}
-		// get minimum required matrix size.
-		foreach ($this->symbattr as $params) {
-			if ($params[11] >= $nd) {
-				break;
+		if($this->selected_symbol >= 0) {
+			if ($nd > $this->symbattr[$this->selected_symbol][11]) {
+				trigger_error('Too much data for symbol.');
+				return false;
+			}
+			$params = $this->symbattr[$this->selected_symbol];
+		} elseif($this->rectangular === false) {
+			// check size
+			if ($nd > 1558) {
+				return false;
+			}
+			// get minimum required matrix size.
+			foreach ($this->symbattr as $params) {
+				if ($params[11] >= $nd) {
+					break;
+				}
+			}
+		} else {
+			// check size
+			if ($nd > 49) {
+				return false;
+			}
+			// get minimum required matrix size.
+			for($i = 24; $i < sizeof($this->symbattr); $i++) {
+				$params = $this->symbattr[$i];
+				if ($params[11] >= $nd) {
+					break;
+				}
 			}
 		}
+
 		if ($params[11] < $nd) {
 			// too much data
 			return false;
 		} elseif ($params[11] > $nd) {
 			// add padding
-			if ((($params[11] - $nd) > 1) AND ($cw[($nd - 1)] != 254)) {
-				if ($this->last_enc == ENC_EDF) {
+			if ($this->last_enc == ENC_EDF) {
+				// For EDIFACT encoding, the last two remaining code words are automatically switched to ASCII mode (without unlatch).
+				// Otherwise switch manually.
+				if (($params[11] - $nd) > 2) {
 					// switch to ASCII encoding
 					$cw[] = 124;
 					++$nd;
-				} elseif (($this->last_enc != ENC_ASCII) AND ($this->last_enc != ENC_BASE256)) {
+				}
+			} elseif ((($params[11] - $nd) > 1) AND ($cw[($nd - 1)] != 254)) {
+				if (($this->last_enc != ENC_ASCII) AND ($this->last_enc != ENC_BASE256)) {
 					// switch to ASCII encoding
 					$cw[] = 254;
 					++$nd;
@@ -280,11 +351,14 @@ class Datamatrix {
 		// add error correction codewords
 		$cw = $this->getErrorCorrection($cw, $params[13], $params[14], $params[15]);
 		// initialize empty arrays
-		$grid = array_fill(0, ($params[2] * $params[3]), 0);
+		$grid = array();
+		for($r = 0; $r < $params[0]; $r++)
+		{
+			$grid[] = array_fill(0, $params[1], 0);
+		}
 		// get placement map
 		$places = $this->getPlacementMap($params[2], $params[3]);
 		// fill the grid with data
-		$grid = array();
 		$i = 0;
 		// region data row max index
 		$rdri = ($params[4] - 1);
@@ -445,7 +519,7 @@ class Datamatrix {
 	 */
 	protected function get253StateCodeword($cwpad, $cwpos) {
 		$pad = ($cwpad + (((149 * $cwpos) % 253) + 1));
-		if ($pad > 254) {
+		if ($pad > 253) {
 			$pad -= 254;
 		}
 		return $pad;
@@ -655,7 +729,7 @@ class Datamatrix {
 			case ENC_ASCII: { // ASCII character 0 to 127
 				$cw = 254;
 				if ($this->last_enc == ENC_EDF) {
-					$cw = 124;
+					$cw = 124; // 31 coded in the first 6 bits
 				}
 				break;
 			}
@@ -690,9 +764,20 @@ class Datamatrix {
 	 * @protected
 	 */
 	protected function getMaxDataCodewords($numcw) {
-		foreach ($this->symbattr as $key => $matrix) {
-			if ($matrix[11] >= $numcw) {
-				return $matrix[11];
+		if($this->selected_symbol >= 0) {
+			return $this->symbattr[$this->selected_symbol][11];
+		} elseif($this->rectangular === false) {
+			foreach ($this->symbattr as $key => $matrix) {
+				if ($matrix[11] >= $numcw) {
+					return $matrix[11];
+				}
+			}
+		} else {
+			for($i = 24; $i < sizeof($this->symbattr); $i++) {
+				$params = $this->symbattr[$i];
+				if ($params[11] >= $numcw) {
+					return $params[11];
+				}
 			}
 		}
 		return 0;
@@ -895,26 +980,21 @@ class Datamatrix {
 								$temp_cw[] = 0x1f;
 								++$field_length;
 								// fill empty characters
-								for ($i = $field_length; $i < 4; ++$i) {
-									$temp_cw[] = 0;
-								}
+								$temp_cw[] = 0; // avoid index out of bounds access below
 								$enc = ENC_ASCII;
 								$this->last_enc = $enc;
 							}
 							// encodes four data characters in three codewords
-							$tcw = (($temp_cw[0] & 0x3F) << 2) + (($temp_cw[1] & 0x30) >> 4);
-							if ($tcw > 0) {
-								$cw[] = $tcw;
+							if($field_length >= 1) {
+								$cw[] = (($temp_cw[0] & 0x3F) << 2) + (($temp_cw[1] & 0x30) >> 4);
 								$cw_num++;
 							}
-							$tcw= (($temp_cw[1] & 0x0F) << 4) + (($temp_cw[2] & 0x3C) >> 2);
-							if ($tcw > 0) {
-								$cw[] = $tcw;
+							if($field_length >= 2) {
+								$cw[] = (($temp_cw[1] & 0x0F) << 4) + (($temp_cw[2] & 0x3C) >> 2);
 								$cw_num++;
 							}
-							$tcw = (($temp_cw[2] & 0x03) << 6) + ($temp_cw[3] & 0x3F);
-							if ($tcw > 0) {
-								$cw[] = $tcw;
+							if($field_length >= 3) {
+								$cw[] = (($temp_cw[2] & 0x03) << 6) + ($temp_cw[3] & 0x3F);
 								$cw_num++;
 							}
 							$temp_cw = array();
