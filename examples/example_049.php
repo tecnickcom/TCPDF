@@ -84,7 +84,7 @@ Please use this feature only if you are in control of the HTML content and you a
 
 For security reasons, the parameters for the 'params' attribute of TCPDF 
 tag must be prepared as an array and encoded with the
-serializeTCPDFtagParameters() method (see the example below).
+serializeTCPDFtag() method (see the example below).
 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
