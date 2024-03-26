@@ -1283,7 +1283,7 @@ class TCPDF {
 	 * @protected
 	 * @since 4.6.005 (2009-04-24)
 	 */
-	protected $signature_max_length = 11742;
+	protected $signature_max_length = 23000;
 
 	/**
 	 * Data for digital signature appearance.
@@ -7705,12 +7705,14 @@ class TCPDF {
 			$signature = $tmparr[1];
 			// decode signature
 			$signature = base64_decode(trim($signature));
-			// add TSA timestamp to signature
-			$signature = $this->applyTSA($signature);
 			// convert signature to hex
 			$signature = current(unpack('H*', $signature));
+			// add TSA timestamp to signature
+			$signature = $this->applyTSA($signature);
+
 			$signature = str_pad($signature, $this->signature_max_length, '0');
 			// Add signature to the document
+			
 			$this->buffer = substr($pdfdoc, 0, $byte_range[1]).'<'.$signature.'>'.substr($pdfdoc, $byte_range[1]);
 			$this->bufferlen = strlen($this->buffer);
 		}
@@ -13655,6 +13657,8 @@ class TCPDF {
 	 * @author Richard Stockinger
 	 * @since 6.0.090 (2014-06-16)
 	 */
+	// other options suggested to be implement: reqPolicy, nonce, certReq, extensions 
+	// and option to abort signing if timestamping failed and LTV enable (embed crl and or ocsp revocation info)
 	public function setTimeStamp($tsa_host='', $tsa_username='', $tsa_password='', $tsa_cert='') {
 		$this->tsa_data = array();
 		if (!function_exists('curl_init')) {
@@ -13675,19 +13679,29 @@ class TCPDF {
 	}
 
 	/**
-	 * NOT YET IMPLEMENTED
-	 * Request TSA for a timestamp
-	 * @param string $signature Digital signature as binary string
-	 * @return string Timestamped digital signature
+	 * Applying TSA for a timestamp.
+	 * @param string $signature Digital signature as hex string
+	 * @return hex string Timestamped digital signature
 	 * @protected
-	 * @author Richard Stockinger
-	 * @since 6.0.090 (2014-06-16)
+	 * @author M Hida
+	 * @since 6.6.2 (2023-05-25)
 	 */
 	protected function applyTSA($signature) {
 		if (!$this->tsa_timestamp) {
 			return $signature;
 		}
-		//@TODO: implement this feature
+		require_once(dirname(__FILE__).'/include/tcpdf_cmssignature.php');
+		$tcpdf_cms = new tcpdf_cms_signature;
+		$tcpdf_cms->pkcs7_data($signature);
+		$tsaQuery = $tcpdf_cms->tsa_query($tcpdf_cms->pkcs7_EncryptedDigest);
+		if(!$tsaResp = $tcpdf_cms->tsa_send($tsaQuery, $this->tsa_data['tsa_host'], $this->tsa_data['tsa_username'], $this->tsa_data['tsa_password'])) {
+			$this->Error("Can't send TSA Request to: ".$this->tsa_data['tsa_host']." error:".$tcpdf_cms->errorMsg);
+		}
+		if(@$signatureWithTs = $tcpdf_cms->pkcs7_appendTsa($tsaResp)) {
+			$signature = $signatureWithTs;
+		} else {
+			$this->Error("Can't append TSA data! error: ".$tcpdf_cms->errorMsg);
+		}
 		return $signature;
 	}
 
