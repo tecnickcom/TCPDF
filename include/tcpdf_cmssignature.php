@@ -99,8 +99,8 @@ class tcpdf_cms_signature {
 
 		if($tsResponse) {
 			$header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-      curl_close($ch);
-      $header = substr($tsResponse, 0, $header_size);
+			curl_close($ch);
+			$header = substr($tsResponse, 0, $header_size);
 			$body = substr($tsResponse, $header_size);
 			
 			// Get the HTTP response code
