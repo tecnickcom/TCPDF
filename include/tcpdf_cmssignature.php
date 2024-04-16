@@ -24,13 +24,13 @@ class tcpdf_cms_signature {
 	 * result value of pkcs7 EncryptedDigest.
 	 * @public
 	 */
-	public string $pkcs7_EncryptedDigest;
+	public $pkcs7_EncryptedDigest;
 	
 	/**
 	 * private array parsed of pkcs7 data.
 	 * @private
 	 */
-	private array $pkcs7_dataArray;
+	private $pkcs7_dataArray;
 
 	/**
 	 * futher implementation
@@ -359,7 +359,7 @@ class tcpdf_cms_signature {
  */
 class tcpdf_asn1 {
 	// throw error to errorMsg
-	public string $errorMsg;
+	public $errorMsg;
 	
 	/**
 	 * parse asn.1 to array
