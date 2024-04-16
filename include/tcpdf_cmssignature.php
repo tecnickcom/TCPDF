@@ -96,11 +96,11 @@ class tcpdf_cms_signature {
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/timestamp-query','User-Agent: TCPDF'));
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $binarytsReqData);
 		$tsResponse = curl_exec($ch);
-		curl_close($ch);
 
 		if($tsResponse) {
 			$header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-			$header = substr($tsResponse, 0, $header_size);
+      curl_close($ch);
+      $header = substr($tsResponse, 0, $header_size);
 			$body = substr($tsResponse, $header_size);
 			
 			// Get the HTTP response code
