@@ -24,13 +24,13 @@ class tcpdf_cms_signature {
 	 * result value of pkcs7 EncryptedDigest.
 	 * @public
 	 */
-	public string $pkcs7_EncryptedDigest;
+	public $pkcs7_EncryptedDigest;
 	
 	/**
 	 * private array parsed of pkcs7 data.
 	 * @private
 	 */
-	private array $pkcs7_dataArray;
+	private $pkcs7_dataArray;
 
 	/**
 	 * futher implementation
@@ -96,10 +96,10 @@ class tcpdf_cms_signature {
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/timestamp-query','User-Agent: TCPDF'));
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $binarytsReqData);
 		$tsResponse = curl_exec($ch);
-		curl_close($ch);
 
 		if($tsResponse) {
 			$header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+			curl_close($ch);
 			$header = substr($tsResponse, 0, $header_size);
 			$body = substr($tsResponse, $header_size);
 			
@@ -359,7 +359,7 @@ class tcpdf_cms_signature {
  */
 class tcpdf_asn1 {
 	// throw error to errorMsg
-	public string $errorMsg;
+	public $errorMsg;
 	
 	/**
 	 * parse asn.1 to array
