@@ -76,7 +76,8 @@ NOTES:
 */
 
 // set certificate file
-$certificate = 'file://data/cert/tcpdf.crt';
+//$certificate = 'file://data/cert/tcpdf.crt';
+$certificate = file_get_contents('data/cert/tcpdf.crt');
 
 // set additional information
 $info = array(
@@ -85,6 +86,9 @@ $info = array(
 	'Reason' => 'Testing TCPDF',
 	'ContactInfo' => 'http://www.tcpdf.org',
 	);
+
+// Set TSA server address
+$pdf->setTimeStamp('http://timestamp.apple.com/ts01');
 
 // set document signature
 $pdf->setSignature($certificate, $certificate, 'tcpdfdemo', '', 2, $info);
