@@ -2451,6 +2451,15 @@ class TCPDF {
 	}
 
 	/**
+	 * Allow to disable/enable TCPDF meta link
+	 * @param bool $tcpdflink
+	 * @return void
+	 */
+	public function setTcpdfLink($tcpdflink) {
+		$this->tcpdflink = $tcpdflink;
+	}
+
+	/**
 	 * Set the last cell height.
 	 * @param float $h cell height.
 	 * @author Nicola Asuni
