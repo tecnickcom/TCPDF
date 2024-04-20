@@ -82,9 +82,7 @@ If you are printing user-generated content, the tcpdf tag should be considered u
 This tag is disabled by default by the K_TCPDF_CALLS_IN_HTML constant on TCPDF configuration file.
 Please use this feature only if you are in control of the HTML content and you are sure that it does not contain any harmful code.
 
-For security reasons, the parameters for the 'params' attribute of TCPDF 
-tag must be prepared as an array and encoded with the
-serializeTCPDFtagParameters() method (see the example below).
+For security reasons, the content of the TCPDF tag must be prepared and encoded with the serializeTCPDFtag() method (see the example below).
 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
