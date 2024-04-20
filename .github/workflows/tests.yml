@@ -66,7 +66,7 @@ jobs:
             - name: List php modules using "no php ini" mode
               run: php -m -n
             - name: Cache module
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               with:
                   path: ~/.composer/cache/
                   key: composer-cache
@@ -109,7 +109,7 @@ jobs:
               with:
                   php-version: 8.2
             - name: Cache module
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               with:
                   path: ~/.composer/cache/
                   key: composer-cache
