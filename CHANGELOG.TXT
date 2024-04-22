@@ -1,10 +1,18 @@
-6.6.5 (2023-09-06)
+6.7.5 (2024-04-20)
+	- Update GitHub actions
+	- fix: CSV-2024-22640 (#712)
+
+6.7.4 (2024-03-24)
+	- Upgrade tcpdf tag encryption algorithm.
+	- Fix regression issue #699.
+	- Fix security issue.
+	- [BREAKING CHANGE] The tcpdf HTML tag syntax has changed, see example_049.php.
+	- New K_ALLOWED_TCPDF_TAGS configuration constant to set the allowed methods for the tcdpf HTML tag.
+	- Raised minimum PHP version to PHP 5.5.0.
+
+6.6.5 (2023-09-02)
 	- Fix corrupted file.
-
-6.6.4 (2023-09-06)
 	- Fix GitHub automation tests.
-
-6.6.3 (2023-09-06)
 	- Fix SPDX license ID (#591)
 	- Fix warning "array offset on value of type null" (#620)
 	- Improve the README about the status of this library (#589)
@@ -272,7 +280,7 @@
 	- Bug item #956 "Monospaced fonts are not alignd at the baseline" was fixed.
 	- Bug item #964 "Problem when changing font size" was fixed.
 	- Bug item #969 "ImageSVG with radialGradient problem" was fixed.
-	- sRGB.icc file was replaced with the one from the Debian package icc-profiles-free (2.0.1+dfsg-1) 
+	- sRGB.icc file was replaced with the one from the Debian package icc-profiles-free (2.0.1+dfsg-1)
 
 6.0.091 (2014-08-13)
 	- Issue #325"Division by zero when css fontsize equals 0" was fixed.
@@ -281,7 +289,7 @@
 	- Starting from this version TCPDF is also available in GitHub at https://github.com/tecnickcom/TCPDF
 	- Function getmypid() was removed for better compatibility with shared hosting environments.
 	- Support for pulling SVG stroke opacity value from RGBa color was mergeg [adf006].
-	- Bug item #951 "HTML Table within TCPDF columns doesnt flow correctly on page break ..." was fixed. 
+	- Bug item #951 "HTML Table within TCPDF columns doesnt flow correctly on page break ..." was fixed.
 
 6.0.089 (2014-07-16)
 	- Bug item #948 "bottom line of rowspan cell not work correctly" was fixed.

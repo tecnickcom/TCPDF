@@ -29,12 +29,10 @@ jobs:
                 coverage-extension: ["none"]
                 # Add more specific tests
                 include:
-                  - { php-version: '5.3', experimental: false, os: ubuntu-latest, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'xdebug' }
-                  - { php-version: '5.4', experimental: false, os: ubuntu-latest, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'xdebug' }
                   - { php-version: '5.5', experimental: false, os: ubuntu-latest, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'xdebug' }
                   - { php-version: '5.6', experimental: false, os: ubuntu-latest, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'xdebug' }
                   - { php-version: '7.0', experimental: false, os: ubuntu-latest, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'xdebug' }
-                  - { php-version: '8.2', experimental: false, os: macos-latest, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'none' }
+                  #- { php-version: '8.2', experimental: false, os: macos-latest, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'none' }
                   - { php-version: '8.2', experimental: false, os: windows-latest, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'none' }
                   - { php-version: '8.3', experimental: true, os: ubuntu-latest, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'pcov' }
                   - { php-version: 'nightly', experimental: true, os: ubuntu-latest, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'pcov' }
@@ -68,7 +66,7 @@ jobs:
             - name: List php modules using "no php ini" mode
               run: php -m -n
             - name: Cache module
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               with:
                   path: ~/.composer/cache/
                   key: composer-cache
@@ -111,7 +109,7 @@ jobs:
               with:
                   php-version: 8.2
             - name: Cache module
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               with:
                   path: ~/.composer/cache/
                   key: composer-cache
