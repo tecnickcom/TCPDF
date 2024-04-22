@@ -3,7 +3,7 @@
 // File name   : datamatrix.php
 // Version     : 1.0.008 tbd.
 // Begin       : 2010-06-07
-// Last Update : 2024-01-23
+// Last Update : 2024-01-26
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // Author      : Urs Wettstein (implementation of rectangular code)
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
@@ -125,18 +125,21 @@ class Datamatrix {
 	/**
 	 * Store whether the code is rectangular or not (square).
 	 * @protected
+	 * @var bool
 	 */
 	protected $rectangular = false;
 
 	/**
 	 * Dimension selection
 	 * @protected
+	 * @var array|null
 	 */
 	protected $dimension = null;
 
 	/**
 	 * Index of the selected symbol or -1 for detection according data size
 	 * @protected
+	 * @var integer
 	 */
 	protected $selected_symbol = -1;
 
@@ -249,7 +252,8 @@ class Datamatrix {
 	 * This is the class constructor.
 	 * Creates a datamatrix object
 	 * @param string $code Code to represent using Datamatrix.
-	 * @param string $shape Shape of datamatrix code (R = rectangular, S = square)
+	 * @param string $shape Shape of datamatrix code (R = rectangular, S = square, RRxCC = fixed dimensions)
+	 * @phpstan-param 'R'|'S'|'10x10'|'12x12'|'14x14'|'16x16'|'18x18'|'20x20'|'22x22'|'24x24'|'26x26'|'32x32'|'36x36'|'40x40'|'44x44'|'48x48'|'52x52'|'64x64'|'72x72'|'80x80'|'88x88'|'96x96'|'104x104'|'120x120'|'132x132'|'144x144'|'8x18'|'8x32'|'12x26'|'12x36'|'16x36'|'16x48' $shape
 	 * @public
 	 */
 	public function __construct($code, $shape = 'S') {
