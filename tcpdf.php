@@ -1274,7 +1274,8 @@ class TCPDF {
 	 * @protected
 	 * @since 4.6.005 (2009-04-24)
 	 */
-	protected $signature_max_length = 23000;
+	//protected $signature_max_length = 19000;
+	protected $signature_max_length = 27000;
 
 	/**
 	 * Data for digital signature appearance.
@@ -1295,6 +1296,7 @@ class TCPDF {
 	 * @protected
 	 * @since 6.0.085 (2014-06-19)
 	 */
+	protected $signature_ltv = false;
 	protected $tsa_timestamp = false;
 
 	/**
@@ -1302,6 +1304,7 @@ class TCPDF {
 	 * @protected
 	 * @since 6.0.085 (2014-06-19)
 	 */
+	protected $signature_ltv_data = array();
 	protected $tsa_data = array();
 
 	/**
@@ -1982,7 +1985,9 @@ class TCPDF {
 		$this->setTextShadow();
 		// signature
 		$this->sign = false;
+		$this->signature_ltv = false;
 		$this->tsa_timestamp = false;
+		$this->signature_ltv_data = array();
 		$this->tsa_data = array();
 		$this->signature_appearance = array('page' => 1, 'rect' => '0 0 0 0', 'name' => 'Signature');
 		$this->empty_signature_appearance = array();
@@ -7694,8 +7699,8 @@ class TCPDF {
 			$signature = base64_decode(trim($signature));
 			// convert signature to hex
 			$signature = current(unpack('H*', $signature));
-			// add TSA timestamp to signature
-			$signature = $this->applyTSA($signature);
+			// add LTV/TSA to signature
+			 $signature = $this->applyLtvTsa($signature);
 
 			$signature = str_pad($signature, $this->signature_max_length, '0');
 			// Add signature to the document
@@ -7870,7 +7875,9 @@ class TCPDF {
 			'signature_data',
 			'signature_max_length',
 			'byterange_string',
+			'signature_ltv',
 			'tsa_timestamp',
+			'signature_ltv_data',
 			'tsa_data'
 		);
 		foreach (array_keys(get_object_vars($this)) as $val) {
@@ -13673,23 +13680,51 @@ class TCPDF {
 	 * @author M Hida
 	 * @since 6.6.2 (2023-05-25)
 	 */
-	protected function applyTSA($signature) {
-		if (!$this->tsa_timestamp) {
-			return $signature;
-		}
-		require_once(dirname(__FILE__).'/include/tcpdf_cmssignature.php');
-		$tcpdf_cms = new tcpdf_cms_signature;
-		$tcpdf_cms->pkcs7_data($signature);
-		$tsaQuery = $tcpdf_cms->tsa_query($tcpdf_cms->pkcs7_EncryptedDigest);
-		if(!$tsaResp = $tcpdf_cms->tsa_send($tsaQuery, $this->tsa_data['tsa_host'], $this->tsa_data['tsa_username'], $this->tsa_data['tsa_password'])) {
-			$this->Error("Can't send TSA Request to: ".$this->tsa_data['tsa_host']." error:".$tcpdf_cms->errorMsg);
-		}
-		if(@$signatureWithTs = $tcpdf_cms->pkcs7_appendTsa($tsaResp)) {
-			$signature = $signatureWithTs;
-		} else {
-			$this->Error("Can't append TSA data! error: ".$tcpdf_cms->errorMsg);
-		}
-		return $signature;
+	public function setLtv($ocspURI=null, $crlURIorFILE=null, $issuerURIorFILE=null) {
+		$this->signature_ltv_data = array();
+		$this->signature_ltv_data['ocspURI'] = $ocspURI;
+		$this->signature_ltv_data['crlURIorFILE'] = $crlURIorFILE;
+		$this->signature_ltv_data['issuerURIorFILE'] = $issuerURIorFILE;
+		$this->signature_ltv = true;
+	}
+
+	/**
+	 * Applying LTV and TSA
+	 * @param string $signature hex form pkcs7 digital signature
+	 * @return hex string LTV/TSA embedded digital signature
+	 * @protected
+	 * @author M Hida
+	 * @since 6.6.2 (2023-05-25)
+	 */
+	protected function applyLtvTsa($signature) {
+		if ($this->signature_ltv || $this->tsa_timestamp) {
+      require_once(dirname(__FILE__).'/include/tcpdf_cmssignature.php');
+      $tcpdf_cms = new tcpdf_cmssignature;
+      $tcpdf_cms->signature_data = $this->signature_data;
+    }
+    if ($this->signature_ltv) {
+      $tcpdf_cms->signature_ltv_data = $this->signature_ltv_data;
+      $tcpdf_cms->pkcs7_data($signature);
+      $tcpdf_cms->log .= "info: append LTV start\n";
+      if(@$signatureWithLtv = $tcpdf_cms->pkcs7_appendLtv()) {
+        $tcpdf_cms->log .= "info: append LTV end success\n";
+         $signature = $signatureWithLtv;
+      } else {
+        $tcpdf_cms->log .= "error: append LTV end failed!\n";
+      }
+    }
+    if ($this->tsa_timestamp) {
+      $tcpdf_cms->tsa_data = $this->tsa_data;
+      $tcpdf_cms->pkcs7_data($signature);
+      $tcpdf_cms->log .= "info: append TSA start!\n";
+      if(@$signatureWithTs = $tcpdf_cms->pkcs7_appendTsa()) {
+        $tcpdf_cms->log .= "info: append TSA end success\n";
+         $signature = $signatureWithTs;
+      } else {
+        $tcpdf_cms->log .= "error: append TSA end failed!\n";
+      }
+    }
+    return $signature;
 	}
 
 	/**
