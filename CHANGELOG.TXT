@@ -1,3 +1,31 @@
+6.7.5 (2024-04-20)
+	- Update GitHub actions
+	- fix: CSV-2024-22640 (#712)
+
+6.7.4 (2024-03-24)
+	- Upgrade tcpdf tag encryption algorithm.
+	- Fix regression issue #699.
+	- Fix security issue.
+	- [BREAKING CHANGE] The tcpdf HTML tag syntax has changed, see example_049.php.
+	- New K_ALLOWED_TCPDF_TAGS configuration constant to set the allowed methods for the tcdpf HTML tag.
+	- Raised minimum PHP version to PHP 5.5.0.
+
+6.6.5 (2023-09-02)
+	- Fix corrupted file.
+	- Fix GitHub automation tests.
+	- Fix SPDX license ID (#591)
+	- Fix warning "array offset on value of type null" (#620)
+	- Improve the README about the status of this library (#589)
+	- Fix deprecation warning with PHP 8.1 (#614)
+	- Fixes for PHP 8.2 in tcpdf_fonts.php (#632)
+	- Fix some php 8+ edge cases (#630)
+	- Fix composite glyph output (#581)
+	- Fix "access array offset on value of type bool" with PDF/A (#583)
+	- Fix non-numeric value warning (#627)
+	- Fix issues with S25 barcode (#611)
+	- Fix return type annotations (#613)
+	- Fix some inconsistencies in type hints (#598)
+
 6.6.2 (2022-12-17)
 	- Ensure pregSplit return type is always array.
 	- Add ability to run tests on various operating systems (#566)
