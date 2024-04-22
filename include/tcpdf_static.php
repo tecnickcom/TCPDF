@@ -1876,6 +1876,9 @@ class TCPDF_STATIC {
 		if (preg_match('|^https?://|', $filename) == 1) {
 			return self::url_exists($filename);
 		}
+		if (stripos($filename, 'data:') === 0) {
+			return true;
+		}
 		if (strpos($filename, '://')) {
 			return false; // only support http and https wrappers for security reasons
 		}
