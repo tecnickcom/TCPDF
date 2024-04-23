@@ -3,4 +3,5 @@
 /.gitattributes export-ignore
 /tests export-ignore
 /scripts export-ignore
+/examples export-ignore
 /phpstan.neon.dist export-ignore
