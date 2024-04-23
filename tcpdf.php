@@ -23034,12 +23034,6 @@ class TCPDF {
 				}
 			}
 		}
-		if ($ow <= 0) {
-			$ow = 1;
-		}
-		if ($oh <= 0) {
-			$oh = 1;
-		}
 		// calculate image width and height on document
 		if (($w <= 0) AND ($h <= 0)) {
 			// convert image size to document unit
