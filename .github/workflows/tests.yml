@@ -1,5 +1,11 @@
 name: Run tests
 
+env:
+  XDEBUG_MODE: coverage
+
+permissions:
+  contents: read
+
 on:
   push:
     branches:
@@ -16,45 +22,24 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php-version: ["5.3", "5.4", "5.5", "5.6", "7.0", "7.1", "7.2", "7.3", "7.4", "8.0", "8.1", "8.2"]
-                os: [macos-latest, windows-latest]
+                php-version: ["7.1", "7.2", "7.3", "7.4", "8.0", "8.1", "8.2"]
+                os: [ubuntu-latest]
                 experimental: [false]
                 php-extensions: ["bcmath, imagick, gd"]
                 coverage-extension: ["none"]
-                exclude:
-                  # For now, we do not know how to run workflow on Windows
-                  # with imagick PHP extension for PHP 5.3 - 5.6
-                  - { php-version: '5.3', os: windows-latest }
-                  - { php-version: '5.4', os: windows-latest }
-                  - { php-version: '5.5', os: windows-latest }
-                  - { php-version: '5.6', os: windows-latest }
-                  # Somehow some tests fail under Windows and PHP 7.0,
-                  # so we disable that run for now
-                  - { php-version: '7.0', os: windows-latest }
+                # Add more specific tests
                 include:
-                  - { php-version: '5.3', os: windows-latest, experimental: false, php-extensions: 'bcmath, gd', coverage-extension: 'none' }
-                  - { php-version: '5.4', os: windows-latest, experimental: false, php-extensions: 'bcmath, gd', coverage-extension: 'none' }
-                  - { php-version: '5.5', os: windows-latest, experimental: false, php-extensions: 'bcmath, gd', coverage-extension: 'none' }
-                  - { php-version: '5.6', os: windows-latest, experimental: false, php-extensions: 'bcmath, gd', coverage-extension: 'none' }
-                  # Specify coverage extension for Ubuntu runs
-                  - { php-version: '5.3', os: ubuntu-latest, experimental: false, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'xdebug' }
-                  - { php-version: '5.4', os: ubuntu-latest, experimental: false, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'xdebug' }
-                  - { php-version: '5.5', os: ubuntu-latest, experimental: false, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'xdebug' }
-                  - { php-version: '5.6', os: ubuntu-latest, experimental: false, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'xdebug' }
-                  - { php-version: '7.0', os: ubuntu-latest, experimental: false, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'xdebug' }
-                  # pcov is available from PHP 7.1
-                  - { php-version: '7.1', os: ubuntu-latest, experimental: false, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'pcov' }
-                  - { php-version: '7.2', os: ubuntu-latest, experimental: false, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'pcov' }
-                  - { php-version: '7.3', os: ubuntu-latest, experimental: false, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'pcov' }
-                  - { php-version: '7.4', os: ubuntu-latest, experimental: false, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'pcov' }
-                  - { php-version: '8.0', os: ubuntu-latest, experimental: false, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'pcov' }
-                  - { php-version: '8.1', os: ubuntu-latest, experimental: false, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'pcov' }
-                  - { php-version: '8.2', os: ubuntu-latest, experimental: false, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'pcov' }
-                  - { php-version: 'nightly', os: ubuntu-latest, experimental: true, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'pcov' }
+                  - { php-version: '5.5', experimental: false, os: ubuntu-latest, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'xdebug' }
+                  - { php-version: '5.6', experimental: false, os: ubuntu-latest, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'xdebug' }
+                  - { php-version: '7.0', experimental: false, os: ubuntu-latest, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'xdebug' }
+                  #- { php-version: '8.2', experimental: false, os: macos-latest, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'none' }
+                  - { php-version: '8.2', experimental: false, os: windows-latest, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'none' }
+                  - { php-version: '8.3', experimental: true, os: ubuntu-latest, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'pcov' }
+                  - { php-version: 'nightly', experimental: true, os: ubuntu-latest, php-extensions: 'bcmath, imagick, gd', coverage-extension: 'pcov' }
         env:
             PDFINFO_BINARY: ${{ (matrix.os == 'ubuntu-latest') && '/usr/bin/pdfinfo' || ((matrix.os == 'macos-latest') && '/usr/local/bin/pdfinfo' || 'C:\ProgramData\Chocolatey\bin\pdfinfo.exe') }}
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - name: Install pdfinfo, pdftopng or pdftoppm
               uses: ConorMacBride/install-package@v1
               with:
@@ -81,14 +66,14 @@ jobs:
             - name: List php modules using "no php ini" mode
               run: php -m -n
             - name: Cache module
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               with:
                   path: ~/.composer/cache/
                   key: composer-cache
             - name: Install dependencies
-              run: composer install --no-interaction
+              run: composer update --no-interaction
             - name: Install test dependencies
-              run: cd ./tests && composer install --no-interaction && cd ../
+              run: cd ./tests && composer update --no-interaction && cd ../
             - name: Run shell-based test suite
               if: runner.os == 'Linux'
               run: ./tests/launch.sh
@@ -118,18 +103,17 @@ jobs:
         name: Static Analysis
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
-            - name: Use php 8.0
+            - uses: actions/checkout@v4
+            - name: Use php 8.2
               uses: shivammathur/setup-php@v2
               with:
-                  php-version: 8.0
-                  tools: composer:v2
+                  php-version: 8.2
             - name: Cache module
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               with:
                   path: ~/.composer/cache/
                   key: composer-cache
             - name: Install phpstan
               run: composer require --dev phpstan/phpstan
             - name: Analyse files
-              run: ./vendor/bin/phpstan --memory-limit=2G
+              run: ./vendor/bin/phpstan --memory-limit=6G
