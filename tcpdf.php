@@ -1268,6 +1268,18 @@ class TCPDF {
 	 * @since 4.6.005 (2009-04-24)
 	 */
 	protected $signature_data = array();
+	/**
+	 * Digital signature data.
+	 * @protected
+	 * @since 6.6.2 (2024-04-21)
+	 */
+	protected $signature_data_ltv = array();
+	/**
+	 * Digital signature data.
+	 * @protected
+	 * @since 6.6.2 (2024-04-21)
+	 */
+	protected $signature_data_tsa = array();
 
 	/**
 	 * Digital signature max length.
@@ -1290,22 +1302,6 @@ class TCPDF {
 	 * @since 5.9.101 (2011-07-06)
 	 */
 	protected $empty_signature_appearance = array();
-
-	/**
-	 * Boolean flag to enable document timestamping with TSA.
-	 * @protected
-	 * @since 6.0.085 (2014-06-19)
-	 */
-	protected $signature_ltv = false;
-	protected $tsa_timestamp = false;
-
-	/**
-	 * Timestamping data.
-	 * @protected
-	 * @since 6.0.085 (2014-06-19)
-	 */
-	protected $signature_ltv_data = array();
-	protected $tsa_data = array();
 
 	/**
 	 * Regular expression used to find blank characters (required for word-wrapping).
@@ -1985,10 +1981,6 @@ class TCPDF {
 		$this->setTextShadow();
 		// signature
 		$this->sign = false;
-		$this->signature_ltv = false;
-		$this->tsa_timestamp = false;
-		$this->signature_ltv_data = array();
-		$this->tsa_data = array();
 		$this->signature_appearance = array('page' => 1, 'rect' => '0 0 0 0', 'name' => 'Signature');
 		$this->empty_signature_appearance = array();
 		// user's rights
@@ -7672,35 +7664,17 @@ class TCPDF {
 			$byterange = sprintf('/ByteRange[0 %u %u %u]', $byte_range[1], $byte_range[2], $byte_range[3]);
 			$byterange .= str_repeat(' ', ($byterange_string_len - strlen($byterange)));
 			$pdfdoc = str_replace(TCPDF_STATIC::$byterange_string, $byterange, $pdfdoc);
-			// write the document to a temporary folder
-			$tempdoc = TCPDF_STATIC::getObjFilename('doc', $this->file_id);
-			$f = TCPDF_STATIC::fopenLocal($tempdoc, 'wb');
-			if (!$f) {
-				$this->Error('Unable to create temporary file: '.$tempdoc);
-			}
-			$pdfdoc_length = strlen($pdfdoc);
-			fwrite($f, $pdfdoc, $pdfdoc_length);
-			fclose($f);
-			// get digital signature via openssl library
-			$tempsign = TCPDF_STATIC::getObjFilename('sig', $this->file_id);
-			if (empty($this->signature_data['extracerts'])) {
-				openssl_pkcs7_sign($tempdoc, $tempsign, $this->signature_data['signcert'], array($this->signature_data['privkey'], $this->signature_data['password']), array(), PKCS7_BINARY | PKCS7_DETACHED);
-			} else {
-				openssl_pkcs7_sign($tempdoc, $tempsign, $this->signature_data['signcert'], array($this->signature_data['privkey'], $this->signature_data['password']), array(), PKCS7_BINARY | PKCS7_DETACHED, $this->signature_data['extracerts']);
-			}
-			// read signature
-			$signature = file_get_contents($tempsign);
-			// extract signature
-			$signature = substr($signature, $pdfdoc_length);
-			$signature = substr($signature, (strpos($signature, "%%EOF\n\n------") + 13));
-			$tmparr = explode("\n\n", $signature);
-			$signature = $tmparr[1];
-			// decode signature
-			$signature = base64_decode(trim($signature));
-			// convert signature to hex
-			$signature = current(unpack('H*', $signature));
-			// add LTV/TSA to signature
-			 $signature = $this->applyLtvTsa($signature);
+
+      require_once(dirname(__FILE__).'/include/tcpdf_cmssignature.php');
+      $tcpdf_cms = new tcpdf_cmssignature;
+      $tcpdf_cms->signature_data = $this->signature_data;
+      $tcpdf_cms->signature_data_ltv = $this->signature_data_ltv;
+      $tcpdf_cms->signature_data_tsa = $this->signature_data_tsa;
+      $tcpdf_cms->log .= "info:Start PKCS7 Signing...\n";
+      if(!$signature = $tcpdf_cms->pkcs7_sign($pdfdoc)) {
+        $tcpdf_cms->log .= "error:PKCS7 Signing end FAILED!\n";
+      }
+      $tcpdf_cms->log .= "info:PKCS7 Signing end Success.\n";
 
 			$signature = str_pad($signature, $this->signature_max_length, '0');
 			// Add signature to the document
@@ -7873,12 +7847,10 @@ class TCPDF {
 			'imagekeys',
 			'sign',
 			'signature_data',
+			'signature_data_ltv',
+			'signature_data_tsa',
 			'signature_max_length',
-			'byterange_string',
-			'signature_ltv',
-			'tsa_timestamp',
-			'signature_ltv_data',
-			'tsa_data'
+			'byterange_string'
 		);
 		foreach (array_keys(get_object_vars($this)) as $val) {
 			if ($destroyall OR !in_array($val, $preserve)) {
@@ -13548,7 +13520,7 @@ class TCPDF {
 	 * @author Nicola Asuni
 	 * @since 4.6.005 (2009-04-24)
 	 */
-	public function setSignature($signing_cert='', $private_key='', $private_key_password='', $extracerts='', $cert_type=2, $info=array(), $approval='') {
+	public function setSignature($signing_cert='', $private_key='', $private_key_password='', $extracerts='', $cert_type=2, $info=array(), $hashAlgorithm='sha256', $approval='') {
 		// to create self-signed signature: openssl req -x509 -nodes -days 365000 -newkey rsa:1024 -keyout tcpdf.crt -out tcpdf.crt
 		// to export crt to p12: openssl pkcs12 -export -in tcpdf.crt -out tcpdf.p12
 		// to convert pfx certificate to pem: openssl
@@ -13570,6 +13542,7 @@ class TCPDF {
 		$this->signature_data['extracerts'] = $extracerts;
 		$this->signature_data['cert_type'] = $cert_type;
 		$this->signature_data['info'] = $info;
+		$this->signature_data['hashAlgorithm'] = strtolower($hashAlgorithm);
 		$this->signature_data['approval'] = $approval;
 	}
 
@@ -13650,81 +13623,36 @@ class TCPDF {
 	 * @public
 	 * @author Richard Stockinger
 	 * @since 6.0.090 (2014-06-16)
+	 * @author M Hida
+	 * @since 6.6.2 (2024-04-21)
 	 */
 	// other options suggested to be implement: reqPolicy, nonce, certReq, extensions 
 	// and option to abort signing if timestamping failed and LTV enable (embed crl and or ocsp revocation info)
-	public function setTimeStamp($tsa_host='', $tsa_username='', $tsa_password='', $tsa_cert='') {
-		$this->tsa_data = array();
-		if (!function_exists('curl_init')) {
-			$this->Error('Please enable cURL PHP extension!');
-		}
-		if (strlen($tsa_host) == 0) {
-			$this->Error('Please specify the host of Time Stamping Authority (TSA)!');
-		}
-		$this->tsa_data['tsa_host'] = $tsa_host;
-		if (is_file($tsa_username)) {
-			$this->tsa_data['tsa_auth'] = $tsa_username;
-		} else {
-			$this->tsa_data['tsa_username'] = $tsa_username;
-		}
-		$this->tsa_data['tsa_password'] = $tsa_password;
-		$this->tsa_data['tsa_cert'] = $tsa_cert;
-		$this->tsa_timestamp = true;
+	public function setTimeStamp($tsa_host, $tsa_username='', $tsa_password='', $tsa_cert='') {
+    $this->signature_data_tsa['host'] = $tsa_host;
+		$this->signature_data_tsa['username'] = $tsa_username;
+		$this->signature_data_tsa['password'] = $tsa_password;
+		$this->signature_data_tsa['cert'] = $tsa_cert;
 	}
 
 	/**
-	 * Applying TSA for a timestamp.
-	 * @param string $signature Digital signature as hex string
-	 * @return hex string Timestamped digital signature
-	 * @protected
+	 * Set user defined LTV parameters.
+	 * If not set, it will lookup in cert attributes.
+	 * Enable LTV (Long Term Validation) (requires the OpenSSL Library).
+	 * Use with digital signature only!
+	 * @param string $ocspURI Custom OCSP URI address, usefull cert not specify AIA OCSP address in cert attribute. Set null to skip ocsp embedding and set next arguments.
+	 *                        set false/empty to lookup in cert attribute.
+	 * @param string $crlURIorFILE Custom CDP address/file location, usefull cert not specify CDP address in cert attribute. Set null to skip CRL embedding and set next arguments.
+	 *                        set false/empty to lookup in cert attribute.
+	 * @param string $issuerURIorFILE Specifies CA Issuer URI address or file name. Its absolutely needed.
+	 * @public
 	 * @author M Hida
-	 * @since 6.6.2 (2023-05-25)
+	 * @since 6.6.2 (2024-04-21)
 	 */
 	public function setLtv($ocspURI=null, $crlURIorFILE=null, $issuerURIorFILE=null) {
-		$this->signature_ltv_data = array();
-		$this->signature_ltv_data['ocspURI'] = $ocspURI;
-		$this->signature_ltv_data['crlURIorFILE'] = $crlURIorFILE;
-		$this->signature_ltv_data['issuerURIorFILE'] = $issuerURIorFILE;
-		$this->signature_ltv = true;
-	}
-
-	/**
-	 * Applying LTV and TSA
-	 * @param string $signature hex form pkcs7 digital signature
-	 * @return hex string LTV/TSA embedded digital signature
-	 * @protected
-	 * @author M Hida
-	 * @since 6.6.2 (2023-05-25)
-	 */
-	protected function applyLtvTsa($signature) {
-		if ($this->signature_ltv || $this->tsa_timestamp) {
-      require_once(dirname(__FILE__).'/include/tcpdf_cmssignature.php');
-      $tcpdf_cms = new tcpdf_cmssignature;
-      $tcpdf_cms->signature_data = $this->signature_data;
-    }
-    if ($this->signature_ltv) {
-      $tcpdf_cms->signature_ltv_data = $this->signature_ltv_data;
-      $tcpdf_cms->pkcs7_data($signature);
-      $tcpdf_cms->log .= "info: append LTV start\n";
-      if(@$signatureWithLtv = $tcpdf_cms->pkcs7_appendLtv()) {
-        $tcpdf_cms->log .= "info: append LTV end success\n";
-         $signature = $signatureWithLtv;
-      } else {
-        $tcpdf_cms->log .= "error: append LTV end failed!\n";
-      }
-    }
-    if ($this->tsa_timestamp) {
-      $tcpdf_cms->tsa_data = $this->tsa_data;
-      $tcpdf_cms->pkcs7_data($signature);
-      $tcpdf_cms->log .= "info: append TSA start!\n";
-      if(@$signatureWithTs = $tcpdf_cms->pkcs7_appendTsa()) {
-        $tcpdf_cms->log .= "info: append TSA end success\n";
-         $signature = $signatureWithTs;
-      } else {
-        $tcpdf_cms->log .= "error: append TSA end failed!\n";
-      }
-    }
-    return $signature;
+		$this->signature_data_ltv['ocspURI'] = $ocspURI;
+		$this->signature_data_ltv['crlURIorFILE'] = $crlURIorFILE;
+		$this->signature_data_ltv['issuerURIorFILE'] = $issuerURIorFILE;
 	}
 
 	/**
