@@ -16440,7 +16440,7 @@ class TCPDF {
 			)
 		);
 
-		if(empty($html)) {
+		if(empty($html) && $html != '0') {
 			return $dom;
 		}
 		// array of CSS styles ( selector => properties).
