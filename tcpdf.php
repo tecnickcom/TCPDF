@@ -13936,8 +13936,8 @@ class TCPDF {
 	 * @since 3.0.000 (2008-03-27)
 	 */
 	protected function addExtGState($parms) {
-		if ($this->pdfa_mode || $this->pdfa_version >= 2) {
-			// transparencies are not allowed in PDF/A mode
+		if (($this->pdfa_mode && $this->pdfa_version < 2) || ($this->state != 2)) {
+			// transparency is not allowed in PDF/A-1 mode
 			return;
 		}
 		// check if this ExtGState already exist
