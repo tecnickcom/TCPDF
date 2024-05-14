@@ -1295,8 +1295,7 @@ class TCPDF {
 	 * @protected
 	 * @since 4.6.005 (2009-04-24)
 	 */
-	//protected $signature_max_length = 19000;
-	protected $signature_max_length = 27000;
+	protected $signature_max_length = 36864;
 
 	/**
 	 * Data for digital signature appearance.
@@ -7687,7 +7686,7 @@ class TCPDF {
       if(!$signature = $tcpdf_cms->pkcs7_sign($pdfdoc)) {
         $tcpdf_cms->log .= "error:PKCS7 Signing end FAILED!\n";
       }
-      $tcpdf_cms->log .= "info:PKCS7 Signing end Success.\n";
+      $tcpdf_cms->log .= "info:PDF Sign Finish size \"".strlen($signature)."\" Kb\n";
 
 			$signature = str_pad($signature, $this->signature_max_length, '0');
 			// Add signature to the document
