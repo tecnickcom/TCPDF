@@ -76,10 +76,10 @@ NOTES:
 */
 
 // set certificate file
-$certificate = file_get_contents("data/cert/PDF User.pem");
-$issuer = "data/cert/Root CA Test.crt";
-$extracerts = file_get_contents($issuer);
-$crl = "data/cert/RootCATest.der.crl";
+$certificate = file_get_contents("data/cert/longChain.pem");
+//$issuer = "data/cert/Root CA Test.crt";
+$extracerts = false;
+//$crl = "data/cert/RootCATest.der.crl";
 
 // set additional information
 $info = array(
