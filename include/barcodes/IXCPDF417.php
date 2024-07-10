@@ -949,8 +949,8 @@ class IXCPDF417
                         // tmp array for the 6 bytes block
                         $cw6 = [];
                         do {
-                            $d = bcmod($t, '900');
-                            $t = bcdiv($t, '900');
+                            $d = bcmod($t, '900', 0);
+                            $t = bcdiv($t, '900', 0);
                             // prepend the value to the beginning of the array
                             array_unshift($cw6, $d);
                         } while ($t != '0');
@@ -975,8 +975,8 @@ class IXCPDF417
                     }
                     $t = '1'.$code;
                     do {
-                        $d = bcmod($t, '900');
-                        $t = bcdiv($t, '900');
+                        $d = bcmod($t, '900', 0);
+                        $t = bcdiv($t, '900', 0);
                         array_unshift($cw, $d);
                     } while ($t != '0');
                     $code = $rest;

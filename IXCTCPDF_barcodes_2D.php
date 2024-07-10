@@ -54,7 +54,7 @@ class IXCTCPDF2DBarcode
      * Array representation of barcode.
      * @protected
      */
-    protected $barcode_array = false;
+    protected $barcode_array = [];
 
     /**
      * This is the class constructor.
@@ -346,7 +346,7 @@ class IXCTCPDF2DBarcode
                 break;
             }
             default: {
-                $this->barcode_array = false;
+                $this->barcode_array = [];
             }
         }
     }

@@ -1327,43 +1327,43 @@ class IXCTCPDF_FONTS
                     // set the checkSumAdjustment to 0
                     $table[$tag]['data'] = substr($table[$tag]['data'], 0, 8)."\x0\x0\x0\x0".substr($table[$tag]['data'], 12);
                 }
-                $pad = 4 - ($table[$tag]['length'] % 4);
-                if ($pad != 4) {
-                    // the length of a table must be a multiple of four bytes
-                    $table[$tag]['length'] += $pad;
-                    $table[$tag]['data'] .= str_repeat("\x0", $pad);
-                }
                 $table[$tag]['offset'] = $offset;
                 $offset += $table[$tag]['length'];
+                $numPad = ($offset + 3 & ~3) - $offset;
+                if ($numPad > 0) {
+                    $table[$tag]['data'] .= str_repeat("\x0", $numPad);
+                    $offset += $numPad;
+                }
                 // check sum is not changed (so keep the following line commented)
-                //$table[$tag]['checkSum'] = self::_getTTFtableChecksum($table[$tag]['data'], $table[$tag]['length']);
+                //$table[$tag]['checkSum'] = self::_getTTFtableChecksum($table[$tag]['data'], $table[$tag]['length'] + $numPad);
             } else {
                 unset($table[$tag]);
             }
         }
         // add loca
+        $table['loca'] = [];
         $table['loca']['data'] = $loca;
         $table['loca']['length'] = strlen($loca);
-        $pad = 4 - ($table['loca']['length'] % 4);
-        if ($pad != 4) {
-            // the length of a table must be a multiple of four bytes
-            $table['loca']['length'] += $pad;
-            $table['loca']['data'] .= str_repeat("\x0", $pad);
-        }
         $table['loca']['offset'] = $offset;
-        $table['loca']['checkSum'] = self::_getTTFtableChecksum($table['loca']['data'], $table['loca']['length']);
         $offset += $table['loca']['length'];
+        $numPad = ($offset + 3 & ~3) - $offset;
+        if ($numPad > 0) {
+            $table['loca']['data'] .= str_repeat("\x0", $numPad);
+            $offset += $numPad;
+        }
+        $table['loca']['checkSum'] = self::_getTTFtableChecksum($table['loca']['data'], $table['loca']['length'] + $numPad);
         // add glyf
+        $table['glyf'] = [];
         $table['glyf']['data'] = $glyf;
         $table['glyf']['length'] = strlen($glyf);
-        $pad = 4 - ($table['glyf']['length'] % 4);
-        if ($pad != 4) {
-            // the length of a table must be a multiple of four bytes
-            $table['glyf']['length'] += $pad;
-            $table['glyf']['data'] .= str_repeat("\x0", $pad);
-        }
         $table['glyf']['offset'] = $offset;
-        $table['glyf']['checkSum'] = self::_getTTFtableChecksum($table['glyf']['data'], $table['glyf']['length']);
+        $offset += $table['glyf']['length'];
+        $numPad = ($offset + 3 & ~3) - $offset;
+        if ($numPad > 0) {
+            $table['glyf']['data'] .= str_repeat("\x0", $numPad);
+            $offset += $numPad;
+        }
+        $table['glyf']['checkSum'] = self::_getTTFtableChecksum($table['glyf']['data'], $table['glyf']['length'] + $numPad);
         // rebuild font
         $font = '';
         $font .= pack('N', 0x10000); // sfnt version
@@ -1387,7 +1387,7 @@ class IXCTCPDF_FONTS
         }
         // set checkSumAdjustment on head table
         $checkSumAdjustment = 0xB1B0AFBA - self::_getTTFtableChecksum($font, strlen($font));
-        $font = substr($font, 0, $table['head']['offset'] + 8).pack('N', $checkSumAdjustment).substr($font, $table['head']['offset'] + 12);
+        $font = substr($font, 0, $table['head']['offset'] + $offset + 8).pack('N', $checkSumAdjustment).substr($font, $table['head']['offset'] + $offset + 12);
         return $font;
     }
 
@@ -1794,9 +1794,9 @@ class IXCTCPDF_FONTS
     public static function UTF8ArrayToUniArray($ta, $isunicode = true)
     {
         if ($isunicode) {
-            return array_map(['IXCTCPDF_FONTS', 'unichrUnicode'], $ta);
+            return array_map(get_called_class().'::unichrUnicode', $ta);
         }
-        return array_map(['IXCTCPDF_FONTS', 'unichrASCII'], $ta);
+        return array_map(get_called_class().'::unichrASCII', $ta);
     }
 
     /**
@@ -2019,10 +2019,11 @@ class IXCTCPDF_FONTS
      */
     public static function UTF8StringToArray($str, $isunicode, &$currentfont)
     {
+        $str = is_null($str) ? '' : $str;
         if ($isunicode) {
             // requires PCRE unicode support turned on
             $chars = IXCTCPDF_STATIC::pregSplit('//', 'u', $str, -1, PREG_SPLIT_NO_EMPTY);
-            $carr = array_map(['IXCTCPDF_FONTS', 'uniord'], $chars);
+            $carr = array_map(get_called_class().'::uniord', $chars);
         } else {
             $chars = str_split($str);
             $carr = array_map('ord', $chars);

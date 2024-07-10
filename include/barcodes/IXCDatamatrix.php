@@ -789,7 +789,7 @@ class IXCDatamatrix
                             if (isset($this->chset['SH1'][$chr])) {
                                 $temp_cw[] = 0; // shift 1
                                 $shiftset = $this->chset['SH1'];
-                            } elseif (isset($chr, $this->chset['SH2'][$chr])) {
+                            } elseif (isset($this->chset['SH2'][$chr])) {
                                 $temp_cw[] = 1; // shift 2
                                 $shiftset = $this->chset['SH2'];
                             } elseif (($enc == ENC_C40) and isset($this->chset['S3C'][$chr])) {
