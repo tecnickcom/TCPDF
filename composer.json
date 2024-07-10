@@ -11,7 +11,7 @@
     "ixc"
   ],
   "homepage": "https://www.ixcsoft.com.br",
-  "license": "LGPL-3.0-only",
+  "license": "LGPL-3.0-or-later",
   "authors": [
     {
       "name": "Nicola Asuni",
@@ -25,7 +25,7 @@
     }
   ],
   "require": {
-    "php": ">=7.0"
+    "php": ">=7.3"
   },
   "autoload": {
     "classmap": [

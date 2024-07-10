@@ -54,7 +54,7 @@ class IXCTCPDFBarcode
      * Array representation of barcode.
      * @protected
      */
-    protected $barcode_array;
+    protected $barcode_array = [];
 
     /**
      * This is the class constructor.
@@ -351,7 +351,7 @@ class IXCTCPDFBarcode
                 $arrcode = $this->barcode_pharmacode2t($code);
                 break;
             default:
-                $this->barcode_array = false;
+                $this->barcode_array = [];
                 $arrcode = false;
                 break;
         }
@@ -813,7 +813,7 @@ class IXCTCPDFBarcode
         $chr['5'] = '11101011101010';
         $chr['6'] = '10111011101010';
         $chr['7'] = '10101011101110';
-        $chr['8'] = '10101110111010';
+        $chr['8'] = '11101010111010';
         $chr['9'] = '10111010111010';
         if ($checksum) {
             // add checksum
@@ -823,7 +823,7 @@ class IXCTCPDFBarcode
             // add leading zero if code-length is odd
             $code = '0'.$code;
         }
-        $seq = '11011010';
+        $seq = '1110111010';
         $clen = strlen($code);
         for ($i = 0; $i < $clen; ++$i) {
             $digit = $code[$i];
@@ -833,7 +833,7 @@ class IXCTCPDFBarcode
             }
             $seq .= $chr[$digit];
         }
-        $seq .= '1101011';
+        $seq .= '111010111';
         $bararray = ['code' => $code, 'maxw' => 0, 'maxh' => 1, 'bcode' => []];
         return $this->binseq_to_array($seq, $bararray);
     }
@@ -1231,7 +1231,7 @@ class IXCTCPDFBarcode
                         }
                     }
                 }
-            }
+        }
         // calculate check character
         $sum = $startid;
         foreach ($code_data as $key => $val) {

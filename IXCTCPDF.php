@@ -785,6 +785,13 @@ class IXCTCPDF
      */
     protected $file_id;
 
+    /**
+     * Internal secret used to encrypt data.
+     * @protected
+     * @since 6.7.5 (2024-03-21)
+     */
+    protected $hash_key;
+
     // --- bookmark ---
 
     /**
@@ -1827,6 +1834,7 @@ class IXCTCPDF
         // set file ID for trailer
         $serformat = (is_array($format) ? json_encode($format) : $format);
         $this->file_id = md5(IXCTCPDF_STATIC::getRandomSeed('TCPDF' . $orientation . $unit . $serformat . $encoding));
+        $this->hash_key = hash_hmac('sha256', IXCTCPDF_STATIC::getRandomSeed($this->file_id), IXCTCPDF_STATIC::getRandomSeed('TCPDF'), false);
         $this->font_obj_ids = [];
         $this->page_obj_id = [];
         $this->form_obj_id = [];
@@ -1899,7 +1907,7 @@ class IXCTCPDF
         $this->setPageFormat($format, $orientation);
         // page margins (1 cm)
         $margin = 28.35 / $this->k;
-        $this->SetMargins($margin, $margin);
+        $this->setMargins($margin, $margin);
         $this->clMargin = $this->lMargin;
         $this->crMargin = $this->rMargin;
         // internal cell padding
@@ -1914,11 +1922,11 @@ class IXCTCPDF
         $this->linestyleJoin = '0 j';
         $this->linestyleDash = '[] 0 d';
         // automatic page break
-        $this->SetAutoPageBreak(true, (2 * $margin));
+        $this->setAutoPageBreak(true, (2 * $margin));
         // full width display mode
-        $this->SetDisplayMode('fullwidth');
+        $this->setDisplayMode('fullwidth');
         // compression
-        $this->SetCompression();
+        $this->setCompression();
         // set default PDF version number
         $this->setPDFVersion();
         $this->tcpdflink = true;
@@ -1949,7 +1957,7 @@ class IXCTCPDF
         // initialize some settings
         IXCTCPDF_FONTS::utf8Bidi([], '', false, $this->isunicode, $this->CurrentFont);
         // set default font
-        $this->SetFont($this->FontFamily, $this->FontStyle, $this->FontSizePt);
+        $this->setFont($this->FontFamily, $this->FontStyle, $this->FontSizePt);
         $this->setHeaderFont([$this->FontFamily, $this->FontStyle, $this->FontSizePt]);
         $this->setFooterFont([$this->FontFamily, $this->FontStyle, $this->FontSizePt]);
         // check if PCRE Unicode support is enabled
@@ -1974,9 +1982,6 @@ class IXCTCPDF
         $this->header_xobj_autoreset = false;
         $this->custom_xmp = '';
         $this->custom_xmp_rdf = '';
-        // Call cleanup method after script execution finishes or exit() is called.
-        // NOTE: This will not be executed if the process is killed with a SIGTERM or SIGKILL signal.
-        register_shutdown_function([$this, '_destroy'], true);
     }
 
     /**
@@ -2209,7 +2214,7 @@ class IXCTCPDF
      * @public
      * @since 3.0.015 (2008-06-06)
      */
-    public function setPageOrientation($orientation, $autopagebreak = '', $bottommargin = '')
+    public function setPageOrientation($orientation, $autopagebreak = null, $bottommargin = null)
     {
         if (! isset($this->pagedim[$this->page]['MediaBox'])) {
             // the boundaries of the physical medium on which the page shall be displayed or printed
@@ -2282,7 +2287,7 @@ class IXCTCPDF
                 $bottommargin = 2 * 28.35 / $this->k;
             }
         }
-        $this->SetAutoPageBreak($autopagebreak, $bottommargin);
+        $this->setAutoPageBreak($autopagebreak, $bottommargin);
         // store page dimensions
         $this->pagedim[$this->page]['w'] = $this->wPt;
         $this->pagedim[$this->page]['h'] = $this->hPt;
@@ -2432,7 +2437,7 @@ class IXCTCPDF
     public function getCellHeight($fontsize, $padding = true)
     {
         $height = ($fontsize * $this->cell_height_ratio);
-        if ($padding) {
+        if ($padding && ! empty($this->cell_padding)) {
             $height += ($this->cell_padding['T'] + $this->cell_padding['B']);
         }
         return round($height, 6);
@@ -2509,7 +2514,7 @@ class IXCTCPDF
      * @since 1.5.2
      * @see getPageDimensions()
      */
-    public function getPageWidth($pagenum = '')
+    public function getPageWidth($pagenum = null)
     {
         if (empty($pagenum)) {
             return $this->w;
@@ -2526,7 +2531,7 @@ class IXCTCPDF
      * @since 1.5.2
      * @see getPageDimensions()
      */
-    public function getPageHeight($pagenum = '')
+    public function getPageHeight($pagenum = null)
     {
         if (empty($pagenum)) {
             return $this->h;
@@ -2573,12 +2578,12 @@ class IXCTCPDF
      * @since 1.0
      * @see SetLeftMargin(), SetTopMargin(), SetRightMargin(), SetAutoPageBreak()
      */
-    public function SetMargins($left, $top, $right = -1, $keepmargins = false)
+    public function setMargins($left, $top, $right = null, $keepmargins = false)
     {
         //Set left, top and right margins
         $this->lMargin = $left;
         $this->tMargin = $top;
-        if ($right == -1) {
+        if ($right == -1 or $right === null) {
             $right = $left;
         }
         $this->rMargin = $right;
@@ -2596,7 +2601,7 @@ class IXCTCPDF
      * @since 1.4
      * @see SetTopMargin(), SetRightMargin(), SetAutoPageBreak(), SetMargins()
      */
-    public function SetLeftMargin($margin)
+    public function setLeftMargin($margin)
     {
         //Set left margin
         $this->lMargin = $margin;
@@ -2610,9 +2615,9 @@ class IXCTCPDF
      * @param float $margin The margin.
      * @public
      * @since 1.5
-     * @see SetLeftMargin(), SetRightMargin(), SetAutoPageBreak(), SetMargins()
+     * @see setLeftMargin(), SetRightMargin(), SetAutoPageBreak(), SetMargins()
      */
-    public function SetTopMargin($margin)
+    public function setTopMargin($margin)
     {
         //Set top margin
         $this->tMargin = $margin;
@@ -2626,9 +2631,9 @@ class IXCTCPDF
      * @param float $margin The margin.
      * @public
      * @since 1.5
-     * @see SetLeftMargin(), SetTopMargin(), SetAutoPageBreak(), SetMargins()
+     * @see setLeftMargin(), setTopMargin(), SetAutoPageBreak(), SetMargins()
      */
-    public function SetRightMargin($margin)
+    public function setRightMargin($margin)
     {
         $this->rMargin = $margin;
         if (($this->page > 0) and ($this->x > ($this->w - $margin))) {
@@ -2643,7 +2648,7 @@ class IXCTCPDF
      * @since 2.1.000 (2008-01-09)
      * @see getCellPaddings(), setCellPaddings()
      */
-    public function SetCellPadding($pad)
+    public function setCellPadding($pad)
     {
         if ($pad >= 0) {
             $this->cell_padding['L'] = $pad;
@@ -2663,18 +2668,18 @@ class IXCTCPDF
      * @since 5.9.000 (2010-10-03)
      * @see getCellPaddings(), SetCellPadding()
      */
-    public function setCellPaddings($left = '', $top = '', $right = '', $bottom = '')
+    public function setCellPaddings($left = null, $top = null, $right = null, $bottom = null)
     {
-        if (($left !== '') and ($left >= 0)) {
+        if (! IXCTCPDF_STATIC::empty_string($left) and ($left >= 0)) {
             $this->cell_padding['L'] = $left;
         }
-        if (($top !== '') and ($top >= 0)) {
+        if (! IXCTCPDF_STATIC::empty_string($top) and ($top >= 0)) {
             $this->cell_padding['T'] = $top;
         }
-        if (($right !== '') and ($right >= 0)) {
+        if (! IXCTCPDF_STATIC::empty_string($right) and ($right >= 0)) {
             $this->cell_padding['R'] = $right;
         }
-        if (($bottom !== '') and ($bottom >= 0)) {
+        if (! IXCTCPDF_STATIC::empty_string($bottom) and ($bottom >= 0)) {
             $this->cell_padding['B'] = $bottom;
         }
     }
@@ -2701,18 +2706,18 @@ class IXCTCPDF
      * @since 5.9.000 (2010-10-03)
      * @see getCellMargins()
      */
-    public function setCellMargins($left = '', $top = '', $right = '', $bottom = '')
+    public function setCellMargins($left = null, $top = null, $right = null, $bottom = null)
     {
-        if (($left !== '') and ($left >= 0)) {
+        if (! IXCTCPDF_STATIC::empty_string($left) and ($left >= 0)) {
             $this->cell_margin['L'] = $left;
         }
-        if (($top !== '') and ($top >= 0)) {
+        if (! IXCTCPDF_STATIC::empty_string($top) and ($top >= 0)) {
             $this->cell_margin['T'] = $top;
         }
-        if (($right !== '') and ($right >= 0)) {
+        if (! IXCTCPDF_STATIC::empty_string($right) and ($right >= 0)) {
             $this->cell_margin['R'] = $right;
         }
-        if (($bottom !== '') and ($bottom >= 0)) {
+        if (! IXCTCPDF_STATIC::empty_string($bottom) and ($bottom >= 0)) {
             $this->cell_margin['B'] = $bottom;
         }
     }
@@ -2836,7 +2841,7 @@ class IXCTCPDF
      * @since 1.0
      * @see Cell(), MultiCell(), AcceptPageBreak()
      */
-    public function SetAutoPageBreak($auto, $margin = 0)
+    public function setAutoPageBreak($auto, $margin = 0)
     {
         $this->AutoPageBreak = $auto ? true : false;
         $this->bMargin = $margin;
@@ -2862,7 +2867,7 @@ class IXCTCPDF
      * @public
      * @since 1.2
      */
-    public function SetDisplayMode($zoom, $layout = 'SinglePage', $mode = 'UseNone')
+    public function setDisplayMode($zoom, $layout = 'SinglePage', $mode = 'UseNone')
     {
         if (($zoom == 'fullpage') or ($zoom == 'fullwidth') or ($zoom == 'real') or ($zoom == 'default') or (! is_string($zoom))) {
             $this->ZoomMode = $zoom;
@@ -2880,7 +2885,7 @@ class IXCTCPDF
      * @public
      * @since 1.4
      */
-    public function SetCompression($compress = true)
+    public function setCompression($compress = true)
     {
         $this->compress = false;
         if (function_exists('gzcompress')) {
@@ -2910,7 +2915,7 @@ class IXCTCPDF
      * @since 5.9.027 (2010-12-01)
      * @public
      */
-    public function SetDocInfoUnicode($unicode = true)
+    public function setDocInfoUnicode($unicode = true)
     {
         $this->docinfounicode = $unicode ? true : false;
     }
@@ -2922,7 +2927,7 @@ class IXCTCPDF
      * @since 1.2
      * @see SetAuthor(), SetCreator(), SetKeywords(), SetSubject()
      */
-    public function SetTitle($title)
+    public function setTitle($title)
     {
         $this->title = $title;
     }
@@ -2934,7 +2939,7 @@ class IXCTCPDF
      * @since 1.2
      * @see SetAuthor(), SetCreator(), SetKeywords(), SetTitle()
      */
-    public function SetSubject($subject)
+    public function setSubject($subject)
     {
         $this->subject = $subject;
     }
@@ -2946,7 +2951,7 @@ class IXCTCPDF
      * @since 1.2
      * @see SetCreator(), SetKeywords(), SetSubject(), SetTitle()
      */
-    public function SetAuthor($author)
+    public function setAuthor($author)
     {
         $this->author = $author;
     }
@@ -2958,7 +2963,7 @@ class IXCTCPDF
      * @since 1.2
      * @see SetAuthor(), SetCreator(), SetSubject(), SetTitle()
      */
-    public function SetKeywords($keywords)
+    public function setKeywords($keywords)
     {
         $this->keywords = $keywords;
     }
@@ -2970,7 +2975,7 @@ class IXCTCPDF
      * @since 1.2
      * @see SetAuthor(), SetKeywords(), SetSubject(), SetTitle()
      */
-    public function SetCreator($creator)
+    public function setCreator($creator)
     {
         $this->creator = $creator;
     }
@@ -2982,7 +2987,7 @@ class IXCTCPDF
      * @public
      * @since 6.4
      */
-    public function SetAllowLocalFiles($allowLocalFiles)
+    public function setAllowLocalFiles($allowLocalFiles)
     {
         $this->allowLocalFiles = (bool)$allowLocalFiles;
     }
@@ -3040,13 +3045,13 @@ class IXCTCPDF
             $gvars = $this->getGraphicVars();
             $this->setEqualColumns();
             $this->lastpage(true);
-            $this->SetAutoPageBreak(false);
+            $this->setAutoPageBreak(false);
             $this->x = 0;
             $this->y = $this->h - (1 / $this->k);
             $this->lMargin = 0;
             $this->_outSaveGraphicsState();
             $font = defined('PDF_FONT_NAME_MAIN') ? PDF_FONT_NAME_MAIN : 'helvetica';
-            $this->SetFont($font, '', 1);
+            $this->setFont($font, '', 1);
             $this->setTextRenderingMode(0, false, false);
             $msg = "\x50\x6f\x77\x65\x72\x65\x64\x20\x62\x79\x20\x54\x43\x50\x44\x46\x20\x28\x77\x77\x77\x2e\x74\x63\x70\x64\x66\x2e\x6f\x72\x67\x29";
             $lnk = "\x68\x74\x74\x70\x3a\x2f\x2f\x77\x77\x77\x2e\x74\x63\x70\x64\x66\x2e\x6f\x72\x67";
@@ -3092,13 +3097,13 @@ class IXCTCPDF
             $this->original_rMargin = $this->pagedim[$this->page]['orm'];
             $this->AutoPageBreak = $this->pagedim[$this->page]['pb'];
             $this->CurOrientation = $this->pagedim[$this->page]['or'];
-            $this->SetAutoPageBreak($this->AutoPageBreak, $this->bMargin);
+            $this->setAutoPageBreak($this->AutoPageBreak, $this->bMargin);
             // restore graphic settings
             //$this->setGraphicVars($gvars);
             if ($resetmargins) {
                 $this->lMargin = $this->pagedim[$this->page]['olm'];
                 $this->rMargin = $this->pagedim[$this->page]['orm'];
-                $this->SetY($this->tMargin);
+                $this->setY($this->tMargin);
             } else {
                 // account for booklet mode
                 if ($this->pagedim[$this->page]['olm'] != $this->pagedim[$oldpage]['olm']) {
@@ -3269,7 +3274,7 @@ class IXCTCPDF
         if ($this->numpages > $this->page) {
             // this page has been already added
             $this->setPage($this->page + 1);
-            $this->SetY($this->tMargin);
+            $this->setY($this->tMargin);
             return;
         }
         // start a new page
@@ -3527,22 +3532,22 @@ class IXCTCPDF
                 $header_x = $this->original_lMargin + ($headerdata['logo_width'] * 1.1);
             }
             $cw = $this->w - $this->original_lMargin - $this->original_rMargin - ($headerdata['logo_width'] * 1.1);
-            $this->SetTextColorArray($this->header_text_color);
+            $this->setTextColorArray($this->header_text_color);
             // header title
-            $this->SetFont($headerfont[0], 'B', $headerfont[2] + 1);
-            $this->SetX($header_x);
+            $this->setFont($headerfont[0], 'B', $headerfont[2] + 1);
+            $this->setX($header_x);
             $this->Cell($cw, $cell_height, $headerdata['title'], 0, 1, '', 0, '', 0);
             // header string
-            $this->SetFont($headerfont[0], $headerfont[1], $headerfont[2]);
-            $this->SetX($header_x);
+            $this->setFont($headerfont[0], $headerfont[1], $headerfont[2]);
+            $this->setX($header_x);
             $this->MultiCell($cw, $cell_height, $headerdata['string'], 0, '', 0, 1, '', '', true, 0, false, true, 0, 'T', false);
             // print an ending header line
-            $this->SetLineStyle(['width' => 0.85 / $this->k, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => $headerdata['line_color']]);
-            $this->SetY((2.835 / $this->k) + max($imgy, $this->y));
+            $this->setLineStyle(['width' => 0.85 / $this->k, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => $headerdata['line_color']]);
+            $this->setY((2.835 / $this->k) + max($imgy, $this->y));
             if ($this->rtl) {
-                $this->SetX($this->original_rMargin);
+                $this->setX($this->original_rMargin);
             } else {
-                $this->SetX($this->original_lMargin);
+                $this->setX($this->original_lMargin);
             }
             $this->Cell(($this->w - $this->original_lMargin - $this->original_rMargin), 0, '', 'T', 0, 'C');
             $this->endTemplate();
@@ -3574,10 +3579,10 @@ class IXCTCPDF
     public function Footer()
     {
         $cur_y = $this->y;
-        $this->SetTextColorArray($this->footer_text_color);
+        $this->setTextColorArray($this->footer_text_color);
         //set style for cell border
         $line_width = (0.85 / $this->k);
-        $this->SetLineStyle(['width' => $line_width, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => $this->footer_line_color]);
+        $this->setLineStyle(['width' => $line_width, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => $this->footer_line_color]);
         //print document barcode
         $barcode = $this->getBarcode();
         if (! empty($barcode)) {
@@ -3603,13 +3608,13 @@ class IXCTCPDF
         } else {
             $pagenumtxt = $w_page . $this->getPageNumGroupAlias() . ' / ' . $this->getPageGroupAlias();
         }
-        $this->SetY($cur_y);
+        $this->setY($cur_y);
         //Print page number
         if ($this->getRTL()) {
-            $this->SetX($this->original_rMargin);
+            $this->setX($this->original_rMargin);
             $this->Cell(0, 0, $pagenumtxt, 'T', 0, 'L');
         } else {
-            $this->SetX($this->original_lMargin);
+            $this->setX($this->original_lMargin);
             $this->Cell(0, 0, $this->getAliasRightShift() . $pagenumtxt, 'T', 0, 'R');
         }
     }
@@ -3633,20 +3638,20 @@ class IXCTCPDF
         $this->_outSaveGraphicsState();
         $this->rMargin = $this->original_rMargin;
         $this->lMargin = $this->original_lMargin;
-        $this->SetCellPadding(0);
+        $this->setCellPadding(0);
         //set current position
         if ($this->rtl) {
-            $this->SetXY($this->original_rMargin, $this->header_margin);
+            $this->setXY($this->original_rMargin, $this->header_margin);
         } else {
-            $this->SetXY($this->original_lMargin, $this->header_margin);
+            $this->setXY($this->original_lMargin, $this->header_margin);
         }
-        $this->SetFont($this->header_font[0], $this->header_font[1], $this->header_font[2]);
+        $this->setFont($this->header_font[0], $this->header_font[1], $this->header_font[2]);
         $this->Header();
         //restore position
         if ($this->rtl) {
-            $this->SetXY($this->original_rMargin, $this->tMargin);
+            $this->setXY($this->original_rMargin, $this->tMargin);
         } else {
-            $this->SetXY($this->original_lMargin, $this->tMargin);
+            $this->setXY($this->original_lMargin, $this->tMargin);
         }
         $this->_outRestoreGraphicsState();
         $this->lasth = $lasth;
@@ -3682,21 +3687,21 @@ class IXCTCPDF
             $this->_outSaveGraphicsState();
             $this->rMargin = $this->original_rMargin;
             $this->lMargin = $this->original_lMargin;
-            $this->SetCellPadding(0);
+            $this->setCellPadding(0);
             //set current position
             $footer_y = $this->h - $this->footer_margin;
             if ($this->rtl) {
-                $this->SetXY($this->original_rMargin, $footer_y);
+                $this->setXY($this->original_rMargin, $footer_y);
             } else {
-                $this->SetXY($this->original_lMargin, $footer_y);
+                $this->setXY($this->original_lMargin, $footer_y);
             }
-            $this->SetFont($this->footer_font[0], $this->footer_font[1], $this->footer_font[2]);
+            $this->setFont($this->footer_font[0], $this->footer_font[1], $this->footer_font[2]);
             $this->Footer();
             //restore position
             if ($this->rtl) {
-                $this->SetXY($this->original_rMargin, $this->tMargin);
+                $this->setXY($this->original_rMargin, $this->tMargin);
             } else {
-                $this->SetXY($this->original_lMargin, $this->tMargin);
+                $this->setXY($this->original_lMargin, $this->tMargin);
             }
             $this->_outRestoreGraphicsState();
             $this->lasth = $lasth;
@@ -3892,7 +3897,7 @@ class IXCTCPDF
      * @since 4.0.024 (2008-09-12)
      * @see AddSpotColor(), SetFillSpotColor(), SetTextSpotColor()
      */
-    public function SetDrawSpotColor($name, $tint = 100)
+    public function setDrawSpotColor($name, $tint = 100)
     {
         $this->setSpotColor('draw', $name, $tint);
     }
@@ -3905,7 +3910,7 @@ class IXCTCPDF
      * @since 4.0.024 (2008-09-12)
      * @see AddSpotColor(), SetDrawSpotColor(), SetTextSpotColor()
      */
-    public function SetFillSpotColor($name, $tint = 100)
+    public function setFillSpotColor($name, $tint = 100)
     {
         $this->setSpotColor('fill', $name, $tint);
     }
@@ -3918,7 +3923,7 @@ class IXCTCPDF
      * @since 4.0.024 (2008-09-12)
      * @see AddSpotColor(), SetDrawSpotColor(), SetFillSpotColor()
      */
-    public function SetTextSpotColor($name, $tint = 100)
+    public function setTextSpotColor($name, $tint = 100)
     {
         $this->setSpotColor('text', $name, $tint);
     }
@@ -3981,7 +3986,7 @@ class IXCTCPDF
      * @since 3.1.000 (2008-6-11)
      * @see SetFillColor()
      */
-    public function SetFillColorArray($color, $ret = false)
+    public function setFillColorArray($color, $ret = false)
     {
         return $this->setColorArray('fill', $color, $ret);
     }
@@ -3995,7 +4000,7 @@ class IXCTCPDF
      * @since 3.1.000 (2008-6-11)
      * @see SetFillColor()
      */
-    public function SetTextColorArray($color, $ret = false)
+    public function setTextColorArray($color, $ret = false)
     {
         return $this->setColorArray('text', $color, $ret);
     }
@@ -4107,7 +4112,7 @@ class IXCTCPDF
      * @since 1.3
      * @see SetDrawColorArray(), SetFillColor(), SetTextColor(), Line(), Rect(), Cell(), MultiCell()
      */
-    public function SetDrawColor($col1 = 0, $col2 = -1, $col3 = -1, $col4 = -1, $ret = false, $name = '')
+    public function setDrawColor($col1 = 0, $col2 = -1, $col3 = -1, $col4 = -1, $ret = false, $name = '')
     {
         return $this->setColor('draw', $col1, $col2, $col3, $col4, $ret, $name);
     }
@@ -4125,7 +4130,7 @@ class IXCTCPDF
      * @since 1.3
      * @see SetFillColorArray(), SetDrawColor(), SetTextColor(), Rect(), Cell(), MultiCell()
      */
-    public function SetFillColor($col1 = 0, $col2 = -1, $col3 = -1, $col4 = -1, $ret = false, $name = '')
+    public function setFillColor($col1 = 0, $col2 = -1, $col3 = -1, $col4 = -1, $ret = false, $name = '')
     {
         return $this->setColor('fill', $col1, $col2, $col3, $col4, $ret, $name);
     }
@@ -4143,7 +4148,7 @@ class IXCTCPDF
      * @since 1.3
      * @see SetTextColorArray(), SetDrawColor(), SetFillColor(), Text(), Cell(), MultiCell()
      */
-    public function SetTextColor($col1 = 0, $col2 = -1, $col3 = -1, $col4 = -1, $ret = false, $name = '')
+    public function setTextColor($col1 = 0, $col2 = -1, $col3 = -1, $col4 = -1, $ret = false, $name = '')
     {
         return $this->setColor('text', $col1, $col2, $col3, $col4, $ret, $name);
     }
@@ -4184,7 +4189,7 @@ class IXCTCPDF
             $prev_FontFamily = $this->FontFamily;
             $prev_FontStyle = $this->FontStyle;
             $prev_FontSizePt = $this->FontSizePt;
-            $this->SetFont($fontname, $fontstyle, $fontsize, '', 'default', false);
+            $this->setFont($fontname, $fontstyle, $fontsize, '', 'default', false);
         }
         // convert UTF-8 array to Latin1 if required
         if ($this->isunicode and (! $this->isUnicodeFont())) {
@@ -4200,7 +4205,7 @@ class IXCTCPDF
         }
         // restore previous values
         if (! IXCTCPDF_STATIC::empty_string($fontname)) {
-            $this->SetFont($prev_FontFamily, $prev_FontStyle, $prev_FontSizePt, '', 'default', false);
+            $this->setFont($prev_FontFamily, $prev_FontStyle, $prev_FontSizePt, '', 'default', false);
         }
         if ($getarray) {
             return $wa;
@@ -4341,7 +4346,7 @@ class IXCTCPDF
             // all fonts must be embedded
             $family = 'pdfa' . $family;
         }
-        $tempstyle = strtoupper($style);
+        $tempstyle = strtoupper($style === null ? '' : $style);
         $style = '';
         // underline
         if (strpos($tempstyle, 'U') !== false) {
@@ -4408,6 +4413,22 @@ class IXCTCPDF
         }
         // include font file
         if (! IXCTCPDF_STATIC::empty_string($fontfile) and (@IXCTCPDF_STATIC::file_exists($fontfile))) {
+            $type = null;
+            $name = null;
+            $desc = null;
+            $up = -null;
+            $ut = null;
+            $cw = null;
+            $cbbox = null;
+            $dw = null;
+            $enc = null;
+            $cidinfo = null;
+            $file = null;
+            $ctg = null;
+            $diff = null;
+            $originalsize = null;
+            $size1 = null;
+            $size2 = null;
             include($fontfile);
         } else {
             $this->Error('Could not include font definition file: ' . $family . '');
@@ -4468,7 +4489,7 @@ class IXCTCPDF
             $this->Error('Unknow font type: ' . $type . '');
         }
         // set name if unset
-        if (! isset($name) or empty($name)) {
+        if (empty($name)) {
             $name = $fontkey;
         }
         // create artificial font style variations if missing (only works with non-embedded fonts)
@@ -4511,7 +4532,7 @@ class IXCTCPDF
             // we are inside an XObject template
             $this->xobjects[$this->xobjid]['fonts'][$fontkey] = $this->numfonts;
         }
-        if (isset($diff) and (! empty($diff))) {
+        if (! empty($diff)) {
             //Search existing encodings
             $d = 0;
             $nb = count($this->diffs);
@@ -4562,7 +4583,7 @@ class IXCTCPDF
      * @since 1.0
      * @see AddFont(), SetFontSize()
      */
-    public function SetFont($family, $style = '', $size = null, $fontfile = '', $subset = 'default', $out = true)
+    public function setFont($family, $style = '', $size = null, $fontfile = '', $subset = 'default', $out = true)
     {
         //Select a font; size given in points
         if ($size === null) {
@@ -4580,7 +4601,7 @@ class IXCTCPDF
             $this->setFontSubBuffer($this->CurrentFont['fontkey'], 'subsetchars', $this->CurrentFont['subsetchars']);
         }
         $this->CurrentFont = $this->getFontBuffer($fontdata['fontkey']);
-        $this->SetFontSize($size, $out);
+        $this->setFontSize($size, $out);
     }
 
     /**
@@ -4591,7 +4612,7 @@ class IXCTCPDF
      * @since 1.0
      * @see SetFont()
      */
-    public function SetFontSize($size, $out = true)
+    public function setFontSize($size, $out = true)
     {
         $size = (float)$size;
         // font size in points
@@ -4817,7 +4838,7 @@ class IXCTCPDF
      * @public
      * @since 4.5.025
      */
-    public function SetDefaultMonospacedFont($font)
+    public function setDefaultMonospacedFont($font)
     {
         $this->default_monospaced_font = $font;
     }
@@ -4846,7 +4867,7 @@ class IXCTCPDF
      * @since 1.5
      * @see AddLink()
      */
-    public function SetLink($link, $y = 0, $page = -1)
+    public function setLink($link, $y = 0, $page = -1)
     {
         $fixed = false;
         if (! empty($page) and (substr($page, 0, 1) == '*')) {
@@ -5052,12 +5073,12 @@ class IXCTCPDF
      * @since 1.0
      * @see Cell(), Write(), MultiCell(), WriteHTML(), WriteHTMLCell()
      */
-    public function Text($x, $y, $txt, $fstroke = false, $fclip = false, $ffill = true, $border = 0, $ln = 0, $align = '', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M', $rtloff = false)
+    public function Text($x, $y, $txt, $fstroke = 0, $fclip = false, $ffill = true, $border = 0, $ln = 0, $align = '', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M', $rtloff = false)
     {
         $textrendermode = $this->textrendermode;
         $textstrokewidth = $this->textstrokewidth;
         $this->setTextRenderingMode($fstroke, $ffill, $fclip);
-        $this->SetXY($x, $y, $rtloff);
+        $this->setXY($x, $y, $rtloff);
         $this->Cell(0, 0, $txt, $border, $ln, $align, $fill, $link, $stretch, $ignore_min_height, $calign, $valign);
         // restore previous rendering mode
         $this->textrendermode = $textrendermode;
@@ -5101,7 +5122,7 @@ class IXCTCPDF
      * @since 3.2.000 (2008-07-01)
      * @protected
      */
-    protected function checkPageBreak($h = 0, $y = '', $addpage = true)
+    protected function checkPageBreak($h = 0, $y = null, $addpage = true)
     {
         if (IXCTCPDF_STATIC::empty_string($y)) {
             $y = $this->y;
@@ -5180,9 +5201,9 @@ class IXCTCPDF
             // print shadow
             $this->x += $this->txtshadow['depth_w'];
             $this->y += $this->txtshadow['depth_h'];
-            $this->SetFillColorArray($this->txtshadow['color']);
-            $this->SetTextColorArray($this->txtshadow['color']);
-            $this->SetDrawColorArray($this->txtshadow['color']);
+            $this->setFillColorArray($this->txtshadow['color']);
+            $this->setTextColorArray($this->txtshadow['color']);
+            $this->setDrawColorArray($this->txtshadow['color']);
             if ($this->txtshadow['opacity'] != $alpha['CA']) {
                 $this->setAlpha($this->txtshadow['opacity'], $this->txtshadow['blend_mode']);
             }
@@ -5192,9 +5213,9 @@ class IXCTCPDF
             //restore data
             $this->x = $x;
             $this->y = $y;
-            $this->SetFillColorArray($bc);
-            $this->SetTextColorArray($fc);
-            $this->SetDrawColorArray($sc);
+            $this->setFillColorArray($bc);
+            $this->setTextColorArray($fc);
+            $this->setDrawColorArray($sc);
             if ($this->txtshadow['opacity'] != $alpha['CA']) {
                 $this->setAlpha($alpha['CA'], $alpha['BM'], $alpha['ca'], $alpha['AIS']);
             }
@@ -5229,6 +5250,7 @@ class IXCTCPDF
     protected function getCellCode($w, $h = 0, $txt = '', $border = 0, $ln = 0, $align = '', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M')
     {
         // replace 'NO-BREAK SPACE' (U+00A0) character with a simple space
+        $txt = is_null($txt) ? '' : $txt;
         $txt = str_replace(IXCTCPDF_FONTS::unichr(160, $this->isunicode), ' ', $txt);
         $prev_cell_margin = $this->cell_margin;
         $prev_cell_padding = $this->cell_padding;
@@ -5784,7 +5806,7 @@ class IXCTCPDF
             if (is_array($style) and ! empty($style)) {
                 // apply border style
                 $prev_style = $this->linestyleWidth . ' ' . $this->linestyleCap . ' ' . $this->linestyleJoin . ' ' . $this->linestyleDash . ' ' . $this->DrawColor . ' ';
-                $s .= $this->SetLineStyle($style, true) . "\n";
+                $s .= $this->setLineStyle($style, true)."\n";
             }
             switch ($mode) {
                 case 'ext':
@@ -5948,7 +5970,7 @@ class IXCTCPDF
      * @since 1.3
      * @see SetFont(), SetDrawColor(), SetFillColor(), SetTextColor(), SetLineWidth(), Cell(), Write(), SetAutoPageBreak()
      */
-    public function MultiCell($w, $h, $txt, $border = 0, $align = 'J', $fill = false, $ln = 1, $x = '', $y = '', $reseth = true, $stretch = 0, $ishtml = false, $autopadding = true, $maxh = 0, $valign = 'T', $fitcell = false)
+    public function MultiCell($w, $h, $txt, $border = 0, $align = 'J', $fill = false, $ln = 1, $x = null, $y = null, $reseth = true, $stretch = 0, $ishtml = false, $autopadding = true, $maxh = 0, $valign = 'T', $fitcell = false)
     {
         $prev_cell_margin = $this->cell_margin;
         $prev_cell_padding = $this->cell_padding;
@@ -5964,7 +5986,7 @@ class IXCTCPDF
             $this->resetLastH();
         }
         if (! IXCTCPDF_STATIC::empty_string($y)) {
-            $this->SetY($y); // set y in order to convert negative y values to positive ones
+            $this->setY($y); // set y in order to convert negative y values to positive ones
         }
         $y = $this->GetY();
         $resth = 0;
@@ -5979,7 +6001,7 @@ class IXCTCPDF
         // get current column
         $startcolumn = $this->current_column;
         if (! IXCTCPDF_STATIC::empty_string($x)) {
-            $this->SetX($x);
+            $this->setX($x);
         } else {
             $x = $this->GetX();
         }
@@ -6040,7 +6062,7 @@ class IXCTCPDF
                     $maxit = (2 * min(100, max(10, intval($fmax)))); // max number of iterations
                     while ($maxit >= 0) {
                         $fmid = (($fmax + $fmin) / 2);
-                        $this->SetFontSize($fmid, false);
+                        $this->setFontSize($fmid, false);
                         $this->resetLastH();
                         $text_height = $this->getStringHeight($w, $txt, $reseth, $autopadding, $mc_padding, $border);
                         $diff = ($maxh - $text_height);
@@ -6056,11 +6078,11 @@ class IXCTCPDF
                     }
                     if ($maxit < 0) {
                         // premature exit, we get the minimum font value to fit the cell
-                        $this->SetFontSize($fmin);
+                        $this->setFontSize($fmin);
                         $this->resetLastH();
                         $text_height = $this->getStringHeight($w, $txt, $reseth, $autopadding, $mc_padding, $border);
                     } else {
-                        $this->SetFontSize($fmid);
+                        $this->setFontSize($fmid);
                         $this->resetLastH();
                     }
                 }
@@ -6077,7 +6099,7 @@ class IXCTCPDF
             $nl = $this->Write($this->lasth, $txt, '', 0, $align, true, $stretch, false, true, $maxh, 0, $mc_margin);
             if ($fitcell) {
                 // restore font size
-                $this->SetFontSize($prev_FontSizePt);
+                $this->setFontSize($prev_FontSizePt);
             }
         }
         if ($autopadding) {
@@ -6124,7 +6146,7 @@ class IXCTCPDF
             $this->setPage($page);
             if ($this->num_columns < 2) {
                 // single-column mode
-                $this->SetX($x);
+                $this->setX($x);
                 $this->y = $this->tMargin;
             }
             // account for margin changes
@@ -6286,15 +6308,15 @@ class IXCTCPDF
         }
         if ($ln > 0) {
             //Go to the beginning of the next line
-            $this->SetY($currentY + $mc_margin['B']);
+            $this->setY($currentY + $mc_margin['B']);
             if ($ln == 2) {
-                $this->SetX($x + $w + $mc_margin['L'] + $mc_margin['R']);
+                $this->setX($x + $w + $mc_margin['L'] + $mc_margin['R']);
             }
         } else {
             // go left or right by case
             $this->setPage($startpage);
             $this->y = $y;
-            $this->SetX($x + $w + $mc_margin['L'] + $mc_margin['R']);
+            $this->setX($x + $w + $mc_margin['L'] + $mc_margin['R']);
         }
         $this->setContentMark();
         $this->cell_padding = $prev_cell_padding;
@@ -6317,7 +6339,7 @@ class IXCTCPDF
      * @public
      * @since 4.5.011
      */
-    public function getNumLines($txt, $w = 0, $reseth = false, $autopadding = true, $cellpadding = '', $border = 0)
+    public function getNumLines($txt, $w = 0, $reseth = false, $autopadding = true, $cellpadding = null, $border = 0)
     {
         if ($txt === null) {
             return 0;
@@ -6437,7 +6459,7 @@ class IXCTCPDF
      * @author Nicola Asuni, Alexander Escalona Fern\E1ndez
      * @public
      */
-    public function getStringHeight($w, $txt, $reseth = false, $autopadding = true, $cellpadding = '', $border = 0)
+    public function getStringHeight($w, $txt, $reseth = false, $autopadding = true, $cellpadding = null, $border = 0)
     {
         // adjust internal padding
         $prev_cell_padding = $this->cell_padding;
@@ -6471,7 +6493,7 @@ class IXCTCPDF
      * @public
      * @since 1.5
      */
-    public function Write($h, $txt, $link = '', $fill = false, $align = '', $ln = false, $stretch = 0, $firstline = false, $firstblock = false, $maxh = 0, $wadj = 0, $margin = '')
+    public function Write($h, $txt, $link = '', $fill = false, $align = '', $ln = false, $stretch = 0, $firstline = false, $firstblock = false, $maxh = 0, $wadj = 0, $margin = null)
     {
         // check page for no-write regions and adapt page margins if necessary
         list($this->x, $this->y) = $this->checkPageRegions($h, $this->x, $this->y);
@@ -6479,7 +6501,7 @@ class IXCTCPDF
             // fix empty text
             $txt = ' ';
         }
-        if ($margin === '') {
+        if (! is_array($margin)) {
             // set default margins
             $margin = $this->cell_margin;
         }
@@ -6504,7 +6526,7 @@ class IXCTCPDF
         // calculate maximum width for a single character on string
         $chrw = $this->GetArrStringWidth($chars, '', '', 0, true);
         array_walk($chrw, [$this, 'getRawCharWidth']);
-        $maxchwidth = max($chrw);
+        $maxchwidth = ((is_array($chrw) || $chrw instanceof Countable) && count($chrw) > 0) ? max($chrw) : 0;
         // get array of chars
         $uchars = IXCTCPDF_FONTS::UTF8ArrayToUniArray($chars, $this->isunicode);
         // get the number of characters
@@ -6581,7 +6603,7 @@ class IXCTCPDF
                     $w = $linew;
                     $tmpcellpadding = $this->cell_padding;
                     if ($maxh == 0) {
-                        $this->SetCellPadding(0);
+                        $this->setCellPadding(0);
                     }
                 }
                 if ($firstblock and $this->isRTLTextDir()) {
@@ -6604,14 +6626,15 @@ class IXCTCPDF
                 $shy = false;
                 // account for margin changes
                 if ((($this->y + $this->lasth) > $this->PageBreakTrigger) and ($this->inPageBody())) {
-                    $this->AcceptPageBreak();
-                    if ($this->rtl) {
-                        $this->x -= $margin['R'];
-                    } else {
-                        $this->x += $margin['L'];
+                    if ($this->AcceptPageBreak()) {
+                        if ($this->rtl) {
+                            $this->x -= $margin['R'];
+                        } else {
+                            $this->x += $margin['L'];
+                        }
+                        $this->lMargin += $margin['L'];
+                        $this->rMargin += $margin['R'];
                     }
-                    $this->lMargin += $margin['L'];
-                    $this->rMargin += $margin['R'];
                 }
                 $w = $this->getRemainingWidth();
                 $wmax = ($w - $this->cell_padding['L'] - $this->cell_padding['R']);
@@ -6692,7 +6715,7 @@ class IXCTCPDF
                                 $w = $linew;
                                 $tmpcellpadding = $this->cell_padding;
                                 if ($maxh == 0) {
-                                    $this->SetCellPadding(0);
+                                    $this->setCellPadding(0);
                                 }
                             }
                             if ($firstblock and $this->isRTLTextDir()) {
@@ -6736,7 +6759,7 @@ class IXCTCPDF
                                 $w = $linew;
                                 $tmpcellpadding = $this->cell_padding;
                                 if ($maxh == 0) {
-                                    $this->SetCellPadding(0);
+                                    $this->setCellPadding(0);
                                 }
                             }
                             if ($firstblock and $this->isRTLTextDir()) {
@@ -6784,7 +6807,7 @@ class IXCTCPDF
                                 $w = $linew;
                                 $tmpcellpadding = $this->cell_padding;
                                 if ($maxh == 0) {
-                                    $this->SetCellPadding(0);
+                                    $this->setCellPadding(0);
                                 }
                             }
                             // print the line
@@ -6809,14 +6832,15 @@ class IXCTCPDF
                     }
                     // account for margin changes
                     if ((($this->y + $this->lasth) > $this->PageBreakTrigger) and ($this->inPageBody())) {
-                        $this->AcceptPageBreak();
-                        if ($this->rtl) {
-                            $this->x -= $margin['R'];
-                        } else {
-                            $this->x += $margin['L'];
+                        if ($this->AcceptPageBreak()) {
+                            if ($this->rtl) {
+                                $this->x -= $margin['R'];
+                            } else {
+                                $this->x += $margin['L'];
+                            }
+                            $this->lMargin += $margin['L'];
+                            $this->rMargin += $margin['R'];
                         }
-                        $this->lMargin += $margin['L'];
-                        $this->rMargin += $margin['R'];
                     }
                     $w = $this->getRemainingWidth();
                     $wmax = $w - $this->cell_padding['L'] - $this->cell_padding['R'];
@@ -6877,7 +6901,7 @@ class IXCTCPDF
                 $w = $linew;
                 $tmpcellpadding = $this->cell_padding;
                 if ($maxh == 0) {
-                    $this->SetCellPadding(0);
+                    $this->setCellPadding(0);
                 }
             }
             if ($firstblock and $this->isRTLTextDir()) {
@@ -6969,6 +6993,7 @@ class IXCTCPDF
         }
         // resize the block to be contained on the remaining available page or column space
         if ($fitonpage) {
+            $h = $h == 0 ? 1 : $h;
             $ratio_wh = ($w / $h);
             if (($y + $h) > $this->PageBreakTrigger) {
                 $h = $this->PageBreakTrigger - $y;
@@ -7019,15 +7044,15 @@ class IXCTCPDF
      * @public
      * @since 1.1
      */
-    public function Image($file, $x = '', $y = '', $w = 0, $h = 0, $type = '', $link = '', $align = '', $resize = false, $dpi = 300, $palign = '', $ismask = false, $imgmask = false, $border = 0, $fitbox = false, $hidden = false, $fitonpage = false, $alt = false, $altimgs = [])
+    public function Image($file, $x = null, $y = null, $w = 0, $h = 0, $type = '', $link = '', $align = '', $resize = false, $dpi = 300, $palign = '', $ismask = false, $imgmask = false, $border = 0, $fitbox = false, $hidden = false, $fitonpage = false, $alt = false, $altimgs = [])
     {
         if ($this->state != 2) {
             return false;
         }
-        if (strcmp($x, '') === 0) {
+        if (IXCTCPDF_STATIC::empty_string($x)) {
             $x = $this->x;
         }
-        if (strcmp($y, '') === 0) {
+        if (IXCTCPDF_STATIC::empty_string($y)) {
             $y = $this->y;
         }
         // check page for no-write regions and adapt page margins if necessary
@@ -7221,8 +7246,6 @@ class IXCTCPDF
             } elseif ($type == 'jpg') {
                 $type = 'jpeg';
             }
-            $mqr = IXCTCPDF_STATIC::get_mqr();
-            IXCTCPDF_STATIC::set_mqr(false);
             // Specific image handlers (defined on TCPDF_IMAGES CLASS)
             $mtd = '_parse' . $type;
             // GD image handler function
@@ -7324,7 +7347,6 @@ class IXCTCPDF
                 // unable to process image
                 return false;
             }
-            IXCTCPDF_STATIC::set_mqr($mqr);
             if ($ismask) {
                 // force grayscale
                 $info['cs'] = 'DeviceGray';
@@ -7352,7 +7374,7 @@ class IXCTCPDF
         } elseif ($palign == 'R') {
             $ximg = $this->w - $this->rMargin - $w;
         } else {
-            $ximg = $x;
+            $ximg = $this->rtl ? $x - $w : $x;
         }
 
         if ($ismask or $hidden) {
@@ -7401,7 +7423,7 @@ class IXCTCPDF
             }
             case 'N':
             {
-                $this->SetY($this->img_rb_y);
+                $this->setY($this->img_rb_y);
                 break;
             }
             default:
@@ -7497,7 +7519,7 @@ class IXCTCPDF
                         $color = imagecolorat($img, $xpx, $ypx);
                         // get and correct gamma color
                         $alpha = $this->getGDgamma($img, $color);
-                        imagesetpixel($imgalpha, $xpx, $ypx, $alpha);
+                        imagesetpixel($imgalpha, (int) $xpx, (int) $ypx, (int) $alpha);
                     }
                 }
                 imagepng($imgalpha, $tempfile_alpha);
@@ -7538,9 +7560,9 @@ class IXCTCPDF
         if (! isset($this->gdgammacache['#' . $c])) {
             $colors = imagecolorsforindex($img, $c);
             // GD alpha is only 7 bit (0 -> 127)
-            $this->gdgammacache['#' . $c] = (((127 - $colors['alpha']) / 127) * 255);
+            $this->gdgammacache['#'.$c] = (int) (((127 - $colors['alpha']) / 127) * 255);
             // correct gamma
-            $this->gdgammacache['#' . $c] = (pow(($this->gdgammacache['#' . $c] / 255), 2.2) * 255);
+            $this->gdgammacache['#'.$c] = (int) (pow(($this->gdgammacache['#'.$c] / 255), 2.2) * 255);
             // store the latest values on cache to improve performances
             if (count($this->gdgammacache) > 8) {
                 // remove one element from the cache array
@@ -7559,7 +7581,7 @@ class IXCTCPDF
      * @since 1.0
      * @see Cell()
      */
-    public function Ln($h = '', $cell = false)
+    public function Ln($h = null, $cell = false)
     {
         if (($this->num_columns > 1) and ($this->y == $this->columns[$this->current_column]['y']) and isset($this->columns[$this->current_column]['x']) and ($this->x == $this->columns[$this->current_column]['x'])) {
             // revove vertical space from the top of the column
@@ -7579,7 +7601,7 @@ class IXCTCPDF
         } else {
             $this->x = $this->lMargin + $cellpadding;
         }
-        if (is_string($h)) {
+        if (IXCTCPDF_STATIC::empty_string($h)) {
             $h = $this->lasth;
         }
         $this->y += $h;
@@ -7637,7 +7659,7 @@ class IXCTCPDF
      * @since 1.2
      * @see GetX(), GetY(), SetY(), SetXY()
      */
-    public function SetX($x, $rtloff = false)
+    public function setX($x, $rtloff = false)
     {
         $x = floatval($x);
         if (! $rtloff and $this->rtl) {
@@ -7671,7 +7693,7 @@ class IXCTCPDF
      * @since 1.0
      * @see GetX(), GetY(), SetY(), SetXY()
      */
-    public function SetY($y, $resetx = true, $rtloff = false)
+    public function setY($y, $resetx = true, $rtloff = false)
     {
         $y = floatval($y);
         if ($resetx) {
@@ -7705,10 +7727,10 @@ class IXCTCPDF
      * @since 1.2
      * @see SetX(), SetY()
      */
-    public function SetXY($x, $y, $rtloff = false)
+    public function setXY($x, $y, $rtloff = false)
     {
-        $this->SetY($y, false, $rtloff);
-        $this->SetX($x, $rtloff);
+        $this->setY($y, false, $rtloff);
+        $this->setX($x, $rtloff);
     }
 
     /**
@@ -7718,7 +7740,7 @@ class IXCTCPDF
      * @since 5.9.186 (2012-09-13)
      * @see setAbsX(), setAbsY(), SetAbsXY()
      */
-    public function SetAbsX($x)
+    public function setAbsX($x)
     {
         $this->x = floatval($x);
     }
@@ -7730,7 +7752,7 @@ class IXCTCPDF
      * @since 5.9.186 (2012-09-13)
      * @see setAbsX(), setAbsY(), SetAbsXY()
      */
-    public function SetAbsY($y)
+    public function setAbsY($y)
     {
         $this->y = floatval($y);
     }
@@ -7743,10 +7765,10 @@ class IXCTCPDF
      * @since 5.9.186 (2012-09-13)
      * @see setAbsX(), setAbsY(), SetAbsXY()
      */
-    public function SetAbsXY($x, $y)
+    public function setAbsXY($x, $y)
     {
-        $this->SetAbsX($x);
-        $this->SetAbsY($y);
+        $this->setAbsX($x);
+        $this->setAbsY($y);
     }
 
     /**
@@ -7772,10 +7794,6 @@ class IXCTCPDF
             $dest = $dest ? 'D' : 'F';
         }
         $dest = strtoupper($dest);
-        if ($dest[0] != 'F') {
-            $name = preg_replace('/[\s]+/', '_', $name);
-            $name = preg_replace('/[^a-zA-Z0-9_\.-]/', '', $name);
-        }
         if ($this->sign) {
             // *** apply digital signature to the document ***
             // get the document content
@@ -7847,7 +7865,7 @@ class IXCTCPDF
                     header('Pragma: public');
                     header('Expires: Sat, 26 Jul 1997 05:00:00 GMT'); // Date in the past
                     header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-                    header('Content-Disposition: inline; filename="' . basename($name) . '"');
+                    header('Content-Disposition: inline; filename="' . rawurlencode(basename($name)) . '"; ' . 'filename*=UTF-8\'\'' . rawurlencode(basename($name)));
                     IXCTCPDF_STATIC::sendOutputData($this->getBuffer(), $this->bufferlen);
                 } else {
                     echo $this->getBuffer();
@@ -7879,7 +7897,7 @@ class IXCTCPDF
                     header('Content-Type: application/pdf');
                 }
                 // use the Content-Disposition header to supply a recommended filename
-                header('Content-Disposition: attachment; filename="' . basename($name) . '"');
+                header('Content-Disposition: attachment; filename="' . rawurlencode(basename($name)) . '"; ' . 'filename*=UTF-8\'\'' . rawurlencode(basename($name)));
                 header('Content-Transfer-Encoding: binary');
                 IXCTCPDF_STATIC::sendOutputData($this->getBuffer(), $this->bufferlen);
                 break;
@@ -8585,31 +8603,35 @@ class IXCTCPDF
                     $lineendings = ['Square', 'Circle', 'Diamond', 'OpenArrow', 'ClosedArrow', 'None', 'Butt', 'ROpenArrow', 'RClosedArrow', 'Slash'];
                     // Annotation types
                     switch (strtolower($pl['opt']['subtype'])) {
-                        case 'text':
-                        {
+                        case 'text': {
                             if (isset($pl['opt']['open'])) {
-                                $annots .= ' /Open ' . (strtolower($pl['opt']['open']) == 'true' ? 'true' : 'false');
+                                $annots .= ' /Open '. (strtolower($pl['opt']['open']) == 'true' ? 'true' : 'false');
                             }
                             $iconsapp = ['Comment', 'Help', 'Insert', 'Key', 'NewParagraph', 'Note', 'Paragraph'];
                             if (isset($pl['opt']['name']) and in_array($pl['opt']['name'], $iconsapp)) {
-                                $annots .= ' /Name /' . $pl['opt']['name'];
+                                $annots .= ' /Name /'.$pl['opt']['name'];
                             } else {
                                 $annots .= ' /Name /Note';
                             }
+                            $hasStateModel = isset($pl['opt']['statemodel']);
+                            $hasState = isset($pl['opt']['state']);
                             $statemodels = ['Marked', 'Review'];
-                            if (isset($pl['opt']['statemodel']) and in_array($pl['opt']['statemodel'], $statemodels)) {
-                                $annots .= ' /StateModel /' . $pl['opt']['statemodel'];
+                            if (! $hasStateModel && ! $hasState) {
+                                break;
+                            }
+                            if ($hasStateModel and in_array($pl['opt']['statemodel'], $statemodels)) {
+                                $annots .= ' /StateModel /'.$pl['opt']['statemodel'];
                             } else {
                                 $pl['opt']['statemodel'] = 'Marked';
-                                $annots .= ' /StateModel /' . $pl['opt']['statemodel'];
+                                $annots .= ' /StateModel /'.$pl['opt']['statemodel'];
                             }
                             if ($pl['opt']['statemodel'] == 'Marked') {
                                 $states = ['Accepted', 'Unmarked'];
                             } else {
                                 $states = ['Accepted', 'Rejected', 'Cancelled', 'Completed', 'None'];
                             }
-                            if (isset($pl['opt']['state']) and in_array($pl['opt']['state'], $states)) {
-                                $annots .= ' /State /' . $pl['opt']['state'];
+                            if ($hasState and in_array($pl['opt']['state'], $states)) {
+                                $annots .= ' /State /'.$pl['opt']['state'];
                             } else {
                                 if ($pl['opt']['statemodel'] == 'Marked') {
                                     $annots .= ' /State /Unmarked';
@@ -8619,21 +8641,20 @@ class IXCTCPDF
                             }
                             break;
                         }
-                        case 'link':
-                        {
+                        case 'link': {
                             if (is_string($pl['txt']) && ! empty($pl['txt'])) {
                                 if ($pl['txt'][0] == '#') {
                                     // internal destination
-                                    $annots .= ' /A <</S /GoTo /D ' . IXCTCPDF_STATIC::encodeNameObject(substr($pl['txt'], 1)) . '>>';
+                                    $annots .= ' /A <</S /GoTo /D /'.IXCTCPDF_STATIC::encodeNameObject(substr($pl['txt'], 1)).'>>';
                                 } elseif ($pl['txt'][0] == '%') {
                                     // embedded PDF file
                                     $filename = basename(substr($pl['txt'], 1));
-                                    $annots .= ' /A << /S /GoToE /D [0 /Fit] /NewWindow true /T << /R /C /P ' . ($n - 1) . ' /A ' . $this->embeddedfiles[$filename]['a'] . ' >> >>';
+                                    $annots .= ' /A << /S /GoToE /D [0 /Fit] /NewWindow true /T << /R /C /P '.($n - 1).' /A '.$this->embeddedfiles[$filename]['a'].' >> >>';
                                 } elseif ($pl['txt'][0] == '*') {
                                     // embedded generic file
                                     $filename = basename(substr($pl['txt'], 1));
-                                    $jsa = 'var D=event.target.doc;var MyData=D.dataObjects;for (var i in MyData) if (MyData[i].path=="' . $filename . '") D.exportDataObject( { cName : MyData[i].name, nLaunch : 2});';
-                                    $annots .= ' /A << /S /JavaScript /JS ' . $this->_textstring($jsa, $annot_obj_id) . '>>';
+                                    $jsa = 'var D=event.target.doc;var MyData=D.dataObjects;for (var i in MyData) if (MyData[i].path=="'.$filename.'") D.exportDataObject( { cName : MyData[i].name, nLaunch : 2});';
+                                    $annots .= ' /A << /S /JavaScript /JS '.$this->_textstring($jsa, $annot_obj_id).'>>';
                                 } else {
                                     $parsedUrl = parse_url($pl['txt']);
                                     if (empty($parsedUrl['scheme']) and (! empty($parsedUrl['path']) && strtolower(substr($parsedUrl['path'], -4)) == '.pdf')) {
@@ -8642,12 +8663,12 @@ class IXCTCPDF
                                         if (! empty($parsedUrl['fragment'])) {
                                             // check for named destination
                                             $tmp = explode('=', $parsedUrl['fragment']);
-                                            $dest = '(' . ((count($tmp) == 2) ? $tmp[1] : $tmp[0]) . ')';
+                                            $dest = '('.((count($tmp) == 2) ? $tmp[1] : $tmp[0]).')';
                                         }
-                                        $annots .= ' /A <</S /GoToR /D ' . $dest . ' /F ' . $this->_datastring($this->unhtmlentities($parsedUrl['path']), $annot_obj_id) . ' /NewWindow true>>';
+                                        $annots .= ' /A <</S /GoToR /D '.$dest.' /F '.$this->_datastring($this->unhtmlentities($parsedUrl['path']), $annot_obj_id).' /NewWindow true>>';
                                     } else {
                                         // external URI link
-                                        $annots .= ' /A <</S /URI /URI ' . $this->_datastring($this->unhtmlentities($pl['txt']), $annot_obj_id) . '>>';
+                                        $annots .= ' /A <</S /URI /URI '.$this->_datastring($this->unhtmlentities($pl['txt']), $annot_obj_id).'>>';
                                     }
                                 }
                             } elseif (isset($this->links[$pl['txt']])) {
@@ -8659,7 +8680,7 @@ class IXCTCPDF
                             }
                             $hmodes = ['N', 'I', 'O', 'P'];
                             if (isset($pl['opt']['h']) and in_array($pl['opt']['h'], $hmodes)) {
-                                $annots .= ' /H /' . $pl['opt']['h'];
+                                $annots .= ' /H /'.$pl['opt']['h'];
                             } else {
                                 $annots .= ' /H /I';
                             }
@@ -9057,8 +9078,6 @@ class IXCTCPDF
             $this->_newobj();
             $this->_out('<< /Type /Encoding /BaseEncoding /WinAnsiEncoding /Differences [' . $diff . '] >>' . "\n" . 'endobj');
         }
-        $mqr = IXCTCPDF_STATIC::get_mqr();
-        IXCTCPDF_STATIC::set_mqr(false);
         foreach ($this->FontFiles as $file => $info) {
             // search and get font file to embedd
             $fontfile = IXCTCPDF_FONTS::getFontFullPath($file, $info['fontdir']);
@@ -9112,7 +9131,6 @@ class IXCTCPDF
                 $this->_out($out);
             }
         }
-        IXCTCPDF_STATIC::set_mqr($mqr);
         foreach ($this->fontkeys as $k) {
             //Font objects
             $font = $this->getFontBuffer($k);
@@ -9384,6 +9402,7 @@ class IXCTCPDF
         foreach ($this->imagekeys as $file) {
             $info = $this->getImageBuffer($file);
             // set object for alternate images array
+            $altoid = null;
             if ((! $this->pdfa_mode) and isset($info['altimgs']) and ! empty($info['altimgs'])) {
                 $altoid = $this->_newobj();
                 $out = '[';
@@ -9431,7 +9450,7 @@ class IXCTCPDF
                 $out .= ' /Decode [1 0 1 0 1 0 1 0]';
             }
             $out .= ' /BitsPerComponent ' . $info['bpc'];
-            if (isset($altoid) and ($altoid > 0)) {
+            if ($altoid > 0) {
                 // reference to alternate images dictionary
                 $out .= ' /Alternates ' . $altoid . ' 0 R';
             }
@@ -10116,7 +10135,7 @@ class IXCTCPDF
                 }
                 $out .= ' >> >>';
             }
-            $font = $this->getFontBuffer('helvetica');
+            $font = $this->getFontBuffer((($this->pdfa_mode) ? 'pdfa' : '') .'helvetica');
             $out .= ' /DA (/F' . $font['i'] . ' 0 Tf 0 g)';
             $out .= ' /Q ' . (($this->rtl) ? '2' : '0');
             //$out .= ' /XFA ';
@@ -10391,9 +10410,9 @@ class IXCTCPDF
      * @protected
      * @since 5.8.009 (2010-08-20)
      */
-    protected function _getobj($objid = '')
+    protected function _getobj($objid = null)
     {
-        if ($objid === '') {
+        if (IXCTCPDF_STATIC::empty_string($objid)) {
             ++$this->n;
             $objid = $this->n;
         }
@@ -10712,7 +10731,7 @@ class IXCTCPDF
      * @return int the number of cells used or the remaining text if $firstline = true;
      * @public
      */
-    public function addHtmlLink($url, $name, $fill = false, $firstline = false, $color = '', $style = -1, $firstblock = false)
+    public function addHtmlLink($url, $name, $fill = false, $firstline = false, $color = null, $style = -1, $firstblock = false)
     {
         if (isset($url[1]) and ($url[0] == '#') and is_numeric($url[1])) {
             // convert url to internal link
@@ -10725,26 +10744,26 @@ class IXCTCPDF
                     $lnky = 0;
                 }
                 $url = $this->AddLink();
-                $this->SetLink($url, $lnky, $page);
+                $this->setLink($url, $lnky, $page);
             }
         }
         // store current settings
         $prevcolor = $this->fgcolor;
         $prevstyle = $this->FontStyle;
         if (empty($color)) {
-            $this->SetTextColorArray($this->htmlLinkColorArray);
+            $this->setTextColorArray($this->htmlLinkColorArray);
         } else {
-            $this->SetTextColorArray($color);
+            $this->setTextColorArray($color);
         }
         if ($style == -1) {
-            $this->SetFont('', $this->FontStyle . $this->htmlLinkFontStyle);
+            $this->setFont('', $this->FontStyle . $this->htmlLinkFontStyle);
         } else {
-            $this->SetFont('', $this->FontStyle . $style);
+            $this->setFont('', $this->FontStyle . $style);
         }
         $ret = $this->Write($this->lasth, $name, $url, $fill, '', false, 0, $firstline, $firstblock, 0);
         // restore settings
-        $this->SetFont('', $prevstyle);
-        $this->SetTextColorArray($prevcolor);
+        $this->setFont('', $prevstyle);
+        $this->setTextColorArray($prevcolor);
         return $ret;
     }
 
@@ -11192,7 +11211,7 @@ class IXCTCPDF
      * @since 2.0.000 (2008-01-02)
      * @author Nicola Asuni
      */
-    public function SetProtection($permissions = ['print', 'modify', 'copy', 'annot-forms', 'fill-forms', 'extract', 'assemble', 'print-high'], $user_pass = '', $owner_pass = null, $mode = 0, $pubkeys = null)
+    public function setProtection($permissions = ['print', 'modify', 'copy', 'annot-forms', 'fill-forms', 'extract', 'assemble', 'print-high'], $user_pass = '', $owner_pass = null, $mode = 0, $pubkeys = null)
     {
         if ($this->pdfa_mode) {
             // encryption is not allowed in PDF/A mode
@@ -11397,12 +11416,12 @@ class IXCTCPDF
      * @since 2.1.000 (2008-01-07)
      * @see StartTransform(), StopTransform()
      */
-    public function Scale($s_x, $s_y, $x = '', $y = '')
+    public function Scale($s_x, $s_y, $x = null, $y = null)
     {
-        if ($x === '') {
+        if (IXCTCPDF_STATIC::empty_string($x)) {
             $x = $this->x;
         }
-        if ($y === '') {
+        if (IXCTCPDF_STATIC::empty_string($y)) {
             $y = $this->y;
         }
         if (($s_x == 0) or ($s_y == 0)) {
@@ -11431,7 +11450,7 @@ class IXCTCPDF
      * @since 2.1.000 (2008-01-07)
      * @see StartTransform(), StopTransform()
      */
-    public function MirrorH($x = '')
+    public function MirrorH($x = null)
     {
         $this->Scale(-100, 100, $x);
     }
@@ -11443,7 +11462,7 @@ class IXCTCPDF
      * @since 2.1.000 (2008-01-07)
      * @see StartTransform(), StopTransform()
      */
-    public function MirrorV($y = '')
+    public function MirrorV($y = null)
     {
         $this->Scale(100, -100, '', $y);
     }
@@ -11456,7 +11475,7 @@ class IXCTCPDF
      * @since 2.1.000 (2008-01-07)
      * @see StartTransform(), StopTransform()
      */
-    public function MirrorP($x = '', $y = '')
+    public function MirrorP($x = null, $y = null)
     {
         $this->Scale(-100, -100, $x, $y);
     }
@@ -11470,7 +11489,7 @@ class IXCTCPDF
      * @since 2.1.000 (2008-01-07)
      * @see StartTransform(), StopTransform()
      */
-    public function MirrorL($angle = 0, $x = '', $y = '')
+    public function MirrorL($angle = 0, $x = null, $y = null)
     {
         $this->Scale(-100, 100, $x, $y);
         $this->Rotate(-2 * ($angle - 90), $x, $y);
@@ -11531,12 +11550,12 @@ class IXCTCPDF
      * @since 2.1.000 (2008-01-07)
      * @see StartTransform(), StopTransform()
      */
-    public function Rotate($angle, $x = '', $y = '')
+    public function Rotate($angle, $x = null, $y = null)
     {
-        if ($x === '') {
+        if (IXCTCPDF_STATIC::empty_string($x)) {
             $x = $this->x;
         }
-        if ($y === '') {
+        if (IXCTCPDF_STATIC::empty_string($y)) {
             $y = $this->y;
         }
         $y = ($this->h - $y) * $this->k;
@@ -11562,7 +11581,7 @@ class IXCTCPDF
      * @since 2.1.000 (2008-01-07)
      * @see StartTransform(), StopTransform()
      */
-    public function SkewX($angle_x, $x = '', $y = '')
+    public function SkewX($angle_x, $x = null, $y = null)
     {
         $this->Skew($angle_x, 0, $x, $y);
     }
@@ -11576,7 +11595,7 @@ class IXCTCPDF
      * @since 2.1.000 (2008-01-07)
      * @see StartTransform(), StopTransform()
      */
-    public function SkewY($angle_y, $x = '', $y = '')
+    public function SkewY($angle_y, $x = null, $y = null)
     {
         $this->Skew(0, $angle_y, $x, $y);
     }
@@ -11591,12 +11610,12 @@ class IXCTCPDF
      * @since 2.1.000 (2008-01-07)
      * @see StartTransform(), StopTransform()
      */
-    public function Skew($angle_x, $angle_y, $x = '', $y = '')
+    public function Skew($angle_x, $angle_y, $x = null, $y = null)
     {
-        if ($x === '') {
+        if (IXCTCPDF_STATIC::empty_string($x)) {
             $x = $this->x;
         }
-        if ($y === '') {
+        if (IXCTCPDF_STATIC::empty_string($y)) {
             $y = $this->y;
         }
         if (($angle_x <= -90) or ($angle_x >= 90) or ($angle_y <= -90) or ($angle_y >= 90)) {
@@ -11656,7 +11675,7 @@ class IXCTCPDF
      * @since 1.0
      * @see Line(), Rect(), Cell(), MultiCell()
      */
-    public function SetLineWidth($width)
+    public function setLineWidth($width)
     {
         //Set line width
         $this->LineWidth = $width;
@@ -11701,7 +11720,7 @@ class IXCTCPDF
      * @public
      * @since 2.1.000 (2008-01-08)
      */
-    public function SetLineStyle($style, $ret = false)
+    public function setLineStyle($style, $ret = false)
     {
         $s = ''; // string to be returned
         if (! is_array($style)) {
@@ -11749,7 +11768,7 @@ class IXCTCPDF
             $s .= $this->linestyleDash . ' ';
         }
         if (isset($style['color'])) {
-            $s .= $this->SetDrawColorArray($style['color'], true) . ' ';
+            $s .= $this->setDrawColorArray($style['color'], true) . ' ';
         }
         if (! $ret and ($this->state == 2)) {
             $this->_out($s);
@@ -11873,7 +11892,7 @@ class IXCTCPDF
             return;
         }
         if (is_array($style)) {
-            $this->SetLineStyle($style);
+            $this->setLineStyle($style);
         }
         $this->_outPoint($x1, $y1);
         $this->_outLine($x2, $y2);
@@ -11908,7 +11927,7 @@ class IXCTCPDF
         }
         if (! (strpos($style, 'F') === false) and ! empty($fill_color)) {
             // set background color
-            $this->SetFillColorArray($fill_color);
+            $this->setFillColorArray($fill_color);
         }
         if (! empty($border_style)) {
             if (isset($border_style['all']) and ! empty($border_style['all'])) {
@@ -11980,7 +11999,7 @@ class IXCTCPDF
         }
         $op = IXCTCPDF_STATIC::getPathPaintOperator($style);
         if ($line_style) {
-            $this->SetLineStyle($line_style);
+            $this->setLineStyle($line_style);
         }
         $this->_outPoint($x0, $y0);
         $this->_outCurve($x1, $y1, $x2, $y2, $x3, $y3);
@@ -12006,15 +12025,15 @@ class IXCTCPDF
         if ($this->state != 2) {
             return;
         }
-        if (! (false === strpos($style, 'F')) and isset($fill_color)) {
-            $this->SetFillColorArray($fill_color);
+        if (! (false === strpos($style, 'F')) and is_array($fill_color)) {
+            $this->setFillColorArray($fill_color);
         }
         $op = IXCTCPDF_STATIC::getPathPaintOperator($style);
         if ($op == 'f') {
             $line_style = [];
         }
         if ($line_style) {
-            $this->SetLineStyle($line_style);
+            $this->setLineStyle($line_style);
         }
         $this->_outPoint($x0, $y0);
         foreach ($segments as $segment) {
@@ -12042,7 +12061,7 @@ class IXCTCPDF
      * @public
      * @since 2.1.000 (2008-01-08)
      */
-    public function Ellipse($x0, $y0, $rx, $ry = '', $angle = 0, $astart = 0, $afinish = 360, $style = '', $line_style = [], $fill_color = [], $nc = 2)
+    public function Ellipse($x0, $y0, $rx, $ry = 0, $angle = 0, $astart = 0, $afinish = 360, $style = '', $line_style = [], $fill_color = [], $nc = 2)
     {
         if ($this->state != 2) {
             return;
@@ -12050,15 +12069,15 @@ class IXCTCPDF
         if (IXCTCPDF_STATIC::empty_string($ry) or ($ry == 0)) {
             $ry = $rx;
         }
-        if (! (false === strpos($style, 'F')) and isset($fill_color)) {
-            $this->SetFillColorArray($fill_color);
+        if (! (false === strpos($style, 'F')) and is_array($fill_color)) {
+            $this->setFillColorArray($fill_color);
         }
         $op = IXCTCPDF_STATIC::getPathPaintOperator($style);
         if ($op == 'f') {
             $line_style = [];
         }
         if ($line_style) {
-            $this->SetLineStyle($line_style);
+            $this->setLineStyle($line_style);
         }
         $this->_outellipticalarc($x0, $y0, $rx, $ry, $angle, $astart, $afinish, false, $nc, true, true, false);
         $this->_out($op);
@@ -12273,8 +12292,8 @@ class IXCTCPDF
             }
             $nc += 4;
         }
-        if (! (false === strpos($style, 'F')) and isset($fill_color)) {
-            $this->SetFillColorArray($fill_color);
+        if (! (false === strpos($style, 'F')) and is_array($fill_color)) {
+            $this->setFillColorArray($fill_color);
         }
         $op = IXCTCPDF_STATIC::getPathPaintOperator($style);
         if ($op == 'f') {
@@ -12283,7 +12302,7 @@ class IXCTCPDF
         $draw = true;
         if ($line_style) {
             if (isset($line_style['all'])) {
-                $this->SetLineStyle($line_style['all']);
+                $this->setLineStyle($line_style['all']);
             } else {
                 $draw = false;
                 if ($op == 'B') {
@@ -12303,7 +12322,7 @@ class IXCTCPDF
                         if ($line_style[$line_num] != 0) {
                             if (is_array($line_style[$line_num])) {
                                 $this->_out('S');
-                                $this->SetLineStyle($line_style[$line_num]);
+                                $this->setLineStyle($line_style[$line_num]);
                                 $this->_outPoint($p[$i - 2], $p[$i - 1]);
                                 $this->_outLine($p[$i], $p[$i + 1]);
                                 $this->_out('S');
@@ -12480,15 +12499,15 @@ class IXCTCPDF
             return;
         }
         // Rounded
-        if (! (false === strpos($style, 'F')) and isset($fill_color)) {
-            $this->SetFillColorArray($fill_color);
+        if (! (false === strpos($style, 'F')) and is_array($fill_color)) {
+            $this->setFillColorArray($fill_color);
         }
         $op = IXCTCPDF_STATIC::getPathPaintOperator($style);
         if ($op == 'f') {
             $border_style = [];
         }
         if ($border_style) {
-            $this->SetLineStyle($border_style);
+            $this->setLineStyle($border_style);
         }
         $MyArc = 4 / 3 * (sqrt(2) - 1);
         $this->_outPoint($x + $rx, $y);
@@ -13062,12 +13081,12 @@ class IXCTCPDF
      * @author Nicola Asuni
      * @since 4.8.000 (2009-09-07)
      */
-    public function TextField($name, $w, $h, $prop = [], $opt = [], $x = '', $y = '', $js = false)
+    public function TextField($name, $w, $h, $prop = [], $opt = [], $x = null, $y = null, $js = false)
     {
-        if ($x === '') {
+        if (IXCTCPDF_STATIC::empty_string($x)) {
             $x = $this->x;
         }
-        if ($y === '') {
+        if (IXCTCPDF_STATIC::empty_string($y)) {
             $y = $this->y;
         }
         // check page for no-write regions and adapt page margins if necessary
@@ -13188,12 +13207,12 @@ class IXCTCPDF
      * @author Nicola Asuni
      * @since 4.8.000 (2009-09-07)
      */
-    public function RadioButton($name, $w, $prop = [], $opt = [], $onvalue = 'On', $checked = false, $x = '', $y = '', $js = false)
+    public function RadioButton($name, $w, $prop = [], $opt = [], $onvalue = 'On', $checked = false, $x = null, $y = null, $js = false)
     {
-        if ($x === '') {
+        if (IXCTCPDF_STATIC::empty_string($x)) {
             $x = $this->x;
         }
-        if ($y === '') {
+        if (IXCTCPDF_STATIC::empty_string($y)) {
             $y = $this->y;
         }
         // check page for no-write regions and adapt page margins if necessary
@@ -13292,12 +13311,12 @@ class IXCTCPDF
      * @author Nicola Asuni
      * @since 4.8.000 (2009-09-07)
      */
-    public function ListBox($name, $w, $h, $values, $prop = [], $opt = [], $x = '', $y = '', $js = false)
+    public function ListBox($name, $w, $h, $values, $prop = [], $opt = [], $x = null, $y = null, $js = false)
     {
-        if ($x === '') {
+        if (IXCTCPDF_STATIC::empty_string($x)) {
             $x = $this->x;
         }
-        if ($y === '') {
+        if (IXCTCPDF_STATIC::empty_string($y)) {
             $y = $this->y;
         }
         // check page for no-write regions and adapt page margins if necessary
@@ -13379,12 +13398,12 @@ class IXCTCPDF
      * @author Nicola Asuni
      * @since 4.8.000 (2009-09-07)
      */
-    public function ComboBox($name, $w, $h, $values, $prop = [], $opt = [], $x = '', $y = '', $js = false)
+    public function ComboBox($name, $w, $h, $values, $prop = [], $opt = [], $x = null, $y = null, $js = false)
     {
-        if ($x === '') {
+        if (IXCTCPDF_STATIC::empty_string($x)) {
             $x = $this->x;
         }
-        if ($y === '') {
+        if (IXCTCPDF_STATIC::empty_string($y)) {
             $y = $this->y;
         }
         // check page for no-write regions and adapt page margins if necessary
@@ -13467,12 +13486,12 @@ class IXCTCPDF
      * @author Nicola Asuni
      * @since 4.8.000 (2009-09-07)
      */
-    public function CheckBox($name, $w, $checked = false, $prop = [], $opt = [], $onvalue = 'Yes', $x = '', $y = '', $js = false)
+    public function CheckBox($name, $w, $checked = false, $prop = [], $opt = [], $onvalue = 'Yes', $x = null, $y = null, $js = false)
     {
-        if ($x === '') {
+        if (IXCTCPDF_STATIC::empty_string($x)) {
             $x = $this->x;
         }
-        if ($y === '') {
+        if (IXCTCPDF_STATIC::empty_string($y)) {
             $y = $this->y;
         }
         // check page for no-write regions and adapt page margins if necessary
@@ -13548,12 +13567,12 @@ class IXCTCPDF
      * @author Nicola Asuni
      * @since 4.8.000 (2009-09-07)
      */
-    public function Button($name, $w, $h, $caption, $action, $prop = [], $opt = [], $x = '', $y = '', $js = false)
+    public function Button($name, $w, $h, $caption, $action, $prop = [], $opt = [], $x = null, $y = null, $js = false)
     {
-        if ($x === '') {
+        if (IXCTCPDF_STATIC::empty_string($x)) {
             $x = $this->x;
         }
-        if ($y === '') {
+        if (IXCTCPDF_STATIC::empty_string($y)) {
             $y = $this->y;
         }
         // check page for no-write regions and adapt page margins if necessary
@@ -13586,7 +13605,7 @@ class IXCTCPDF
             'R' => ['width' => $bw, 'cap' => 'square', 'join' => 'miter', 'dash' => 0, 'color' => [51]],
             'T' => ['width' => $bw, 'cap' => 'square', 'join' => 'miter', 'dash' => 0, 'color' => [231]],
             'B' => ['width' => $bw, 'cap' => 'square', 'join' => 'miter', 'dash' => 0, 'color' => [51]]];
-        $this->SetFillColor(204);
+        $this->setFillColor(204);
         $this->Cell($w, $h, $caption, $border, 0, 'C', true, '', 1, false, 'T', 'M');
         $this->endTemplate();
         --$this->n;
@@ -14008,7 +14027,7 @@ class IXCTCPDF
      * @public
      * @since 3.0.000 (2008-03-27)
      */
-    public function startPageGroup($page = '')
+    public function startPageGroup($page = null)
     {
         if (empty($page)) {
             $page = $this->page + 1;
@@ -14339,7 +14358,7 @@ class IXCTCPDF
      * @public
      * @since 5.9.152 (2012-03-23)
      */
-    public function setOverprint($stroking = true, $nonstroking = '', $mode = 0)
+    public function setOverprint($stroking = true, $nonstroking = null, $mode = 0)
     {
         if ($this->state != 2) {
             return;
@@ -14380,7 +14399,7 @@ class IXCTCPDF
      * @public
      * @since 3.0.000 (2008-03-27)
      */
-    public function setAlpha($stroking = 1, $bm = 'Normal', $nonstroking = '', $ais = false)
+    public function setAlpha($stroking = 1, $bm = 'Normal', $nonstroking = null, $ais = false)
     {
         if ($this->pdfa_mode && $this->pdfa_version < 2) {
             // transparency is not allowed in PDF/A-1 mode
@@ -14643,7 +14662,7 @@ class IXCTCPDF
                     // color gradient
                     $this->LinearGradient($xb, $yb, $wb, $hb, $col_a, $col_b, $coords);
                 } else {
-                    $this->SetFillColorArray($col_b);
+                    $this->setFillColorArray($col_b);
                     // colored rectangle
                     $this->Rect($xb, $yb, $wb, $hb, 'F', []);
                 }
@@ -14667,7 +14686,7 @@ class IXCTCPDF
      */
     public function cropMark($x, $y, $w, $h, $type = 'T,R,B,L', $color = [100, 100, 100, 100, 'All'])
     {
-        $this->SetLineStyle(['width' => (0.5 / $this->k), 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => $color]);
+        $this->setLineStyle(['width' => (0.5 / $this->k), 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => $color]);
         $type = strtoupper($type);
         $type = preg_replace('/[^A-Z\-\,]*/', '', $type);
         // split type in single components
@@ -14744,16 +14763,16 @@ class IXCTCPDF
     public function registrationMark($x, $y, $r, $double = false, $cola = [100, 100, 100, 100, 'All'], $colb = [0, 0, 0, 0, 'None'])
     {
         $line_style = ['width' => max((0.5 / $this->k), ($r / 30)), 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => $cola];
-        $this->SetFillColorArray($cola);
+        $this->setFillColorArray($cola);
         $this->PieSector($x, $y, $r, 90, 180, 'F');
         $this->PieSector($x, $y, $r, 270, 360, 'F');
         $this->Circle($x, $y, $r, 0, 360, 'C', $line_style, [], 8);
         if ($double) {
             $ri = $r * 0.5;
-            $this->SetFillColorArray($colb);
+            $this->setFillColorArray($colb);
             $this->PieSector($x, $y, $ri, 90, 180, 'F');
             $this->PieSector($x, $y, $ri, 270, 360, 'F');
-            $this->SetFillColorArray($cola);
+            $this->setFillColorArray($cola);
             $this->PieSector($x, $y, $ri, 0, 90, 'F');
             $this->PieSector($x, $y, $ri, 180, 270, 'F');
             $this->Circle($x, $y, $ri, 0, 360, 'C', $line_style, [], 8);
@@ -14778,20 +14797,20 @@ class IXCTCPDF
         // external radius
         $re = ($r * 1.3);
         // Cyan
-        $this->SetFillColorArray([100, 0, 0, 0]);
+        $this->setFillColorArray([100, 0, 0, 0]);
         $this->PieSector($x, $y, $ri, 270, 360, 'F');
         // Magenta
-        $this->SetFillColorArray([0, 100, 0, 0]);
+        $this->setFillColorArray([0, 100, 0, 0]);
         $this->PieSector($x, $y, $ri, 0, 90, 'F');
         // Yellow
-        $this->SetFillColorArray([0, 0, 100, 0]);
+        $this->setFillColorArray([0, 0, 100, 0]);
         $this->PieSector($x, $y, $ri, 90, 180, 'F');
         // Key - black
-        $this->SetFillColorArray([0, 0, 0, 100]);
+        $this->setFillColorArray([0, 0, 0, 100]);
         $this->PieSector($x, $y, $ri, 180, 270, 'F');
         // registration color
         $line_style = ['width' => $lw, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => [100, 100, 100, 100, 'All']];
-        $this->SetFillColorArray([100, 100, 100, 100, 'All']);
+        $this->setFillColorArray([100, 100, 100, 100, 'All']);
         // external circle
         $this->Circle($x, $y, $r, 0, 360, 'C', $line_style, [], 8);
         // cross lines
@@ -14919,8 +14938,8 @@ class IXCTCPDF
                 if ($patch_array[$i]['points'][$j] > $bpcd) {
                     $patch_array[$i]['points'][$j] = $bpcd;
                 }
-                $this->gradients[$n]['stream'] .= chr(floor($patch_array[$i]['points'][$j] / 256));
-                $this->gradients[$n]['stream'] .= chr(floor($patch_array[$i]['points'][$j] % 256));
+                $this->gradients[$n]['stream'] .= chr((int) floor($patch_array[$i]['points'][$j] / 256));
+                $this->gradients[$n]['stream'] .= chr((int) floor(intval($patch_array[$i]['points'][$j]) % 256));
             }
             $count_cols = count($patch_array[$i]['colors']);
             for ($j = 0; $j < $count_cols; ++$j) {
@@ -15352,7 +15371,7 @@ class IXCTCPDF
      * @since 3.1.000 (2008-06-09)
      * @public
      */
-    public function ImageEps($file, $x = '', $y = '', $w = 0, $h = 0, $link = '', $useBoundingBox = true, $align = '', $palign = '', $border = 0, $fitonpage = false, $fixoutvals = false)
+    public function ImageEps($file, $x = null, $y = null, $w = 0, $h = 0, $link = '', $useBoundingBox = true, $align = '', $palign = '', $border = 0, $fitonpage = false, $fixoutvals = false)
     {
         if ($this->state != 2) {
             return;
@@ -15361,10 +15380,10 @@ class IXCTCPDF
             // convert EPS to raster image using GD or ImageMagick libraries
             return $this->Image($file, $x, $y, $w, $h, 'EPS', $link, $align, true, 300, $palign, false, false, $border, false, false, $fitonpage);
         }
-        if ($x === '') {
+        if (IXCTCPDF_STATIC::empty_string($x)) {
             $x = $this->x;
         }
-        if ($y === '') {
+        if (IXCTCPDF_STATIC::empty_string($y)) {
             $y = $this->y;
         }
         // check page for no-write regions and adapt page margins if necessary
@@ -15474,9 +15493,7 @@ class IXCTCPDF
         // translate
         $this->_out(sprintf('%F %F %F %F %F %F cm', 1, 0, 0, 1, $dx, $dy + ($this->hPt - (2 * $y * $k) - ($y2 - $y1))));
         // scale
-        if (isset($scale_x)) {
-            $this->_out(sprintf('%F %F %F %F %F %F cm', $scale_x, 0, 0, $scale_y, $x1 * (1 - $scale_x), $y2 * (1 - $scale_y)));
-        }
+        $this->_out(sprintf('%F %F %F %F %F %F cm', $scale_x, 0, 0, $scale_y, $x1 * (1 - $scale_x), $y2 * (1 - $scale_y)));
         // handle pc/unix/mac line endings
         $lines = preg_split('/[\r\n]+/si', $data, -1, PREG_SPLIT_NO_EMPTY);
         $u = 0;
@@ -15670,7 +15687,7 @@ class IXCTCPDF
             }
             case 'N':
             {
-                $this->SetY($this->img_rb_y);
+                $this->setY($this->img_rb_y);
                 break;
             }
             default:
@@ -15732,7 +15749,7 @@ class IXCTCPDF
      * @since 3.1.000 (2008-06-09)
      * @public
      */
-    public function write1DBarcode($code, $type, $x = '', $y = '', $w = '', $h = '', $xres = '', $style = [], $align = '')
+    public function write1DBarcode($code, $type, $x = null, $y = null, $w = null, $h = null, $xres = null, $style = [], $align = '')
     {
         if (IXCTCPDF_STATIC::empty_string(trim($code))) {
             return;
@@ -15743,7 +15760,7 @@ class IXCTCPDF
         // create new barcode object
         $barcodeobj = new IXCTCPDFBarcode($code, $type);
         $arrcode = $barcodeobj->getBarcodeArray();
-        if (($arrcode === false) or empty($arrcode) or ($arrcode['maxw'] <= 0)) {
+        if (empty($arrcode) or ($arrcode['maxw'] <= 0)) {
             $this->Error('Error in 1D barcode string');
         }
         if ($arrcode['maxh'] <= 0) {
@@ -15792,20 +15809,20 @@ class IXCTCPDF
             if (isset($style['fontsize'])) {
                 $fontsize = $style['fontsize'];
             }
-            $this->SetFont($style['font'], '', $fontsize);
+            $this->setFont($style['font'], '', $fontsize);
         }
         if (! isset($style['stretchtext'])) {
             $style['stretchtext'] = 4;
         }
-        if ($x === '') {
+        if (IXCTCPDF_STATIC::empty_string($x)) {
             $x = $this->x;
         }
-        if ($y === '') {
+        if (IXCTCPDF_STATIC::empty_string($y)) {
             $y = $this->y;
         }
         // check page for no-write regions and adapt page margins if necessary
         list($x, $y) = $this->checkPageRegions($h, $x, $y);
-        if (($w === '') or ($w <= 0)) {
+        if (IXCTCPDF_STATIC::empty_string($w) or ($w <= 0)) {
             if ($this->rtl) {
                 $w = $x - $this->lMargin;
             } else {
@@ -15893,7 +15910,7 @@ class IXCTCPDF
         }
         $text_height = $this->getCellHeight($fontsize / $this->k);
         // height
-        if (($h === '') or ($h <= 0)) {
+        if (IXCTCPDF_STATIC::empty_string($h) or ($h <= 0)) {
             // set default height
             $h = (($arrcode['maxw'] * $xres) / 3) + (2 * $vpadding) + $text_height;
         }
@@ -15903,7 +15920,7 @@ class IXCTCPDF
             if ($text_height > $h) {
                 $fontsize = (($h * $this->k) / (4 * $this->cell_height_ratio));
                 $text_height = $this->getCellHeight($fontsize / $this->k);
-                $this->SetFont($style['font'], '', $fontsize);
+                $this->setFont($style['font'], '', $fontsize);
             }
             if ($vpadding > 0) {
                 $vpadding = (($h - $text_height) / 4);
@@ -15971,8 +15988,8 @@ class IXCTCPDF
             $this->Rect($xpos_rect, $y, $w, $h, 'D');
         }
         // set foreground color
-        $this->SetDrawColorArray($style['fgcolor']);
-        $this->SetTextColorArray($style['fgcolor']);
+        $this->setDrawColorArray($style['fgcolor']);
+        $this->setDrawColorArray($style['fgcolor']);
         // print bars
         foreach ($arrcode['bcode'] as $k => $v) {
             $bw = ($v['w'] * $xres);
@@ -15998,7 +16015,7 @@ class IXCTCPDF
             $this->x = $xpos_text;
             $this->y = $y + $vpadding + $barh;
             $cellpadding = $this->cell_padding;
-            $this->SetCellPadding(0);
+            $this->setCellPadding(0);
             $this->Cell($txtwidth, 0, $label, 0, 0, 'C', false, '', $style['stretchtext'], false, 'T', 'T');
             $this->cell_padding = $cellpadding;
         }
@@ -16028,7 +16045,7 @@ class IXCTCPDF
             }
             case 'N':
             {
-                $this->SetY($this->img_rb_y);
+                $this->setY($this->img_rb_y);
                 break;
             }
             default:
@@ -16063,7 +16080,7 @@ class IXCTCPDF
      * @since 4.5.037 (2009-04-07)
      * @public
      */
-    public function write2DBarcode($code, $type, $x = '', $y = '', $w = '', $h = '', $style = [], $align = '', $distort = false)
+    public function write2DBarcode($code, $type, $x = null, $y = null, $w = null, $h = null, $style = [], $align = '', $distort = false)
     {
         if (IXCTCPDF_STATIC::empty_string(trim($code))) {
             return;
@@ -16074,7 +16091,7 @@ class IXCTCPDF
         // create new barcode object
         $barcodeobj = new IXCTCPDF2DBarcode($code, $type);
         $arrcode = $barcodeobj->getBarcodeArray();
-        if (($arrcode === false) or empty($arrcode) or ! isset($arrcode['num_rows']) or ($arrcode['num_rows'] == 0) or ! isset($arrcode['num_cols']) or ($arrcode['num_cols'] == 0)) {
+        if (empty($arrcode) or ! isset($arrcode['num_rows']) or ($arrcode['num_rows'] == 0) or ! isset($arrcode['num_cols']) or ($arrcode['num_cols'] == 0)) {
             $this->Error('Error in 2D barcode string');
         }
         // set default values
@@ -16115,10 +16132,10 @@ class IXCTCPDF
         if (! isset($style['module_height'])) {
             $style['module_height'] = 1; // height of a single module in points
         }
-        if ($x === '') {
+        if (IXCTCPDF_STATIC::empty_string($x)) {
             $x = $this->x;
         }
-        if ($y === '') {
+        if (IXCTCPDF_STATIC::empty_string($y)) {
             $y = $this->y;
         }
         // check page for no-write regions and adapt page margins if necessary
@@ -16160,7 +16177,7 @@ class IXCTCPDF
             $h = $maxh;
         }
         // set dimensions
-        if ((($w === '') or ($w <= 0)) and (($h === '') or ($h <= 0))) {
+        if ((IXCTCPDF_STATIC::empty_string($w) or ($w <= 0)) and (IXCTCPDF_STATIC::empty_string($h) or ($h <= 0))) {
             $w = ($cols + $hpad) * ($mw / $this->k);
             $h = ($rows + $vpad) * ($mh / $this->k);
         } elseif (($w === '') or ($w <= 0)) {
@@ -16227,7 +16244,7 @@ class IXCTCPDF
             $this->Rect($xpos, $y, $w, $h, 'D');
         }
         // set foreground color
-        $this->SetDrawColorArray($style['fgcolor']);
+        $this->setDrawColorArray($style['fgcolor']);
         // print barcode cells
         // for each row
         for ($r = 0; $r < $rows; ++$r) {
@@ -16268,7 +16285,7 @@ class IXCTCPDF
             }
             case 'N':
             {
-                $this->SetY($this->img_rb_y);
+                $this->setY($this->img_rb_y);
                 break;
             }
             default:
@@ -16391,7 +16408,7 @@ class IXCTCPDF
      * @since 5.9.017 (2010-11-16)
      * @see setHtmlVSpace()
      */
-    public function fixHTMLCode($html, $default_css = '', $tagvs = '', $tidy_options = '')
+    public function fixHTMLCode($html, $default_css = '', $tagvs = null, $tidy_options = null)
     {
         return IXCTCPDF_STATIC::fixHTMLCode($html, $default_css, $tagvs, $tidy_options, $this->tagvspaces);
     }
@@ -16468,34 +16485,35 @@ class IXCTCPDF
     protected function getCSSBorderStyle($cssborder)
     {
         $bprop = preg_split('/[\s]+/', trim($cssborder));
+        $count = count($bprop);
+        if ($count > 0 && $bprop[$count - 1] === '!important') {
+            unset($bprop[$count - 1]);
+            --$count;
+        }
         $border = []; // value to be returned
-        switch (count($bprop)) {
-            case 3:
-            {
-                $width = $bprop[0];
-                $style = $bprop[1];
-                $color = $bprop[2];
-                break;
-            }
-            case 2:
-            {
+        switch ($count) {
+            case 2: {
                 $width = 'medium';
                 $style = $bprop[0];
                 $color = $bprop[1];
                 break;
             }
-            case 1:
-            {
+            case 1: {
                 $width = 'medium';
                 $style = $bprop[0];
                 $color = 'black';
                 break;
             }
-            default:
-            {
+            case 0: {
                 $width = 'medium';
                 $style = 'solid';
                 $color = 'black';
+                break;
+            }
+            default: {
+                $width = $bprop[0];
+                $style = $bprop[1];
+                $color = $bprop[2];
                 break;
             }
         }
@@ -16852,6 +16870,7 @@ class IXCTCPDF
             }
             default:
             {
+                $parentSize = $this->getHTMLUnitToUnits($parent_size, $refsize, $defaultunit, true);
                 $size = $this->getHTMLUnitToUnits($val, $parent_size, $defaultunit, true);
             }
         }
@@ -16867,6 +16886,53 @@ class IXCTCPDF
      */
     protected function getHtmlDomArray($html)
     {
+        // set inheritable properties fot the first void element
+        // possible inheritable properties are: azimuth, border-collapse, border-spacing, caption-side, color, cursor, direction, empty-cells, font, font-family, font-stretch, font-size, font-size-adjust, font-style, font-variant, font-weight, letter-spacing, line-height, list-style, list-style-image, list-style-position, list-style-type, orphans, page, page-break-inside, quotes, speak, speak-header, text-align, text-indent, text-transform, volume, white-space, widows, word-spacing
+        $dom = [
+            [
+                'tag' => false,
+                'block' => false,
+                'value' => '',
+                'parent' => 0,
+                'hide' => false,
+                'fontname' => $this->FontFamily,
+                'fontstyle' => $this->FontStyle,
+                'fontsize' => $this->FontSizePt,
+                'font-stretch' => $this->font_stretching,
+                'letter-spacing' => $this->font_spacing,
+                'stroke' => $this->textstrokewidth,
+                'fill' => (($this->textrendermode % 2) == 0),
+                'clip' => ($this->textrendermode > 3),
+                'line-height' => $this->cell_height_ratio,
+                'bgcolor' => false,
+                'fgcolor' => $this->fgcolor, // color
+                'strokecolor' => $this->strokecolor,
+                'align' => '',
+                'listtype' => '',
+                'text-indent' => 0,
+                'text-transform' => '',
+                'border' => [],
+                'dir' => $this->rtl ? 'rtl' : 'ltr',
+                'width' => 0,
+                'height' => 0,
+                'x' => 0,
+                'y' => 0,
+                'w' => 0,
+                'h' => 0,
+                'l' => 0,
+                't' => 0,
+                'r' => 0,
+                'b' => 0,
+                'padding' => ['T' => 0, 'R' => 0, 'B' => 0, 'L' => 0],
+                'margin' => ['T' => 0, 'R' => 0, 'B' => 0, 'L' => 0],
+                'border-spacing' => ['H' => 0, 'V' => 0],
+                'border-collapse' => 'separate',
+            ]
+        ];
+
+        if (empty($html)) {
+            return $dom;
+        }
         // array of CSS styles ( selector => properties).
         $css = [];
         // get CSS array defined at previous call
@@ -16915,14 +16981,14 @@ class IXCTCPDF
             }
         }
         // create a special tag to contain the CSS array (used for table content)
-        $csstagarray = '<cssarray>' . htmlentities(json_encode($css)) . '</cssarray>';
+        $csstagarray = '<cssarray>'.htmlentities(json_encode($css)).'</cssarray>';
         // remove head and style blocks
         $html = preg_replace('/<head([^\>]*?)>(.*?)<\/head>/is', '', $html);
         $html = preg_replace('/<style([^\>]*?)>([^\<]*?)<\/style>/is', '', $html);
         // define block tags
-        $blocktags = ['blockquote', 'br', 'dd', 'dl', 'div', 'dt', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'li', 'ol', 'p', 'pre', 'ul', 'tcpdf', 'table', 'tr', 'td'];
+        $blocktags = ['blockquote','br','dd','dl','div','dt','h1','h2','h3','h4','h5','h6','hr','li','ol','p','pre','ul','tcpdf','table','tr','td'];
         // define self-closing tags
-        $selfclosingtags = ['area', 'base', 'basefont', 'br', 'hr', 'input', 'img', 'link', 'meta'];
+        $selfclosingtags = ['area','base','basefont','br','hr','input','img','link','meta'];
         // remove all unsupported tags (the line below lists all supported tags)
         $html = strip_tags($html, '<marker/><a><b><blockquote><body><br><br/><dd><del><div><dl><dt><em><font><form><h1><h2><h3><h4><h5><h6><hr><hr/><i><img><input><label><li><ol><option><p><pre><s><select><small><span><strike><strong><sub><sup><table><tablehead><tcpdf><td><textarea><th><thead><tr><tt><u><ul>');
         //replace some blank characters
@@ -16939,12 +17005,12 @@ class IXCTCPDF
                 // preserve newlines on <pre> tag
                 $html_b = preg_replace("'<xre([^\>]*)>(.*?)\n(.*?)</pre>'si", "<xre\\1>\\2<br />\\3</pre>", $html_b);
             }
-            while (preg_match("'<xre([^\>]*)>(.*?)" . $this->re_space['p'] . "(.*?)</pre>'" . $this->re_space['m'], $html_b)) {
+            while (preg_match("'<xre([^\>]*)>(.*?)".$this->re_space['p']."(.*?)</pre>'".$this->re_space['m'], $html_b)) {
                 // preserve spaces on <pre> tag
-                $html_b = preg_replace("'<xre([^\>]*)>(.*?)" . $this->re_space['p'] . "(.*?)</pre>'" . $this->re_space['m'], "<xre\\1>\\2&nbsp;\\3</pre>", $html_b);
+                $html_b = preg_replace("'<xre([^\>]*)>(.*?)".$this->re_space['p']."(.*?)</pre>'".$this->re_space['m'], "<xre\\1>\\2&nbsp;\\3</pre>", $html_b);
             }
-            $html = $html_a . $html_b . substr($html, $pos + 6);
-            $offset = strlen($html_a . $html_b);
+            $html = $html_a.$html_b.substr($html, $pos + 6);
+            $offset = strlen($html_a.$html_b);
         }
         $offset = 0;
         while (($offset < strlen($html)) and ($pos = strpos($html, '</textarea>', $offset)) !== false) {
@@ -16955,8 +17021,8 @@ class IXCTCPDF
                 $html_b = preg_replace("'<textarea([^\>]*)>(.*?)\n(.*?)</textarea>'si", "<textarea\\1>\\2<TBR>\\3</textarea>", $html_b);
                 $html_b = preg_replace("'<textarea([^\>]*)>(.*?)[\"](.*?)</textarea>'si", "<textarea\\1>\\2''\\3</textarea>", $html_b);
             }
-            $html = $html_a . $html_b . substr($html, $pos + 11);
-            $offset = strlen($html_a . $html_b);
+            $html = $html_a.$html_b.substr($html, $pos + 11);
+            $offset = strlen($html_a.$html_b);
         }
         $html = preg_replace('/([\s]*)<option/si', '<option', $html);
         $html = preg_replace('/<\/option>([\s]*)/si', '</option>', $html);
@@ -16968,8 +17034,8 @@ class IXCTCPDF
                 $html_b = preg_replace("'<option([\s]+)value=\"([^\"]*)\"([^\>]*)>(.*?)</option>'si", "\\2#!TaB!#\\4#!NwL!#", $html_b);
                 $html_b = preg_replace("'<option([^\>]*)>(.*?)</option>'si", "\\2#!NwL!#", $html_b);
             }
-            $html = $html_a . $html_b . substr($html, $pos + 9);
-            $offset = strlen($html_a . $html_b);
+            $html = $html_a.$html_b.substr($html, $pos + 9);
+            $offset = strlen($html_a.$html_b);
         }
         if (preg_match("'</select'si", $html)) {
             $html = preg_replace("'<select([^\>]*)>'si", "<select\\1 opt=\"", $html);
@@ -16980,24 +17046,24 @@ class IXCTCPDF
         $html = str_replace('<TBR>', "\n", $html);
         // remove extra spaces from code
         $html = preg_replace('/[\s]+<\/(table|tr|ul|ol|dl)>/', '</\\1>', $html);
-        $html = preg_replace('/' . $this->re_space['p'] . '+<\/(td|th|li|dt|dd)>/' . $this->re_space['m'], '</\\1>', $html);
+        $html = preg_replace('/'.$this->re_space['p'].'+<\/(td|th|li|dt|dd)>/'.$this->re_space['m'], '</\\1>', $html);
         $html = preg_replace('/[\s]+<(tr|td|th|li|dt|dd)/', '<\\1', $html);
-        $html = preg_replace('/' . $this->re_space['p'] . '+<(ul|ol|dl|br)/' . $this->re_space['m'], '<\\1', $html);
+        $html = preg_replace('/'.$this->re_space['p'].'+<(ul|ol|dl|br)/'.$this->re_space['m'], '<\\1', $html);
         $html = preg_replace('/<\/(table|tr|td|th|blockquote|dd|dt|dl|div|dt|h1|h2|h3|h4|h5|h6|hr|li|ol|ul|p)>[\s]+</', '</\\1><', $html);
         $html = preg_replace('/<\/(td|th)>/', '<marker style="font-size:0"/></\\1>', $html);
         $html = preg_replace('/<\/table>([\s]*)<marker style="font-size:0"\/>/', '</table>', $html);
-        $html = preg_replace('/' . $this->re_space['p'] . '+<img/' . $this->re_space['m'], chr(32) . '<img', $html);
+        $html = preg_replace('/'.$this->re_space['p'].'+<img/'.$this->re_space['m'], chr(32).'<img', $html);
         $html = preg_replace('/<img([^\>]*)>[\s]+([^\<])/xi', '<img\\1>&nbsp;\\2', $html);
         $html = preg_replace('/<img([^\>]*)>/xi', '<img\\1><span><marker style="font-size:0"/></span>', $html);
         $html = preg_replace('/<xre/', '<pre', $html); // restore pre tag
         $html = preg_replace('/<textarea([^\>]*)>([^\<]*)<\/textarea>/xi', '<textarea\\1 value="\\2" />', $html);
         $html = preg_replace('/<li([^\>]*)><\/li>/', '<li\\1>&nbsp;</li>', $html);
-        $html = preg_replace('/<li([^\>]*)>' . $this->re_space['p'] . '*<img/' . $this->re_space['m'], '<li\\1><font size="1">&nbsp;</font><img', $html);
+        $html = preg_replace('/<li([^\>]*)>'.$this->re_space['p'].'*<img/'.$this->re_space['m'], '<li\\1><font size="1">&nbsp;</font><img', $html);
         $html = preg_replace('/<([^\>\/]*)>[\s]/', '<\\1>&nbsp;', $html); // preserve some spaces
         $html = preg_replace('/[\s]<\/([^\>]*)>/', '&nbsp;</\\1>', $html); // preserve some spaces
         $html = preg_replace('/<su([bp])/', '<zws/><su\\1', $html); // fix sub/sup alignment
         $html = preg_replace('/<\/su([bp])>/', '</su\\1><zws/>', $html); // fix sub/sup alignment
-        $html = preg_replace('/' . $this->re_space['p'] . '+/' . $this->re_space['m'], chr(32), $html); // replace multiple spaces with a single space
+        $html = preg_replace('/'.$this->re_space['p'].'+/'.$this->re_space['m'], chr(32), $html); // replace multiple spaces with a single space
         // trim string
         $html = $this->stringTrim($html);
         // fix br tag after li
@@ -17011,37 +17077,8 @@ class IXCTCPDF
         // count elements
         $maxel = count($a);
         $elkey = 0;
-        $key = 0;
-        // create an array of elements
-        $dom = [];
-        $dom[$key] = [];
-        // set inheritable properties fot the first void element
-        // possible inheritable properties are: azimuth, border-collapse, border-spacing, caption-side, color, cursor, direction, empty-cells, font, font-family, font-stretch, font-size, font-size-adjust, font-style, font-variant, font-weight, letter-spacing, line-height, list-style, list-style-image, list-style-position, list-style-type, orphans, page, page-break-inside, quotes, speak, speak-header, text-align, text-indent, text-transform, volume, white-space, widows, word-spacing
-        $dom[$key]['tag'] = false;
-        $dom[$key]['block'] = false;
-        $dom[$key]['value'] = '';
-        $dom[$key]['parent'] = 0;
-        $dom[$key]['hide'] = false;
-        $dom[$key]['fontname'] = $this->FontFamily;
-        $dom[$key]['fontstyle'] = $this->FontStyle;
-        $dom[$key]['fontsize'] = $this->FontSizePt;
-        $dom[$key]['font-stretch'] = $this->font_stretching;
-        $dom[$key]['letter-spacing'] = $this->font_spacing;
-        $dom[$key]['stroke'] = $this->textstrokewidth;
-        $dom[$key]['fill'] = (($this->textrendermode % 2) == 0);
-        $dom[$key]['clip'] = ($this->textrendermode > 3);
-        $dom[$key]['line-height'] = $this->cell_height_ratio;
-        $dom[$key]['bgcolor'] = false;
-        $dom[$key]['fgcolor'] = $this->fgcolor; // color
-        $dom[$key]['strokecolor'] = $this->strokecolor;
-        $dom[$key]['align'] = '';
-        $dom[$key]['listtype'] = '';
-        $dom[$key]['text-indent'] = 0;
-        $dom[$key]['text-transform'] = '';
-        $dom[$key]['border'] = [];
-        $dom[$key]['dir'] = $this->rtl ? 'rtl' : 'ltr';
         $thead = false; // true when we are inside the THEAD tag
-        ++$key;
+        $key = 1;
         $level = [];
         array_push($level, 0); // root
         while ($elkey < $maxel) {
@@ -17117,7 +17154,7 @@ class IXCTCPDF
                         && ($dom[($dom[$key]['parent'])]['thead'] === true)
                     ) {
                         if (IXCTCPDF_STATIC::empty_string($dom[($dom[($dom[$key]['parent'])]['parent'])]['thead'])) {
-                            $dom[($dom[($dom[$key]['parent'])]['parent'])]['thead'] = $csstagarray . $a[$dom[($dom[($dom[$key]['parent'])]['parent'])]['elkey']];
+                            $dom[($dom[($dom[$key]['parent'])]['parent'])]['thead'] = $csstagarray.$a[$dom[($dom[($dom[$key]['parent'])]['parent'])]['elkey']];
                         }
                         for ($i = $dom[$key]['parent']; $i <= $key; ++$i) {
                             $dom[($dom[($dom[$key]['parent'])]['parent'])]['thead'] .= $a[$dom[$i]['elkey']];
@@ -17238,20 +17275,17 @@ class IXCTCPDF
                             $lineheight = trim($dom[$key]['style']['line-height']);
                             switch ($lineheight) {
                                 // A normal line height. This is default
-                                case 'normal':
-                                {
+                                case 'normal': {
                                     $dom[$key]['line-height'] = $dom[0]['line-height'];
                                     break;
                                 }
-                                case 'inherit':
-                                {
+                                case 'inherit': {
                                     $dom[$key]['line-height'] = $dom[$parentkey]['line-height'];
                                 }
-                                default:
-                                {
+                                default: {
                                     if (is_numeric($lineheight)) {
                                         // convert to percentage of font height
-                                        $lineheight = ($lineheight * 100) . '%';
+                                        $lineheight = ($lineheight * 100).'%';
                                     }
                                     $dom[$key]['line-height'] = $this->getHTMLUnitToUnits($lineheight, 1, '%', true);
                                     if (substr($lineheight, -1) !== '%') {
@@ -17394,20 +17428,20 @@ class IXCTCPDF
                         }
                         $cellside = ['L' => 'left', 'R' => 'right', 'T' => 'top', 'B' => 'bottom'];
                         foreach ($cellside as $bsk => $bsv) {
-                            if (isset($dom[$key]['style']['border-' . $bsv])) {
-                                $borderstyle = $this->getCSSBorderStyle($dom[$key]['style']['border-' . $bsv]);
+                            if (isset($dom[$key]['style']['border-'.$bsv])) {
+                                $borderstyle = $this->getCSSBorderStyle($dom[$key]['style']['border-'.$bsv]);
                                 if (! empty($borderstyle)) {
                                     $dom[$key]['border'][$bsk] = $borderstyle;
                                 }
                             }
-                            if (isset($dom[$key]['style']['border-' . $bsv . '-color'])) {
-                                $dom[$key]['border'][$bsk]['color'] = IXCTCPDF_COLORS::convertHTMLColorToDec($dom[$key]['style']['border-' . $bsv . '-color'], $this->spot_colors);
+                            if (isset($dom[$key]['style']['border-'.$bsv.'-color'])) {
+                                $dom[$key]['border'][$bsk]['color'] = IXCTCPDF_COLORS::convertHTMLColorToDec($dom[$key]['style']['border-'.$bsv.'-color'], $this->spot_colors);
                             }
-                            if (isset($dom[$key]['style']['border-' . $bsv . '-width'])) {
-                                $dom[$key]['border'][$bsk]['width'] = $this->getCSSBorderWidth($dom[$key]['style']['border-' . $bsv . '-width']);
+                            if (isset($dom[$key]['style']['border-'.$bsv.'-width'])) {
+                                $dom[$key]['border'][$bsk]['width'] = $this->getCSSBorderWidth($dom[$key]['style']['border-'.$bsv.'-width']);
                             }
-                            if (isset($dom[$key]['style']['border-' . $bsv . '-style'])) {
-                                $dom[$key]['border'][$bsk]['dash'] = $this->getCSSBorderDashStyle($dom[$key]['style']['border-' . $bsv . '-style']);
+                            if (isset($dom[$key]['style']['border-'.$bsv.'-style'])) {
+                                $dom[$key]['border'][$bsk]['dash'] = $this->getCSSBorderDashStyle($dom[$key]['style']['border-'.$bsv.'-style']);
                                 if ($dom[$key]['border'][$bsk]['dash'] < 0) {
                                     $dom[$key]['border'][$bsk] = [];
                                 }
@@ -17420,8 +17454,8 @@ class IXCTCPDF
                             $dom[$key]['padding'] = $this->cell_padding;
                         }
                         foreach ($cellside as $psk => $psv) {
-                            if (isset($dom[$key]['style']['padding-' . $psv])) {
-                                $dom[$key]['padding'][$psk] = $this->getHTMLUnitToUnits($dom[$key]['style']['padding-' . $psv], 0, 'px', false);
+                            if (isset($dom[$key]['style']['padding-'.$psv])) {
+                                $dom[$key]['padding'][$psk] = $this->getHTMLUnitToUnits($dom[$key]['style']['padding-'.$psv], 0, 'px', false);
                             }
                         }
                         // check for CSS margin properties
@@ -17431,8 +17465,8 @@ class IXCTCPDF
                             $dom[$key]['margin'] = $this->cell_margin;
                         }
                         foreach ($cellside as $psk => $psv) {
-                            if (isset($dom[$key]['style']['margin-' . $psv])) {
-                                $dom[$key]['margin'][$psk] = $this->getHTMLUnitToUnits(str_replace('auto', '0', $dom[$key]['style']['margin-' . $psv]), 0, 'px', false);
+                            if (isset($dom[$key]['style']['margin-'.$psv])) {
+                                $dom[$key]['margin'][$psk] = $this->getHTMLUnitToUnits(str_replace('auto', '0', $dom[$key]['style']['margin-'.$psv]), 0, 'px', false);
                             }
                         }
                         // check for CSS border-spacing properties
@@ -17468,7 +17502,7 @@ class IXCTCPDF
                         $dom[$key]['hide'] = (trim(strtolower($dom[$key]['attribute']['display'])) == 'none');
                     }
                     if (isset($dom[$key]['attribute']['border']) and ($dom[$key]['attribute']['border'] != 0)) {
-                        $borderstyle = $this->getCSSBorderStyle($dom[$key]['attribute']['border'] . ' solid black');
+                        $borderstyle = $this->getCSSBorderStyle($dom[$key]['attribute']['border'].' solid black');
                         if (! empty($borderstyle)) {
                             $dom[$key]['border']['LTRB'] = $borderstyle;
                         }
@@ -17640,23 +17674,21 @@ class IXCTCPDF
                         }
                     } elseif (! $this->isunicode) {
                         switch ($dom[$dom[$key]['parent']]['text-transform']) {
-                            case 'capitalize':
-                            {
+                            case 'capitalize': {
                                 $element = ucwords(strtolower($element));
                                 break;
                             }
-                            case 'uppercase':
-                            {
+                            case 'uppercase': {
                                 $element = strtoupper($element);
                                 break;
                             }
-                            case 'lowercase':
-                            {
+                            case 'lowercase': {
                                 $element = strtolower($element);
                                 break;
                             }
                         }
                     }
+                    $element = preg_replace("/&NBSP;/i", "&nbsp;", $element);
                 }
                 $dom[$key]['value'] = stripslashes($this->unhtmlentities($element));
             }
@@ -17683,42 +17715,61 @@ class IXCTCPDF
     }
 
     /**
-     * Return an hash code used to ensure that the serialized data has been generated by this TCPDF instance.
-     * @param string $data serialized data
-     * @return string
-     * @public static
+     * Calculates the hash value of the given data.
+     *
+     * @param string $data The data to be hashed.
+     * @return string The hashed value of the data.
      */
-    protected function getHashForTCPDFtagParams($data)
+    protected function hashTCPDFtag($data)
     {
-        return md5(strlen($data) . $this->file_id . $data);
+        return hash_hmac('sha256', $data, $this->hash_key, false);
     }
 
     /**
-     * Serialize an array of parameters to be used with TCPDF tag in HTML code.
-     * @param array $data parameters array
-     * @return string containing serialized data
+     * Serialize data to be used with TCPDF tag in HTML code.
+     * @param string $method TCPDF method name
+     * @param array $params Method parameters
+     * @return string Serialized data
      * @public static
      */
-    public function serializeTCPDFtagParameters($data)
+    public function serializeTCPDFtag($method, $params = [])
     {
+        $data = ['m' => $method, 'p' => $params];
         $encoded = urlencode(json_encode($data));
-        return $this->getHashForTCPDFtagParams($encoded) . $encoded;
+        $hash = $this->hashTCPDFtag($encoded);
+        return strlen($hash).'+'.$hash.'+'.$encoded;
     }
 
     /**
-     * Unserialize parameters to be used with TCPDF tag in HTML code.
+     * Unserialize data to be used with TCPDF tag in HTML code.
      * @param string $data serialized data
      * @return array containing unserialized data
      * @protected static
      */
-    protected function unserializeTCPDFtagParameters($data)
+    protected function unserializeTCPDFtag($data)
     {
-        $hash = substr($data, 0, 32);
-        $encoded = substr($data, 32);
-        if ($hash != $this->getHashForTCPDFtagParams($encoded)) {
+        $hpos = strpos($data, '+');
+        $hlen = intval(substr($data, 0, $hpos));
+        $hash = substr($data, $hpos + 1, $hlen);
+        $encoded = substr($data, $hpos + 2 + $hlen);
+        if ($hash != $this->hashTCPDFtag($encoded)) {
             $this->Error('Invalid parameters');
         }
         return json_decode(urldecode($encoded), true);
+    }
+
+    /**
+     * Check if a TCPDF tag is allowed
+     * @param string $method TCPDF method name
+     * @return boolean
+     * @protected
+     */
+    protected function allowedTCPDFtag($method)
+    {
+        if (defined('K_ALLOWED_TCPDF_TAGS')) {
+            return (strpos(K_ALLOWED_TCPDF_TAGS, '|'.$method.'|') !== false);
+        }
+        return false;
     }
 
     /**
@@ -17869,6 +17920,9 @@ class IXCTCPDF
                     }
                     ++$key;
                 }
+            }
+            if ($key == $maxel) {
+                break;
             }
             if ($dom[$key]['tag'] and isset($dom[$key]['attribute']['pagebreak'])) {
                 // check for pagebreak
@@ -18149,7 +18203,7 @@ class IXCTCPDF
                             $this->cell_height_ratio = $dom[$key]['line-height'];
                             $fontaligned = true;
                         }
-                        $this->SetFont($fontname, $fontstyle, $fontsize);
+                        $this->setFont($fontname, $fontstyle, $fontsize);
                         // reset row height
                         $this->resetLastH();
                         $curfontname = $fontname;
@@ -18176,16 +18230,16 @@ class IXCTCPDF
                 // get current position on page buffer
                 $curpos = $this->pagelen[$startlinepage];
                 if (isset($dom[$key]['bgcolor']) and ($dom[$key]['bgcolor'] !== false)) {
-                    $this->SetFillColorArray($dom[$key]['bgcolor']);
+                    $this->setFillColorArray($dom[$key]['bgcolor']);
                     $wfill = true;
                 } else {
                     $wfill = $fill | false;
                 }
                 if (isset($dom[$key]['fgcolor']) and ($dom[$key]['fgcolor'] !== false)) {
-                    $this->SetTextColorArray($dom[$key]['fgcolor']);
+                    $this->setTextColorArray($dom[$key]['fgcolor']);
                 }
                 if (isset($dom[$key]['strokecolor']) and ($dom[$key]['strokecolor'] !== false)) {
-                    $this->SetDrawColorArray($dom[$key]['strokecolor']);
+                    $this->setDrawColorArray($dom[$key]['strokecolor']);
                 }
                 if (isset($dom[$key]['align'])) {
                     $lalign = $dom[$key]['align'];
@@ -18243,7 +18297,7 @@ class IXCTCPDF
                             $pend = '';
                         }
                     }
-                    if ((isset($plalign) and ((($plalign == 'C') or ($plalign == 'J') or (($plalign == 'R') and (! $this->rtl)) or (($plalign == 'L') and ($this->rtl)))))) {
+                    if ((((($plalign == 'C') or ($plalign == 'J') or (($plalign == 'R') and (! $this->rtl)) or (($plalign == 'L') and ($this->rtl)))))) {
                         // calculate shifting amount
                         $tw = $w;
                         if (($plalign == 'J') and $this->isRTLTextDir() and ($this->num_columns > 1)) {
@@ -18647,9 +18701,9 @@ class IXCTCPDF
                 if (! ($dom[$key]['tag'] and ! $dom[$key]['opening'] and ($dom[$key]['value'] == 'table')
                     and (isset($this->emptypagemrk[$this->page]))
                     and ($this->emptypagemrk[$this->page] == $this->pagelen[$this->page]))) {
-                    $this->SetFont($fontname, $fontstyle, $fontsize);
+                    $this->setFont($fontname, $fontstyle, $fontsize);
                     if ($wfill) {
-                        $this->SetFillColorArray($this->bgcolor);
+                        $this->setFillColorArray($this->bgcolor);
                     }
                 }
             } // end newline
@@ -18852,7 +18906,7 @@ class IXCTCPDF
                             $dom[$trid]['cellpos'][($cellid - 1)]['bgcolor'] = $dom[$parentid]['bgcolor'];
                         }
                         // store border info
-                        if (isset($tdborder) and ! empty($tdborder)) {
+                        if (! empty($tdborder)) {
                             $dom[$trid]['cellpos'][($cellid - 1)]['border'] = $tdborder;
                         }
                         $prevLastH = $this->lasth;
@@ -18949,14 +19003,14 @@ class IXCTCPDF
             } elseif (strlen($dom[$key]['value']) > 0) {
                 // print list-item
                 if (! IXCTCPDF_STATIC::empty_string($this->lispacer) and ($this->lispacer != '^')) {
-                    $this->SetFont($pfontname, $pfontstyle, $pfontsize);
+                    $this->setFont($pfontname, $pfontstyle, $pfontsize);
                     $this->resetLastH();
                     $minstartliney = $this->y;
                     $maxbottomliney = ($startliney + $this->getCellHeight($this->FontSize));
                     if (is_numeric($pfontsize) and ($pfontsize > 0)) {
                         $this->putHtmlListBullet($this->listnum, $this->lispacer, $pfontsize);
                     }
-                    $this->SetFont($curfontname, $curfontstyle, $curfontsize);
+                    $this->setFont($curfontname, $curfontstyle, $curfontsize);
                     $this->resetLastH();
                     if (is_numeric($pfontsize) and ($pfontsize > 0) and is_numeric($curfontsize) and ($curfontsize > 0) and ($pfontsize != $curfontsize)) {
                         $pfontascent = $this->getFontAscent($pfontname, $pfontstyle, $pfontsize);
@@ -19197,7 +19251,7 @@ class IXCTCPDF
                     $pend = '';
                 }
             }
-            if ((isset($plalign) and ((($plalign == 'C') or (($plalign == 'R') and (! $this->rtl)) or (($plalign == 'L') and ($this->rtl)))))) {
+            if ((((($plalign == 'C') or (($plalign == 'R') and (! $this->rtl)) or (($plalign == 'L') and ($this->rtl)))))) {
                 // calculate shifting amount
                 $tw = $w;
                 if ($this->lMargin != $prevlMargin) {
@@ -19416,7 +19470,7 @@ class IXCTCPDF
                 $dom[$key]['old_cell_padding'] = $this->cell_padding;
                 if (isset($tag['attribute']['cellpadding'])) {
                     $pad = $this->getHTMLUnitToUnits($tag['attribute']['cellpadding'], 1, 'px');
-                    $this->SetCellPadding($pad);
+                    $this->setCellPadding($pad);
                 } elseif (isset($tag['padding'])) {
                     $this->cell_padding = $tag['padding'];
                 }
@@ -19459,7 +19513,7 @@ class IXCTCPDF
                     $hrWidth = $wtmp;
                 }
                 $prevlinewidth = $this->GetLineWidth();
-                $this->SetLineWidth($hrHeight);
+                $this->setLineWidth($hrHeight);
 
                 $lineStyle = [];
                 if (isset($tag['fgcolor'])) {
@@ -19489,7 +19543,7 @@ class IXCTCPDF
                 $lineStyle = array_filter($lineStyle);
 
                 $this->Line($x, $y, $x + $hrWidth, $y, $lineStyle);
-                $this->SetLineWidth($prevlinewidth);
+                $this->setLineWidth($prevlinewidth);
                 $this->addHTMLVertSpace(max($hbc, ($hrHeight / 2)), 0, $cell, ! isset($dom[($key + 1)]));
                 break;
             }
@@ -19510,6 +19564,9 @@ class IXCTCPDF
                     // data stream
                     $imgsrc = '@' . base64_decode(substr($imgsrc, 1));
                     $type = '';
+                } elseif (preg_match('@^data:image/([^;]*);base64,(.*)@', $imgsrc, $reg)) {
+                    $imgsrc = '@'.base64_decode($reg[2]);
+                    $type = $reg[1];
                 } elseif ($this->allowLocalFiles && substr($imgsrc, 0, 7) === 'file://') {
                     // get image type from a local file path
                     $imgsrc = substr($imgsrc, 7);
@@ -19590,7 +19647,7 @@ class IXCTCPDF
                                 $lnky = 0;
                             }
                             $imglink = $this->AddLink();
-                            $this->SetLink($imglink, $lnky, $page);
+                            $this->setLink($imglink, $lnky, $page);
                         }
                     }
                 }
@@ -19758,12 +19815,12 @@ class IXCTCPDF
             }
             case 'sup':
             {
-                $this->SetXY($this->GetX(), $this->GetY() - ((0.7 * $this->FontSizePt) / $this->k));
+                $this->setXY($this->GetX(), $this->GetY() - ((0.7 * $this->FontSizePt) / $this->k));
                 break;
             }
             case 'sub':
             {
-                $this->SetXY($this->GetX(), $this->GetY() + ((0.3 * $this->FontSizePt) / $this->k));
+                $this->setXY($this->GetX(), $this->GetY() + ((0.3 * $this->FontSizePt) / $this->k));
                 break;
             }
             case 'h1':
@@ -20041,17 +20098,14 @@ class IXCTCPDF
             {
                 if (defined('K_TCPDF_CALLS_IN_HTML') and (K_TCPDF_CALLS_IN_HTML === true)) {
                     // Special tag used to call TCPDF methods
-                    if (isset($tag['attribute']['method'])) {
-                        $tcpdf_method = $tag['attribute']['method'];
-                        if (method_exists($this, $tcpdf_method)) {
-                            if (isset($tag['attribute']['params']) and (! empty($tag['attribute']['params']))) {
-                                $params = $this->unserializeTCPDFtagParameters($tag['attribute']['params']);
-                                call_user_func_array([$this, $tcpdf_method], $params);
-                            } else {
-                                $this->$tcpdf_method();
-                            }
-                            $this->newline = true;
+                    // This tag is disabled by default by the K_TCPDF_CALLS_IN_HTML constant on TCPDF configuration file.
+                    // Please use this feature only if you are in control of the HTML content and you are sure that it does not contain any harmful code.
+                    if (! empty($tag['attribute']['data'])) {
+                        $tcpdf_tag_data = $this->unserializeTCPDFtag($tag['attribute']['data']);
+                        if ($this->allowedTCPDFtag($tcpdf_tag_data['m'])) {
+                            call_user_func_array([$this, $tcpdf_tag_data['m']], $tcpdf_tag_data['p']);
                         }
+                        $this->newline = true;
                     }
                 }
                 break;
@@ -20265,7 +20319,7 @@ class IXCTCPDF
                         $table_el = $dom[($dom[$key]['parent'])];
                     }
                     // for each row
-                    if (count($table_el['trids']) > 0) {
+                    if (! empty($table_el['trids'])) {
                         unset($xmax);
                     }
                     foreach ($table_el['trids'] as $j => $trkey) {
@@ -20297,7 +20351,7 @@ class IXCTCPDF
                                 $border = $cellpos['border'];
                             }
                             if (isset($cellpos['bgcolor']) and ($cellpos['bgcolor']) !== false) {
-                                $this->SetFillColorArray($cellpos['bgcolor']);
+                                $this->setFillColorArray($cellpos['bgcolor']);
                                 $fill = true;
                             } else {
                                 $fill = false;
@@ -20516,12 +20570,12 @@ class IXCTCPDF
                 }
                 case 'sup':
                 {
-                    $this->SetXY($this->GetX(), $this->GetY() + ((0.7 * $parent['fontsize']) / $this->k));
+                    $this->setXY($this->GetX(), $this->GetY() + ((0.7 * $parent['fontsize']) / $this->k));
                     break;
                 }
                 case 'sub':
                 {
-                    $this->SetXY($this->GetX(), $this->GetY() - ((0.3 * $parent['fontsize']) / $this->k));
+                    $this->setXY($this->GetX(), $this->GetY() - ((0.3 * $parent['fontsize']) / $this->k));
                     break;
                 }
                 case 'div':
@@ -20724,7 +20778,7 @@ class IXCTCPDF
         if (isset($tag['bgcolor']) and ($tag['bgcolor'] !== false)) {
             // get background color
             $old_bgcolor = $this->bgcolor;
-            $this->SetFillColorArray($tag['bgcolor']);
+            $this->setFillColorArray($tag['bgcolor']);
             $fill = true;
         }
         if (! $border and ! $fill) {
@@ -20890,7 +20944,7 @@ class IXCTCPDF
         $this->page_regions = $temp_page_regions;
         if (isset($old_bgcolor)) {
             // restore background color
-            $this->SetFillColorArray($old_bgcolor);
+            $this->setFillColorArray($old_bgcolor);
         }
         // restore pointer position
         $this->x = $prev_x;
@@ -20928,7 +20982,7 @@ class IXCTCPDF
      * @public
      * @since 4.2.000 (2008-10-29)
      */
-    public function SetBooklet($booklet = true, $inner = -1, $outer = -1)
+    public function setBooklet($booklet = true, $inner = -1, $outer = -1)
     {
         $this->booklet = $booklet;
         if ($inner >= 0) {
@@ -21324,9 +21378,9 @@ class IXCTCPDF
         $this->x = $tmpx;
         $this->lispacer = '^';
         // restore colors
-        $this->SetFillColorArray($bgcolor);
-        $this->SetDrawColorArray($strokecolor);
-        $this->SettextColorArray($color);
+        $this->setFillColorArray($bgcolor);
+        $this->setDrawColorArray($strokecolor);
+        $this->settextColorArray($color);
     }
 
     /**
@@ -21454,7 +21508,7 @@ class IXCTCPDF
         }
         $this->_out('' . $this->linestyleWidth . ' ' . $this->linestyleCap . ' ' . $this->linestyleJoin . ' ' . $this->linestyleDash . ' ' . $this->DrawColor . ' ' . $this->FillColor . '');
         if (! IXCTCPDF_STATIC::empty_string($this->FontFamily)) {
-            $this->SetFont($this->FontFamily, $this->FontStyle, $this->FontSizePt);
+            $this->setFont($this->FontFamily, $this->FontStyle, $this->FontSizePt);
         }
     }
 
@@ -22097,7 +22151,7 @@ class IXCTCPDF
      * @since 4.5.000 (2009-01-02)
      * @see addTOCPage(), endTOCPage(), addHTMLTOC()
      */
-    public function addTOC($page = '', $numbersfont = '', $filler = '.', $toc_name = 'TOC', $style = '', $color = [0, 0, 0])
+    public function addTOC($page = null, $numbersfont = '', $filler = '.', $toc_name = 'TOC', $style = '', $color = [0,0,0])
     {
         $fontsize = $this->FontSizePt;
         $fontfamily = $this->FontFamily;
@@ -22126,7 +22180,7 @@ class IXCTCPDF
                 $page = 1;
             }
         }
-        $this->SetFont($numbersfont, $fontstyle, $fontsize);
+        $this->setFont($numbersfont, $fontstyle, $fontsize);
         $numwidth = $this->GetStringWidth('00000');
         $maxpage = 0; //used for pages on attached documents
         foreach ($this->outlines as $key => $outline) {
@@ -22142,11 +22196,11 @@ class IXCTCPDF
                 $alignnum = 'R';
             }
             if ($outline['l'] == 0) {
-                $this->SetFont($fontfamily, $outline['s'] . 'B', $fontsize);
+                $this->setFont($fontfamily, $outline['s'] . 'B', $fontsize);
             } else {
-                $this->SetFont($fontfamily, $outline['s'], $fontsize - $outline['l']);
+                $this->setFont($fontfamily, $outline['s'], $fontsize - $outline['l']);
             }
-            $this->SetTextColorArray($outline['c']);
+            $this->setTextColorArray($outline['c']);
             // check for page break
             $this->checkPageBreak(2 * $this->getCellHeight($this->FontSize));
             // set margins and X position
@@ -22166,7 +22220,7 @@ class IXCTCPDF
                 $current_page = $this->page;
                 $current_column = $this->current_column;
             }
-            $this->SetX($x_start);
+            $this->setX($x_start);
             $indent = ($spacer * $outline['l']);
             if ($this->rtl) {
                 $this->x -= $indent;
@@ -22176,7 +22230,7 @@ class IXCTCPDF
                 $this->lMargin = $this->x;
             }
             $link = $this->AddLink();
-            $this->SetLink($link, $outline['y'], $outline['p']);
+            $this->setLink($link, $outline['y'], $outline['p']);
             // write the text
             if ($this->rtl) {
                 $txt = ' ' . $outline['t'];
@@ -22189,7 +22243,7 @@ class IXCTCPDF
             } else {
                 $tw = $this->w - $this->rMargin - $this->x;
             }
-            $this->SetFont($numbersfont, $fontstyle, $fontsize);
+            $this->setFont($numbersfont, $fontstyle, $fontsize);
             if (IXCTCPDF_STATIC::empty_string($page)) {
                 $pagenum = $outline['p'];
             } else {
@@ -22308,7 +22362,7 @@ class IXCTCPDF
      * @since 5.0.001 (2010-05-06)
      * @see addTOCPage(), endTOCPage(), addTOC()
      */
-    public function addHTMLTOC($page = '', $toc_name = 'TOC', $templates = [], $correct_align = true, $style = '', $color = [0, 0, 0])
+    public function addHTMLTOC($page = null, $toc_name = 'TOC', $templates = [], $correct_align = true, $style = '', $color = [0,0,0])
     {
         $filler = ' ';
         $prev_htmlLinkColorArray = $this->htmlLinkColorArray;
@@ -22325,12 +22379,12 @@ class IXCTCPDF
             $dom = $this->getHtmlDomArray($html);
             foreach ($dom as $key => $value) {
                 if ($value['value'] == '#TOC_PAGE_NUMBER#') {
-                    $this->SetFont($dom[($key - 1)]['fontname']);
+                    $this->setFont($dom[($key - 1)]['fontname']);
                     $templates['F' . $level] = $this->isUnicodeFont();
                 }
             }
         }
-        $this->SetFont($current_font);
+        $this->setFont($current_font);
         $maxpage = 0; //used for pages on attached documents
         foreach ($this->outlines as $key => $outline) {
             // get HTML template
@@ -22479,25 +22533,23 @@ class IXCTCPDF
      */
     public function rollbackTransaction($self = false)
     {
-        if (isset($this->objcopy)) {
-            $objcopy = $this->objcopy;
-            $this->_destroy(true, true);
-            if ($self) {
-                $objvars = get_object_vars($objcopy);
-                foreach ($objvars as $key => $value) {
-                    $this->$key = $value;
-                }
-                $objcopy->_destroy(true, true);
-                /* The unique file_id should not be used during cleanup again */
-                $objcopy->file_id = null;
-                unset($objcopy);
-                return $this;
-            }
-            /* The unique file_id should not be used during cleanup again */
-            $this->file_id = null;
-            return $objcopy;
+        if (! isset($this->objcopy)) {
+            return $this;
         }
-        return $this;
+        $file_id = $this->file_id;
+        $objcopy = $this->objcopy;
+        $this->_destroy(true, true);
+        if ($self) {
+            $objvars = get_object_vars($objcopy);
+            foreach ($objvars as $key => $value) {
+                $this->$key = $value;
+            }
+            $objcopy->_destroy(true, true);
+            unset($objcopy);
+            return $this;
+        }
+        $this->file_id = $file_id;
+        return $objcopy;
     }
 
     // --- MULTI COLUMNS METHODS -----------------------
@@ -22510,7 +22562,7 @@ class IXCTCPDF
      * @public
      * @since 4.9.001 (2010-03-28)
      */
-    public function setEqualColumns($numcols = 0, $width = 0, $y = '')
+    public function setEqualColumns($numcols = 0, $width = 0, $y = null)
     {
         $this->columns = [];
         if ($numcols < 2) {
@@ -22572,9 +22624,9 @@ class IXCTCPDF
      * @public
      * @since 4.9.001 (2010-03-28)
      */
-    public function selectColumn($col = '')
+    public function selectColumn($col = null)
     {
-        if (is_string($col)) {
+        if (IXCTCPDF_STATIC::empty_string($col)) {
             $col = $this->current_column;
         } elseif ($col >= $this->num_columns) {
             $col = 0;
@@ -22680,7 +22732,7 @@ class IXCTCPDF
     {
         // Ref.: PDF 32000-1:2008 - 9.3.6 Text Rendering Mode
         // convert text rendering parameters
-        if ($stroke < 0) {
+        if ($stroke < 0 || ! is_numeric($stroke)) {
             $stroke = 0;
         }
         if ($fill === true) {
@@ -23110,7 +23162,7 @@ class IXCTCPDF
         // set new environment
         $this->num_columns = 1;
         $this->current_column = 0;
-        $this->SetAutoPageBreak(false);
+        $this->setAutoPageBreak(false);
         if (($w === '') or ($w <= 0)) {
             $w = $this->w - $this->lMargin - $this->rMargin;
         }
@@ -23178,7 +23230,7 @@ class IXCTCPDF
      * @since 5.8.017 (2010-08-24)
      * @see startTemplate(), endTemplate()
      */
-    public function printTemplate($id, $x = '', $y = '', $w = 0, $h = 0, $align = '', $palign = '', $fitonpage = false)
+    public function printTemplate($id, $x = null, $y = null, $w = 0, $h = 0, $align = '', $palign = '', $fitonpage = false)
     {
         if ($this->state != 2) {
             return;
@@ -23196,10 +23248,10 @@ class IXCTCPDF
             }
         }
         // set default values
-        if ($x === '') {
+        if (IXCTCPDF_STATIC::empty_string($x)) {
             $x = $this->x;
         }
-        if ($y === '') {
+        if (IXCTCPDF_STATIC::empty_string($y)) {
             $y = $this->y;
         }
         // check page for no-write regions and adapt page margins if necessary
@@ -23300,7 +23352,7 @@ class IXCTCPDF
             }
             case 'N':
             {
-                $this->SetY($rb_y);
+                $this->setY($rb_y);
                 break;
             }
             default:
@@ -23546,7 +23598,7 @@ class IXCTCPDF
      * @since 5.0.000 (2010-05-02)
      * @public
      */
-    public function ImageSVG($file, $x = '', $y = '', $w = 0, $h = 0, $link = '', $align = '', $palign = '', $border = 0, $fitonpage = false)
+    public function ImageSVG($file, $x = null, $y = null, $w = 0, $h = 0, $link = '', $align = '', $palign = '', $border = 0, $fitonpage = false)
     {
         if ($this->state != 2) {
             return;
@@ -23576,10 +23628,10 @@ class IXCTCPDF
         if ($svgdata === false) {
             $this->Error('SVG file not found: ' . $file);
         }
-        if ($x === '') {
+        if (IXCTCPDF_STATIC::empty_string($x)) {
             $x = $this->x;
         }
-        if ($y === '') {
+        if (IXCTCPDF_STATIC::empty_string($y)) {
             $y = $this->y;
         }
         // check page for no-write regions and adapt page margins if necessary
@@ -23779,8 +23831,8 @@ class IXCTCPDF
         $page_break_mode = $this->AutoPageBreak;
         $page_break_margin = $this->getBreakMargin();
         $cell_padding = $this->cell_padding;
-        $this->SetCellPadding(0);
-        $this->SetAutoPageBreak(false);
+        $this->setCellPadding(0);
+        $this->setAutoPageBreak(false);
         // save the current graphic state
         $this->_out('q' . $this->epsmarker);
         // set initial clipping mask
@@ -23852,7 +23904,7 @@ class IXCTCPDF
             }
             case 'N':
             {
-                $this->SetY($this->img_rb_y);
+                $this->setY($this->img_rb_y);
                 break;
             }
             default:
@@ -23875,7 +23927,7 @@ class IXCTCPDF
         }
         $this->endlinex = $this->img_rb_x;
         // restore page break
-        $this->SetAutoPageBreak($page_break_mode, $page_break_margin);
+        $this->setAutoPageBreak($page_break_mode, $page_break_margin);
         $this->cell_padding = $cell_padding;
     }
 
@@ -23951,10 +24003,10 @@ class IXCTCPDF
         }
         // color
         $fill_color = IXCTCPDF_COLORS::convertHTMLColorToDec($svgstyle['color'], $this->spot_colors);
-        $this->SetFillColorArray($fill_color);
+        $this->setFillColorArray($fill_color);
         // text color
         $text_color = IXCTCPDF_COLORS::convertHTMLColorToDec($svgstyle['text-color'], $this->spot_colors);
-        $this->SetTextColorArray($text_color);
+        $this->setTextColorArray($text_color);
         // clip
         if (preg_match('/rect\(([a-z0-9\-\.]*)[\s]*([a-z0-9\-\.]*)[\s]*([a-z0-9\-\.]*)[\s]*([a-z0-9\-\.]*)\)/si', $svgstyle['clip'], $regs)) {
             $top = (isset($regs[1]) ? $this->getHTMLUnitToUnits($regs[1], 0, $this->svgunit, false) : 0);
@@ -24081,7 +24133,7 @@ class IXCTCPDF
             if ($svgstyle['fill-opacity'] != 1) {
                 $this->setAlpha($this->alpha['CA'], 'Normal', $svgstyle['fill-opacity'], false);
             }
-            $this->SetFillColorArray($fill_color);
+            $this->setFillColorArray($fill_color);
             if ($svgstyle['fill-rule'] == 'evenodd') {
                 $objstyle .= 'F*';
             } else {
@@ -24104,7 +24156,7 @@ class IXCTCPDF
             if (isset($svgstyle['stroke-dasharray']) and ! empty($svgstyle['stroke-dasharray']) and ($svgstyle['stroke-dasharray'] != 'none')) {
                 $stroke_style['dash'] = $svgstyle['stroke-dasharray'];
             }
-            $this->SetLineStyle($stroke_style);
+            $this->setLineStyle($stroke_style);
             $objstyle .= 'D';
         }
         // font
@@ -24208,7 +24260,7 @@ class IXCTCPDF
                 break;
             }
         }
-        $this->SetFont($font_family, $font_style, $font_size);
+        $this->setFont($font_family, $font_style, $font_size);
         $this->setFontStretching($font_stretch);
         $this->setFontSpacing($font_spacing);
         return $objstyle;
@@ -24596,9 +24648,7 @@ class IXCTCPDF
             }
             $firstcmd = false;
         } // end foreach
-        if (! empty($op)) {
-            $this->_out($op);
-        }
+        $this->_out($op);
         return [$xmin, $ymin, ($xmax - $xmin), ($ymax - $ymin)];
     }
 

@@ -650,7 +650,7 @@ class IXCTCPDF_PARSER
                     $offset += $numlen;
                 }
                 break;
-            }
+        }
         return [$objtype, $objval, $offset];
     }
 
