@@ -4287,14 +4287,22 @@ class IXCTCPDF
      */
     protected function getFontsList()
     {
-        if (($fontsdir = opendir(IXCTCPDF_FONTS::_getfontpath())) !== false) {
-            while (($file = readdir($fontsdir)) !== false) {
-                if (substr($file, -4) == '.php') {
-                    array_push($this->fontlist, strtolower(basename($file, '.php')));
-                }
-            }
-            closedir($fontsdir);
-        }
+        $this->fontList = array (
+            0 => 'timesbi',
+            1 => 'helveticab',
+            2 => 'courieri',
+            3 => 'helveticabi',
+            4 => 'symbol',
+            5 => 'helveticai',
+            6 => 'times',
+            7 => 'zapfdingbats',
+            8 => 'courier',
+            9 => 'helvetica',
+            10 => 'courierbi',
+            11 => 'timesi',
+            12 => 'courierb',
+            13 => 'timesb',
+        );
     }
 
     /**
@@ -7992,14 +8000,13 @@ class IXCTCPDF
         }
         if ($destroyall and ! $preserve_objcopy && isset($this->file_id)) {
             self::$cleaned_ids[$this->file_id] = true;
-            // remove all temporary files
-            if ($handle = @opendir(K_PATH_CACHE)) {
-                while (false !== ($file_name = readdir($handle))) {
-                    if (strpos($file_name, '__tcpdf_' . $this->file_id . '_') === 0) {
-                        unlink(K_PATH_CACHE . $file_name);
+            if (is_dir(K_PATH_CACHE)) {
+                $files = glob(K_PATH_CACHE.'__tcpdf_*');
+                foreach($files as $file) {
+                    if (is_file($file) && strpos(basename($file), '__tcpdf_' . $this->file_id . '_') === 0) {
+                        unlink($file);
                     }
                 }
-                closedir($handle);
             }
             if (isset($this->imagekeys)) {
                 foreach ($this->imagekeys as $file) {
