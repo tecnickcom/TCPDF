@@ -8532,7 +8532,7 @@ class TCPDF {
 						}
 						case 'freetext': {
 							if (isset($pl['opt']['da']) AND !empty($pl['opt']['da'])) {
-								$annots .= ' /DA ('.$pl['opt']['da'].')';
+								$annots .= ' /DA '.$this->_datastring($pl['opt']['da']);
 							}
 							if (isset($pl['opt']['q']) AND ($pl['opt']['q'] >= 0) AND ($pl['opt']['q'] <= 2)) {
 								$annots .= ' /Q '.intval($pl['opt']['q']);
@@ -8789,7 +8789,7 @@ class TCPDF {
 								$annots .= ' /AA << '.$pl['opt']['aa'].' >>';
 							}
 							if (isset($pl['opt']['da']) AND !empty($pl['opt']['da'])) {
-								$annots .= ' /DA ('.$pl['opt']['da'].')';
+								$annots .= ' /DA '.$this->_datastring($pl['opt']['da']);
 							}
 							if (isset($pl['opt']['q']) AND ($pl['opt']['q'] >= 0) AND ($pl['opt']['q'] <= 2)) {
 								$annots .= ' /Q '.intval($pl['opt']['q']);
@@ -9939,7 +9939,7 @@ class TCPDF {
 				$out .= ' >> >>';
 			}
 			$font = $this->getFontBuffer((($this->pdfa_mode) ? 'pdfa' : '') .'helvetica');
-			$out .= ' /DA (/F'.$font['i'].' 0 Tf 0 g)';
+			$out .= ' /DA ' . $this->_datastring('/F'.$font['i'].' 0 Tf 0 g');
 			$out .= ' /Q '.(($this->rtl)?'2':'0');
 			//$out .= ' /XFA ';
 			$out .= ' >>';
@@ -11046,7 +11046,7 @@ class TCPDF {
 				$this->encryptdata['V'] = 4;
 				$this->encryptdata['Length'] = 128;
 				$this->encryptdata['CF']['CFM'] = 'AESV2';
-				$this->encryptdata['CF']['Length'] = 128;
+				$this->encryptdata['CF']['Length'] = 16;
 				if ($this->encryptdata['pubkey']) {
 					$this->encryptdata['SubFilter'] = 'adbe.pkcs7.s5';
 					$this->encryptdata['Recipients'] = array();
@@ -11057,7 +11057,7 @@ class TCPDF {
 				$this->encryptdata['V'] = 5;
 				$this->encryptdata['Length'] = 256;
 				$this->encryptdata['CF']['CFM'] = 'AESV3';
-				$this->encryptdata['CF']['Length'] = 256;
+				$this->encryptdata['CF']['Length'] = 32;
 				if ($this->encryptdata['pubkey']) {
 					$this->encryptdata['SubFilter'] = 'adbe.pkcs7.s5';
 					$this->encryptdata['Recipients'] = array();
