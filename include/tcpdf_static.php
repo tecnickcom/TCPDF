@@ -273,8 +273,33 @@ class TCPDF_STATIC {
 	 * @public static
 	 */
 	public static function _escape($s) {
-		// the chr(13) substitution fixes the Bugs item #1421290.
-		return strtr($s, array(')' => '\\)', '(' => '\\(', '\\' => '\\\\', chr(13) => '\r'));
+		$out = '';
+		$len = strlen($s);
+		for ($idx = 0; $idx < $len; $idx++) {
+			$char = $s[$idx];
+			if (($char == '(') || ($char == ')')) {
+				$out .= '\\' . $char;
+				continue;
+			}
+            		if ($char == "\r") {
+				$out .= '\\r';
+				continue;
+			}
+			if ($char == "\n") {
+				$out .= '\\n';
+				continue;
+			}
+			if ($char == "\t") {
+				$out .= '\\t';
+				continue;
+			}
+			if (($char < ' ') || ($char > '~')) {
+				$out .= '\\' . str_pad(decoct(ord($char)), 3, '0', STR_PAD_LEFT);
+                		continue;
+			}
+            		$out .= $char;
+		}
+		return $out;
 	}
 
 	/**
