@@ -379,7 +379,10 @@ class TCPDF_STATIC {
 		if (function_exists('posix_getpid')) {
 			$rnd .= posix_getpid();
 		}
-		if (function_exists('openssl_random_pseudo_bytes') AND (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN')) {
+
+		if (function_exists('random_bytes')) {
+			$rnd .= random_bytes(512);
+		} elseif (function_exists('openssl_random_pseudo_bytes') AND (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN')) {
 			// this is not used on windows systems because it is very slow for a know bug
 			$rnd .= openssl_random_pseudo_bytes(512);
 		} else {
@@ -387,7 +390,7 @@ class TCPDF_STATIC {
 				$rnd .= uniqid('', true);
 			}
 		}
-		return $rnd.$seed.__FILE__.serialize($_SERVER).microtime(true);
+		return $rnd.$seed.__FILE__.microtime(true);
 	}
 
 	/**
