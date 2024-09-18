@@ -19329,7 +19329,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				break;
 			}
 			case 'p': {
-				$this->addHTMLVertSpace($hbz, $hb, $cell, $firsttag);
+				// $this->addHTMLVertSpace($hbz, $hb, $cell, $firsttag);
 				break;
 			}
 			case 'pre': {
@@ -20092,7 +20092,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				break;
 			}
 			case 'p': {
-				$this->addHTMLVertSpace($hbz, $hb, $cell, false, $lasttag);
+				$this->addHTMLVertSpace($hbz, 0, $cell, false, $lasttag);
 				break;
 			}
 			case 'pre': {
