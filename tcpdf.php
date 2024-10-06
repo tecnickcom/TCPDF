@@ -4281,9 +4281,6 @@ class TCPDF {
 		}
 		// normalize family name
 		$family = strtolower($family);
-		if ((!$this->isunicode) AND ($family == 'arial')) {
-			$family = 'helvetica';
-		}
 		if (($family == 'symbol') OR ($family == 'zapfdingbats')) {
 			$style = '';
 		}
