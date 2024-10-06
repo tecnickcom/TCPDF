@@ -19059,7 +19059,7 @@ class TCPDF {
 				} else if (preg_match('@^data:image/([^;]*);base64,(.*)@', $imgsrc, $reg)) {
 					$imgsrc = '@'.base64_decode($reg[2]);
 					$type = $reg[1];
-				} elseif (str_contains($imgsrc, '../')) {
+				} elseif (strpos($imgsrc, '../') !== false) {
 					// accessing parent folders is not allowed
 					break;
 				} elseif ( $this->allowLocalFiles && substr($imgsrc, 0, 7) === 'file://') {
