@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.7.5
+// Version     : 6.7.6
 // Begin       : 2002-08-03
-// Last Update : 2024-03-18
+// Last Update : 2024-10-06
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.7.5
+ * @version 6.7.6
  * @author Nicola Asuni - info@tecnick.com
  * @IgnoreAnnotation("protected")
  * @IgnoreAnnotation("public")
@@ -19010,29 +19010,29 @@ class TCPDF {
 				$this->setLineWidth($hrHeight);
 
 				$lineStyle = array();
-                    		if (isset($tag['fgcolor'])) {
-		                        $lineStyle['color'] = $tag['fgcolor'];
-                    		}
+				if (isset($tag['fgcolor'])) {
+					$lineStyle['color'] = $tag['fgcolor'];
+				}
 
-                    		if (isset($tag['fgcolor'])) {
-                        		$lineStyle['color'] = $tag['fgcolor'];
-                    		}
+				if (isset($tag['fgcolor'])) {
+					$lineStyle['color'] = $tag['fgcolor'];
+				}
 
-                    		if (isset($tag['style']['cap'])) {
-                        		$lineStyle['cap'] = $tag['style']['cap'];
-                    		}
+				if (isset($tag['style']['cap'])) {
+					$lineStyle['cap'] = $tag['style']['cap'];
+				}
 
-                    		if (isset($tag['style']['join'])) {
-                        		$lineStyle['join'] = $tag['style']['join'];
-                    		}
+				if (isset($tag['style']['join'])) {
+					$lineStyle['join'] = $tag['style']['join'];
+				}
 
-                    		if (isset($tag['style']['dash'])) {
-                        		$lineStyle['dash'] = $tag['style']['dash'];
-                    		}
+				if (isset($tag['style']['dash'])) {
+					$lineStyle['dash'] = $tag['style']['dash'];
+				}
 
-                    		if (isset($tag['style']['phase'])) {
-                        		$lineStyle['phase'] = $tag['style']['phase'];
-                    		}
+				if (isset($tag['style']['phase'])) {
+					$lineStyle['phase'] = $tag['style']['phase'];
+				}
 
 				$lineStyle = array_filter($lineStyle);
 
@@ -19059,11 +19059,14 @@ class TCPDF {
 				} else if (preg_match('@^data:image/([^;]*);base64,(.*)@', $imgsrc, $reg)) {
 					$imgsrc = '@'.base64_decode($reg[2]);
 					$type = $reg[1];
+				} elseif (str_contains($imgsrc, '../')) {
+					// accessing parent folders is not allowed
+					break;
 				} elseif ( $this->allowLocalFiles && substr($imgsrc, 0, 7) === 'file://') {
-                    // get image type from a local file path
-                    $imgsrc = substr($imgsrc, 7);
-                    $type = TCPDF_IMAGES::getImageFileType($imgsrc);
-                } else {
+					// get image type from a local file path
+					$imgsrc = substr($imgsrc, 7);
+					$type = TCPDF_IMAGES::getImageFileType($imgsrc);
+				} else {
 					if (($imgsrc[0] === '/') AND !empty($_SERVER['DOCUMENT_ROOT']) AND ($_SERVER['DOCUMENT_ROOT'] != '/')) {
 						// fix image path
 						$findroot = strpos($imgsrc, $_SERVER['DOCUMENT_ROOT']);

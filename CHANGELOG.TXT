@@ -1,3 +1,6 @@
+6.7.6 (2024-10-06)
+	- Forbid access to parent folder in HTML images.
+
 6.7.5 (2024-04-20)
 	- Update GitHub actions
 	- fix: CSV-2024-22640 (#712)
