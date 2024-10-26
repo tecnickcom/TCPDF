@@ -8164,7 +8164,7 @@ class TCPDF {
 	 * @since 5.0.010 (2010-05-17)
 	 */
 	protected function _getannotsrefs($n) {
-		if (!(isset($this->PageAnnots[$n]) OR ($this->sign AND isset($this->signature_data['cert_type'])))) {
+		if (!(isset($this->PageAnnots[$n]) OR count($this->empty_signature_appearance)>0 OR ($this->sign AND isset($this->signature_data['cert_type'])))) {
 			return '';
 		}
 		$out = ' /Annots [';
@@ -8532,7 +8532,7 @@ class TCPDF {
 						}
 						case 'freetext': {
 							if (isset($pl['opt']['da']) AND !empty($pl['opt']['da'])) {
-								$annots .= ' /DA ('.$pl['opt']['da'].')';
+								$annots .= ' /DA '.$this->_datastring($pl['opt']['da']);
 							}
 							if (isset($pl['opt']['q']) AND ($pl['opt']['q'] >= 0) AND ($pl['opt']['q'] <= 2)) {
 								$annots .= ' /Q '.intval($pl['opt']['q']);
@@ -8789,7 +8789,7 @@ class TCPDF {
 								$annots .= ' /AA << '.$pl['opt']['aa'].' >>';
 							}
 							if (isset($pl['opt']['da']) AND !empty($pl['opt']['da'])) {
-								$annots .= ' /DA ('.$pl['opt']['da'].')';
+								$annots .= ' /DA '.$this->_datastring($pl['opt']['da']);
 							}
 							if (isset($pl['opt']['q']) AND ($pl['opt']['q'] >= 0) AND ($pl['opt']['q'] <= 2)) {
 								$annots .= ' /Q '.intval($pl['opt']['q']);
@@ -9939,7 +9939,7 @@ class TCPDF {
 				$out .= ' >> >>';
 			}
 			$font = $this->getFontBuffer((($this->pdfa_mode) ? 'pdfa' : '') .'helvetica');
-			$out .= ' /DA (/F'.$font['i'].' 0 Tf 0 g)';
+			$out .= ' /DA ' . $this->_datastring('/F'.$font['i'].' 0 Tf 0 g');
 			$out .= ' /Q '.(($this->rtl)?'2':'0');
 			//$out .= ' /XFA ';
 			$out .= ' >>';
@@ -11046,7 +11046,7 @@ class TCPDF {
 				$this->encryptdata['V'] = 4;
 				$this->encryptdata['Length'] = 128;
 				$this->encryptdata['CF']['CFM'] = 'AESV2';
-				$this->encryptdata['CF']['Length'] = 128;
+				$this->encryptdata['CF']['Length'] = 16;
 				if ($this->encryptdata['pubkey']) {
 					$this->encryptdata['SubFilter'] = 'adbe.pkcs7.s5';
 					$this->encryptdata['Recipients'] = array();
@@ -11057,7 +11057,7 @@ class TCPDF {
 				$this->encryptdata['V'] = 5;
 				$this->encryptdata['Length'] = 256;
 				$this->encryptdata['CF']['CFM'] = 'AESV3';
-				$this->encryptdata['CF']['Length'] = 256;
+				$this->encryptdata['CF']['Length'] = 32;
 				if ($this->encryptdata['pubkey']) {
 					$this->encryptdata['SubFilter'] = 'adbe.pkcs7.s5';
 					$this->encryptdata['Recipients'] = array();
@@ -13936,8 +13936,8 @@ class TCPDF {
 	 * @since 3.0.000 (2008-03-27)
 	 */
 	protected function addExtGState($parms) {
-		if ($this->pdfa_mode || $this->pdfa_version >= 2) {
-			// transparencies are not allowed in PDF/A mode
+		if (($this->pdfa_mode && $this->pdfa_version < 2) || ($this->state != 2)) {
+			// transparency is not allowed in PDF/A-1 mode
 			return;
 		}
 		// check if this ExtGState already exist
@@ -16440,7 +16440,7 @@ class TCPDF {
 			)
 		);
 
-		if(empty($html)) {
+		if($html === '' || $html === null) {
 			return $dom;
 		}
 		// array of CSS styles ( selector => properties).
@@ -23173,14 +23173,12 @@ class TCPDF {
 		$this->_out(sprintf('%F %F %F %F %F %F cm', $svgscale_x, 0, 0, $svgscale_y, ($e + $svgoffset_x), ($f + $svgoffset_y)));
 		// creates a new XML parser to be used by the other XML functions
 		$parser = xml_parser_create('UTF-8');
-		// the following function allows to use parser inside object
-		xml_set_object($parser, $this);
 		// disable case-folding for this XML parser
 		xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, 0);
 		// sets the element handler functions for the XML parser
-		xml_set_element_handler($parser, 'startSVGElementHandler', 'endSVGElementHandler');
+		xml_set_element_handler($parser, [$this, 'startSVGElementHandler'], [$this, 'endSVGElementHandler']);
 		// sets the character data handler function for the XML parser
-		xml_set_character_data_handler($parser, 'segSVGContentHandler');
+		xml_set_character_data_handler($parser, [$this, 'segSVGContentHandler']);
 		// start parsing an XML document
 		if (!xml_parse($parser, $svgdata)) {
 			$error_message = sprintf('SVG Error: %s at line %d', xml_error_string(xml_get_error_code($parser)), xml_get_current_line_number($parser));
@@ -23642,7 +23640,8 @@ class TCPDF {
 			$params = array();
 			if (isset($val[2])) {
 				// get curve parameters
-				$rawparams = preg_split('/([\,\s]+)/si', trim($val[2]));
+				preg_match_all('/-?\d*\.?\d+/', trim($val[2]), $matches);
+				$rawparams = $matches[0];
 				$params = array();
 				foreach ($rawparams as $ck => $cp) {
 					$params[$ck] = $this->getHTMLUnitToUnits($cp, 0, $this->svgunit, false);
