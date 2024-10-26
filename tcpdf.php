@@ -19055,7 +19055,7 @@ class TCPDF {
 				if ($imgsrc[0] === '@') {
 					// data stream
 					$imgsrc = '@'.base64_decode(substr($imgsrc, 1));
-					$type = '';
+					$type = preg_match('/<svg([^\>]*)>/si', $imgsrc) ? 'svg' : '';
 				} else if (preg_match('@^data:image/([^;]*);base64,(.*)@', $imgsrc, $reg)) {
 					$imgsrc = '@'.base64_decode($reg[2]);
 					$type = $reg[1];
