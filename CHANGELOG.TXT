@@ -1,3 +1,18 @@
+6.7.7 (2024-10-26)
+	- Update regular expression to avoid ReDoS (CVE-2024-22641)
+	- [PHP 8.4] Fix: Curl CURLOPT_BINARYTRANSFER deprecated #675
+	- SVG detection fix for inline data images #646
+	- Fix count svg #647
+	- Since the version 6.7.4, the "0" is considered like empty string and not displayed
+	- Fixed handling of transparency in PDF/A mode in addExtGState method
+	- Encrypt /DA string when document is encrypted
+	- Improve quality of generated seed, avoid potential security pitfall
+	- Try to use random_bytes() first if it's available
+	- Do not include the server parameters in the generated seed, as they might contain sensitive data
+	- Fix bug on _getannotsrefs when there are empty signature appearances but not other annot on a page
+	- Fix SVG coordinate parser that caused drawing artifacts
+	- Remove usage of xml_set_object() function
+
 6.7.6 (2024-10-06)
 	- Forbid access to parent folder in HTML images.
 
