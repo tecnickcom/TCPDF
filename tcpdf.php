@@ -19270,6 +19270,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				++$this->listindentlevel;
 				if ($this->listnum == 1) {
 					if ($key > 1) {
+						$hbz = 4;
+						$hb = 4;
 						$this->addHTMLVertSpace($hbz, $hb, $cell, $firsttag);
 					}
 				} else {
@@ -19351,6 +19353,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			case 'h4':
 			case 'h5':
 			case 'h6': {
+				$hb = 2;
 				$this->addHTMLVertSpace($hbz, $hb, $cell, $firsttag);
 				break;
 			}
@@ -20139,6 +20142,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				--$this->listindentlevel;
 				if ($this->listnum <= 0) {
 					$this->listnum = 0;
+					$hb = 8;
 					$this->addHTMLVertSpace($hbz, $hb, $cell, false, $lasttag);
 				} else {
 					$this->addHTMLVertSpace(0, 0, $cell, false, $lasttag);
@@ -20157,6 +20161,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			case 'h4':
 			case 'h5':
 			case 'h6': {
+				$hb = 2;
 				$this->addHTMLVertSpace($hbz, $hb, $cell, false, $lasttag);
 				break;
 			}
