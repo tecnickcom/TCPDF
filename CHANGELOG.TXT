@@ -1,3 +1,7 @@
+6.7.8 (2024-12-13)
+	- Improve SVG detection by checking for (mandatory) namespace.
+	- Use late state binding now that minimum PHP version is 5.5.
+
 6.7.7 (2024-10-26)
 	- Update regular expression to avoid ReDoS (CVE-2024-22641)
 	- [PHP 8.4] Fix: Curl CURLOPT_BINARYTRANSFER deprecated #675
