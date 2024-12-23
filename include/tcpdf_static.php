@@ -1,13 +1,13 @@
 <?php
 //============================================================+
 // File name   : tcpdf_static.php
-// Version     : 1.1.4
+// Version     : 1.1.5
 // Begin       : 2002-08-03
-// Last Update : 2023-09-06
+// Last Update : 2024-12-23
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
-// Copyright (C) 2002-2023 Nicola Asuni - Tecnick.com LTD
+// Copyright (C) 2002-2024 Nicola Asuni - Tecnick.com LTD
 //
 // This file is part of TCPDF software library.
 //
@@ -38,7 +38,7 @@
  * This is a PHP class that contains static methods for the TCPDF class.<br>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 1.1.2
+ * @version 1.1.5
  */
 
 /**
@@ -46,7 +46,7 @@
  * Static methods used by the TCPDF class.
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 1.1.1
+ * @version 1.1.5
  * @author Nicola Asuni - info@tecnick.com
  */
 class TCPDF_STATIC {
@@ -55,7 +55,7 @@ class TCPDF_STATIC {
 	 * Current TCPDF version.
 	 * @private static
 	 */
-	private static $tcpdf_version = '6.7.8';
+	private static $tcpdf_version = '6.8.0';
 
 	/**
 	 * String alias for total number of pages.
