@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.7.8
+// Version     : 6.8.0
 // Begin       : 2002-08-03
-// Last Update : 2024-12-13
+// Last Update : 2024-12-23
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.7.8
+ * @version 6.8.0
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.7.8
+ * @version 6.8.0
  * @author Nicola Asuni - info@tecnick.com
  * @IgnoreAnnotation("protected")
  * @IgnoreAnnotation("public")
@@ -3007,6 +3007,7 @@ class TCPDF {
 	public function Error($msg) {
 		// unset all class variables
 		$this->_destroy(true);
+		$msg = htmlspecialchars($msg, ENT_QUOTES, 'UTF-8');
 		if (defined('K_TCPDF_THROW_EXCEPTION_ERROR') AND !K_TCPDF_THROW_EXCEPTION_ERROR) {
 			die('<strong>TCPDF ERROR: </strong>'.$msg);
 		} else {
@@ -17259,7 +17260,7 @@ class TCPDF {
 		$hlen = intval(substr($data, 0, $hpos));
 		$hash = substr($data, $hpos + 1, $hlen);
 		$encoded = substr($data, $hpos + 2 + $hlen);
-		if ($hash != $this->hashTCPDFtag($encoded)) {
+		if (!hash_equals( $this->hashTCPDFtag($encoded), $hash)) {
 			$this->Error('Invalid parameters');
 		}
 		return json_decode(urldecode($encoded), true);
@@ -19124,7 +19125,7 @@ class TCPDF {
 				$imglink = '';
 				if (isset($this->HREF['url']) AND !TCPDF_STATIC::empty_string($this->HREF['url'])) {
 					$imglink = $this->HREF['url'];
-					if ($imglink[0] == '#') {
+					if ($imglink[0] == '#' AND is_numeric($imglink[1])) {
 						// convert url to internal link
 						$lnkdata = explode(',', $imglink);
 						if (isset($lnkdata[0])) {
@@ -23485,7 +23486,7 @@ class TCPDF {
 			if (preg_match('/font-family[\s]*:[\s]*([^\;\"]*)/si', $svgstyle['font'], $regs)) {
 				$font_family = $this->getFontFamilyName($regs[1]);
 			} else {
-				$font_family = $svgstyle['font-family'];
+				$font_family = $this->getFontFamilyName($svgstyle['font-family']);
 			}
 			if (preg_match('/font-size[\s]*:[\s]*([^\s\;\"]*)/si', $svgstyle['font'], $regs)) {
 				$font_size = trim($regs[1]);
