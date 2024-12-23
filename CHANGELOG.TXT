@@ -1,5 +1,5 @@
 6.8.0 (2024-12-23)
-	- 
+	- Escape error message.
 
 6.7.8 (2024-12-13)
 	- Improve SVG detection by checking for (mandatory) namespace.
