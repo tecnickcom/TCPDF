@@ -17260,7 +17260,7 @@ class TCPDF {
 		$hlen = intval(substr($data, 0, $hpos));
 		$hash = substr($data, $hpos + 1, $hlen);
 		$encoded = substr($data, $hpos + 2 + $hlen);
-		if ($hash != $this->hashTCPDFtag($encoded)) {
+		if (!hash_equals( $this->hashTCPDFtag($encoded), $hash)) {
 			$this->Error('Invalid parameters');
 		}
 		return json_decode(urldecode($encoded), true);
