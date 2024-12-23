@@ -1,6 +1,8 @@
 6.8.0 (2024-12-23)
+	- Requires PHP 7.1+.
 	- Escape error message.
 	- Use strict time-constant function to compare TCPDF-tag hashes.
+
 
 6.7.8 (2024-12-13)
 	- Improve SVG detection by checking for (mandatory) namespace.
