@@ -1,10 +1,9 @@
 6.8.0 (2024-12-23)
-	- Requires PHP 7.1+.
+	- Requires PHP 7.1+ and curl extension.
 	- Escape error message.
 	- Use strict time-constant function to compare TCPDF-tag hashes.
 	- Add K_CURLOPTS config array to set custom cURL options (NOTE: some defaults have changed).
 	- Add some addTTFfont fixes from tc-lib-pdf-font.
-
 
 6.7.8 (2024-12-13)
 	- Improve SVG detection by checking for (mandatory) namespace.
