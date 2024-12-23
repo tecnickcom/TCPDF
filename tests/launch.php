@@ -160,6 +160,7 @@ echo PHP_EOL;
  */
 $phpExtensions = array(
     'bcmath' => null,
+    'curl' => null,
     'gd' => null,
     'imagick' => null,
     'json' => null,
