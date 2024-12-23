@@ -23486,7 +23486,7 @@ class TCPDF {
 			if (preg_match('/font-family[\s]*:[\s]*([^\;\"]*)/si', $svgstyle['font'], $regs)) {
 				$font_family = $this->getFontFamilyName($regs[1]);
 			} else {
-				$font_family = $svgstyle['font-family'];
+				$font_family = $this->getFontFamilyName($svgstyle['font-family']);
 			}
 			if (preg_match('/font-size[\s]*:[\s]*([^\s\;\"]*)/si', $svgstyle['font'], $regs)) {
 				$font_size = trim($regs[1]);
