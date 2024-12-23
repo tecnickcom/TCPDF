@@ -106,6 +106,31 @@ class TCPDF_STATIC {
 	 */
 	public static $pageboxes = array('MediaBox', 'CropBox', 'BleedBox', 'TrimBox', 'ArtBox');
 
+	/**
+     * Array of default cURL options for curl_setopt_array.
+     *
+     * @var array<int, bool|int|string> cURL options.
+     */
+    protected const CURLOPT_DEFAULT = [
+        CURLOPT_CONNECTTIMEOUT => 5,
+        CURLOPT_MAXREDIRS => 5,
+        CURLOPT_PROTOCOLS => CURLPROTO_HTTPS | CURLPROTO_HTTP | CURLPROTO_FTP | CURLPROTO_FTPS,
+        CURLOPT_SSL_VERIFYHOST => 2,
+        CURLOPT_SSL_VERIFYPEER => true,
+        CURLOPT_TIMEOUT => 30,
+        CURLOPT_USERAGENT => 'tcpdf',
+    ];
+
+    /**
+     * Array of fixed cURL options for curl_setopt_array.
+     *
+     * @var array<int, bool|int|string> cURL options.
+     */
+    protected const CURLOPT_FIXED = [
+        CURLOPT_FAILONERROR => true,
+        CURLOPT_RETURNTRANSFER => true,
+    ];
+
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	/**
@@ -1823,23 +1848,19 @@ class TCPDF_STATIC {
 	 */
 	public static function url_exists($url) {
 		$crs = curl_init();
-		// encode query params in URL to get right response form the server
-		$url = self::encodeUrlQuery($url);
-		curl_setopt($crs, CURLOPT_URL, $url);
-		curl_setopt($crs, CURLOPT_NOBODY, true);
-		curl_setopt($crs, CURLOPT_FAILONERROR, true);
-		if ((ini_get('open_basedir') == '') && (!ini_get('safe_mode'))) {
-			curl_setopt($crs, CURLOPT_FOLLOWLOCATION, true);
-		}
-		curl_setopt($crs, CURLOPT_CONNECTTIMEOUT, 5);
-		curl_setopt($crs, CURLOPT_TIMEOUT, 30);
-		curl_setopt($crs, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($crs, CURLOPT_SSL_VERIFYHOST, false);
-		curl_setopt($crs, CURLOPT_USERAGENT, 'tc-lib-file');
-		curl_setopt($crs, CURLOPT_MAXREDIRS, 5);
-		if (defined('CURLOPT_PROTOCOLS')) {
-		    curl_setopt($crs, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS | CURLPROTO_HTTP |  CURLPROTO_FTP | CURLPROTO_FTPS);
-		}
+        $curlopts = [];
+        if (
+            (ini_get('open_basedir') == '')
+            && (ini_get('safe_mode') === ''
+            || ini_get('safe_mode') === false)
+        ) {
+            $curlopts[CURLOPT_FOLLOWLOCATION] = true;
+        }
+        $curlopts = array_replace($curlopts, self::CURLOPT_DEFAULT);
+        $curlopts = array_replace($curlopts, K_CURLOPTS);
+        $curlopts = array_replace($curlopts, self::CURLOPT_FIXED);
+        $curlopts[CURLOPT_URL] = $url;
+        curl_setopt_array($crs, $curlopts);
 		curl_exec($crs);
 		$code = curl_getinfo($crs, CURLINFO_HTTP_CODE);
 		curl_close($crs);
@@ -1960,21 +1981,19 @@ class TCPDF_STATIC {
 			) {
 				// try to get remote file data using cURL
 				$crs = curl_init();
-				curl_setopt($crs, CURLOPT_URL, $path);
-				curl_setopt($crs, CURLOPT_FAILONERROR, true);
-				curl_setopt($crs, CURLOPT_RETURNTRANSFER, true);
-				if ((ini_get('open_basedir') == '') && (!ini_get('safe_mode'))) {
-				    curl_setopt($crs, CURLOPT_FOLLOWLOCATION, true);
+				$curlopts = [];
+				if (
+					(ini_get('open_basedir') == '')
+					&& (ini_get('safe_mode') === ''
+					|| ini_get('safe_mode') === false)
+				) {
+					$curlopts[CURLOPT_FOLLOWLOCATION] = true;
 				}
-				curl_setopt($crs, CURLOPT_CONNECTTIMEOUT, 5);
-				curl_setopt($crs, CURLOPT_TIMEOUT, 30);
-				curl_setopt($crs, CURLOPT_SSL_VERIFYPEER, false);
-				curl_setopt($crs, CURLOPT_SSL_VERIFYHOST, false);
-				curl_setopt($crs, CURLOPT_USERAGENT, 'tc-lib-file');
-				curl_setopt($crs, CURLOPT_MAXREDIRS, 5);
-				if (defined('CURLOPT_PROTOCOLS')) {
-				    curl_setopt($crs, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS | CURLPROTO_HTTP |  CURLPROTO_FTP | CURLPROTO_FTPS);
-				}
+				$curlopts = array_replace($curlopts, self::CURLOPT_DEFAULT);
+				$curlopts = array_replace($curlopts, K_CURLOPTS);
+				$curlopts = array_replace($curlopts, self::CURLOPT_FIXED);
+				$curlopts[CURLOPT_URL] = $url;
+				curl_setopt_array($crs, $curlopts);
 				$ret = curl_exec($crs);
 				curl_close($crs);
 				if ($ret !== false) {

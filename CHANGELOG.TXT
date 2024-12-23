@@ -2,6 +2,7 @@
 	- Requires PHP 7.1+.
 	- Escape error message.
 	- Use strict time-constant function to compare TCPDF-tag hashes.
+	- Add K_CURLOPTS config array to set custom cURL options (NOTE: some defaults have changed).
 
 
 6.7.8 (2024-12-13)
