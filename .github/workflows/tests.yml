@@ -25,7 +25,7 @@ jobs:
                 php-version: ["7.1", "7.2", "7.3", "7.4", "8.0", "8.1", "8.2"]
                 os: [ubuntu-latest]
                 experimental: [false]
-                php-extensions: ["bcmath, imagick, gd"]
+                php-extensions: ["bcmath, curl, imagick, gd"]
                 coverage-extension: ["none"]
                 # Add more specific tests
                 include:
