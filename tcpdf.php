@@ -5562,7 +5562,9 @@ class TCPDF {
 						// x space to skip
 						if ($spacewidth != 0) {
 							// justification shift
-							$xshift += (count(array_keys($uniarr, 32)) * $spw);
+							$xshift += (count(array_keys(array_filter($uniarr, function ($element) {
+                                return $element == 32;
+                            }))) * $spw);
 						}
 						$xshift += $this->GetArrStringWidth($uniarr); // + shift justification
 					} else {

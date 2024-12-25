@@ -543,7 +543,9 @@ class TCPDFBarcode {
 		$sum = 0;
 		$clen = strlen($code);
 		for ($i = 0 ; $i < $clen; ++$i) {
-			$k = array_keys($chars, $code[$i]);
+			$k = array_keys(array_filter($chars, function ($value) use ($code, $i) {
+                return $value == $code[$i];
+            }));
 			$sum += $k[0];
 		}
 		$j = ($sum % 43);
@@ -699,7 +701,9 @@ class TCPDFBarcode {
 		$p = 1;
 		$check = 0;
 		for ($i = ($len - 1); $i >= 0; --$i) {
-			$k = array_keys($chars, $code[$i]);
+            $k = array_keys(array_filter($chars, function ($value) use ($code, $i) {
+                return $value == $code[$i];
+            }));
 			$check += ($k[0] * $p);
 			++$p;
 			if ($p > 20) {
@@ -713,7 +717,9 @@ class TCPDFBarcode {
 		$p = 1;
 		$check = 0;
 		for ($i = $len; $i >= 0; --$i) {
-			$k = array_keys($chars, $code[$i]);
+            $k = array_keys(array_filter($chars, function ($value) use ($code, $i) {
+                return $value == $code[$i];
+            }));
 			$check += ($k[0] * $p);
 			++$p;
 			if ($p > 15) {
@@ -1760,9 +1766,8 @@ class TCPDFBarcode {
 			}
 			$row %= 6;
 			$col %= 6;
-			$chk = array_keys($checktable, array($row,$col));
-			$code .= $chk[0];
-			++$len;
+            $code .= array_search(array($row, $col), $checktable);
+            ++$len;
 		}
 		$k = 0;
 		if ($notkix) {
