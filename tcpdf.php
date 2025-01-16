@@ -8311,15 +8311,15 @@ class TCPDF {
 										break;
 									}
 									case 'locked': {
-										$fval += 1 << 8;
+										$fval += 1 << 7;
 										break;
 									}
 									case 'togglenoview': {
-										$fval += 1 << 9;
+										$fval += 1 << 8;
 										break;
 									}
 									case 'lockedcontents': {
-										$fval += 1 << 10;
+										$fval += 1 << 9;
 										break;
 									}
 									default: {
