@@ -1,3 +1,6 @@
+6.8.1 (2025-01-26)
+	- Check relative paths on SVG images.
+
 6.8.0 (2024-12-23)
 	- Requires PHP 7.1+ and curl extension.
 	- Escape error message.
