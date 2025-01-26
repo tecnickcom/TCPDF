@@ -1,4 +1,8 @@
-6.8.1 (2025-01-26)
+6.8.2 (2025-01-26)
+	- Fix some annotation flags values.
+	- Remove examples from packaging.
+
+6.8.1 (2025-01-26) - UNTAGGED
 	- Check relative paths on SVG images.
 
 6.8.0 (2024-12-23)
