@@ -1,7 +1,7 @@
 <?php
 $type = 'TrueType';
 $name = 'Georgia-BoldItalic';
-$desc = array('Ascent'=>756,'Descent'=>-217,'CapHeight'=>756,'Flags'=>96,'FontBBox'=>'[-242 -217 1355 915]','ItalicAngle'=>-13,'StemV'=>120,'MissingWidth'=>1000);
+$desc = array('Ascent'=>756,'Descent'=>-217,'CapHeight'=>756,'Flags'=>96,'FontBBox'=>'[-242 -217 1266 915]','ItalicAngle'=>-13,'StemV'=>120,'MissingWidth'=>1000);
 $up = -88;
 $ut = 59;
 $cw = array(
@@ -20,7 +20,7 @@ $cw = array(
 $enc = 'ISO-8859-1';
 $diff = '128 /.notdef 130 /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 142 /.notdef 145 /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 158 /.notdef /.notdef';
 $uv = array(0=>array(0,256));
-$file = 'georgiaz.z';
-$originalsize = 53380;
+$file = 'georgia bold italic.z';
+$originalsize = 49436;
 $subsetted = true;
 ?>
