@@ -30,8 +30,6 @@
             "config",
             "include",
             "tcpdf.php",
-            "tcpdf_parser.php",
-            "tcpdf_import.php",
             "tcpdf_barcodes_1d.php",
             "tcpdf_barcodes_2d.php",
             "include/tcpdf_colors.php",
