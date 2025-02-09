@@ -42,10 +42,5 @@
             "include/barcodes/pdf417.php",
             "include/barcodes/qrcode.php"
         ]
-    },
-    "archive": {
-        "exclude": [
-            "/examples"
-        ]
     }
 }
