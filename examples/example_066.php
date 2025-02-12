@@ -3,18 +3,18 @@
 /**
  * Example 066 for TCPDF library
  *
- * @description Creates an example PDF/A-1b document using TCPDF
+ * @description Creates an example PDF/A-3b document using TCPDF
  * @author Nicola Asuni - Tecnick.com LTD <info@tecnick.com>
  * @license LGPL-3.0
  */
 
 /**
- * Creates an example PDF/A-1b document using TCPDF
+ * Creates an example PDF/A-3b document using TCPDF
  *
- * @abstract TCPDF - Example: PDF/A-1b mode
+ * @abstract TCPDF - Example: PDF/A-3b mode
  * @author Nicola Asuni
  * @since 2021-03-26
- * @group A-1b
+ * @group A-3b
  * @group pdf
  */
 
@@ -22,7 +22,7 @@
 require_once('tcpdf_include.php');
 
 // create new PDF document
-$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false, true);
+$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false, 3);
 
 // set document information
 $pdf->setCreator(PDF_CREATOR);
@@ -73,8 +73,8 @@ $pdf->AddPage();
 
 // Set some content to print
 $html = <<<HTML
-<h1>Example of <a href="http://www.tcpdf.org" style="text-decoration:none;background-color:#CC0000;color:black;">&nbsp;<span style="color:black;">TC</span><span style="color:white;">PDF</span>&nbsp;</a> document in <span style="background-color:#99ccff;color:black;"> PDF/A-1b </span> mode.</h1>
-<i>This document conforms to the standard <b>PDF/A-1b (ISO 19005-1:2005)</b>.</i>
+<h1>Example of <a href="http://www.tcpdf.org" style="text-decoration:none;background-color:#CC0000;color:black;">&nbsp;<span style="color:black;">TC</span><span style="color:white;">PDF</span>&nbsp;</a> document in <span style="background-color:#99ccff;color:black;"> PDF/A-3b </span> mode.</h1>
+<i>This document conforms to the standard <b>PDF/A-3b (ISO 19005-3:2012)</b>.</i>
 <p>Please check the source code documentation and other examples for further information (<a href="http://www.tcpdf.org">http://www.tcpdf.org</a>).</p>
 HTML;
 
