@@ -22,7 +22,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php-version: ["7.1", "7.2", "7.3", "7.4", "8.0", "8.1", "8.2"]
+                php-version: ["7.1", "7.2", "7.3", "7.4", "8.0", "8.1", "8.2", "8.3"]
                 os: [ubuntu-latest]
                 experimental: [false]
                 php-extensions: ["bcmath, curl, imagick, gd"]
@@ -31,7 +31,7 @@ jobs:
                 include:
                   #- { php-version: '8.2', experimental: false, os: macos-latest, php-extensions: 'bcmath, curl, imagick, gd', coverage-extension: 'none' }
                   - { php-version: '8.2', experimental: false, os: windows-latest, php-extensions: 'bcmath, curl, imagick, gd', coverage-extension: 'none' }
-                  - { php-version: '8.3', experimental: true, os: ubuntu-latest, php-extensions: 'bcmath, curl, imagick, gd', coverage-extension: 'pcov' }
+                  - { php-version: '8.4', experimental: true, os: ubuntu-latest, php-extensions: 'bcmath, curl, imagick, gd', coverage-extension: 'pcov' }
                   - { php-version: 'nightly', experimental: true, os: ubuntu-latest, php-extensions: 'bcmath, curl, imagick, gd', coverage-extension: 'pcov' }
         env:
             PDFINFO_BINARY: ${{ (matrix.os == 'ubuntu-latest') && '/usr/bin/pdfinfo' || ((matrix.os == 'macos-latest') && '/usr/local/bin/pdfinfo' || 'C:\ProgramData\Chocolatey\bin\pdfinfo.exe') }}
@@ -90,7 +90,7 @@ jobs:
             # For debugging issues
             - name: Archive test results
               if: failure()
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               with:
                 name: test-run-output-${{ matrix.php-version }}-${{ matrix.os }}
                 retention-days: 1
