@@ -1,3 +1,6 @@
+6.9.0 (2025-04-03)
+	- Fixed Path Traversal security vulnerability reported by Positive Technologies.
+
 6.9.0 (2025-03-30)
 	- Added PHP 8.4 testing.
 	- Removed tcpdf_import.php and tcpdf_parser.php files (for a parser check the tc-lib-pdf-parser project instead).
