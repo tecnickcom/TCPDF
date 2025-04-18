@@ -1,5 +1,8 @@
-6.9.0 (2025-04-03)
-	- Fixed Path Traversal security vulnerability reported by Positive Technologies.
+6.9.2 (2025-04-18)
+	- Fixed "Deserialization of untrusted data" security vulnerability reported by Positive Technologies.
+
+6.9.1 (2025-04-03)
+	- Fixed "Path Traversal" security vulnerability reported by Positive Technologies.
 
 6.9.0 (2025-03-30)
 	- Added PHP 8.4 testing.
