@@ -40,10 +40,10 @@
  * @version 1.2.1
  */
 
-// Disable phar stream wrapper to prevent deserialization vulnerability.
-if (in_array('phar', stream_get_wrappers(), true)) {
-    stream_wrapper_unregister('phar');
-}
+// Disable phar stream wrapper globally.
+// if (in_array('phar', stream_get_wrappers(), true)) {
+//     stream_wrapper_unregister('phar');
+// }
 
 // DOCUMENT_ROOT fix for IIS Webserver
 if ((!isset($_SERVER['DOCUMENT_ROOT'])) OR (empty($_SERVER['DOCUMENT_ROOT']))) {

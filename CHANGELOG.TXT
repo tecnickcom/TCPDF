@@ -1,5 +1,10 @@
+6.9.3 (2025-04-20)
+	- New fix for "Deserialization of untrusted data" (check on valid protocols).
+	- Removed global phar configuration.
+
 6.9.2 (2025-04-18)
-	- Fixed "Deserialization of untrusted data" security vulnerability reported by Positive Technologies.
+	- Quick fix for "Deserialization of untrusted data" security vulnerability reported by Positive Technologies.
+	- Disable phar protocol globally.
 
 6.9.1 (2025-04-03)
 	- Fixed "Path Traversal" security vulnerability reported by Positive Technologies.
