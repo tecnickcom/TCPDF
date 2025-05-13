@@ -1,3 +1,6 @@
+6.9.4 (2025-05-13)
+	- Update donation link.
+
 6.9.3 (2025-04-20)
 	- New fix for "Deserialization of untrusted data" (check on valid protocols).
 	- Removed global phar configuration.
