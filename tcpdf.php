@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.9.4
+// Version     : 6.9.5
 // Begin       : 2002-08-03
-// Last Update : 2025-04-18
+// Last Update : 2025-05-27
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -104,7 +104,7 @@
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 6.9.4
+ * @version 6.9.5
  */
 
 // TCPDF configuration
@@ -128,7 +128,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.9.4
+ * @version 6.9.5
  * @author Nicola Asuni - info@tecnick.com
  * @IgnoreAnnotation("protected")
  * @IgnoreAnnotation("public")
@@ -17427,6 +17427,9 @@ class TCPDF {
 				}
 			}
 			if ($key == $maxel) break;
+			if ($dom[$key]['tag'] AND $dom[$key]['opening'] AND !empty($dom[$key]['attribute']['id'])) {
+				$this->setDestination($dom[$key]['attribute']['id']);
+			}
 			if ($dom[$key]['tag'] AND isset($dom[$key]['attribute']['pagebreak'])) {
 				// check for pagebreak
 				if (($dom[$key]['attribute']['pagebreak'] == 'true') OR ($dom[$key]['attribute']['pagebreak'] == 'left') OR ($dom[$key]['attribute']['pagebreak'] == 'right')) {
@@ -19151,7 +19154,7 @@ class TCPDF {
 				$imglink = '';
 				if (isset($this->HREF['url']) AND !TCPDF_STATIC::empty_string($this->HREF['url'])) {
 					$imglink = $this->HREF['url'];
-					if ($imglink[0] == '#' AND is_numeric($imglink[1])) {
+					if ($imglink[0] == '#' AND isset($imglink[1]) AND is_numeric($imglink[1])) {
 						// convert url to internal link
 						$lnkdata = explode(',', $imglink);
 						if (isset($lnkdata[0])) {
@@ -20012,7 +20015,7 @@ class TCPDF {
 					}
 				}
 				if (!$in_table_head) { // we are not inside a thead section
-					$this->cell_padding = isset($table_el['old_cell_padding']) ? $table_el['old_cell_padding'] : null;
+					$this->cell_padding = isset($table_el['old_cell_padding']) ? $table_el['old_cell_padding'] : array('T' => 0, 'R' => 0, 'B' => 0, 'L' => 0);
 					// reset row height
 					$this->resetLastH();
 					if (($this->page == ($this->numpages - 1)) AND ($this->pageopen[$this->numpages])) {
@@ -23479,6 +23482,8 @@ class TCPDF {
 			$fill_color = TCPDF_COLORS::convertHTMLColorToDec($svgstyle['fill'], $this->spot_colors);
 			if ($svgstyle['fill-opacity'] != 1) {
 				$this->setAlpha($this->alpha['CA'], 'Normal', $svgstyle['fill-opacity'], false);
+			} elseif (preg_match('/rgba\(\d+%?,\s*\d+%?,\s*\d+%?,\s*(\d+(?:\.\d+)?)\)/i', $svgstyle['fill'], $rgba_matches)) {
+				$this->setAlpha($this->alpha['CA'], 'Normal', $rgba_matches[1], false);
 			}
 			$this->setFillColorArray($fill_color);
 			if ($svgstyle['fill-rule'] == 'evenodd') {
