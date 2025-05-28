@@ -76,7 +76,10 @@ NOTES:
 */
 
 // set certificate file
-$certificate = 'file://data/cert/tcpdf.crt';
+$certificate = file_get_contents("data/cert/longChain.pem");
+//$issuer = "data/cert/Root CA Test.crt";
+$extracerts = false;
+//$crl = "data/cert/RootCATest.der.crl";
 
 // set additional information
 $info = array(
@@ -86,8 +89,19 @@ $info = array(
 	'ContactInfo' => 'http://www.tcpdf.org',
 	);
 
+// set LTV setLtv($ocspURI=false, $crlURIorFILE=false, $issuerURIorFILE=false)
+// set false to skip ocsp or crl
+// set to empty or null will continue lookup in certificate attributes (Authority Info Access(AIA) and CRL Distribution Points(CDP))
+// skip both will result no LTV. Note that issuerURIorFILE cannot skipped. It will use given address/file location or lookup in cert AIA attributes if null.
+// dont give any parameter to lookup all address in cert attributes.
+$pdf->setLtv();
+
+// Set TSA server address
+$pdf->setTimeStamp('http://timestamp.apple.com/ts01');
+
 // set document signature
-$pdf->setSignature($certificate, $certificate, 'tcpdfdemo', '', 2, $info);
+// added digest algorithm in last arguments
+$pdf->setSignature($certificate, $certificate, 'tcpdfdemo', $extracerts, 2, $info, 'sha256');
 
 // set font. 'helvetica' MUST be used to avoid a PHP notice from PHP 7.4+
 $pdf->setFont('helvetica', '', 12);
@@ -117,7 +131,12 @@ $pdf->addEmptySignatureAppearance(180, 80, 15, 15);
 
 //Close and output PDF document
 $pdf->Output('example_052.pdf', 'D');
+//$r=$pdf->Output('example_052.pdf', 'S');
+//$h = fopen('../example_052.pdf','w');
+//fwrite($h, $r);
+//fclose($h);
 
 //============================================================+
 // END OF FILE
 //============================================================+
+?>
