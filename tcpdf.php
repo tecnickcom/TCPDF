@@ -9852,7 +9852,7 @@ class TCPDF {
 		}
 		// start catalog
 		$oid = $this->_newobj();
-		$out = '<< ';
+		$out = '<<';
 		if (!empty($this->efnames)) {
 			$out .= ' /AF [ '. implode(' ', $this->efnames) .' ]';
 		}
