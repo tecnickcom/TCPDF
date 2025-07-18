@@ -35,7 +35,7 @@ $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8',
 // set document information
 $pdf->setCreator(PDF_CREATOR);
 $pdf->setAuthor('Nicola Asuni');
-$pdf->setTitle('TCPDF Example 052');
+$pdf->setTitle('TCPDF Example 052-Next');
 $pdf->setSubject('TCPDF Tutorial');
 $pdf->setKeywords('TCPDF, PDF, example, test, guide');
 
@@ -82,7 +82,7 @@ $certificate = 'file://data/cert/tcpdf.crt';
 $info = array(
 	'Name' => 'TCPDF',
 	'Location' => 'Office',
-	'Reason' => 'Testing TCPDF',
+	'Reason' => 'Testing TCPDF-Next',
 	'ContactInfo' => 'http://www.tcpdf.org',
 	);
 
@@ -96,7 +96,7 @@ $pdf->setFont('helvetica', '', 12);
 $pdf->AddPage();
 
 // print a line of text
-$text = 'This is a <b color="#FF0000">digitally signed document</b> using the default (example) <b>tcpdf.crt</b> certificate.<br />To validate this signature you have to load the <b color="#006600">tcpdf.fdf</b> on the Arobat Reader to add the certificate to <i>List of Trusted Identities</i>.<br /><br />For more information check the source code of this example and the source code documentation for the <i>setSignature()</i> method.<br /><br /><a href="http://www.tcpdf.org">www.tcpdf.org</a>';
+$text = 'Next This is a <b color="#FF0000">digitally signed document</b> using the default (example) <b>tcpdf.crt</b> certificate.<br />To validate this signature you have to load the <b color="#006600">tcpdf.fdf</b> on the Arobat Reader to add the certificate to <i>List of Trusted Identities</i>.<br /><br />For more information check the source code of this example and the source code documentation for the <i>setSignature()</i> method.<br /><br /><a href="http://www.tcpdf.org">www.tcpdf.org</a>';
 $pdf->writeHTML($text, true, 0, true, 0);
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

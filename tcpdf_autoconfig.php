@@ -142,7 +142,7 @@ if (!defined('PDF_PAGE_ORIENTATION')) {
 }
 
 if (!defined('PDF_CREATOR')) {
-	define ('PDF_CREATOR', 'TCPDF');
+	define ('PDF_CREATOR', 'TCPDF1');
 }
 
 if (!defined('PDF_AUTHOR')) {

@@ -114,7 +114,7 @@ define ('PDF_HEADER_TITLE', 'TCPDF Example');
 /**
  * Header description string.
  */
-define ('PDF_HEADER_STRING', "by Nicola Asuni - Tecnick.com\nwww.tcpdf.org");
+define ('PDF_HEADER_STRING', "This needs to be a variable when paid or TCPDF-Next Header info");
 
 /**
  * Document unit of measure [pt=point, mm=millimeter, cm=centimeter, in=inch].

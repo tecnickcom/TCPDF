@@ -57,7 +57,7 @@ $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8',
 // set document information
 $pdf->setCreator(PDF_CREATOR);
 $pdf->setAuthor('Nicola Asuni');
-$pdf->setTitle('TCPDF Example 051');
+$pdf->setTitle('TCPDF Example 051a');
 $pdf->setSubject('TCPDF Tutorial');
 $pdf->setKeywords('TCPDF, PDF, example, test, guide');
 
