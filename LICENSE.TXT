@@ -1,13 +1,21 @@
 **********************************************************************
-* TCPDF LICENSE
+* TCPDF-Next LICENSE
 **********************************************************************
 
-  TCPDF is free software: you can redistribute it and/or modify it
+TCPDF-Next
+Copyright (c) 2025 Brad Smith
+
+This project is a fork of TCPDF:
+  https://github.com/tecnickcom/TCPDF
+  (c) 2002-2020 Nicola Asuni, released under LGPL-3.0
+
+Modifications and updates © 2025 Brad Smith, released under the same LGPL-3.0 license.
+
+  TCPDF-Next is free software: you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as
   published by the Free Software Foundation, either version 3 of the
   License, or (at your option) any later version.
-  
-  2002-2025 Nicola Asuni - Tecnick.com LTD
+
 
 **********************************************************************
 **********************************************************************

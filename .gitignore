@@ -1,6 +1,8 @@
 .idea
 .phpdoc
 *.bak
+tcpdf_barcodes_1d.php
+tcpdf_barcodes_2d.php
 /vendor/
 /composer.lock
 /composer.phar
