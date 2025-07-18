@@ -4,3 +4,6 @@
 /vendor/
 /composer.lock
 /composer.phar
+.env
+tests/private
+docs/internal

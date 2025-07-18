@@ -1,15 +1,12 @@
-# TCPDF
-*PHP PDF Library*
+# TCPDF-Next
 
-[![Donate via PayPal](https://img.shields.io/badge/donate-paypal-87ceeb.svg)](https://www.paypal.com/donate/?hosted_button_id=NZUEC5XS8MFBJ)
-*Please consider supporting this project by making a donation via [PayPal](https://www.paypal.com/donate/?hosted_button_id=NZUEC5XS8MFBJ)*
 
-* **category**    Library
-* **author**      Nicola Asuni <info@tecnick.com>
-* **copyright**   2002-2025 Nicola Asuni - Tecnick.com LTD
-* **license**     http://www.gnu.org/copyleft/lesser.html GNU-LGPL v3 (see LICENSE.TXT)
-* **link**        http://www.tcpdf.org
-* **source**      https://github.com/tecnickcom/TCPDF
+* **category**              Library
+* **author**       
+* **copyright**             
+* **license**               http://www.gnu.org/copyleft/lesser.html GNU-LGPL v3 (see LICENSE.TXT)
+* **link**                  http://www.tcpdf.org
+* **source**                https://github.com/tecnickcom/TCPDF
 
 
 ## NOTE
@@ -76,8 +73,3 @@ Link : http://projects.arabeyes.org/
 
 TCPDF includes the sRGB.icc profile from the icc-profiles-free Debian package:
 https://packages.debian.org/source/stable/icc-profiles-free
-
-
-## Developer(s) Contact
-
-* Nicola Asuni <info@tecnick.com>
