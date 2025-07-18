@@ -42,5 +42,9 @@
             "include/barcodes/pdf417.php",
             "include/barcodes/qrcode.php"
         ]
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.84",
+        "phpstan/phpstan": "^2.1"
     }
 }
