@@ -111,25 +111,56 @@ class TCPDF_STATIC {
      *
      * @var array<int, bool|int|string> cURL options.
      */
-    protected const CURLOPT_DEFAULT = [
-        CURLOPT_CONNECTTIMEOUT => 5,
-        CURLOPT_MAXREDIRS => 5,
-        CURLOPT_PROTOCOLS => CURLPROTO_HTTPS | CURLPROTO_HTTP | CURLPROTO_FTP | CURLPROTO_FTPS,
-        CURLOPT_SSL_VERIFYHOST => 2,
-        CURLOPT_SSL_VERIFYPEER => true,
-        CURLOPT_TIMEOUT => 30,
-        CURLOPT_USERAGENT => 'tcpdf',
-    ];
+	// /**
+    //  * Array of default cURL options for curl_setopt_array.
+    //  *
+    //  * @var array<int, bool|int|string> cURL options.
+    //  */
+    // protected const CURLOPT_DEFAULT = [
+    //     CURLOPT_CONNECTTIMEOUT => 5,
+    //     CURLOPT_MAXREDIRS => 5,
+    //     CURLOPT_PROTOCOLS => CURLPROTO_HTTPS | CURLPROTO_HTTP | CURLPROTO_FTP | CURLPROTO_FTPS,
+    //     CURLOPT_SSL_VERIFYHOST => 2,
+    //     CURLOPT_SSL_VERIFYPEER => true,
+    //     CURLOPT_TIMEOUT => 30,
+    //     CURLOPT_USERAGENT => 'tcpdf',
+    // ];
+
+    // /**
+    //  * Array of fixed cURL options for curl_setopt_array.
+    //  *
+    //  * @var array<int, bool|int|string> cURL options.
+    //  */
+    // protected const CURLOPT_FIXED = [
+    //     CURLOPT_FAILONERROR => true,
+    //     CURLOPT_RETURNTRANSFER => true,
+    // ];
+
+    protected static function CURLOPT_DEFAULT()
+    {
+        return [
+            CURLOPT_CONNECTTIMEOUT => 5,
+            CURLOPT_MAXREDIRS => 5,
+            CURLOPT_PROTOCOLS => CURLPROTO_HTTPS | CURLPROTO_HTTP | CURLPROTO_FTP | CURLPROTO_FTPS,
+            CURLOPT_SSL_VERIFYHOST => 2,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_USERAGENT => 'tcpdf',
+        ];
+    }
 
     /**
      * Array of fixed cURL options for curl_setopt_array.
      *
      * @var array<int, bool|int|string> cURL options.
      */
-    protected const CURLOPT_FIXED = [
-        CURLOPT_FAILONERROR => true,
-        CURLOPT_RETURNTRANSFER => true,
-    ];
+    protected static function CURLOPT_FIXED()
+    {
+        return [
+            CURLOPT_FAILONERROR => true,
+            CURLOPT_RETURNTRANSFER => true,
+        ];
+    }
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
