@@ -1,3 +1,12 @@
+6.10.0 (2025-05-27)
+	- Embedded files support (Factur-X 1.07 / ZUGFeRD 2.3) #789
+
+6.9.5 (2025-05-27)
+	- Automatically add destinations from HTML code #804
+	- Wrong default value when $table_el['old_cell_padding'] is missing #807
+	- Fixed PHP warning when empty hash link for image exists in HTML #809
+	- Fix for application of alpha component to SVG RGBA fills #810
+
 6.9.4 (2025-05-13)
 	- Update donation link.
 
