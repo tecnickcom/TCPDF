@@ -509,6 +509,12 @@ class TCPDF {
 	protected $keywords = '';
 
 	/**
+	 * Document description.
+	 * @protected
+	 */
+	protected $description = '';
+
+	/**
 	 * Document creator.
 	 * @protected
 	 */
@@ -2958,6 +2964,17 @@ class TCPDF {
 	 */
 	public function setSubject($subject) {
 		$this->subject = $subject;
+	}
+
+	/**
+	 * Defines the description of the document.
+	 * @param string $description The description.
+	 * @public
+	 * @since 1.2
+	 * @see SetAuthor(), SetCreator(), SetKeywords(), SetTitle()
+	 */
+	public function setDescription($description) {
+		$this->description = $description;
 	}
 
 	/**
@@ -9621,6 +9638,10 @@ class TCPDF {
 		if (!TCPDF_STATIC::empty_string($this->subject)) {
 			// The subject of the document.
 			$out .= ' /Subject '.$this->_textstring($this->subject, $oid);
+		}
+		if (!TCPDF_STATIC::empty_string($this->description)) {
+			// The description of the document.
+			$out .= ' /Description '.$this->_textstring($this->description, $oid);
 		}
 		if (!TCPDF_STATIC::empty_string($this->keywords)) {
 			// Keywords associated with the document.

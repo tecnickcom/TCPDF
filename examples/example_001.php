@@ -39,6 +39,7 @@ $pdf->setCreator(PDF_CREATOR);
 $pdf->setAuthor('Nicola Asuni');
 $pdf->setTitle('TCPDF Example 001');
 $pdf->setSubject('TCPDF Tutorial');
+$pdf->setDescription('TCPDF Tutorial Description');
 $pdf->setKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
