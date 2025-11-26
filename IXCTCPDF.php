@@ -8001,7 +8001,7 @@ class IXCTCPDF
         if ($destroyall and ! $preserve_objcopy && isset($this->file_id)) {
             self::$cleaned_ids[$this->file_id] = true;
             if (is_dir(K_PATH_CACHE)) {
-                $files = glob(K_PATH_CACHE.'__tcpdf_*');
+                $files = scandir(K_PATH_CACHE, SCANDIR_SORT_NONE);
                 foreach($files as $file) {
                     if (is_file($file) && strpos(basename($file), '__tcpdf_' . $this->file_id . '_') === 0) {
                         unlink($file);
