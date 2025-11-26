@@ -8003,6 +8003,9 @@ class IXCTCPDF
             if (is_dir(K_PATH_CACHE)) {
                 $files = scandir(K_PATH_CACHE, SCANDIR_SORT_NONE);
                 foreach($files as $file) {
+                    if ($file[0] === '.'){
+                        continue;
+                    }
                     if (is_file($file) && strpos(basename($file), '__tcpdf_' . $this->file_id . '_') === 0) {
                         unlink($file);
                     }
