@@ -1296,7 +1296,7 @@ class TCPDF {
 	 * @protected
 	 * @since 4.6.005 (2009-04-24)
 	 */
-	protected $signature_max_length = 36864;
+	protected $signature_max_length = 38400;
 
 	/**
 	 * Data for digital signature appearance.
