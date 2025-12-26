@@ -543,7 +543,11 @@ class TCPDF_SIGNATURE {
         asn1::seq($hexOidHashAlgos[$hashAlgorithm]."0500").  // OBJ $messageDigest & OBJ_null
         asn1::oct($hash)
     );
-    $pkey = $this->signature_data['privkey'];
+    if (is_null($this->signature_data['password']) || $this->signature_data['password'] === '') {
+        $pkey = $this->signature_data['privkey'];
+    } else {
+        $pkey = openssl_get_privatekey($this->signature_data['privkey'], $this->signature_data['password']);
+    }
     if(!openssl_private_encrypt(hex2bin($toencrypt), $encryptedDigest, $pkey, OPENSSL_PKCS1_PADDING)) {
       $this->log .= ("info:openssl_private_encrypt error! can't encrypt");
       return false;
