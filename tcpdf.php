@@ -13570,7 +13570,7 @@ class TCPDF {
 	 * @param mixed $signing_cert signing certificate (string or filename prefixed with 'file://')
 	 * @param mixed $private_key private key (string or filename prefixed with 'file://')
 	 * @param string $private_key_password password
-	 * @param string $extracerts specifies array or filename prefixed with 'file://' containing a bunch of extra certificates to include in the signature which can for example be used to help the recipient to verify the certificate that you used.
+	 * @param string $extracerts specifies string or filename prefixed with 'file://' containing a bunch of extra certificates to include in the signature which can for example be used to help the recipient to verify the certificate that you used.
 	 * @param int $cert_type The access permissions granted for this document. Valid values shall be: 1 = No changes to the document shall be permitted; any change to the document shall invalidate the signature; 2 = Permitted changes shall be filling in forms, instantiating page templates, and signing; other changes shall invalidate the signature; 3 = Permitted changes shall be the same as for 2, as well as annotation creation, deletion, and modification; other changes shall invalidate the signature.
 	 * @param array $info array of option information: Name, Location, Reason, ContactInfo.
 	 * @param string $approval Enable approval signature eg. for PDF incremental update
@@ -13578,7 +13578,7 @@ class TCPDF {
 	 * @author Nicola Asuni
 	 * @since 4.6.005 (2009-04-24)
 	 */
-	public function setSignature($signing_cert='', $private_key='', $private_key_password='', $extracerts=array(), $cert_type=2, $info=array(), $hashAlgorithm='sha256', $approval='') {
+	public function setSignature($signing_cert='', $private_key='', $private_key_password='', $extracerts='', $cert_type=2, $info=array(), $hashAlgorithm='sha256', $approval='') {
 		// to create self-signed signature: openssl req -x509 -nodes -days 365000 -newkey rsa:1024 -keyout tcpdf.crt -out tcpdf.crt
 		// to export crt to p12: openssl pkcs12 -export -in tcpdf.crt -out tcpdf.p12
 		// to convert pfx certificate to pem: openssl
@@ -13594,10 +13594,9 @@ class TCPDF {
 		if (strlen($private_key) == 0) {
 			$private_key = $signing_cert;
 		}
-		if (is_string($extracerts) && strpos($extracerts, 'file://') === 0) {
-			preg_match_all('/-----BEGIN CERTIFICATE-----(.*?)-----END CERTIFICATE-----/s', file_get_contents($extracerts), $matches);
-			$extracerts = $matches[0];
-		}
+        $extracerts = strpos($extracerts, 'file://') === 0 ? file_get_contents($extracerts) : $extracerts;
+        preg_match_all('/-----BEGIN CERTIFICATE-----(.*?)-----END CERTIFICATE-----/s', $extracerts, $matches);
+        $extracerts = $matches[0];
 		$this->signature_data['signcert'] = $signing_cert;
 		$this->signature_data['privkey'] = $private_key;
 		$this->signature_data['password'] = $private_key_password;
