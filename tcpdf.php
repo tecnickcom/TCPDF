@@ -17013,7 +17013,7 @@ class TCPDF {
 						}
 						// check for CSS padding properties
 						if (isset($dom[$key]['style']['padding'])) {
-							$dom[$key]['padding'] = $this->getCSSPadding($dom[$key]['style']['padding']);
+							$dom[$key]['padding'] = $this->getCSSPadding($dom[$key]['style']['padding'][0]);
 						} else {
 							$dom[$key]['padding'] = $this->cell_padding;
 						}
@@ -17024,7 +17024,7 @@ class TCPDF {
 						}
 						// check for CSS margin properties
 						if (isset($dom[$key]['style']['margin'])) {
-							$dom[$key]['margin'] = $this->getCSSMargin($dom[$key]['style']['margin']);
+							$dom[$key]['margin'] = $this->getCSSMargin($dom[$key]['style']['margin'][0]);
 						} else {
 							$dom[$key]['margin'] = $this->cell_margin;
 						}
