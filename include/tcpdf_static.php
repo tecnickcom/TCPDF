@@ -107,29 +107,33 @@ class TCPDF_STATIC {
 	public static $pageboxes = array('MediaBox', 'CropBox', 'BleedBox', 'TrimBox', 'ArtBox');
 
 	/**
-     * Array of default cURL options for curl_setopt_array.
-     *
-     * @var array<int, bool|int|string> cURL options.
+     * Returns the array of default cURL options for curl_setopt_array.
+     * @return array<int, bool|int|string> cURL options.
+	 * @protected static
      */
-    protected const CURLOPT_DEFAULT = [
-        CURLOPT_CONNECTTIMEOUT => 5,
-        CURLOPT_MAXREDIRS => 5,
-        CURLOPT_PROTOCOLS => CURLPROTO_HTTPS | CURLPROTO_HTTP | CURLPROTO_FTP | CURLPROTO_FTPS,
-        CURLOPT_SSL_VERIFYHOST => 2,
-        CURLOPT_SSL_VERIFYPEER => true,
-        CURLOPT_TIMEOUT => 30,
-        CURLOPT_USERAGENT => 'tcpdf',
-    ];
+    protected static function getCurlOptDefault() {
+		return [
+			CURLOPT_CONNECTTIMEOUT => 5,
+			CURLOPT_MAXREDIRS => 5,
+			CURLOPT_PROTOCOLS => CURLPROTO_HTTPS | CURLPROTO_HTTP | CURLPROTO_FTP | CURLPROTO_FTPS,
+			CURLOPT_SSL_VERIFYHOST => 2,
+			CURLOPT_SSL_VERIFYPEER => true,
+			CURLOPT_TIMEOUT => 30,
+			CURLOPT_USERAGENT => 'tcpdf',
+		];
+	}
 
     /**
-     * Array of fixed cURL options for curl_setopt_array.
-     *
-     * @var array<int, bool|int|string> cURL options.
+     * Returns the array of fixed cURL options for curl_setopt_array.
+     * @returns array<int, bool|int|string> cURL options.
+	 * @protected static
      */
-    protected const CURLOPT_FIXED = [
-        CURLOPT_FAILONERROR => true,
-        CURLOPT_RETURNTRANSFER => true,
-    ];
+    protected static function getCurlOptFixed() {
+		return[
+        	CURLOPT_FAILONERROR => true,
+        	CURLOPT_RETURNTRANSFER => true,
+    	];
+	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -1856,9 +1860,9 @@ class TCPDF_STATIC {
         ) {
             $curlopts[CURLOPT_FOLLOWLOCATION] = true;
         }
-        $curlopts = array_replace($curlopts, self::CURLOPT_DEFAULT);
+        $curlopts = array_replace($curlopts, self::getCurlOptDefault());
         $curlopts = array_replace($curlopts, K_CURLOPTS);
-        $curlopts = array_replace($curlopts, self::CURLOPT_FIXED);
+        $curlopts = array_replace($curlopts, self::getCurlOptFixed());
         $curlopts[CURLOPT_URL] = $url;
         curl_setopt_array($crs, $curlopts);
 		curl_exec($crs);
@@ -1989,9 +1993,9 @@ class TCPDF_STATIC {
 				) {
 					$curlopts[CURLOPT_FOLLOWLOCATION] = true;
 				}
-				$curlopts = array_replace($curlopts, self::CURLOPT_DEFAULT);
+				$curlopts = array_replace($curlopts, self::getCurlOptDefault());
 				$curlopts = array_replace($curlopts, K_CURLOPTS);
-				$curlopts = array_replace($curlopts, self::CURLOPT_FIXED);
+				$curlopts = array_replace($curlopts, self::getCurlOptFixed());
 				$curlopts[CURLOPT_URL] = $url;
 				curl_setopt_array($crs, $curlopts);
 				$ret = curl_exec($crs);
