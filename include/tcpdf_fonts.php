@@ -930,6 +930,12 @@ class TCPDF_FONTS {
 	 * @public static
 	 */
 	public static function _getTTFtableChecksum($table, $length) {
+		// Suppress warning about casting on armhf
+		if (PHP_INT_SIZE == 4) {
+			set_error_handler(function($errno, $errstr) {
+				return strpos($errstr, 'is not representable as an int') !== false;
+			}, E_WARNING);
+		}
 		$sum = 0;
 		$tlen = ($length / 4);
 		$offset = 0;
@@ -939,6 +945,9 @@ class TCPDF_FONTS {
 			$offset += 4;
 		}
 		$sum = unpack('Ni', pack('N', $sum));
+		if (PHP_INT_SIZE == 4) {
+			restore_error_handler();
+		}
 		return $sum['i'];
 	}
 
@@ -1382,9 +1391,18 @@ class TCPDF_FONTS {
 		foreach ($table as $data) {
 			$font .= $data['data'];
 		}
+		// Suppress warning about casting on armhf
+		if (PHP_INT_SIZE == 4) {
+			set_error_handler(function($errno, $errstr) {
+				return strpos($errstr, 'is not representable as an int') !== false;
+			}, E_WARNING);
+		}
 		// set checkSumAdjustment on head table
 		$checkSumAdjustment = 0xB1B0AFBA - self::_getTTFtableChecksum($font, strlen($font));
 		$font = substr($font, 0, $table['head']['offset'] + $offset + 8).pack('N', $checkSumAdjustment).substr($font, $table['head']['offset'] + $offset + 12);
+		if (PHP_INT_SIZE == 4) {
+			restore_error_handler();
+		}
 		return $font;
 	}
 
