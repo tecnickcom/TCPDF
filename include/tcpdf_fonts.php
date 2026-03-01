@@ -1384,7 +1384,7 @@ class TCPDF_FONTS {
 		}
 		// set checkSumAdjustment on head table
 		$checkSumAdjustment = 0xB1B0AFBA - self::_getTTFtableChecksum($font, strlen($font));
-		$font = substr($font, 0, $table['head']['offset'] + $offset + 8).pack('N', $checkSumAdjustment).substr($font, $table['head']['offset'] + $offset + 12);
+		$font = substr($font, 0, $table['head']['offset'] + $offset + 4).pack('N', $checkSumAdjustment).substr($font, $table['head']['offset'] + $offset + 8);
 		return $font;
 	}
 
