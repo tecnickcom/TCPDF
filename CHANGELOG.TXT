@@ -1,6 +1,11 @@
 6.11.0 (2026-03-01)
 	- Updated copyright year.
 	- Updated linked http urls to https.
+	- Fix PHP 8.5 deprecation on curl_close() - PR #838
+	- Fix PHP 8.5 deprecation on null array offset - PR #839
+	- Fixed: Font subsetting - incorrect placement of head checksum - PR #849
+	- Fix imagedestroy() deprecation in PHP 8.5 - PR #851
+	- Fix Rendering of SVG -> PDF issue - PR #855
 
 6.10.1 (2025-11-21)
 	- cI: Add 8.5 to CI matrix - PR #836
