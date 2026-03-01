@@ -23732,7 +23732,9 @@ class TCPDF {
 			if (isset($val[2])) {
 				// get curve parameters, see https://github.com/tecnickcom/TCPDF/issues/767
 				$rawparams = preg_split('/([\,\s]+)/si', trim($val[2]));
-				$rawparams = array_filter($rawparams, fn ($p) => trim($p) != '');
+				$rawparams = array_filter($rawparams, function($p) {
+					return trim($p) != '';
+				});
 				$params = array();
 				foreach ($rawparams as $ck => $cp) {
 					$params[$ck] = $this->getHTMLUnitToUnits($cp, 0, $this->svgunit, false);
