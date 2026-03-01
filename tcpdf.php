@@ -7437,12 +7437,16 @@ class TCPDF {
 					}
 				}
 				imagepng($imgalpha, $tempfile_alpha);
-				imagedestroy($imgalpha);
+				if (PHP_VERSION_ID < 80000) {
+					imagedestroy($imgalpha);
+				}
 				// extract image without alpha channel
 				$imgplain = imagecreatetruecolor($wpx, $hpx);
 				imagecopy($imgplain, $img, 0, 0, 0, 0, $wpx, $hpx);
 				imagepng($imgplain, $tempfile_plain);
-				imagedestroy($imgplain);
+				if (PHP_VERSION_ID < 80000) {
+					imagedestroy($imgplain);
+				}
 				$parsed = true;
 			} catch (Exception $e) {
 				// GD fails
