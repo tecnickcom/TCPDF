@@ -7884,7 +7884,7 @@ class TCPDF {
 	 * @since 4.5.016 (2009-02-24)
 	 */
 	public function _destroy($destroyall=false, $preserve_objcopy=false) {
-		if (isset(self::$cleaned_ids[$this->file_id])) {
+		if (isset($this->file_id) && isset(self::$cleaned_ids[$this->file_id])) {
 			$destroyall = false;
 		}
 		if ($destroyall AND !$preserve_objcopy && isset($this->file_id)) {
