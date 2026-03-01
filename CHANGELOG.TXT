@@ -1,3 +1,7 @@
+6.11.0 (2026-03-01)
+	- Updated copyright year.
+	- Updated linked http urls to https.
+
 6.10.1 (2025-11-21)
 	- cI: Add 8.5 to CI matrix - PR #836
 	- Fix PHP 8.5 deprecation for xml_parser_free - PR #835
