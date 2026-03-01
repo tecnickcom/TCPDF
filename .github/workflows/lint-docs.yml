@@ -15,7 +15,7 @@ jobs:
     lint-docs:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v5
+            - uses: actions/checkout@v6
             - name: lint php documentation
               uses: sudo-bot/action-doctum@v5
               with:

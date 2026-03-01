@@ -36,7 +36,7 @@ jobs:
         env:
             PDFINFO_BINARY: ${{ (matrix.os == 'ubuntu-latest') && '/usr/bin/pdfinfo' || ((matrix.os == 'macos-latest') && '/usr/local/bin/pdfinfo' || 'C:\ProgramData\Chocolatey\bin\pdfinfo.exe') }}
         steps:
-            - uses: actions/checkout@v5
+            - uses: actions/checkout@v6
             - name: Install pdfinfo, pdftopng or pdftoppm
               uses: ConorMacBride/install-package@v1
               with:
@@ -76,7 +76,7 @@ jobs:
               run: ./tests/launch.sh
             - name: Send coverage
               if: matrix.coverage-extension != 'none'
-              uses: codecov/codecov-action@v3
+              uses: codecov/codecov-action@v5
               with:
                 flags: php-${{ matrix.php-version }}-${{ matrix.os }}
                 name: php-${{ matrix.php-version }}-${{ matrix.os }}
@@ -100,7 +100,7 @@ jobs:
         name: Static Analysis
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v5
+            - uses: actions/checkout@v6
             - name: Use php 8.2
               uses: shivammathur/setup-php@v2
               with:

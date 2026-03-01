@@ -5,9 +5,9 @@
 // Begin       : 2002-08-03
 // Last Update : 2024-12-23
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
-// License     : GNU-LGPL v3 (http://www.gnu.org/copyleft/lesser.html)
+// License     : GNU-LGPL v3 (https://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
-// Copyright (C) 2002-2025 Nicola Asuni - Tecnick.com LTD
+// Copyright (C) 2002-2026 Nicola Asuni - Tecnick.com LTD
 //
 // This file is part of TCPDF software library.
 //
@@ -492,7 +492,7 @@ class TCPDF_STATIC {
 	 * @param string $last_enc_key_c Reference to last RC4 computed key.
 	 * @return string encrypted text
 	 * @since 2.0.000 (2008-01-02)
-	 * @author Klemen Vodopivec, Nicola Asuni
+	 * @author Klemen Vodopivec,2026 Nicola Asuni
 	 * @public static
 	 */
 	public static function _RC4($key, $text, &$last_enc_key, &$last_enc_key_c) {

@@ -6,8 +6,8 @@
 
 * **category**    Library
 * **author**      Nicola Asuni <info@tecnick.com>
-* **copyright**   2002-2025 Nicola Asuni - Tecnick.com LTD
-* **license**     http://www.gnu.org/copyleft/lesser.html GNU-LGPL v3 (see LICENSE.TXT)
+* **copyright**   2002-2026 Nicola Asuni - Tecnick.com LTD
+* **license**     https://www.gnu.org/copyleft/lesser.html GNU-LGPL v3 (see LICENSE.TXT)
 * **link**        http://www.tcpdf.org
 * **source**      https://github.com/tecnickcom/TCPDF
 
@@ -63,7 +63,7 @@ All the original binary TTF font files have been renamed for compatibility with 
 The binary files (.z) that begins with the prefix "free" have been extracted from the GNU FreeFont collection (GNU-GPLv3).
 The binary files (.z) that begins with the prefix "pdfa" have been derived from the GNU FreeFont, so they are subject to the same license.
 For the details of Copyright, License and other information, please check the files inside the directory fonts/freefont-20120503
-Link : http://www.gnu.org/software/freefont/
+Link : https://www.gnu.org/software/freefont/
 
 The binary files (.z) that begins with the prefix "dejavu" have been extracted from the DejaVu fonts 2.33 (Bitstream) collection.
 For the details of Copyright, License and other information, please check the files inside the directory fonts/dejavu-fonts-ttf-2.33
@@ -80,4 +80,4 @@ https://packages.debian.org/source/stable/icc-profiles-free
 
 ## Developer(s) Contact
 
-* Nicola Asuni <info@tecnick.com>
+*2026 Nicola Asuni <info@tecnick.com>
