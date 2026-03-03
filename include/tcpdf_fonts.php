@@ -45,6 +45,12 @@
  * @version 1.1.1
  * @author Nicola Asuni - info@tecnick.com
  */
+
+// Suppress warning about casting on armhf
+set_error_handler(function($errno, $errstr) {
+    return strpos($errstr, 'is not representable as an int') !== false;
+}, E_WARNING);
+
 class TCPDF_FONTS {
 
 	/**
