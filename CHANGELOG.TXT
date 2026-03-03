@@ -1,3 +1,6 @@
+6.11.1 (2026-03-03)
+	- Remove debug line preventing compression.
+
 6.11.0 (2026-03-01)
 	- Updated copyright year.
 	- Updated linked http urls to https.
