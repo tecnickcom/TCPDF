@@ -107,6 +107,12 @@ class TCPDF_STATIC {
 	public static $pageboxes = array('MediaBox', 'CropBox', 'BleedBox', 'TrimBox', 'ArtBox');
 
 	/**
+	 * String thousands separator
+	 * @private static
+	 */
+	private static $thousands_separator = '.';
+
+	/**
      * Array of default cURL options for curl_setopt_array.
      *
      * @var array<int, bool|int|string> cURL options.
@@ -1022,7 +1028,7 @@ class TCPDF_STATIC {
 	 * @public static
 	 */
 	public static function formatPageNumber($num) {
-		return number_format((float)$num, 0, '', '.');
+		return number_format((float)$num, 0, '', self::$thousands_separator);
 	}
 
 	/**
@@ -1035,7 +1041,7 @@ class TCPDF_STATIC {
 	 * @public static
 	 */
 	public static function formatTOCPageNumber($num) {
-		return number_format((float)$num, 0, '', '.');
+		return number_format((float)$num, 0, '', self::$thousands_separator);
 	}
 
 	/**
@@ -2654,6 +2660,16 @@ class TCPDF_STATIC {
 			}
 		}
 		return $page_mode;
+	}
+
+	/**
+	 * Set the thousands separator to use it in the number format.
+	 * @param string $separator
+	 * @return void
+	 * @public static
+	 */
+	public static function setThousandsSeparator($separator) {
+		self::$thousands_separator = $separator;
 	}
 
 } // END OF TCPDF_STATIC CLASS
