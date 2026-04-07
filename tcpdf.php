@@ -3002,6 +3002,7 @@ class TCPDF {
 	 *
 	 * @param string $separator
 	 * @public
+	 * @return void
 	 */
 	public function setThousandsSeparator($separator) {
 		TCPDF_STATIC::setThousandsSeparator($separator);
