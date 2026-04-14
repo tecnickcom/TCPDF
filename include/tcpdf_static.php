@@ -1857,7 +1857,7 @@ class TCPDF_STATIC {
             $curlopts[CURLOPT_FOLLOWLOCATION] = true;
         }
         $curlopts = array_replace($curlopts, self::CURLOPT_DEFAULT);
-        $curlopts = array_replace($curlopts, K_CURLOPTS);
+        $curlopts = array_replace($curlopts, (defined('K_CURLOPTS') ? K_CURLOPTS : []));
         $curlopts = array_replace($curlopts, self::CURLOPT_FIXED);
         $curlopts[CURLOPT_URL] = $url;
         curl_setopt_array($crs, $curlopts);
@@ -1992,7 +1992,7 @@ class TCPDF_STATIC {
 					$curlopts[CURLOPT_FOLLOWLOCATION] = true;
 				}
 				$curlopts = array_replace($curlopts, self::CURLOPT_DEFAULT);
-				$curlopts = array_replace($curlopts, K_CURLOPTS);
+				$curlopts = array_replace($curlopts, (defined('K_CURLOPTS') ? K_CURLOPTS : []));
 				$curlopts = array_replace($curlopts, self::CURLOPT_FIXED);
 				$curlopts[CURLOPT_URL] = $url;
 				curl_setopt_array($crs, $curlopts);
