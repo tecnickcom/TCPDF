@@ -2997,6 +2997,17 @@ class TCPDF {
 		$this->allowLocalFiles = (bool) $allowLocalFiles;
 	}
 
+	/**
+	 * Set the thousands separator to use in the number formatting
+	 *
+	 * @param string $separator
+	 * @public
+	 * @return void
+	 */
+	public function setThousandsSeparator($separator) {
+		TCPDF_STATIC::setThousandsSeparator($separator);
+	}
+
 
 	/**
 	 * Throw an exception or print an error message and die if the K_TCPDF_PARSER_THROW_EXCEPTION_ERROR constant is set to true.
