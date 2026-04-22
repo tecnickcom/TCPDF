@@ -19315,7 +19315,7 @@ class TCPDF {
 				if ($key > 2) {
 					$this->addHTMLVertSpace($hbz, $hb, $cell, $firsttag);
 				}
-				if ($this->listordered[$this->listnum]) {
+				if (!empty($this->listordered[$this->listnum])) {
 					// ordered item
 					if (isset($parent['attribute']['type']) AND !TCPDF_STATIC::empty_string($parent['attribute']['type'])) {
 						$this->lispacer = $parent['attribute']['type'];
@@ -19325,6 +19325,9 @@ class TCPDF {
 						$this->lispacer = $this->lisymbol;
 					} else {
 						$this->lispacer = '#';
+					}
+					if (!isset($this->listcount[$this->listnum])) {
+						$this->listcount[$this->listnum] = 0;
 					}
 					++$this->listcount[$this->listnum];
 					if (isset($tag['attribute']['value'])) {
@@ -20686,7 +20689,7 @@ class TCPDF {
 		} elseif ($listtype == '!') {
 			// set default list type for unordered list
 			$deftypes = array('disc', 'circle', 'square');
-			$listtype = $deftypes[($listdepth - 1) % 3];
+			$listtype = $deftypes[max(0, ($listdepth - 1) % 3)];
 		} elseif ($listtype == '#') {
 			// set default list type for ordered list
 			$listtype = 'decimal';
@@ -20769,7 +20772,7 @@ class TCPDF {
 			// $textitem
 			case '1':
 			case 'decimal': {
-				$textitem = $this->listcount[$this->listnum];
+				$textitem = $this->listcount[$this->listnum] ?? '';
 				break;
 			}
 			case 'decimal-leading-zero': {
@@ -20830,7 +20833,7 @@ class TCPDF {
 			}
 			*/
 			default: {
-				$textitem = $this->listcount[$this->listnum];
+				$textitem = $this->listcount[$this->listnum] ?? '';
 			}
 		}
 		if (!TCPDF_STATIC::empty_string($textitem)) {
