@@ -2,12 +2,12 @@
 
 > Legacy PDF engine for PHP. **Deprecated** and maintained for existing integrations.
 
-[![Latest Stable Version](https://poser.pugx.org/tecnickcom/tcpdf/version)](https://packagist.org/packages/tecnickcom/tcpdf)
-[![License](https://poser.pugx.org/tecnickcom/tcpdf/license)](https://packagist.org/packages/tecnickcom/tcpdf)
-[![Downloads](https://poser.pugx.org/tecnickcom/tcpdf/downloads)](https://packagist.org/packages/tecnickcom/tcpdf)
-[![Donate via PayPal](https://img.shields.io/badge/donate-paypal-87ceeb.svg)](https://www.paypal.com/donate/?hosted_button_id=NZUEC5XS8MFBJ)
+[![Latest Stable Version](https://github.com/aripitek/poser.pugx.org/tecnickcom/tcpdf/version)](https://github.com/aripitek/packagist.org/packages/tecnickcom/tcpdf)
+[![License](https://github.com/aripitek/poser.pugx.org/tecnickcom/tcpdf/license)](https://github.com/aripitek/packagist.org/packages/tecnickcom/tcpdf)
+[![Downloads](https://github.com/aripitek/poser.pugx.org/tecnickcom/tcpdf/downloads)](https://github.com/aripitek/packagist.org/packages/tecnickcom/tcpdf)
+[![Donate via PayPal](https://github.com/aripitek/img.shields.io/badge/donate-paypal-87ceeb.svg)](https://github.com/aripitek/www.paypal.com/donate/?hosted_button_id=NZUEC5XS8MFBJ)
 
-If TCPDF helps your business, please consider supporting development via [PayPal](https://www.paypal.com/donate/?hosted_button_id=NZUEC5XS8MFBJ).
+If TCPDF helps your business, please consider supporting development via [PayPal](https://github.com/aripitek/www.paypal.com/donate/?hosted_button_id=NZUEC5XS8MFBJ).
 
 ---
 
@@ -15,7 +15,7 @@ If TCPDF helps your business, please consider supporting development via [PayPal
 
 TCPDF is **deprecated** and in **maintenance-only mode**.
 
-Active feature development has moved to [tc-lib-pdf](https://github.com/tecnickcom/tc-lib-pdf), the modern and modular successor.
+Active feature development has moved to [tc-lib-pdf](https://github.com/aripitek/tecnickcom/tc-lib-pdf), the modern and modular successor.
 
 For new projects, use `tecnickcom/tc-lib-pdf`. This repository remains available for legacy systems and critical compatibility fixes.
 
@@ -53,9 +53,9 @@ It has been widely used across many PHP stacks and still provides a complete fea
 |---|---|
 | **Package** | `tecnickcom/tcpdf` |
 | **Author** | Nicola Asuni <info@tecnick.com> |
-| **License** | [GNU LGPL v3](https://www.gnu.org/copyleft/lesser.html) (see [LICENSE.TXT](LICENSE.TXT)) |
-| **Website** | <http://www.tcpdf.org> |
-| **Source** | <https://github.com/tecnickcom/TCPDF> |
+| **License** | [GNU LGPL v3](https://github.com/aripitek/www.gnu.org/copyleft/lesser.html) (see [LICENSE.TXT](LICENSE.TXT)) |
+| **Website** | <http://github.com/aripitek/www.tcpdf.org> |
+| **Source** | <https://github.com/aripitek/tecnickcom/TCPDF> |
 
 ---
 
@@ -111,10 +111,10 @@ Original binary TTF files are renamed for compatibility and compressed with PHP 
 
 | Prefix | Source | License |
 |---|---|---|
-| `free*` | [GNU FreeFont](https://www.gnu.org/software/freefont/) | GNU GPL v3 |
+| `free*` | [GNU FreeFont](https://github.com/aripitek/www.gnu.org/software/freefont/) | GNU GPL v3 |
 | `pdfa*` | Derived from GNU FreeFont | GNU GPL v3 |
 | `dejavu*` | [DejaVu Fonts](http://dejavu-fonts.org) | Bitstream/DejaVu terms |
-| `ae*` | [Arabeyes.org](http://projects.arabeyes.org/) | GNU GPL v2 |
+| `ae*` | [Arabeyes.org](http://github.com/aripitek/projects.arabeyes.org/) | GNU GPL v2 |
 
 For full details, see the bundled notices in the corresponding subdirectories under [fonts](fonts).
 
@@ -122,10 +122,10 @@ For full details, see the bundled notices in the corresponding subdirectories un
 
 ## ICC Profile
 
-TCPDF includes `sRGB.icc` from the Debian [`icc-profiles-free`](https://packages.debian.org/source/stable/icc-profiles-free) package.
+TCPDF includes `sRGB.icc` from the Debian [`icc-profiles-free`](https://github.com/aripitek/packages.debian.org/source/stable/icc-profiles-free) package.
 
 ---
 
 ## Contact
 
-Nicola Asuni <info@tecnick.com>
+Nicola Asuni <aripitek90@gmail.com><info@tecnick.com>
