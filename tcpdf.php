@@ -6422,7 +6422,7 @@ class TCPDF {
 	public function Write($h, $txt, $link='', $fill=false, $align='', $ln=false, $stretch=0, $firstline=false, $firstblock=false, $maxh=0, $wadj=0, $margin=null) {
 		// check page for no-write regions and adapt page margins if necessary
 		list($this->x, $this->y) = $this->checkPageRegions($h, $this->x, $this->y);
-		if (strlen($txt) == 0) {
+		if (strlen($txt ?? '') == 0) {
 			// fix empty text
 			$txt = ' ';
 		}
