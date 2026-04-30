@@ -1,7 +1,7 @@
 {
     "name": "tecnickcom/tcpdf",
     "type": "library",
-    "description": "TCPDF is a PHP class for generating PDF documents and barcodes.",
+    "description": "Deprecated legacy PDF engine for PHP. For new projects use tecnickcom/tc-lib-pdf.",
     "keywords": [
         "PDF",
         "tcpdf",
@@ -11,8 +11,7 @@
         "pdf417",
         "barcodes"
     ],
-    "homepage": "http://www.tcpdf.org/",
-    "version": "6.11.2",
+    "homepage": "https://tcpdf.org",
     "license": "LGPL-3.0-or-later",
     "authors": [
         {
@@ -24,6 +23,17 @@
     "require": {
         "php": ">=7.1.0",
         "ext-curl": "*"
+    },
+    "suggest": {
+        "tecnickcom/tc-lib-pdf": "Modern replacement for TCPDF for new projects.",
+        "ext-gd": "Enables additional image handling in some workflows.",
+        "ext-imagick": "Enables additional image format support when available.",
+        "ext-zlib": "Recommended for compressed streams and related features."
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true
     },
     "autoload": {
         "classmap": [
@@ -42,5 +52,24 @@
             "include/barcodes/pdf417.php",
             "include/barcodes/qrcode.php"
         ]
-    }
+    },
+    "archive": {
+        "exclude": [
+            "/.github",
+            "/.phpdoc",
+            "/examples",
+            "/scripts",
+            "/tests"
+        ]
+    },
+    "support": {
+        "issues": "https://github.com/tecnickcom/TCPDF/issues",
+        "source": "https://github.com/tecnickcom/TCPDF"
+    },
+    "funding": [
+        {
+            "type": "paypal",
+            "url": "https://www.paypal.com/donate/?hosted_button_id=NZUEC5XS8MFBJ"
+        }
+    ]
 }
