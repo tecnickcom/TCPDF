@@ -1,45 +1,51 @@
 # TCPDF
 
-> Legacy PDF engine for PHP. **Deprecated** and maintained for existing integrations.
+> **⚠️ ARCHIVED LEGACY VERSION — NO UPDATES WILL BE PROVIDED**
+>
+> This is an archived branch of TCPDF. Feature development and updates have been discontinued.
+> For new projects and migrating existing code, use the modern [tc-lib-pdf](https://github.com/tecnickcom/tc-lib-pdf) library.
 
 [![Latest Stable Version](https://poser.pugx.org/tecnickcom/tcpdf/version)](https://packagist.org/packages/tecnickcom/tcpdf)
 [![License](https://poser.pugx.org/tecnickcom/tcpdf/license)](https://packagist.org/packages/tecnickcom/tcpdf)
 [![Downloads](https://poser.pugx.org/tecnickcom/tcpdf/downloads)](https://packagist.org/packages/tecnickcom/tcpdf)
-[![Donate via PayPal](https://img.shields.io/badge/donate-paypal-87ceeb.svg)](https://www.paypal.com/donate/?hosted_button_id=NZUEC5XS8MFBJ)
+[![Sponsor on GitHub](https://img.shields.io/badge/sponsor-github-EA4AAA.svg?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/tecnickcom)
 
-If TCPDF helps your business, please consider supporting development via [PayPal](https://www.paypal.com/donate/?hosted_button_id=NZUEC5XS8MFBJ).
+If this project is useful to you, please consider [supporting development via GitHub Sponsors](https://github.com/sponsors/tecnickcom).
 
 ---
 
-## Deprecation Notice
+## Status: Archived & No Longer Maintained
 
-TCPDF is **deprecated** and in **maintenance-only mode**.
+This repository is an archived branch of TCPDF and **will not receive any further updates** or feature development.
 
 Active feature development has moved to [tc-lib-pdf](https://github.com/tecnickcom/tc-lib-pdf), the modern and modular successor.
 
-For new projects, use `tecnickcom/tc-lib-pdf`. This repository remains available for legacy systems and critical compatibility fixes.
+### About the Main Branch
 
-### Migration Path
+The **main branch** of this repository contains a refactored version of TCPDF that uses `tc-lib-pdf` as its backend. This version provides:
 
-- New projects: install `tecnickcom/tc-lib-pdf`.
-- Existing TCPDF users: keep TCPDF for current production workloads and migrate in phases.
-- Teams seeking modern architecture, Composer-first design, and stronger type-safety should prioritize `tc-lib-pdf`.
+- **Drop-in compatibility layer**: wraps `tc-lib-pdf` to maintain practical backward compatibility with existing TCPDF code
+- **Modern architecture**: leverages the modular and extensible `tc-lib-pdf` foundation
+- **Breaking changes**: some changes are necessary and may require updates to existing implementations
 
-### Why Migrate to tc-lib-pdf
+For active development and complete documentation, **refer to the [main branch](https://github.com/tecnickcom/TCPDF/tree/main)** of this repository.
 
-- Modern architecture: modular libraries and cleaner component boundaries improve maintainability.
-- Better extensibility: new features are easier to add without patching a monolithic legacy core.
-- Stronger tooling fit: modern package structure works better with static analysis, CI, and automated tests.
-- Lower long-term risk: reduces technical debt tied to legacy APIs and supports ongoing PHP ecosystem evolution.
-- Improved delivery speed: teams can implement and ship new PDF capabilities with less friction.
+### Migration Guide
 
-Migration still requires planning and regression checks to preserve rendering parity for existing documents.
+If you are using this archived legacy branch, consider migrating to:
 
-### Future Compatibility Possibility
+1. **[Main branch](https://github.com/tecnickcom/TCPDF/tree/main)** — if you want to stay within the TCPDF API while using the modern `tc-lib-pdf` backend
+2. **[tc-lib-pdf](https://github.com/tecnickcom/tc-lib-pdf)** — for new projects or when you're ready to adopt the modern PDF library directly
 
-As a long-term possibility, TCPDF could be refactored to use `tc-lib-pdf` internally as a backend while preserving a practical level of backward compatibility for existing TCPDF integrations.
+### Why Migrate
 
-This is not part of a committed roadmap and there is no guarantee it will happen. It is documented here only as a potential direction that may be evaluated in the future.
+- **Modern architecture**: modular libraries and cleaner component boundaries improve maintainability
+- **Better extensibility**: new features are easier to add without patching a monolithic legacy core
+- **Stronger tooling fit**: modern package structure works better with static analysis, CI, and automated tests
+- **Lower long-term risk**: reduces technical debt tied to legacy APIs and supports ongoing PHP ecosystem evolution
+- **Improved delivery speed**: teams can implement and ship new PDF capabilities with less friction
+
+Migration requires planning and regression checks to preserve rendering parity for existing documents, but the investment pays off with reduced maintenance burden.
 
 ---
 

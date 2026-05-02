@@ -1,3 +1,10 @@
+6.11.4 (2026-05-02)
+	- ARCHIVED: This branch is now archived and will not receive any further updates.
+	- Refer to the main branch (https://github.com/tecnickcom/TCPDF/tree/main) for active development with tc-lib-pdf backend.
+	- For new projects or migration guidance, see https://github.com/tecnickcom/tc-lib-pdf
+
+----------------------------------------
+
 6.11.3 (2026-04-21)
 	- Added deprecation notice.
 	- Improved composer.json.
