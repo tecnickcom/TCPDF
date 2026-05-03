@@ -1,3 +1,12 @@
+7.0.0 (UNRELEASED)
+	- [BREAKING CHANGE] Font loading is migrating to `tecnickcom/tc-lib-pdf-font` assets resolved via Composer (`tecnickcom/tc-lib-pdf`).
+	- Added tc-lib-aware font discovery and JSON font definition loading compatibility in `AddFont()`.
+	- Added Composer autoload bootstrap in `tcpdf_autoconfig.php` to make tc-lib dependencies available at runtime.
+	- Migration notes:
+		- Install dependencies with Composer so `vendor/tecnickcom/tc-lib-pdf-font/target/fonts/` exists.
+		- Validate all custom font registrations against tc-lib font assets.
+		- Repository bundled `fonts/` assets are removed; use tc-lib font assets or explicit custom font paths.
+
 6.11.3 (2026-04-21)
 	- Added deprecation notice.
 	- Improved composer.json.

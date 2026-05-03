@@ -1,107 +1,24 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.11.3
 // Begin       : 2002-08-03
-// Last Update : 2026-03-03
-// Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
+// Authors     : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (https://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
-// Copyright (C) 2002-2026 Nicola Asuni - Tecnick.com LTD
+// Copyright (C) 2026 Nicola Asuni - Tecnick.com LTD
 //
 // This file is part of TCPDF software library.
-//
-// TCPDF is free software: you can redistribute it and/or modify it
-// under the terms of the GNU Lesser General Public License as
-// published by the Free Software Foundation, either version 3 of the
-// License, or (at your option) any later version.
-//
-// TCPDF is distributed in the hope that it will be useful, but
-// WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-// See the GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the License
-// along with TCPDF. If not, see
-// <http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT>.
-//
-// See LICENSE.TXT file for more information.
 // -------------------------------------------------------------------
 //
 // Description :
 //   This is a PHP class for generating PDF documents without requiring external extensions.
 //
-// NOTE:
-//   This class was originally derived in 2002 from the Public
-//   Domain FPDF class by Olivier Plathey (http://www.fpdf.org),
-//   but now is almost entirely rewritten and contains thousands of
-//   new lines of code and hundreds new features.
-//
-// Main features:
-//  * no external libraries are required for the basic functions;
-//  * all standard page formats, custom page formats, custom margins and units of measure;
-//  * UTF-8 Unicode and Right-To-Left languages;
-//  * TrueTypeUnicode, TrueType, Type1 and CID-0 fonts;
-//  * font subsetting;
-//  * methods to publish some XHTML + CSS code, Javascript and Forms;
-//  * images, graphic (geometric figures) and transformation methods;
-//  * supports JPEG, PNG and SVG images natively, all images supported by GD (GD, GD2, GD2PART, GIF, JPEG, PNG, BMP, XBM, XPM) and all images supported via ImageMagick (http://www.imagemagick.org/www/formats.html)
-//  * 1D and 2D barcodes: CODE 39, ANSI MH10.8M-1983, USD-3, 3 of 9, CODE 93, USS-93, Standard 2 of 5, Interleaved 2 of 5, CODE 128 A/B/C, 2 and 5 Digits UPC-Based Extension, EAN 8, EAN 13, UPC-A, UPC-E, MSI, POSTNET, PLANET, RMS4CC (Royal Mail 4-state Customer Code), CBC (Customer Bar Code), KIX (Klant index - Customer index), Intelligent Mail Barcode, Onecode, USPS-B-3200, CODABAR, CODE 11, PHARMACODE, PHARMACODE TWO-TRACKS, Datamatrix, QR-Code, PDF417;
-//  * JPEG and PNG ICC profiles, Grayscale, RGB, CMYK, Spot Colors and Transparencies;
-//  * automatic page header and footer management;
-//  * document encryption up to 256 bit and digital signature certifications;
-//  * transactions to UNDO commands;
-//  * PDF annotations, including links, text and file attachments;
-//  * text rendering modes (fill, stroke and clipping);
-//  * multiple columns mode;
-//  * no-write page regions;
-//  * bookmarks, named destinations and table of content;
-//  * text hyphenation;
-//  * text stretching and spacing (tracking);
-//  * automatic page break, line break and text alignments including justification;
-//  * automatic page numbering and page groups;
-//  * move and delete pages;
-//  * page compression (requires php-zlib extension);
-//  * XOBject Templates;
-//  * Layers and object visibility.
-//	* PDF/A-1b support
 //============================================================+
 
 /**
  * @file
  * This is a PHP class for generating PDF documents without requiring external extensions.<br>
- * TCPDF project (http://www.tcpdf.org) was originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
- * <h3>TCPDF main features are:</h3>
- * <ul>
- * <li>no external libraries are required for the basic functions;</li>
- * <li>all standard page formats, custom page formats, custom margins and units of measure;</li>
- * <li>UTF-8 Unicode and Right-To-Left languages;</li>
- * <li>TrueTypeUnicode, TrueType, Type1 and CID-0 fonts;</li>
- * <li>font subsetting;</li>
- * <li>methods to publish some XHTML + CSS code, Javascript and Forms;</li>
- * <li>images, graphic (geometric figures) and transformation methods;
- * <li>supports JPEG, PNG and SVG images natively, all images supported by GD (GD, GD2, GD2PART, GIF, JPEG, PNG, BMP, XBM, XPM) and all images supported via ImageMagick (http://www.imagemagick.org/www/formats.html)</li>
- * <li>1D and 2D barcodes: CODE 39, ANSI MH10.8M-1983, USD-3, 3 of 9, CODE 93, USS-93, Standard 2 of 5, Interleaved 2 of 5, CODE 128 A/B/C, 2 and 5 Digits UPC-Based Extension, EAN 8, EAN 13, UPC-A, UPC-E, MSI, POSTNET, PLANET, RMS4CC (Royal Mail 4-state Customer Code), CBC (Customer Bar Code), KIX (Klant index - Customer index), Intelligent Mail Barcode, Onecode, USPS-B-3200, CODABAR, CODE 11, PHARMACODE, PHARMACODE TWO-TRACKS, Datamatrix, QR-Code, PDF417;</li>
- * <li>JPEG and PNG ICC profiles, Grayscale, RGB, CMYK, Spot Colors and Transparencies;</li>
- * <li>automatic page header and footer management;</li>
- * <li>document encryption up to 256 bit and digital signature certifications;</li>
- * <li>transactions to UNDO commands;</li>
- * <li>PDF annotations, including links, text and file attachments;</li>
- * <li>text rendering modes (fill, stroke and clipping);</li>
- * <li>multiple columns mode;</li>
- * <li>no-write page regions;</li>
- * <li>bookmarks, named destinations and table of content;</li>
- * <li>text hyphenation;</li>
- * <li>text stretching and spacing (tracking);</li>
- * <li>automatic page break, line break and text alignments including justification;</li>
- * <li>automatic page numbering and page groups;</li>
- * <li>move and delete pages;</li>
- * <li>page compression (requires php-zlib extension);</li>
- * <li>XOBject Templates;</li>
- * <li>Layers and object visibility;</li>
- * <li>PDF/A-1b support.</li>
- * </ul>
- * Tools to encode your unicode fonts are on fonts/utils directory.</p>
+ * Font assets are provided through Composer via tc-lib-pdf-font.</p>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
  * @version 6.11.3
@@ -110,13 +27,7 @@
 // TCPDF configuration
 require_once(dirname(__FILE__).'/tcpdf_autoconfig.php');
 // TCPDF static font methods and data
-require_once(dirname(__FILE__).'/include/tcpdf_font_data.php');
-// TCPDF static font methods and data
 require_once(dirname(__FILE__).'/include/tcpdf_fonts.php');
-// TCPDF static color methods and data
-require_once(dirname(__FILE__).'/include/tcpdf_colors.php');
-// TCPDF static image methods and data
-require_once(dirname(__FILE__).'/include/tcpdf_images.php');
 // TCPDF static methods and data
 require_once(dirname(__FILE__).'/include/tcpdf_static.php');
 
@@ -125,8 +36,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
 /**
  * @class TCPDF
  * PHP class for generating PDF documents without requiring external extensions.
- * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
- * @package com.tecnick.tcpdf
+* @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
  * @version 6.11.3
  * @author Nicola Asuni - info@tecnick.com
@@ -1872,6 +1782,20 @@ class TCPDF {
 	 */
 	protected $allowLocalFiles = false;
 
+	/**
+	 * Cached tc-lib-pdf-graph color parser.
+	 * @protected
+	 * @var \Com\Tecnick\Color\Pdf|null
+	 */
+	protected $pdfgraphcolor = null;
+
+	/**
+	 * Cached tc-lib-pdf-graph drawing helper.
+	 * @protected
+	 * @var \Com\Tecnick\Pdf\Graph\Draw|null
+	 */
+	protected $pdfgraphdraw = null;
+
 	//------------------------------------------------------------
 	// METHODS
 	//------------------------------------------------------------
@@ -3489,7 +3413,7 @@ class TCPDF {
 				$this->x = $this->original_lMargin;
 			}
 			if (($headerdata['logo']) AND ($headerdata['logo'] != K_BLANK_IMAGE)) {
-				$imgtype = TCPDF_IMAGES::getImageFileType(K_PATH_IMAGES.$headerdata['logo']);
+				$imgtype = TCPDF_STATIC::getImageFileType(K_PATH_IMAGES.$headerdata['logo']);
 				if (($imgtype == 'eps') OR ($imgtype == 'ai')) {
 					$this->ImageEps(K_PATH_IMAGES.$headerdata['logo'], '', '', $headerdata['logo_width']);
 				} elseif ($imgtype == 'svg') {
@@ -3817,7 +3741,7 @@ class TCPDF {
 	 * @since 5.9.125 (2011-10-03)
 	 */
 	public function setSpotColor($type, $name, $tint=100) {
-		$spotcolor = TCPDF_COLORS::getSpotColor($name, $this->spot_colors);
+		$spotcolor = TCPDF_STATIC::getSpotColor($name, $this->spot_colors);
 		if ($spotcolor === false) {
 			$this->Error('Undefined spot color: '.$name.', you must add it using the AddSpotColor() method.');
 		}
@@ -4234,20 +4158,46 @@ class TCPDF {
 	 * @since 4.0.013 (2008-07-28)
 	 */
 	protected function getFontsList() {
-		if (($fontsdir = opendir(TCPDF_FONTS::_getfontpath())) !== false) {
-			while (($file = readdir($fontsdir)) !== false) {
-				if (substr($file, -4) == '.php') {
-					array_push($this->fontlist, strtolower(basename($file, '.php')));
+		$this->fontlist = array();
+		$fontpaths = TCPDF_FONTS::getFontSearchPaths();
+		foreach ($fontpaths as $fontpath) {
+			if (!@is_dir($fontpath)) {
+				continue;
+			}
+			try {
+				$iterator = new RecursiveIteratorIterator(
+					new RecursiveDirectoryIterator($fontpath, FilesystemIterator::SKIP_DOTS)
+				);
+				foreach ($iterator as $fontfile) {
+					if (!$fontfile->isFile()) {
+						continue;
+					}
+					$ext = strtolower($fontfile->getExtension());
+					if (($ext !== 'php') AND ($ext !== 'json')) {
+						continue;
+					}
+					$this->fontlist[] = strtolower($fontfile->getBasename('.'.$ext));
+				}
+			} catch (Exception $e) {
+				// keep best-effort behavior if recursive scanning is not available
+				if (($fontsdir = @opendir($fontpath)) !== false) {
+					while (($file = readdir($fontsdir)) !== false) {
+						if (substr($file, -4) == '.php') {
+							$this->fontlist[] = strtolower(basename($file, '.php'));
+						}
+					}
+					closedir($fontsdir);
 				}
 			}
-			closedir($fontsdir);
 		}
+		$this->fontlist = array_values(array_unique($this->fontlist));
 	}
 
 	/**
 	 * Imports a TrueType, Type1, core, or CID0 font and makes it available.
-	 * It is necessary to generate a font definition file first (read /fonts/utils/README.TXT).
-	 * The definition file (and the font file itself when embedding) must be present either in the current directory or in the one indicated by K_PATH_FONTS if the constant is defined. If it could not be found, the error "Could not include font definition file" is generated.
+	 * Font definition files are resolved from K_PATH_FONTS and available search paths.
+	 * By default, K_PATH_FONTS points to vendor/tecnickcom/tc-lib-pdf-font/target/fonts/.
+	 * If a definition file cannot be found, the error "Could not include font definition file" is generated.
 	 * @param string $family Font family. The name can be chosen arbitrarily. If it is a standard family name, it will override the corresponding font.
 	 * @param string $style Font style. Possible values are (case insensitive):<ul><li>empty string: regular (default)</li><li>B: bold</li><li>I: italic</li><li>BI or IB: bold italic</li></ul>
 	 * @param string $fontfile The font definition file. By default, the name is built from the family and style, in lower case with no spaces.
@@ -4348,13 +4298,19 @@ class TCPDF {
 		// search and include font file
 		if (TCPDF_STATIC::empty_string($fontfile) OR (!@TCPDF_STATIC::file_exists($fontfile))) {
 			// build a standard filenames for specified font
-			$tmp_fontfile = str_replace(' ', '', $family).strtolower($style).'.php';
-			$fontfile = TCPDF_FONTS::getFontFullPath($tmp_fontfile, $fontdir);
+			$tmp_fontname = str_replace(' ', '', $family).strtolower($style);
+			$fontfile = TCPDF_FONTS::getFontFullPath($tmp_fontname.'.php', $fontdir);
+			if (TCPDF_STATIC::empty_string($fontfile)) {
+				$fontfile = TCPDF_FONTS::getFontFullPath($tmp_fontname.'.json', $fontdir);
+			}
 			if (TCPDF_STATIC::empty_string($fontfile)) {
 				$missing_style = true;
 				// try to remove the style part
-				$tmp_fontfile = str_replace(' ', '', $family).'.php';
-				$fontfile = TCPDF_FONTS::getFontFullPath($tmp_fontfile, $fontdir);
+				$tmp_fontname = str_replace(' ', '', $family);
+				$fontfile = TCPDF_FONTS::getFontFullPath($tmp_fontname.'.php', $fontdir);
+				if (TCPDF_STATIC::empty_string($fontfile)) {
+					$fontfile = TCPDF_FONTS::getFontFullPath($tmp_fontname.'.json', $fontdir);
+				}
 			}
 		}
 		// include font file
@@ -4375,7 +4331,59 @@ class TCPDF {
 			$originalsize=null;
 			$size1=null;
 			$size2=null;
-			include($fontfile);
+			if (strtolower(pathinfo($fontfile, PATHINFO_EXTENSION)) === 'json') {
+				$font_data = null;
+				if (class_exists('\\Com\\Tecnick\\Pdf\\Font\\Font')) {
+					try {
+						$tcfont = new \Com\Tecnick\Pdf\Font\Font(
+							$family,
+							$style,
+							$fontfile,
+							(bool) $subset,
+							(bool) $this->isunicode,
+							(bool) $this->pdfa_mode,
+							(bool) $this->compress
+						);
+						$tcfont->load();
+						$font_data = $tcfont->getFontData();
+					} catch (Throwable $e) {
+						$font_data = null;
+					}
+				}
+				if (!is_array($font_data)) {
+					$font_json = @file_get_contents($fontfile);
+					$font_data = @json_decode($font_json, true);
+				}
+				if (!is_array($font_data)) {
+					$this->Error('The font definition JSON file has a bad format: '.$fontfile.'');
+				}
+				$type = $font_data['type'] ?? null;
+				if (is_string($type)) {
+					$type_lc = strtolower($type);
+					if ($type_lc === 'core') {
+						$type = 'core';
+					} elseif ($type_lc === 'cidfont0') {
+						$type = 'cidfont0';
+					}
+				}
+				$name = $font_data['name'] ?? null;
+				$desc = $font_data['desc'] ?? null;
+				$up = $font_data['up'] ?? null;
+				$ut = $font_data['ut'] ?? null;
+				$cw = $font_data['cw'] ?? null;
+				$cbbox = $font_data['cbbox'] ?? null;
+				$dw = $font_data['dw'] ?? null;
+				$enc = $font_data['enc'] ?? null;
+				$cidinfo = $font_data['cidinfo'] ?? null;
+				$file = $font_data['file'] ?? null;
+				$ctg = $font_data['ctg'] ?? null;
+				$diff = $font_data['diff'] ?? null;
+				$originalsize = $font_data['originalsize'] ?? null;
+				$size1 = $font_data['size1'] ?? null;
+				$size2 = $font_data['size2'] ?? null;
+			} else {
+				include($fontfile);
+			}
 		} else {
 			$this->Error('Could not include font definition file: '.$family.'');
 		}
@@ -4517,7 +4525,8 @@ class TCPDF {
 	 * The font can be either a standard one or a font added via the AddFont() method. Standard fonts use Windows encoding cp1252 (Western Europe).
 	 * The method can be called before the first page is created and the font is retained from page to page.
 	 * If you just wish to change the current font size, it is simpler to call SetFontSize().
-	 * Note: for the standard fonts, the font metric files must be accessible. There are three possibilities for this:<ul><li>They are in the current directory (the one where the running script lies)</li><li>They are in one of the directories defined by the include_path parameter</li><li>They are in the directory defined by the K_PATH_FONTS constant</li></ul><br />
+	 * Note: font definitions must be accessible via K_PATH_FONTS or an explicit AddFont() path.
+	 * The default source is vendor/tecnickcom/tc-lib-pdf-font/target/fonts/.<br />
 	 * @param string $family Family font. It can be either a name defined by AddFont() or one of the standard Type1 families (case insensitive):<ul><li>times (Times-Roman)</li><li>timesb (Times-Bold)</li><li>timesi (Times-Italic)</li><li>timesbi (Times-BoldItalic)</li><li>helvetica (Helvetica)</li><li>helveticab (Helvetica-Bold)</li><li>helveticai (Helvetica-Oblique)</li><li>helveticabi (Helvetica-BoldOblique)</li><li>courier (Courier)</li><li>courierb (Courier-Bold)</li><li>courieri (Courier-Oblique)</li><li>courierbi (Courier-BoldOblique)</li><li>symbol (Symbol)</li><li>zapfdingbats (ZapfDingbats)</li></ul> It is also possible to pass an empty string. In that case, the current family is retained.
 	 * @param string $style Font style. Possible values are (case insensitive):<ul><li>empty string: regular</li><li>B: bold</li><li>I: italic</li><li>U: underline</li><li>D: line through</li><li>O: overline</li></ul> or any combination. The default value is regular. Bold and italic styles do not apply to Symbol and ZapfDingbats basic fonts or other fonts when not defined.
 	 * @param float|null $size Font size in points. The default value is the current size. If no size has been specified since the beginning of the document, the value taken is 12
@@ -4964,7 +4973,7 @@ class TCPDF {
 	 * @protected
 	 * @see Annotation()
 	 */
-	protected function _putEmbeddedFiles() {
+	private function _putEmbeddedFiles() {
 		if ($this->pdfa_mode && $this->pdfa_version != 3)  {
 			// embedded files are not allowed in PDF/A mode version 1 and 2
 			return;
@@ -6433,13 +6442,13 @@ class TCPDF {
 		// remove carriage returns
 		$s = str_replace("\r", '', $txt);
 		// check if string contains arabic text
-		if (preg_match(TCPDF_FONT_DATA::$uni_RE_PATTERN_ARABIC, $s)) {
+		if (preg_match(\Com\Tecnick\Unicode\Data\Pattern::ARABIC, $s)) {
 			$arabic = true;
 		} else {
 			$arabic = false;
 		}
 		// check if string contains RTL text
-		if ($arabic OR ($this->tmprtl == 'R') OR preg_match(TCPDF_FONT_DATA::$uni_RE_PATTERN_RTL, $s)) {
+		if ($arabic OR ($this->tmprtl == 'R') OR preg_match(\Com\Tecnick\Unicode\Data\Pattern::RTL, $s)) {
 			$rtlmode = true;
 		} else {
 			$rtlmode = false;
@@ -7157,7 +7166,7 @@ class TCPDF {
 			//First use of image, get info
 			$type = strtolower($type);
 			if ($type == '') {
-				$type = TCPDF_IMAGES::getImageFileType($file, $imsize);
+				$type = TCPDF_STATIC::getImageFileType($file, $imsize);
 			} elseif ($type == 'jpg') {
 				$type = 'jpeg';
 			}
@@ -7166,9 +7175,9 @@ class TCPDF {
 			// GD image handler function
 			$gdfunction = 'imagecreatefrom'.$type;
 			$info = false;
-			if ((method_exists('TCPDF_IMAGES', $mtd)) AND (!($resize AND (function_exists($gdfunction) OR extension_loaded('imagick'))))) {
+			if ((method_exists('TCPDF_STATIC', $mtd)) AND (!($resize AND (function_exists($gdfunction) OR extension_loaded('imagick'))))) {
 				// TCPDF image functions
-				$info = TCPDF_IMAGES::$mtd($file);
+				$info = TCPDF_STATIC::$mtd($file);
 				if (($ismask === false) AND ($imgmask === false) AND (strpos($file, '__tcpdf_'.$this->file_id.'_imgmask_') === FALSE)
 					AND (($info === 'pngalpha') OR (isset($info['trns']) AND !empty($info['trns'])))) {
 					return $this->ImagePngAlpha($file, $x, $y, $pixw, $pixh, $w, $h, 'PNG', $link, $align, $resize, $dpi, $palign, $filehash);
@@ -7182,15 +7191,15 @@ class TCPDF {
 						if ($resize) {
 							$imgr = imagecreatetruecolor($neww, $newh);
 							if (($type == 'gif') OR ($type == 'png')) {
-								$imgr = TCPDF_IMAGES::setGDImageTransparency($imgr, $img);
+								$imgr = TCPDF_STATIC::setGDImageTransparency($imgr, $img);
 							}
 							imagecopyresampled($imgr, $img, 0, 0, 0, 0, $neww, $newh, $pixw, $pixh);
 							$img = $imgr;
 						}
 						if (($type == 'gif') OR ($type == 'png')) {
-							$info = TCPDF_IMAGES::_toPNG($img, TCPDF_STATIC::getObjFilename('img', $this->file_id));
+							$info = TCPDF_STATIC::_toPNG($img, TCPDF_STATIC::getObjFilename('img', $this->file_id));
 						} else {
-							$info = TCPDF_IMAGES::_toJPEG($img, $this->jpeg_quality, TCPDF_STATIC::getObjFilename('img', $this->file_id));
+							$info = TCPDF_STATIC::_toJPEG($img, $this->jpeg_quality, TCPDF_STATIC::getObjFilename('img', $this->file_id));
 						}
 					}
 				} catch(Exception $e) {
@@ -7251,7 +7260,7 @@ class TCPDF {
 					$img->setImageFormat('jpeg');
 					$tempname = TCPDF_STATIC::getObjFilename('img', $this->file_id);
 					$img->writeImage($tempname);
-					$info = TCPDF_IMAGES::_parsejpeg($tempname);
+					$info = TCPDF_STATIC::_parsejpeg($tempname);
 					$this->_unlink($tempname);
 					$img->destroy();
 				} catch(Exception $e) {
@@ -7882,7 +7891,7 @@ class TCPDF {
 	 * @public
 	 * @since 4.5.016 (2009-02-24)
 	 */
-	public function _destroy($destroyall=false, $preserve_objcopy=false) {
+	private function _destroy($destroyall=false, $preserve_objcopy=false) {
 		if (isset($this->file_id) && isset(self::$cleaned_ids[$this->file_id])) {
 			$destroyall = false;
 		}
@@ -7933,7 +7942,7 @@ class TCPDF {
 	 * Check for locale-related bug
 	 * @protected
 	 */
-	protected function _dochecks() {
+	private function _dochecks() {
 		//Check for locale-related bug
 		if (1.1 == 1) {
 			$this->Error('Don\'t alter the locale before including class file');
@@ -8037,7 +8046,7 @@ class TCPDF {
 	 * Output pages (and replace page number aliases).
 	 * @protected
 	 */
-	protected function _putpages() {
+	private function _putpages() {
 		$filter = ($this->compress) ? '/Filter /FlateDecode ' : '';
 		// get internal aliases for page numbers
 		$pnalias = $this->getAllInternalPageNumberAliases();
@@ -8199,7 +8208,7 @@ class TCPDF {
 	 * @author Nicola Asuni
 	 * @since 5.0.010 (2010-05-17)
 	 */
-	protected function _getannotsrefs($n) {
+	private function _getannotsrefs($n) {
 		if (!(isset($this->PageAnnots[$n]) OR count($this->empty_signature_appearance)>0 OR ($this->sign AND isset($this->signature_data['cert_type'])))) {
 			return '';
 		}
@@ -8243,7 +8252,7 @@ class TCPDF {
 	 * @author Nicola Asuni
 	 * @since 4.0.018 (2008-08-06)
 	 */
-	protected function _putannotsobjs() {
+	private function _putannotsobjs() {
 		// reset object counter
 		for ($n=1; $n <= $this->numpages; ++$n) {
 			if (isset($this->PageAnnots[$n])) {
@@ -8452,7 +8461,7 @@ class TCPDF {
 						$annots .= '>>';
 					}
 					if (isset($pl['opt']['c']) AND (is_array($pl['opt']['c'])) AND !empty($pl['opt']['c'])) {
-						$annots .= ' /C '.TCPDF_COLORS::getColorStringFromArray($pl['opt']['c']);
+						$annots .= ' /C '.TCPDF_STATIC::getColorStringFromArray($pl['opt']['c']);
 					}
 					//$annots .= ' /StructParent ';
 					//$annots .= ' /OC ';
@@ -8695,10 +8704,10 @@ class TCPDF {
 									$annots .= ' /R '.$pl['opt']['mk']['r'];
 								}
 								if (isset($pl['opt']['mk']['bc']) AND (is_array($pl['opt']['mk']['bc']))) {
-									$annots .= ' /BC '.TCPDF_COLORS::getColorStringFromArray($pl['opt']['mk']['bc']);
+									$annots .= ' /BC '.TCPDF_STATIC::getColorStringFromArray($pl['opt']['mk']['bc']);
 								}
 								if (isset($pl['opt']['mk']['bg']) AND (is_array($pl['opt']['mk']['bg']))) {
-									$annots .= ' /BG '.TCPDF_COLORS::getColorStringFromArray($pl['opt']['mk']['bg']);
+									$annots .= ' /BG '.TCPDF_STATIC::getColorStringFromArray($pl['opt']['mk']['bg']);
 								}
 								if (isset($pl['opt']['mk']['ca'])) {
 									$annots .= ' /CA '.$pl['opt']['mk']['ca'];
@@ -8893,7 +8902,7 @@ class TCPDF {
 	 * @protected
 	 * @since 4.8.001 (2009-09-09)
 	 */
-	protected function _putAPXObject($w=0, $h=0, $stream='') {
+	private function _putAPXObject($w=0, $h=0, $stream='') {
 		$stream = trim($stream);
 		$out = $this->_getobj()."\n";
 		$this->xobjects['AX'.$this->n] = array('n' => $this->n);
@@ -8923,7 +8932,7 @@ class TCPDF {
 	 * @author Nicola Asuni
 	 * @protected
 	 */
-	protected function _putfonts() {
+	private function _putfonts() {
 		$nf = $this->n;
 		foreach ($this->diffs as $diff) {
 			//Encodings
@@ -8953,12 +8962,16 @@ class TCPDF {
 					}
 					// merge subset characters
 					$subsetchars = array(); // used chars
+					$fontmeta = array();
 					foreach ($info['fontkeys'] as $fontkey) {
 						$fontinfo = $this->getFontBuffer($fontkey);
 						$subsetchars += $fontinfo['subsetchars'];
+						if (empty($fontmeta)) {
+							$fontmeta = $fontinfo;
+						}
 					}
 					// rebuild a font subset
-					$font = TCPDF_FONTS::_getTrueTypeFontSubset($font, $subsetchars);
+					$font = TCPDF_FONTS::_getTrueTypeFontSubset($font, $subsetchars, $fontmeta);
 					// calculate new font length
 					$info['length1'] = strlen($font);
 					if ($compressed) {
@@ -9072,7 +9085,7 @@ class TCPDF {
 	 * @author Nicola Asuni
 	 * @since 1.52.0.TC005 (2005-01-05)
 	 */
-	protected function _puttruetypeunicode($font) {
+	private function _puttruetypeunicode($font) {
 		$fontname = '';
 		if ($font['subset']) {
 			// change name for font subsetting
@@ -9095,7 +9108,7 @@ class TCPDF {
 		$out .= "\n".'endobj';
 		$this->_out($out);
 		// ToUnicode map for Identity-H
-		$stream = TCPDF_FONT_DATA::$uni_identity_h;
+		$stream = \Com\Tecnick\Unicode\Data\Identity::CIDHMAP;
 		// ToUnicode Object
 		$this->_newobj();
 		$stream = ($this->compress) ? gzcompress($stream) : $stream;
@@ -9176,7 +9189,7 @@ class TCPDF {
 	 * @author Andrew Whitehead,2026 Nicola Asuni, Yukihiro Nakadaira
 	 * @since 3.2.000 (2008-06-23)
 	 */
-	protected function _putcidfont0($font) {
+	private function _putcidfont0($font) {
 		$cidoffset = 0;
 		if (!isset($font['cw'][1])) {
 			$cidoffset = 31;
@@ -9246,7 +9259,7 @@ class TCPDF {
 	 * Output images.
 	 * @protected
 	 */
-	protected function _putimages() {
+	private function _putimages() {
 		$filter = ($this->compress) ? '/Filter /FlateDecode ' : '';
 		foreach ($this->imagekeys as $file) {
 			$info = $this->getImageBuffer($file);
@@ -9376,7 +9389,7 @@ class TCPDF {
 	 * @protected
 	 * @see startTemplate(), endTemplate(), printTemplate()
 	 */
-	protected function _putxobjects() {
+	private function _putxobjects() {
 		foreach ($this->xobjects as $key => $data) {
 			if (isset($data['outdata'])) {
 				$stream = str_replace($this->epsmarker, '', trim($data['outdata']));
@@ -9479,7 +9492,7 @@ class TCPDF {
 	 * @protected
 	 * @since 4.0.024 (2008-09-12)
 	 */
-	protected function _putspotcolors() {
+	private function _putspotcolors() {
 		foreach ($this->spot_colors as $name => $color) {
 			$this->_newobj();
 			$this->spot_colors[$name]['n'] = $this->n;
@@ -9499,7 +9512,7 @@ class TCPDF {
 	 * @protected
 	 * @since 5.8.014 (2010-08-23)
 	 */
-	protected function _getxobjectdict() {
+	private function _getxobjectdict() {
 		$out = '';
 		foreach ($this->xobjects as $id => $objid) {
 			$out .= ' /'.$id.' '.$objid['n'].' 0 R';
@@ -9511,7 +9524,7 @@ class TCPDF {
 	 * Output Resources Dictionary.
 	 * @protected
 	 */
-	protected function _putresourcedict() {
+	private function _putresourcedict() {
 		$out = $this->_getobj(2)."\n";
 		$out .= '<< /ProcSet [/PDF /Text /ImageB /ImageC /ImageI]';
 		$out .= ' /Font <<';
@@ -9575,7 +9588,7 @@ class TCPDF {
 	 * Output Resources.
 	 * @protected
 	 */
-	protected function _putresources() {
+	private function _putresources() {
 		$this->_putextgstates();
 		$this->_putocg();
 		$this->_putfonts();
@@ -9598,7 +9611,7 @@ class TCPDF {
 	 * @return int object id
 	 * @protected
 	 */
-	protected function _putinfo() {
+	private function _putinfo() {
 		$oid = $this->_newobj();
 		$out = '<<';
 		// store current isunicode value
@@ -9681,7 +9694,7 @@ class TCPDF {
 	 * @since 5.9.121 (2011-09-28)
 	 * @protected
 	 */
-	protected function _putXMP() {
+	private function _putXMP() {
 		$oid = $this->_newobj();
 		// store current isunicode value
 		$prev_isunicode = $this->isunicode;
@@ -9831,17 +9844,24 @@ class TCPDF {
 	 * @return int object id
 	 * @protected
 	 */
-	protected function _putcatalog() {
+	private function _putcatalog() {
 		// put XMP
 		$xmpobj = $this->_putXMP();
 		// if required, add standard sRGB ICC colour profile
 		if ($this->pdfa_mode OR $this->force_srgb) {
 			$iccobj = $this->_newobj();
-			$icc = file_get_contents(dirname(__FILE__).'/include/sRGB.icc');
-			$filter = '';
-			if ($this->compress) {
-				$filter = ' /Filter /FlateDecode';
-				$icc = gzcompress($icc);
+			$icc = file_get_contents(dirname(__FILE__).'/vendor/tecnickcom/tc-lib-pdf/src/include/sRGB.icc.z');
+			$filter = ' /Filter /FlateDecode';
+			if ($icc === false) {
+				$icc = file_get_contents(dirname(__FILE__).'/include/sRGB.icc');
+				if ($icc === false) {
+					$this->Error('Unable to read sRGB ICC profile file.');
+				}
+				$filter = '';
+				if ($this->compress) {
+					$filter = ' /Filter /FlateDecode';
+					$icc = gzcompress($icc);
+				}
 			}
 			$icc = $this->_getrawstream($icc);
 			$this->_out('<</N 3 '.$filter.'/Length '.strlen($icc).'>> stream'."\n".$icc."\n".'endstream'."\n".'endobj');
@@ -10022,7 +10042,7 @@ class TCPDF {
 	 * @since 3.1.000 (2008-06-09)
 	 * @protected
 	 */
-	protected function _putviewerpreferences() {
+	private function _putviewerpreferences() {
 		$vp = $this->viewer_preferences;
 		$out = ' /ViewerPreferences <<';
 		if ($this->rtl) {
@@ -10094,7 +10114,7 @@ class TCPDF {
 	 * Output PDF File Header (7.5.2).
 	 * @protected
 	 */
-	protected function _putheader() {
+	private function _putheader() {
 		$this->_out('%PDF-'.$this->PDFVersion);
 		$this->_out('%'.chr(0xe2).chr(0xe3).chr(0xcf).chr(0xd3));
 	}
@@ -10103,7 +10123,7 @@ class TCPDF {
 	 * Output end of document (EOF).
 	 * @protected
 	 */
-	protected function _enddoc() {
+	private function _enddoc() {
 		if (isset($this->CurrentFont['fontkey']) AND isset($this->CurrentFont['subsetchars'])) {
 			// save subset chars of the previous font
 			$this->setFontSubBuffer($this->CurrentFont['fontkey'], 'subsetchars', $this->CurrentFont['subsetchars']);
@@ -10194,7 +10214,7 @@ class TCPDF {
 	 * @protected
 	 * @see getPageSizeFromFormat(), setPageFormat()
 	 */
-	protected function _beginpage($orientation='', $format='') {
+	private function _beginpage($orientation='', $format='') {
 		++$this->page;
 		$this->pageobjects[$this->page] = array();
 		$this->setPageBuffer($this->page, '');
@@ -10237,7 +10257,7 @@ class TCPDF {
 	 * Mark end of page.
 	 * @protected
 	 */
-	protected function _endpage() {
+	private function _endpage() {
 		$this->setVisibility('all');
 		$this->state = 1;
 	}
@@ -10247,7 +10267,7 @@ class TCPDF {
 	 * @return int object number
 	 * @protected
 	 */
-	protected function _newobj() {
+	private function _newobj() {
 		$this->_out($this->_getobj());
 		return $this->n;
 	}
@@ -10259,7 +10279,7 @@ class TCPDF {
 	 * @protected
 	 * @since 5.8.009 (2010-08-20)
 	 */
-	protected function _getobj($objid=null) {
+	private function _getobj($objid=null) {
 		if (TCPDF_STATIC::empty_string($objid)) {
 			++$this->n;
 			$objid = $this->n;
@@ -10270,18 +10290,6 @@ class TCPDF {
 	}
 
 	/**
-	 * Underline text.
-	 * @param int $x X coordinate
-	 * @param int $y Y coordinate
-	 * @param string $txt text to underline
-	 * @protected
-	 */
-	protected function _dounderline($x, $y, $txt) {
-		$w = $this->GetStringWidth($txt);
-		return $this->_dounderlinew($x, $y, $w);
-	}
-
-	/**
 	 * Underline for rectangular text area.
 	 * @param int $x X coordinate
 	 * @param int $y Y coordinate
@@ -10289,21 +10297,9 @@ class TCPDF {
 	 * @protected
 	 * @since 4.8.008 (2009-09-29)
 	 */
-	protected function _dounderlinew($x, $y, $w) {
+	private function _dounderlinew($x, $y, $w) {
 		$linew = - $this->CurrentFont['ut'] / 1000 * $this->FontSizePt;
 		return sprintf('%F %F %F %F re f', $x * $this->k, ((($this->h - $y) * $this->k) + $linew), $w * $this->k, $linew);
-	}
-
-	/**
-	 * Line through text.
-	 * @param int $x X coordinate
-	 * @param int $y Y coordinate
-	 * @param string $txt text to linethrough
-	 * @protected
-	 */
-	protected function _dolinethrough($x, $y, $txt) {
-		$w = $this->GetStringWidth($txt);
-		return $this->_dolinethroughw($x, $y, $w);
 	}
 
 	/**
@@ -10314,22 +10310,9 @@ class TCPDF {
 	 * @protected
 	 * @since 4.9.008 (2009-09-29)
 	 */
-	protected function _dolinethroughw($x, $y, $w) {
+	private function _dolinethroughw($x, $y, $w) {
 		$linew = - $this->CurrentFont['ut'] / 1000 * $this->FontSizePt;
 		return sprintf('%F %F %F %F re f', $x * $this->k, ((($this->h - $y) * $this->k) + $linew + ($this->FontSizePt / 3)), $w * $this->k, $linew);
-	}
-
-	/**
-	 * Overline text.
-	 * @param int $x X coordinate
-	 * @param int $y Y coordinate
-	 * @param string $txt text to overline
-	 * @protected
-	 * @since 4.9.015 (2010-04-19)
-	 */
-	protected function _dooverline($x, $y, $txt) {
-		$w = $this->GetStringWidth($txt);
-		return $this->_dooverlinew($x, $y, $w);
 	}
 
 	/**
@@ -10340,7 +10323,7 @@ class TCPDF {
 	 * @protected
 	 * @since 4.9.015 (2010-04-19)
 	 */
-	protected function _dooverlinew($x, $y, $w) {
+	private function _dooverlinew($x, $y, $w) {
 		$linew = - $this->CurrentFont['ut'] / 1000 * $this->FontSizePt;
 		return sprintf('%F %F %F %F re f', $x * $this->k, (($this->h - $y + $this->FontAscent) * $this->k) - $linew, $w * $this->k, $linew);
 
@@ -10353,7 +10336,7 @@ class TCPDF {
 	 * @return string escaped string.
 	 * @protected
 	 */
-	protected function _datastring($s, $n=0) {
+	private function _datastring($s, $n=0) {
 		if ($n == 0) {
 			$n = $this->n;
 		}
@@ -10415,7 +10398,7 @@ class TCPDF {
 	 * @protected
 	 * @since 4.6.028 (2009-08-25)
 	 */
-	protected function _datestring($n=0, $timestamp=0) {
+	private function _datestring($n=0, $timestamp=0) {
 		if ((empty($timestamp)) OR ($timestamp < 0)) {
 			$timestamp = $this->doc_creation_timestamp;
 		}
@@ -10429,7 +10412,7 @@ class TCPDF {
 	 * @return string escaped string.
 	 * @protected
 	 */
-	protected function _textstring($s, $n=0) {
+	private function _textstring($s, $n=0) {
 		if ($this->isunicode) {
 			//Convert string to UTF-16BE
 			$s = TCPDF_FONTS::UTF8ToUTF16BE($s, true, $this->isunicode, $this->CurrentFont);
@@ -10445,7 +10428,7 @@ class TCPDF {
 	 * @author Nicola Asuni
 	 * @since 5.5.000 (2010-06-22)
 	 */
-	protected function _getrawstream($s, $n=0) {
+	private function _getrawstream($s, $n=0) {
 		if ($n <= 0) {
 			// default to current object
 			$n = $this->n;
@@ -10458,7 +10441,7 @@ class TCPDF {
 	 * @param string $s string to output.
 	 * @protected
 	 */
-	protected function _out($s) {
+	private function _out($s) {
 		if ($this->state == 2) {
 			if ($this->inxobj) {
 				// we are inside an XObject template
@@ -10631,7 +10614,7 @@ class TCPDF {
 	 * @author Nicola Asuni
 	 * @since 2.0.000 (2008-01-02)
 	 */
-	protected function _objectkey($n) {
+	private function _objectkey($n) {
 		$objkey = $this->encryptdata['key'].pack('VXxx', $n);
 		if ($this->encryptdata['mode'] == 2) { // AES-128
 			// AES padding
@@ -10651,7 +10634,7 @@ class TCPDF {
 	 * @author Nicola Asuni
 	 * @since 5.0.005 (2010-05-11)
 	 */
-	protected function _encrypt_data($n, $s) {
+	private function _encrypt_data($n, $s) {
 		if (!$this->encrypted) {
 			return $s;
 		}
@@ -10679,7 +10662,7 @@ class TCPDF {
 	 * @author Nicola Asuni
 	 * @since 2.0.000 (2008-01-02)
 	 */
-	protected function _putencryption() {
+	private function _putencryption() {
 		if (!$this->encrypted) {
 			return;
 		}
@@ -10799,7 +10782,7 @@ class TCPDF {
 	 * @since 2.0.000 (2008-01-02)
 	 * @author Nicola Asuni
 	 */
-	protected function _Uvalue() {
+	private function _Uvalue() {
 		if ($this->encryptdata['mode'] == 0) { // RC4-40
 			return TCPDF_STATIC::_RC4($this->encryptdata['key'], TCPDF_STATIC::$enc_padding, $this->last_enc_key, $this->last_enc_key_c);
 		} elseif ($this->encryptdata['mode'] < 3) { // RC4-128, AES-128
@@ -10832,7 +10815,7 @@ class TCPDF {
 	 * @since 5.9.006 (2010-10-19)
 	 * @author Nicola Asuni
 	 */
-	protected function _UEvalue() {
+	private function _UEvalue() {
 		$hashkey = hash('sha256', $this->encryptdata['user_password'].$this->encryptdata['UKS'], true);
 		return TCPDF_STATIC::_AESnopad($hashkey, $this->encryptdata['key']);
 	}
@@ -10844,7 +10827,7 @@ class TCPDF {
 	 * @since 2.0.000 (2008-01-02)
 	 * @author Nicola Asuni
 	 */
-	protected function _Ovalue() {
+	private function _Ovalue() {
 		if ($this->encryptdata['mode'] < 3) { // RC4-40, RC4-128, AES-128
 			$tmp = TCPDF_STATIC::_md5_16($this->encryptdata['owner_password']);
 			if ($this->encryptdata['mode'] > 0) {
@@ -10882,7 +10865,7 @@ class TCPDF {
 	 * @since 5.9.006 (2010-10-19)
 	 * @author Nicola Asuni
 	 */
-	protected function _OEvalue() {
+	private function _OEvalue() {
 		$hashkey = hash('sha256', $this->encryptdata['owner_password'].$this->encryptdata['OKS'].$this->encryptdata['U'], true);
 		return TCPDF_STATIC::_AESnopad($hashkey, $this->encryptdata['key']);
 	}
@@ -10895,7 +10878,7 @@ class TCPDF {
 	 * @since 5.9.006 (2010-10-19)
 	 * @author Nicola Asuni
 	 */
-	protected function _fixAES256Password($password) {
+	private function _fixAES256Password($password) {
 		$psw = ''; // password to be returned
 		$psw_array = TCPDF_FONTS::utf8Bidi(TCPDF_FONTS::UTF8StringToArray($password, $this->isunicode, $this->CurrentFont), $password, $this->rtl, $this->isunicode, $this->CurrentFont);
 		foreach ($psw_array as $c) {
@@ -10910,7 +10893,7 @@ class TCPDF {
 	 * @since 2.0.000 (2008-01-02)
 	 * @author Nicola Asuni
 	 */
-	protected function _generateencryptionkey() {
+	private function _generateencryptionkey() {
 		$keybytelen = ($this->encryptdata['Length'] / 8);
 		if (!$this->encryptdata['pubkey']) { // standard mode
 			if ($this->encryptdata['mode'] == 3) { // AES-256
@@ -11567,15 +11550,51 @@ class TCPDF {
 	}
 
 	/**
+	 * Returns a tc-lib-pdf-graph color parser instance.
+	 * @return \Com\Tecnick\Color\Pdf
+	 */
+	protected function getPdfGraphColorParser() {
+		if (!($this->pdfgraphcolor instanceof \Com\Tecnick\Color\Pdf)) {
+			$this->pdfgraphcolor = new \Com\Tecnick\Color\Pdf();
+		}
+		return $this->pdfgraphcolor;
+	}
+
+	/**
+	 * Returns a tc-lib-pdf-graph draw helper synchronized with current page geometry.
+	 * @return \Com\Tecnick\Pdf\Graph\Draw
+	 */
+	protected function getPdfGraphDraw() {
+		if (!($this->pdfgraphdraw instanceof \Com\Tecnick\Pdf\Graph\Draw)) {
+			$this->pdfgraphdraw = new \Com\Tecnick\Pdf\Graph\Draw(
+				$this->k,
+				$this->w,
+				$this->h,
+				$this->getPdfGraphColorParser(),
+				new \Com\Tecnick\Pdf\Encrypt\Encrypt(),
+				(bool) $this->pdfa_mode,
+				(bool) $this->compress
+			);
+			return $this->pdfgraphdraw;
+		}
+
+		$this->pdfgraphdraw->setKUnit($this->k);
+		$this->pdfgraphdraw->setPageWidth($this->w);
+		$this->pdfgraphdraw->setPageHeight($this->h);
+
+		return $this->pdfgraphdraw;
+	}
+
+	/**
 	 * Begin a new subpath by moving the current point to coordinates (x, y), omitting any connecting line segment.
 	 * @param float $x Abscissa of point.
 	 * @param float $y Ordinate of point.
 	 * @protected
 	 * @since 2.1.000 (2008-01-08)
 	 */
-	protected function _outPoint($x, $y) {
+	private function _outPoint($x, $y) {
 		if ($this->state == 2) {
-			$this->_out(sprintf('%F %F m', ($x * $this->k), (($this->h - $y) * $this->k)));
+			$this->_out(trim($this->getPdfGraphDraw()->getRawPoint((float) $x, (float) $y)));
 		}
 	}
 
@@ -11587,9 +11606,9 @@ class TCPDF {
 	 * @protected
 	 * @since 2.1.000 (2008-01-08)
 	 */
-	protected function _outLine($x, $y) {
+	private function _outLine($x, $y) {
 		if ($this->state == 2) {
-			$this->_out(sprintf('%F %F l', ($x * $this->k), (($this->h - $y) * $this->k)));
+			$this->_out(trim($this->getPdfGraphDraw()->getRawLine((float) $x, (float) $y)));
 		}
 	}
 
@@ -11603,9 +11622,9 @@ class TCPDF {
 	 * @protected
 	 * @since 2.1.000 (2008-01-08)
 	 */
-	protected function _outRect($x, $y, $w, $h, $op) {
+	private function _outRect($x, $y, $w, $h, $op) {
 		if ($this->state == 2) {
-			$this->_out(sprintf('%F %F %F %F re %s', ($x * $this->k), (($this->h - $y) * $this->k), ($w * $this->k), (-$h * $this->k), $op));
+			$this->_out(trim(str_replace("\n", ' ', $this->getPdfGraphDraw()->getRawRect((float) $x, (float) $y, (float) $w, (float) $h, (string) $op))));
 		}
 	}
 
@@ -11621,41 +11640,9 @@ class TCPDF {
 	 * @protected
 	 * @since 2.1.000 (2008-01-08)
 	 */
-	protected function _outCurve($x1, $y1, $x2, $y2, $x3, $y3) {
+	private function _outCurve($x1, $y1, $x2, $y2, $x3, $y3) {
 		if ($this->state == 2) {
-			$this->_out(sprintf('%F %F %F %F %F %F c', ($x1 * $this->k), (($this->h - $y1) * $this->k), ($x2 * $this->k), (($this->h - $y2) * $this->k), ($x3 * $this->k), (($this->h - $y3) * $this->k)));
-		}
-	}
-
-	/**
-	 * Append a cubic Bezier curve to the current path. The curve shall extend from the current point to the point (x3, y3), using the current point and (x2, y2) as the Bezier control points.
-	 * The new current point shall be (x3, y3).
-	 * @param float $x2 Abscissa of control point 2.
-	 * @param float $y2 Ordinate of control point 2.
-	 * @param float $x3 Abscissa of end point.
-	 * @param float $y3 Ordinate of end point.
-	 * @protected
-	 * @since 4.9.019 (2010-04-26)
-	 */
-	protected function _outCurveV($x2, $y2, $x3, $y3) {
-		if ($this->state == 2) {
-			$this->_out(sprintf('%F %F %F %F v', ($x2 * $this->k), (($this->h - $y2) * $this->k), ($x3 * $this->k), (($this->h - $y3) * $this->k)));
-		}
-	}
-
-	/**
-	 * Append a cubic Bezier curve to the current path. The curve shall extend from the current point to the point (x3, y3), using (x1, y1) and (x3, y3) as the Bezier control points.
-	 * The new current point shall be (x3, y3).
-	 * @param float $x1 Abscissa of control point 1.
-	 * @param float $y1 Ordinate of control point 1.
-	 * @param float $x3 Abscissa of end point.
-	 * @param float $y3 Ordinate of end point.
-	 * @protected
-	 * @since 2.1.000 (2008-01-08)
-	 */
-	protected function _outCurveY($x1, $y1, $x3, $y3) {
-		if ($this->state == 2) {
-			$this->_out(sprintf('%F %F %F %F y', ($x1 * $this->k), (($this->h - $y1) * $this->k), ($x3 * $this->k), (($this->h - $y3) * $this->k)));
+			$this->_out(trim($this->getPdfGraphDraw()->getRawCurve((float) $x1, (float) $y1, (float) $x2, (float) $y2, (float) $x3, (float) $y3)));
 		}
 	}
 
@@ -11882,120 +11869,41 @@ class TCPDF {
 	 * @protected
 	 * @since 4.9.019 (2010-04-26)
 	 */
-	protected function _outellipticalarc($xc, $yc, $rx, $ry, $xang=0, $angs=0, $angf=360, $pie=false, $nc=2, $startpoint=true, $ccw=true, $svg=false) {
+	private function _outellipticalarc($xc, $yc, $rx, $ry, $xang=0, $angs=0, $angf=360, $pie=false, $nc=2, $startpoint=true, $ccw=true, $svg=false) {
 		if (($rx <= 0) OR ($ry < 0)) {
 			return;
 		}
-		$k = $this->k;
-		if ($nc < 2) {
-			$nc = 2;
-		}
-		$xmin = 2147483647;
-		$ymin = 2147483647;
-		$xmax = 0;
-		$ymax = 0;
-		if ($pie) {
-			// center of the arc
-			$this->_outPoint($xc, $yc);
-		}
-		$xang = deg2rad((float) $xang);
-		$angs = deg2rad((float) $angs);
-		$angf = deg2rad((float) $angf);
-		if ($svg) {
-			$as = $angs;
-			$af = $angf;
-		} else {
-			$as = atan2((sin($angs) / $ry), (cos($angs) / $rx));
-			$af = atan2((sin($angf) / $ry), (cos($angf) / $rx));
-		}
-		if ($as < 0) {
-			$as += (2 * M_PI);
-		}
-		if ($af < 0) {
-			$af += (2 * M_PI);
-		}
-		if ($ccw AND ($as > $af)) {
-			// reverse rotation
-			$as -= (2 * M_PI);
-		} elseif (!$ccw AND ($as < $af)) {
-			// reverse rotation
-			$af -= (2 * M_PI);
-		}
-		$total_angle = ($af - $as);
-		if ($nc < 2) {
-			$nc = 2;
-		}
-		// total arcs to draw
-		$nc *= (2 * abs($total_angle) / M_PI);
-		$nc = round($nc) + 1;
-		// angle of each arc
-		$arcang = ($total_angle / $nc);
-		// center point in PDF coordinates
-		$x0 = $xc;
-		$y0 = ($this->h - $yc);
-		// starting angle
-		$ang = $as;
-		$alpha = sin($arcang) * ((sqrt(4 + (3 * pow(tan(($arcang) / 2), 2))) - 1) / 3);
-		$cos_xang = cos($xang);
-		$sin_xang = sin($xang);
-		$cos_ang = cos($ang);
-		$sin_ang = sin($ang);
-		// first arc point
-		$px1 = $x0 + ($rx * $cos_xang * $cos_ang) - ($ry * $sin_xang * $sin_ang);
-		$py1 = $y0 + ($rx * $sin_xang * $cos_ang) + ($ry * $cos_xang * $sin_ang);
-		// first Bezier control point
-		$qx1 = ($alpha * ((-$rx * $cos_xang * $sin_ang) - ($ry * $sin_xang * $cos_ang)));
-		$qy1 = ($alpha * ((-$rx * $sin_xang * $sin_ang) + ($ry * $cos_xang * $cos_ang)));
-		if ($pie) {
-			// line from center to arc starting point
-			$this->_outLine($px1, $this->h - $py1);
-		} elseif ($startpoint) {
-			// arc starting point
-			$this->_outPoint($px1, $this->h - $py1);
-		}
-		// draw arcs
-		for ($i = 1; $i <= $nc; ++$i) {
-			// starting angle
-			$ang = $as + ($i * $arcang);
-			if ($i == $nc) {
-				$ang = $af;
+
+		$bbox = array();
+		$arc = $this->getPdfGraphDraw()->getRawEllipticalArc(
+			(float) $xc,
+			(float) $yc,
+			(float) $rx,
+			(float) $ry,
+			(float) $xang,
+			(float) $angs,
+			(float) $angf,
+			(bool) $pie,
+			(float) $nc,
+			(bool) $startpoint,
+			(bool) $ccw,
+			(bool) $svg,
+			$bbox
+		);
+
+		if (($this->state == 2) AND ($arc !== '')) {
+			foreach (explode("\n", trim($arc)) as $cmd) {
+				if ($cmd !== '') {
+					$this->_out($cmd);
+				}
 			}
-			$cos_ang = cos($ang);
-			$sin_ang = sin($ang);
-			// second arc point
-			$px2 = $x0 + ($rx * $cos_xang * $cos_ang) - ($ry * $sin_xang * $sin_ang);
-			$py2 = $y0 + ($rx * $sin_xang * $cos_ang) + ($ry * $cos_xang * $sin_ang);
-			// second Bezier control point
-			$qx2 = ($alpha * ((-$rx * $cos_xang * $sin_ang) - ($ry * $sin_xang * $cos_ang)));
-			$qy2 = ($alpha * ((-$rx * $sin_xang * $sin_ang) + ($ry * $cos_xang * $cos_ang)));
-			// draw arc
-			$cx1 = ($px1 + $qx1);
-			$cy1 = ($this->h - ($py1 + $qy1));
-			$cx2 = ($px2 - $qx2);
-			$cy2 = ($this->h - ($py2 - $qy2));
-			$cx3 = $px2;
-			$cy3 = ($this->h - $py2);
-			$this->_outCurve($cx1, $cy1, $cx2, $cy2, $cx3, $cy3);
-			// get bounding box coordinates
-			$xmin = min($xmin, $cx1, $cx2, $cx3);
-			$ymin = min($ymin, $cy1, $cy2, $cy3);
-			$xmax = max($xmax, $cx1, $cx2, $cx3);
-			$ymax = max($ymax, $cy1, $cy2, $cy3);
-			// move to next point
-			$px1 = $px2;
-			$py1 = $py2;
-			$qx1 = $qx2;
-			$qy1 = $qy2;
 		}
-		if ($pie) {
-			$this->_outLine($xc, $yc);
-			// get bounding box coordinates
-			$xmin = min($xmin, $xc);
-			$ymin = min($ymin, $yc);
-			$xmax = max($xmax, $xc);
-			$ymax = max($ymax, $yc);
+
+		if (empty($bbox)) {
+			return array(2147483647, 2147483647, 0, 0);
 		}
-		return array($xmin, $ymin, $xmax, $ymax);
+
+		return array($bbox[0], $bbox[1], $bbox[2], $bbox[3]);
 	}
 
 	/**
@@ -12448,7 +12356,7 @@ class TCPDF {
 	 * @author Johannes G\FCntert,2026 Nicola Asuni
 	 * @since 5.9.098 (2011-06-23)
 	 */
-	protected function _putdests() {
+	private function _putdests() {
 		if (empty($this->dests)) {
 			return;
 		}
@@ -12554,10 +12462,10 @@ class TCPDF {
 	/**
 	 * Create a bookmark PDF string.
 	 * @protected
-	 * @author Olivier Plathey,2026 Nicola Asuni
+	 * @author Olivier Plathey, Nicola Asuni
 	 * @since 2.1.002 (2008-02-12)
 	 */
-	protected function _putbookmarks() {
+	private function _putbookmarks() {
 		$nb = count($this->outlines);
 		if ($nb == 0) {
 			return;
@@ -12712,7 +12620,7 @@ class TCPDF {
 	 * @author Johannes G\FCntert,2026 Nicola Asuni
 	 * @since 2.1.002 (2008-02-12)
 	 */
-	protected function _putjavascript() {
+	private function _putjavascript() {
 		if ($this->pdfa_mode OR (empty($this->javascript) AND empty($this->js_objects))) {
 			return;
 		}
@@ -12770,7 +12678,7 @@ class TCPDF {
 	 * @author Denis Van Nuffelen,2026 Nicola Asuni
 	 * @since 2.1.002 (2008-02-12)
 	 */
-	protected function _addfield($type, $name, $x, $y, $w, $h, $prop) {
+	private function _addfield($type, $name, $x, $y, $w, $h, $prop) {
 		if ($this->rtl) {
 			$x = $x - $w;
 		}
@@ -12781,7 +12689,7 @@ class TCPDF {
 		$this->javascript .= 'f'.$name.'.textSize='.$this->FontSizePt.";\n";
 		foreach($prop as $key => $val) {
 			if (strcmp(substr($key, -5), 'Color') == 0) {
-				$val = TCPDF_COLORS::_JScolor($val);
+				$val = TCPDF_STATIC::_JScolor($val);
 			} else {
 				$val = "'".$val."'";
 			}
@@ -13479,7 +13387,7 @@ class TCPDF {
 	 * @author Nicola Asuni
 	 * @since 4.6.008 (2009-05-07)
 	 */
-	protected function _putsignature() {
+	private function _putsignature() {
 		if ((!$this->sign) OR (!isset($this->signature_data['cert_type']))) {
 			return;
 		}
@@ -13887,7 +13795,7 @@ class TCPDF {
 	 * @protected
 	 * @since 3.0.000 (2008-03-27)
 	 */
-	protected function _putocg() {
+	private function _putocg() {
 		if (empty($this->pdflayers)) {
 			return;
 		}
@@ -14031,7 +13939,7 @@ class TCPDF {
 	 * @protected
 	 * @since 3.0.000 (2008-03-27)
 	 */
-	protected function _putextgstates() {
+	private function _putextgstates() {
 		foreach ($this->extgstates as $i => $ext) {
 			$this->extgstates[$i]['n'] = $this->_newobj();
 			$out = '<< /Type /ExtGState';
@@ -14327,7 +14235,7 @@ class TCPDF {
 				}
 				default: { // SPECIFIC SPOT COLOR NAME
 					$col_a = array(0,0,0,0,'None');
-					$col_b = TCPDF_COLORS::getSpotColor($col, $this->spot_colors);
+					$col_b = TCPDF_STATIC::getSpotColor($col, $this->spot_colors);
 					if ($col_b === false) {
 						// in case of error defaults to the registration color
 						$col_b = array(100,100,100,100,'All');
@@ -14771,7 +14679,7 @@ class TCPDF {
 	 * @since 3.1.000 (2008-06-09)
 	 * @protected
 	 */
-	function _putshaders() {
+	private function _putshaders() {
 		if ($this->pdfa_mode && $this->pdfa_version < 2) {
 			return;
 		}
@@ -16135,7 +16043,7 @@ class TCPDF {
 			return array();
 		}
 		$border['width'] = $this->getCSSBorderWidth($width);
-		$border['color'] = TCPDF_COLORS::convertHTMLColorToDec($color, $this->spot_colors);
+		$border['color'] = TCPDF_STATIC::convertHTMLColorToDec($color, $this->spot_colors);
 		return $border;
 	}
 
@@ -16876,13 +16784,13 @@ class TCPDF {
 						}
 						// font color
 						if (isset($dom[$key]['style']['color']) AND (!TCPDF_STATIC::empty_string($dom[$key]['style']['color']))) {
-							$dom[$key]['fgcolor'] = TCPDF_COLORS::convertHTMLColorToDec($dom[$key]['style']['color'], $this->spot_colors);
+							$dom[$key]['fgcolor'] = TCPDF_STATIC::convertHTMLColorToDec($dom[$key]['style']['color'], $this->spot_colors);
 						} elseif ($dom[$key]['value'] == 'a') {
 							$dom[$key]['fgcolor'] = $this->htmlLinkColorArray;
 						}
 						// background color
 						if (isset($dom[$key]['style']['background-color']) AND (!TCPDF_STATIC::empty_string($dom[$key]['style']['background-color']))) {
-							$dom[$key]['bgcolor'] = TCPDF_COLORS::convertHTMLColorToDec($dom[$key]['style']['background-color'], $this->spot_colors);
+							$dom[$key]['bgcolor'] = TCPDF_STATIC::convertHTMLColorToDec($dom[$key]['style']['background-color'], $this->spot_colors);
 						}
 						// text-decoration
 						if (isset($dom[$key]['style']['text-decoration'])) {
@@ -16927,16 +16835,16 @@ class TCPDF {
 						if (isset($dom[$key]['style']['border-color'])) {
 							$brd_colors = preg_split('/[\s]+/', trim($dom[$key]['style']['border-color']));
 							if (isset($brd_colors[3])) {
-								$dom[$key]['border']['L']['color'] = TCPDF_COLORS::convertHTMLColorToDec($brd_colors[3], $this->spot_colors);
+								$dom[$key]['border']['L']['color'] = TCPDF_STATIC::convertHTMLColorToDec($brd_colors[3], $this->spot_colors);
 							}
 							if (isset($brd_colors[1])) {
-								$dom[$key]['border']['R']['color'] = TCPDF_COLORS::convertHTMLColorToDec($brd_colors[1], $this->spot_colors);
+								$dom[$key]['border']['R']['color'] = TCPDF_STATIC::convertHTMLColorToDec($brd_colors[1], $this->spot_colors);
 							}
 							if (isset($brd_colors[0])) {
-								$dom[$key]['border']['T']['color'] = TCPDF_COLORS::convertHTMLColorToDec($brd_colors[0], $this->spot_colors);
+								$dom[$key]['border']['T']['color'] = TCPDF_STATIC::convertHTMLColorToDec($brd_colors[0], $this->spot_colors);
 							}
 							if (isset($brd_colors[2])) {
-								$dom[$key]['border']['B']['color'] = TCPDF_COLORS::convertHTMLColorToDec($brd_colors[2], $this->spot_colors);
+								$dom[$key]['border']['B']['color'] = TCPDF_STATIC::convertHTMLColorToDec($brd_colors[2], $this->spot_colors);
 							}
 						}
 						if (isset($dom[$key]['style']['border-width'])) {
@@ -16998,7 +16906,7 @@ class TCPDF {
 								}
 							}
 							if (isset($dom[$key]['style']['border-'.$bsv.'-color'])) {
-								$dom[$key]['border'][$bsk]['color'] = TCPDF_COLORS::convertHTMLColorToDec($dom[$key]['style']['border-'.$bsv.'-color'], $this->spot_colors);
+								$dom[$key]['border'][$bsk]['color'] = TCPDF_STATIC::convertHTMLColorToDec($dom[$key]['style']['border-'.$bsv.'-color'], $this->spot_colors);
 							}
 							if (isset($dom[$key]['style']['border-'.$bsv.'-width'])) {
 								$dom[$key]['border'][$bsk]['width'] = $this->getCSSBorderWidth($dom[$key]['style']['border-'.$bsv.'-width']);
@@ -17176,17 +17084,17 @@ class TCPDF {
 					}
 					// set foreground color attribute
 					if (isset($dom[$key]['attribute']['color']) AND (!TCPDF_STATIC::empty_string($dom[$key]['attribute']['color']))) {
-						$dom[$key]['fgcolor'] = TCPDF_COLORS::convertHTMLColorToDec($dom[$key]['attribute']['color'], $this->spot_colors);
+						$dom[$key]['fgcolor'] = TCPDF_STATIC::convertHTMLColorToDec($dom[$key]['attribute']['color'], $this->spot_colors);
 					} elseif (!isset($dom[$key]['style']['color']) AND ($dom[$key]['value'] == 'a')) {
 						$dom[$key]['fgcolor'] = $this->htmlLinkColorArray;
 					}
 					// set background color attribute
 					if (isset($dom[$key]['attribute']['bgcolor']) AND (!TCPDF_STATIC::empty_string($dom[$key]['attribute']['bgcolor']))) {
-						$dom[$key]['bgcolor'] = TCPDF_COLORS::convertHTMLColorToDec($dom[$key]['attribute']['bgcolor'], $this->spot_colors);
+						$dom[$key]['bgcolor'] = TCPDF_STATIC::convertHTMLColorToDec($dom[$key]['attribute']['bgcolor'], $this->spot_colors);
 					}
 					// set stroke color attribute
 					if (isset($dom[$key]['attribute']['strokecolor']) AND (!TCPDF_STATIC::empty_string($dom[$key]['attribute']['strokecolor']))) {
-						$dom[$key]['strokecolor'] = TCPDF_COLORS::convertHTMLColorToDec($dom[$key]['attribute']['strokecolor'], $this->spot_colors);
+						$dom[$key]['strokecolor'] = TCPDF_STATIC::convertHTMLColorToDec($dom[$key]['attribute']['strokecolor'], $this->spot_colors);
 					}
 					// check for width attribute
 					if (isset($dom[$key]['attribute']['width'])) {
@@ -18575,7 +18483,7 @@ class TCPDF {
 				}
 				// text
 				$this->htmlvspace = 0;
-				$isRTLString = preg_match(TCPDF_FONT_DATA::$uni_RE_PATTERN_RTL, $dom[$key]['value']) || preg_match(TCPDF_FONT_DATA::$uni_RE_PATTERN_ARABIC, $dom[$key]['value']);
+				$isRTLString = preg_match(\Com\Tecnick\Unicode\Data\Pattern::RTL, $dom[$key]['value']) || preg_match(\Com\Tecnick\Unicode\Data\Pattern::ARABIC, $dom[$key]['value']);
 				if ((!$this->premode) AND $this->isRTLTextDir() AND !$isRTLString) {
 					// reverse spaces order
 					$lsp = ''; // left spaces
@@ -19143,7 +19051,7 @@ class TCPDF {
 				} elseif ( $this->allowLocalFiles && substr($imgsrc, 0, 7) === 'file://') {
 					// get image type from a local file path
 					$imgsrc = substr($imgsrc, 7);
-					$type = TCPDF_IMAGES::getImageFileType($imgsrc);
+					$type = TCPDF_STATIC::getImageFileType($imgsrc);
 				} elseif ($this->hasExtForbiddenProtocol($imgsrc)) {
 					break;
 				} else {
@@ -19168,7 +19076,7 @@ class TCPDF {
 						}
 					}
 					// get image type
-					$type = TCPDF_IMAGES::getImageFileType($imgsrc);
+					$type = TCPDF_STATIC::getImageFileType($imgsrc);
 				}
 				if (!isset($tag['width'])) {
 					$tag['width'] = 0;
@@ -20993,7 +20901,7 @@ class TCPDF {
 	 * Outputs the "save graphics state" operator 'q'
 	 * @protected
 	 */
-	protected function _outSaveGraphicsState() {
+	private function _outSaveGraphicsState() {
 		$this->_out('q');
 	}
 
@@ -21001,7 +20909,7 @@ class TCPDF {
 	 * Outputs the "restore graphics state" operator 'Q'
 	 * @protected
 	 */
-	protected function _outRestoreGraphicsState() {
+	private function _outRestoreGraphicsState() {
 		$this->_out('Q');
 	}
 
@@ -22386,7 +22294,7 @@ class TCPDF {
 		$unichars = TCPDF_FONTS::UTF8StringToArray($text, $this->isunicode, $this->CurrentFont);
 		// for each char
 		foreach ($unichars as $char) {
-			if ((!$intag) AND (!$skip) AND TCPDF_FONT_DATA::$uni_type[$char] == 'L') {
+			if ((!$intag) AND (!$skip) AND \Com\Tecnick\Unicode\Data\Type::UNI[$char] == 'L') {
 				// letter character
 				$word[] = $char;
 			} else {
@@ -23405,10 +23313,10 @@ class TCPDF {
 			$this->setAlpha($svgstyle['opacity'], 'Normal', $svgstyle['opacity'], false);
 		}
 		// color
-		$fill_color = TCPDF_COLORS::convertHTMLColorToDec($svgstyle['color'], $this->spot_colors);
+		$fill_color = TCPDF_STATIC::convertHTMLColorToDec($svgstyle['color'], $this->spot_colors);
 		$this->setFillColorArray($fill_color);
 		// text color
-		$text_color = TCPDF_COLORS::convertHTMLColorToDec($svgstyle['text-color'], $this->spot_colors);
+		$text_color = TCPDF_STATIC::convertHTMLColorToDec($svgstyle['text-color'], $this->spot_colors);
 		$this->setTextColorArray($text_color);
 		// clip
 		if (preg_match('/rect\(([a-z0-9\-\.]*+)[\s]*+([a-z0-9\-\.]*+)[\s]*+([a-z0-9\-\.]*+)[\s]*+([a-z0-9\-\.]*+)\)/si', $svgstyle['clip'], $regs)) {
@@ -23533,7 +23441,7 @@ class TCPDF {
 				$this->Gradient($gradient['type'], $gradient['coords'], $gradient['stops']);
 			}
 		} elseif ($svgstyle['fill'] != 'none') {
-			$fill_color = TCPDF_COLORS::convertHTMLColorToDec($svgstyle['fill'], $this->spot_colors);
+			$fill_color = TCPDF_STATIC::convertHTMLColorToDec($svgstyle['fill'], $this->spot_colors);
 			if ($svgstyle['fill-opacity'] != 1) {
 				$this->setAlpha($this->alpha['CA'], 'Normal', $svgstyle['fill-opacity'], false);
 			} elseif (preg_match('/rgba\(\d+%?,\s*\d+%?,\s*\d+%?,\s*(\d+(?:\.\d+)?)\)/i', $svgstyle['fill'], $rgba_matches)) {
@@ -23554,7 +23462,7 @@ class TCPDF {
 				$this->setAlpha($rgba_matches[1], 'Normal', $this->alpha['ca'], false);
 			}
 			$stroke_style = array(
-				'color' => TCPDF_COLORS::convertHTMLColorToDec($svgstyle['stroke'], $this->spot_colors),
+				'color' => TCPDF_STATIC::convertHTMLColorToDec($svgstyle['stroke'], $this->spot_colors),
 				'width' => $this->getHTMLUnitToUnits($svgstyle['stroke-width'], 0, $this->svgunit, false),
 				'cap' => $svgstyle['stroke-linecap'],
 				'join' => $svgstyle['stroke-linejoin']
@@ -24104,7 +24012,7 @@ class TCPDF {
 			$attribs['style'] = ';'.$attribs['style'];
 		}
 		foreach ($prev_svgstyle as $key => $val) {
-			if (in_array($key, TCPDF_IMAGES::$svginheritprop)) {
+			if (in_array($key, TCPDF_STATIC::$svginheritprop)) {
 				// inherit previous value
 				$svgstyle[$key] = $val;
 			}
@@ -24344,7 +24252,7 @@ class TCPDF {
 						$offset /= 100;
 					}
 				}
-				$stop_color = isset($svgstyle['stop-color'])?TCPDF_COLORS::convertHTMLColorToDec($svgstyle['stop-color'], $this->spot_colors):'black';
+				$stop_color = isset($svgstyle['stop-color'])?TCPDF_STATIC::convertHTMLColorToDec($svgstyle['stop-color'], $this->spot_colors):'black';
 				$opacity = isset($svgstyle['stop-opacity'])?$svgstyle['stop-opacity']:1;
 				$this->svggradients[$this->svggradientid]['stops'][] = array('offset' => $offset, 'color' => $stop_color, 'opacity' => $opacity);
 				break;
@@ -24583,7 +24491,7 @@ class TCPDF {
 						}
 					}
 					// get image type
-					$imgtype = TCPDF_IMAGES::getImageFileType($img);
+					$imgtype = TCPDF_STATIC::getImageFileType($img);
 					if (($imgtype == 'eps') OR ($imgtype == 'ai')) {
 						$this->ImageEps($img, $x, $y, $w, $h);
 					} elseif ($imgtype == 'svg') {
@@ -24883,7 +24791,7 @@ class TCPDF {
 	 * @param string $file
 	 * @return bool
 	 */
-	protected function _unlink($file)
+	private function _unlink($file)
 	{
 		if ((strpos($file, '://') !== false) && ((substr($file, 0, 7) !== 'file://') || (!$this->allowLocalFiles))) {
 			// forbidden protocol

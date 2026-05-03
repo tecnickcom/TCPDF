@@ -92,7 +92,7 @@ Options:
 
 	-o
 	--outpath   Output path for generated font files (must be writeable
-	            by the web server). Leave empty for default font folder.
+	            by the web server). Leave empty to use K_PATH_FONTS.
 
 	-p
 	--platid    Platform ID for CMAP table to extract (when building a

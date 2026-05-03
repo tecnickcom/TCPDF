@@ -40,6 +40,15 @@ echo "bcmath found at: ${BCMATH_EXT}"
 CURL_EXT="-d extension=$(find ${PHP_EXT_DIR} -type f -name 'curl.so')"
 echo "curl found at: ${CURL_EXT}"
 
+MBSTRING_EXT_PATH="$(find ${PHP_EXT_DIR} -type f -name 'mbstring.so' 2>/dev/null | head -1)"
+if [ -n "${MBSTRING_EXT_PATH}" ]; then
+    MBSTRING_EXT="-d extension=${MBSTRING_EXT_PATH}"
+    echo "mbstring found at: ${MBSTRING_EXT}"
+else
+    MBSTRING_EXT=""
+    echo "mbstring not found, skipping"
+fi
+
 COVERAGE_EXTENSION=""
 COVERAGE_EXTRA_INI=""
 IMAGICK_OR_GD="-dextension=gd.so"
@@ -105,6 +114,7 @@ for file in $EXAMPLE_FILES; do
         ${IMAGICK_OR_GD} ${COVERAGE_EXTENSION} \
         ${BCMATH_EXT} \
         ${CURL_EXT} \
+        ${MBSTRING_EXT} \
         ${JSON_EXT} \
         ${XML_EXT} \
         -d display_errors=on \
@@ -185,6 +195,7 @@ for file in $EXAMPLE_BARCODE_FILES; do
         -d date.timezone=UTC \
         ${BCMATH_EXT} \
         ${CURL_EXT} \
+        ${MBSTRING_EXT} \
         ${COVERAGE_EXTENSION} \
         -d display_errors=on \
         -d error_reporting=-1 \

@@ -47,6 +47,10 @@ PHP=$(shell which php)
 # Composer executable
 COMPOSER=$(PHP) -d "apc.enable_cli=0" $(shell which composer)
 
+# tc-lib-pdf-font package path and sentinel asset
+TCPDF_FONT_PKGDIR=./vendor/tecnickcom/tc-lib-pdf-font
+TCPDF_FONT_SENTINEL=$(TCPDF_FONT_PKGDIR)/target/fonts/core/helvetica.json
+
 # --- MAKE TARGETS ---
 
 # Display general help about this command
@@ -87,6 +91,34 @@ deps: ensuretarget
 	@if [ -f ./tests/composer.json ]; then \
 		$(COMPOSER) --working-dir=tests install --no-interaction; \
 	fi
+	$(MAKE) fonts
+
+## Initialize tc-lib-pdf font assets if needed
+.PHONY: fonts
+fonts:
+	@if [ ! -d $(TCPDF_FONT_PKGDIR) ]; then \
+		echo "tc-lib-pdf-font is not installed. Run composer install first."; \
+		exit 1; \
+	fi
+	@if [ -f $(TCPDF_FONT_SENTINEL) ]; then \
+		echo "tc-lib-pdf font assets already initialized."; \
+	else \
+		echo "Initializing tc-lib-pdf font assets..."; \
+		$(MAKE) -C $(TCPDF_FONT_PKGDIR) clean; \
+		$(COMPOSER) --working-dir=$(TCPDF_FONT_PKGDIR) install --no-interaction; \
+		$(MAKE) -C $(TCPDF_FONT_PKGDIR) fonts; \
+	fi
+
+## Rebuild tc-lib-pdf font assets from scratch
+.PHONY: fonts-rebuild
+fonts-rebuild:
+	@if [ ! -d $(TCPDF_FONT_PKGDIR) ]; then \
+		echo "tc-lib-pdf-font is not installed. Run composer install first."; \
+		exit 1; \
+	fi
+	$(MAKE) -C $(TCPDF_FONT_PKGDIR) clean
+	$(COMPOSER) --working-dir=$(TCPDF_FONT_PKGDIR) install --no-interaction
+	$(MAKE) -C $(TCPDF_FONT_PKGDIR) fonts
 
 ## Generate source code documentation with Doctum if available
 .PHONY: doc

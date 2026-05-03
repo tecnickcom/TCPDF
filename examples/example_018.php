@@ -98,7 +98,7 @@ $pdf->WriteHTML($htmlpersiantranslation, true, 0, true, 0);
 $pdf->setRTL(true);
 
 // set font
-$pdf->setFont('aefurat', '', 18);
+$pdf->setFont('unifont', '', 18);
 
 // print newline
 $pdf->Ln();
@@ -114,7 +114,7 @@ $pdf->setRTL(false);
 // print newline
 $pdf->Ln();
 
-$pdf->setFont('aealarabiya', '', 18);
+$pdf->setFont('unifont', '', 18);
 
 // Arabic and English content
 $htmlcontent2 = '<span color="#0000ff">This is Arabic "العربية" Example With TCPDF.</span>';

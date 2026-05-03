@@ -25,6 +25,63 @@ For new projects, use `tecnickcom/tc-lib-pdf`. This repository remains available
 - Existing TCPDF users: keep TCPDF for current production workloads and migrate in phases.
 - Teams seeking modern architecture, Composer-first design, and stronger type-safety should prioritize `tc-lib-pdf`.
 
+### Breaking Change: Font Asset Migration
+
+TCPDF is migrating font loading to the tc-lib font stack.
+
+- `tecnickcom/tc-lib-pdf` is the Composer entrypoint.
+- Font assets are provided by `tecnickcom/tc-lib-pdf-font` and discovered under `vendor/tecnickcom/tc-lib-pdf-font/target/fonts/`.
+- Repository-shipped `fonts/` assets are removed; TCPDF now resolves bundled fonts from tc-lib assets.
+
+Who is affected:
+
+- Deployments that relied on local `fonts/` files without Composer dependencies.
+- Applications with custom `K_PATH_FONTS` assumptions tied to a repository-relative fonts folder.
+- Integrations that use custom or generated font definitions and expect PHP-only descriptor files.
+
+How to migrate custom font usage:
+
+1. Install dependencies with Composer.
+2. Ensure tc-lib font assets are available in `vendor/tecnickcom/tc-lib-pdf-font/target/fonts/`.
+3. Keep using `SetFont()`/`AddFont()` from TCPDF, but validate that each custom family resolves from tc-lib assets or from your explicit font path.
+4. Update deployment packaging so `vendor/` font assets are shipped in production.
+
+Font generation procedure (Makefile):
+
+1. Run `make deps` to install Composer dependencies and initialize tc-lib font assets.
+2. Run `make fonts` to initialize fonts only when missing.
+3. Run `make fonts-rebuild` to force a full font asset rebuild.
+
+Expected generated asset sentinel:
+
+- `vendor/tecnickcom/tc-lib-pdf-font/target/fonts/core/helvetica.json`
+
+Compatibility notes:
+
+- TCPDF checks configured font paths and tc-lib font assets.
+- JSON font descriptors from tc-lib are accepted by the TCPDF `AddFont()` path.
+- Legacy PHP descriptors can still be used when explicitly provided via custom paths.
+
+Example:
+
+```php
+require __DIR__.'/vendor/autoload.php';
+
+// Optional: override only if you need a non-default path.
+define('K_PATH_FONTS', __DIR__.'/vendor/tecnickcom/tc-lib-pdf-font/target/fonts/');
+
+$pdf->SetFont('helvetica', '', 11);
+```
+
+Safe migration checklist:
+
+1. Require `tecnickcom/tc-lib-pdf` in Composer and install dependencies.
+2. Confirm the font asset directory exists under `vendor/tecnickcom/tc-lib-pdf-font/target/fonts/`.
+3. Run your PDF smoke tests for headers, body text, bold/italic, RTL text, and Unicode text.
+4. Verify no runtime path assumptions require repository `fonts/` files.
+5. Remove legacy `K_PATH_FONTS` overrides that point to removed directories.
+6. Re-run regression output comparisons on representative documents.
+
 ### Why Migrate to tc-lib-pdf
 
 - Modern architecture: modular libraries and cleaner component boundaries improve maintainability.
@@ -94,7 +151,7 @@ It has been widely used across many PHP stacks and still provides a complete fea
 
 ## Requirements
 
-- PHP 7.1 or later
+- PHP 8.1 or later
 - `ext-curl`
 
 Optional extensions for richer output in some workflows: `gd`, `zlib`, `imagick`.
@@ -103,26 +160,17 @@ Optional extensions for richer output in some workflows: `gd`, `zlib`, `imagick`
 
 ## Third-Party Fonts
 
-This library may include third-party font files released under different licenses.
+Third-party bundled font assets are provided through `tecnickcom/tc-lib-pdf-font` under `vendor/tecnickcom/tc-lib-pdf-font/target/fonts/`.
 
-PHP metadata files under [fonts](fonts) are covered by the TCPDF license (GNU LGPL v3). They contain font metadata and can also be generated using TCPDF font utilities.
+TCPDF no longer ships a repository-local `fonts/` directory.
 
-Original binary TTF files are renamed for compatibility and compressed with PHP `gzcompress` (the `.z` format).
-
-| Prefix | Source | License |
-|---|---|---|
-| `free*` | [GNU FreeFont](https://www.gnu.org/software/freefont/) | GNU GPL v3 |
-| `pdfa*` | Derived from GNU FreeFont | GNU GPL v3 |
-| `dejavu*` | [DejaVu Fonts](http://dejavu-fonts.org) | Bitstream/DejaVu terms |
-| `ae*` | [Arabeyes.org](http://projects.arabeyes.org/) | GNU GPL v2 |
-
-For full details, see the bundled notices in the corresponding subdirectories under [fonts](fonts).
+For full details, see the bundled notices shipped by `tecnickcom/tc-lib-pdf-font`.
 
 ---
 
 ## ICC Profile
 
-TCPDF includes `sRGB.icc` from the Debian [`icc-profiles-free`](https://packages.debian.org/source/stable/icc-profiles-free) package.
+TCPDF uses the bundled `sRGB.icc.z` profile provided by `tecnickcom/tc-lib-pdf`.
 
 ---
 

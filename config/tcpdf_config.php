@@ -57,7 +57,7 @@
  * Path for PDF fonts.
  * By default it is automatically set but you can also set it as a fixed string to improve performances.
  */
-//define ('K_PATH_FONTS', K_PATH_MAIN.'fonts/');
+//define ('K_PATH_FONTS', K_PATH_MAIN.'vendor/tecnickcom/tc-lib-pdf-font/target/fonts/');
 
 /**
  * Default images directory.

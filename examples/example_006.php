@@ -253,9 +253,10 @@ $pdf->AddPage();
 $textcolors = '<h1>HTML Text Colors</h1>';
 $bgcolors = '<hr /><h1>HTML Background Colors</h1>';
 
-foreach(TCPDF_COLORS::$webcolor as $k => $v) {
-	$textcolors .= '<span color="#'.$v.'">'.$v.'</span> ';
-	$bgcolors .= '<span bgcolor="#'.$v.'" color="#333333">'.$v.'</span> ';
+foreach(\Com\Tecnick\Color\Web::WEBHEX as $k => $v) {
+	$hexcol = substr($v, 0, 6);
+	$textcolors .= '<span color="#'.$hexcol.'">'.$hexcol.'</span> ';
+	$bgcolors .= '<span bgcolor="#'.$hexcol.'" color="#333333">'.$hexcol.'</span> ';
 }
 
 // output the HTML content

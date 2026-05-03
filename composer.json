@@ -21,8 +21,9 @@
         }
     ],
     "require": {
-        "php": ">=7.1.0",
-        "ext-curl": "*"
+        "php": ">=8.1",
+        "ext-curl": "*",
+        "tecnickcom/tc-lib-pdf": "^8.11"
     },
     "suggest": {
         "tecnickcom/tc-lib-pdf": "Modern replacement for TCPDF for new projects.",
@@ -42,15 +43,8 @@
             "tcpdf.php",
             "tcpdf_barcodes_1d.php",
             "tcpdf_barcodes_2d.php",
-            "include/tcpdf_colors.php",
-            "include/tcpdf_filters.php",
-            "include/tcpdf_font_data.php",
             "include/tcpdf_fonts.php",
-            "include/tcpdf_images.php",
-            "include/tcpdf_static.php",
-            "include/barcodes/datamatrix.php",
-            "include/barcodes/pdf417.php",
-            "include/barcodes/qrcode.php"
+            "include/tcpdf_static.php"
         ]
     },
     "archive": {
@@ -68,8 +62,8 @@
     },
     "funding": [
         {
-            "type": "paypal",
-            "url": "https://www.paypal.com/donate/?hosted_button_id=NZUEC5XS8MFBJ"
+        "type": "github",
+        "url": "https://github.com/sponsors/tecnickcom"
         }
     ]
 }
