@@ -4,7 +4,7 @@
  * Helper class to execute the TCPDF test suite
  *
  * @author Philippe Jausions
- * @license http://www.gnu.org/copyleft/lesser.html GNU-LGPL v3 (see LICENSE.TXT)
+ * @license https://www.gnu.org/copyleft/lesser.html GNU-LGPL v3 (see LICENSE.TXT)
  */
 
 namespace Tecnickcom\TCPDF\Tests;

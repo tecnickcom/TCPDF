@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 
 command -v pdfinfo > /dev/null
@@ -31,18 +31,21 @@ PHP_EXT_DIR="$(${PHP_BINARY} -r 'echo ini_get("extension_dir");')"
 
 echo "php extension dir: ${PHP_EXT_DIR}"
 
+PCOV_EXT_PATH="$(find "${PHP_EXT_DIR}" -type f -name 'pcov.so' | head -n 1 || true)"
+X_DEBUG_EXT="$(find "${PHP_EXT_DIR}" -type f -name 'xdebug.so' | head -n 1 || true)"
+
 BCMATH_EXT="-d extension=$(find ${PHP_EXT_DIR} -type f -name 'bcmath.so')"
 echo "bcmath found at: ${BCMATH_EXT}"
 
 CURL_EXT="-d extension=$(find ${PHP_EXT_DIR} -type f -name 'curl.so')"
 echo "curl found at: ${CURL_EXT}"
 
-COVERAGE_EXTENSION="-d extension=pcov.so"
+COVERAGE_EXTENSION=""
+COVERAGE_EXTRA_INI=""
 IMAGICK_OR_GD="-dextension=gd.so"
 JSON_EXT="-dextension=json.so"
 XML_EXT="-dextension=xml.so"
 if [ "$(${PHP_BINARY} -r 'echo PHP_MAJOR_VERSION;')" = "5" ];then
-    X_DEBUG_EXT="$(find ${PHP_EXT_DIR} -type f -name 'xdebug.so' || '')"
     echo "Xdebug found at: ${X_DEBUG_EXT}"
     # pcov does not exist for PHP 5
     COVERAGE_EXTENSION="-d zend_extension=${X_DEBUG_EXT} -d xdebug.mode=coverage"
@@ -55,10 +58,22 @@ if [ "$(${PHP_BINARY} -r 'echo PHP_MAJOR_VERSION;')" = "5" ];then
 fi
 
 if [ "$(${PHP_BINARY} -r 'echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION;')" = "70" ];then
-    X_DEBUG_EXT="$(find ${PHP_EXT_DIR} -type f -name 'xdebug.so' || '')"
     echo "Xdebug found at: ${X_DEBUG_EXT}"
     # pcov does not exist for PHP 7.0
     COVERAGE_EXTENSION="-d zend_extension=${X_DEBUG_EXT} -d xdebug.mode=coverage"
+fi
+
+if [ -z "${COVERAGE_EXTENSION}" ]; then
+    if [ -n "${PCOV_EXT_PATH}" ]; then
+        COVERAGE_EXTENSION="-d extension=${PCOV_EXT_PATH}"
+        COVERAGE_EXTRA_INI="-d pcov.directory=${ROOT_DIR}"
+        echo "PCOV found at: ${PCOV_EXT_PATH}"
+    elif [ -n "${X_DEBUG_EXT}" ]; then
+        COVERAGE_EXTENSION="-d zend_extension=${X_DEBUG_EXT} -d xdebug.mode=coverage"
+        echo "PCOV not found, falling back to Xdebug at: ${X_DEBUG_EXT}"
+    else
+        echo "No coverage extension found (pcov/xdebug). Running tests without coverage collection."
+    fi
 fi
 
 # PHP >= 8.x.x
@@ -95,7 +110,7 @@ for file in $EXAMPLE_FILES; do
         -d display_errors=on \
         -d error_reporting=-1 \
         -d memory_limit=1G \
-        -d pcov.directory="${ROOT_DIR}" \
+        ${COVERAGE_EXTRA_INI} \
         -d auto_prepend_file="${TESTS_DIR}/coverage.php" \
         "${ROOT_DIR}/$file" 1> "${OUTPUT_FILE}" 2> "${OUTPUT_FILE_ERROR}"
     set -e
@@ -173,7 +188,7 @@ for file in $EXAMPLE_BARCODE_FILES; do
         ${COVERAGE_EXTENSION} \
         -d display_errors=on \
         -d error_reporting=-1 \
-        -d pcov.directory="${ROOT_DIR}" \
+        ${COVERAGE_EXTRA_INI} \
         -d auto_prepend_file="${TESTS_DIR}/coverage.php" \
         "${ROOT_DIR}/$file" 1> "${OUTPUT_FILE}" 2> "${OUTPUT_FILE_ERROR}"
     set -e

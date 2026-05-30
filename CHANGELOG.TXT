@@ -1,3 +1,23 @@
+6.11.3 (2026-04-21)
+	- Added deprecation notice.
+	- Improved composer.json.
+	- Added Makefile for common automation tasks.
+
+6.11.2 (2026-03-03)
+	- Refactor setCompression().
+
+6.11.1 (2026-03-03)
+	- Remove debug line preventing compression.
+
+6.11.0 (2026-03-01)
+	- Updated copyright year.
+	- Updated linked http urls to https.
+	- Fix PHP 8.5 deprecation on curl_close() - PR #838
+	- Fix PHP 8.5 deprecation on null array offset - PR #839
+	- Fixed: Font subsetting - incorrect placement of head checksum - PR #849
+	- Fix imagedestroy() deprecation in PHP 8.5 - PR #851
+	- Fix Rendering of SVG -> PDF issue - PR #855
+
 6.10.1 (2025-11-21)
 	- cI: Add 8.5 to CI matrix - PR #836
 	- Fix PHP 8.5 deprecation for xml_parser_free - PR #835
@@ -1830,7 +1850,7 @@
 		addTOCPage(), endTOCPage(), addHTMLTOC().
 
 5.0.000 (2010-05-05)
-	- Method ImageSVG() was added to embedd SVG images (see example n. 58). Note that not all SVG images are supported.
+	- Method ImageSVG() was added to embed SVG images (see example n. 58). Note that not all SVG images are supported.
 	- Method setRasterizeVectorImages() was added to enable/disable rasterization for vector images via ImageMagick library.
 	- Method RoundedRectXY() was added.
 	- Method PieSectorXY() was added.
@@ -2557,7 +2577,7 @@
 	- A bug relative to fill color on next page was fixed.
 
 4.2.007 (2008-11-12)
-	- The function setListIndentWidth() was added to set custom indentation widht for HTML lists.
+	- The function setListIndentWidth() was added to set custom indentation width for HTML lists.
 
 4.2.006 (2008-11-06)
 	- A bug relative to HTML justification was fixed.
@@ -2751,7 +2771,7 @@
 
 4.0.011 (2008-07-23)
 	- Font support was improved.
-	- The folder /fonts/utils contains new utilities and instructions for embedd font files.
+	- The folder /fonts/utils contains new utilities and instructions for embed font files.
 	- Documentation was updated.
 
 4.0.010 (2008-07-22)
