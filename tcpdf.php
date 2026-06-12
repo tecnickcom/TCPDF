@@ -22000,6 +22000,7 @@ class TCPDF {
 			foreach ($objvars as $key => $value) {
 				$this->$key = $value;
 			}
+			unset($this->objcopy);	// avoid restoring a destroyed copy on nested transactions (writeHTML nobr/thead)
 			$objcopy->_destroy(true, true);
 			unset($objcopy);
 			return $this;
@@ -23264,7 +23265,7 @@ class TCPDF {
 			$error_message = sprintf('SVG Error: %s at line %d', xml_error_string(xml_get_error_code($parser)), xml_get_current_line_number($parser));
 			$this->Error($error_message);
 		}
-		
+
 		// free this XML parser (does nothing in PHP >= 8.0)
 		if (function_exists('xml_parser_free') && PHP_VERSION_ID < 80000) {
 		    xml_parser_free($parser);
@@ -24426,7 +24427,7 @@ class TCPDF {
 					}
 					$this->StopTransform();
 				}
-				
+
 				break;
 			}
 			case 'ellipse': {
