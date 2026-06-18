@@ -34,6 +34,8 @@ jobs:
           coverage: pcov
           extensions: bcmath, curl, date, gd, hash, imagick, json, mbstring, openssl, pcre, zlib
           ini-values: display_errors=on, error_reporting=-1, zend.assertions=1
+      - name: Install poppler-utils (pdftotext, pdfinfo)
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
       - name: List php modules
         run: php -m
       - name: List php modules using "no php ini" mode
