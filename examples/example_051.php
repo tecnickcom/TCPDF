@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : example_051.php
 // Begin       : 2009-04-16
@@ -28,27 +29,28 @@
  */
 
 // Include the main TCPDF library (search for installation path).
-require_once('tcpdf_include.php');
-
+require_once 'tcpdf_include.php';
 
 // Extend the TCPDF class to create custom Header and Footer
-class MYPDF extends TCPDF {
-	//Page header
-	public function Header() {
-		// get the current page break margin
-		$bMargin = $this->getBreakMargin();
-		// get current auto-page-break mode
-		$auto_page_break = $this->AutoPageBreak;
-		// disable auto-page-break
-		$this->setAutoPageBreak(false, 0);
-		// set bacground image
-		$img_file = K_PATH_IMAGES.'image_demo.jpg';
-		$this->Image($img_file, null, 0, 210, 297, '', '', '', false, 300, 'C', false, false, 0);
-		// restore auto-page-break status
-		$this->setAutoPageBreak($auto_page_break, $bMargin);
-		// set the starting point for the page content
-		$this->setPageMark();
-	}
+class MYPDF extends TCPDF
+{
+    //Page header
+    public function Header()
+    {
+        // get the current page break margin
+        $bMargin = $this->getBreakMargin();
+        // get current auto-page-break mode
+        $auto_page_break = $this->AutoPageBreak;
+        // disable auto-page-break
+        $this->setAutoPageBreak(false, 0);
+        // set bacground image
+        $img_file = K_PATH_IMAGES . 'image_demo.jpg';
+        $this->Image($img_file, null, 0, 210, 297, '', '', '', false, 300, 'C', false, false, 0);
+        // restore auto-page-break status
+        $this->setAutoPageBreak($auto_page_break, $bMargin);
+        // set the starting point for the page content
+        $this->setPageMark();
+    }
 }
 
 // create new PDF document
@@ -62,7 +64,7 @@ $pdf->setSubject('TCPDF Tutorial');
 $pdf->setKeywords('TCPDF, PDF, example, test, guide');
 
 // set header and footer fonts
-$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+$pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
 
 // set default monospaced font
 $pdf->setDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -76,15 +78,15 @@ $pdf->setFooterMargin(0);
 $pdf->setPrintFooter(false);
 
 // set auto page breaks
-$pdf->setAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+$pdf->setAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 
 // set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // set some language-dependent strings (optional)
-if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-	require_once(dirname(__FILE__).'/lang/eng.php');
-	$pdf->setLanguageArray($l);
+if (@file_exists(dirname(__FILE__) . '/lang/eng.php')) {
+    require_once dirname(__FILE__) . '/lang/eng.php';
+    $pdf->setLanguageArray($l);
 }
 
 // ---------------------------------------------------------
@@ -99,7 +101,6 @@ $pdf->AddPage();
 $html = '<span style="background-color:yellow;color:blue;">&nbsp;PAGE 1&nbsp;</span>
 <p stroke="0.2" fill="true" strokecolor="yellow" color="blue" style="font-family:helvetica;font-weight:bold;font-size:26pt;">You can set a full page background.</p>';
 $pdf->writeHTML($html, true, false, true, false, '');
-
 
 // add a page
 $pdf->AddPage();
@@ -116,7 +117,6 @@ $pdf->setPrintHeader(false);
 // add a page
 $pdf->AddPage();
 
-
 // -- set new background ---
 
 // get the current page break margin
@@ -126,13 +126,12 @@ $auto_page_break = $pdf->getAutoPageBreak();
 // disable auto-page-break
 $pdf->setAutoPageBreak(false, 0);
 // set bacground image
-$img_file = K_PATH_IMAGES.'image_demo.jpg';
+$img_file = K_PATH_IMAGES . 'image_demo.jpg';
 $pdf->Image($img_file, null, 0, 210, 297, '', '', '', false, 300, 'C', false, false, 0);
 // restore auto-page-break status
 $pdf->setAutoPageBreak($auto_page_break, $bMargin);
 // set the starting point for the page content
 $pdf->setPageMark();
-
 
 // Print a text
 $html = '<span style="color:white;text-align:center;font-weight:bold;font-size:80pt;">PAGE 3</span>';
@@ -142,7 +141,3 @@ $pdf->writeHTML($html, true, false, true, false, '');
 
 //Close and output PDF document
 $pdf->Output('example_051.pdf', 'I');
-
-//============================================================+
-// END OF FILE
-//============================================================+

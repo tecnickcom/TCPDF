@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : example_062.php
 // Begin       : 2010-08-25
@@ -27,7 +28,7 @@
  */
 
 // Include the main TCPDF library (search for installation path).
-require_once('tcpdf_include.php');
+require_once 'tcpdf_include.php';
 
 // create new PDF document
 $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -40,11 +41,11 @@ $pdf->setSubject('TCPDF Tutorial');
 $pdf->setKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 062', PDF_HEADER_STRING);
+$pdf->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE . ' 062', PDF_HEADER_STRING);
 
 // set header and footer fonts
-$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+$pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
+$pdf->setFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
 
 // set default monospaced font
 $pdf->setDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -55,15 +56,15 @@ $pdf->setHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->setFooterMargin(PDF_MARGIN_FOOTER);
 
 // set auto page breaks
-$pdf->setAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+$pdf->setAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 
 // set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // set some language-dependent strings (optional)
-if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-	require_once(dirname(__FILE__).'/lang/eng.php');
-	$pdf->setLanguageArray($l);
+if (@file_exists(dirname(__FILE__) . '/lang/eng.php')) {
+    require_once dirname(__FILE__) . '/lang/eng.php';
+    $pdf->setLanguageArray($l);
 }
 
 // ---------------------------------------------------------
@@ -85,7 +86,6 @@ $pdf->Write(0, 'XObject Templates', '', 0, 'C', 1, 0, false, false, 0);
  * the same results each time, subject only to the graphics state at
  * the time it is invoked.
  */
-
 
 // start a new XObject Template and set transparency group option
 $template_id = $pdf->startTemplate(60, 60, true);
@@ -117,7 +117,6 @@ $pdf->Cell(60, 60, 'Template', 0, 0, 'C', false, '', 0, false, 'T', 'M');
 // end the current Template
 $pdf->endTemplate();
 
-
 // print the selected Template various times using various transparencies
 
 $pdf->setAlpha(0.4);
@@ -136,7 +135,3 @@ $pdf->printTemplate($template_id, 95, 125, 80, 80, '', '', false);
 
 //Close and output PDF document
 $pdf->Output('example_062.pdf', 'I');
-
-//============================================================+
-// END OF FILE
-//============================================================+

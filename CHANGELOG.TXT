@@ -1,3 +1,23 @@
+7.0.0 (2026-06-18) [BREAKING CHANGE]
+	- TCPDF IS DEPRECATED AND IN MAINTENANCE-ONLY MODE
+	- TCPDF is now a compatibility facade over the modern `tecnickcom/tc-lib-pdf` engine. It does not reproduce legacy output exactly, and some methods are adapters, shims, or no-ops (see MAPPING.md); both new and existing projects are encouraged to migrate to `tecnickcom/tc-lib-pdf`.
+		- The `TCPDF` class no longer contains its own PDF engine; every public method delegates rendering to `\Com\Tecnick\Pdf\Tcpdf`, while a small internal state layer reproduces the legacy cursor/page model (X/Y, margins, fonts, colors, automatic page breaks, headers/footers).
+		- The public API is unchanged: all 291 public method signatures (names, parameters, defaults) match legacy TCPDF, so existing integrations keep working.
+		- Output is structurally equivalent, not byte-identical: page sizes and content match, but the modern engine's line-breaking and font metrics can differ slightly (long flowing documents may paginate one page earlier or later).
+		- Per-method delegation status is documented in MAPPING.md (`delegated`, `adapter`, `shim`, `intentional-noop`, `blocked`), machine-verified against the class.
+	- `tecnickcom/tc-lib-pdf` is now a required Composer dependency; the engine and font assets are resolved from `vendor/`.
+	- Minimum PHP version raised to 8.2 (was 7.1).
+	- Bundled engine sources removed (`include/`, `tcpdf_fonts.php`, `tcpdf_font_data.php`, `tcpdf_images.php`, `tcpdf_static.php`, `tcpdf_barcodes_1d.php`, `tcpdf_barcodes_2d.php`); these capabilities are now provided by the `tc-lib-*` libraries.
+	- Font loading migrated to `tecnickcom/tc-lib-pdf-font` assets resolved via Composer.
+		- Install dependencies with Composer so `vendor/tecnickcom/tc-lib-pdf-font/target/fonts/` exists.
+		- Repository bundled `fonts/` assets are removed; use tc-lib font assets or explicit custom font paths.
+		- Legacy PHP font descriptors (`fontname.php` + `fontname.z`) are no longer supported; convert the original TTF/OTF with the `tc-lib-pdf-font` importer.
+		- Validate all custom font registrations against tc-lib font assets.
+	- Tooling: replaced the legacy test harness with a PHPUnit suite under `test/`, added Mago lint/format configuration, and refreshed CI and Makefile targets (`make deps`, `make fonts`, `make fonts-rebuild`).
+	- See README.md for the full migration guide and MAPPING.md for per-method delegation status.
+
+*************************************************
+
 6.11.3 (2026-04-21)
 	- Added deprecation notice.
 	- Improved composer.json.

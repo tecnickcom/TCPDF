@@ -1,7 +1,7 @@
 {
     "name": "tecnickcom/tcpdf",
     "type": "library",
-    "description": "Deprecated legacy PDF engine for PHP. For new projects use tecnickcom/tc-lib-pdf.",
+    "description": "Deprecated legacy PDF engine for PHP. Use instead tecnickcom/tc-lib-pdf.",
     "keywords": [
         "PDF",
         "tcpdf",
@@ -20,9 +20,20 @@
             "role": "lead"
         }
     ],
+    "funding": [
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/tecnickcom"
+        }
+    ],
     "require": {
-        "php": ">=7.1.0",
-        "ext-curl": "*"
+        "php": ">=8.2",
+        "ext-curl": "*",
+        "tecnickcom/tc-lib-pdf": "^8.61"
+    },
+    "require-dev": {
+        "pdepend/pdepend": "^2.16",
+        "phpunit/phpunit": "^11.5 || ^12.5 || ^13.2"
     },
     "suggest": {
         "tecnickcom/tc-lib-pdf": "Modern replacement for TCPDF for new projects.",
@@ -30,27 +41,12 @@
         "ext-imagick": "Enables additional image format support when available.",
         "ext-zlib": "Recommended for compressed streams and related features."
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "prefer-stable": true,
-    "config": {
-        "sort-packages": true
-    },
     "autoload": {
         "classmap": [
             "config",
-            "include",
-            "tcpdf.php",
-            "tcpdf_barcodes_1d.php",
-            "tcpdf_barcodes_2d.php",
-            "include/tcpdf_colors.php",
-            "include/tcpdf_filters.php",
-            "include/tcpdf_font_data.php",
-            "include/tcpdf_fonts.php",
-            "include/tcpdf_images.php",
-            "include/tcpdf_static.php",
-            "include/barcodes/datamatrix.php",
-            "include/barcodes/pdf417.php",
-            "include/barcodes/qrcode.php"
+            "tcpdf.php"
         ]
     },
     "archive": {
@@ -66,10 +62,21 @@
         "issues": "https://github.com/tecnickcom/TCPDF/issues",
         "source": "https://github.com/tecnickcom/TCPDF"
     },
-    "funding": [
-        {
-            "type": "paypal",
-            "url": "https://www.paypal.com/donate/?hosted_button_id=NZUEC5XS8MFBJ"
-        }
-    ]
+    "scripts": {
+        "test": "@php -d xdebug.mode=coverage vendor/bin/phpunit --stderr test",
+        "analyse": ["@analyse:src", "@analyse:test"],
+        "analyse:src": "mago --config mago.src.toml analyze scripts",
+        "analyse:test": "mago --config mago.test.toml analyze test",
+        "cs-check": ["@cs-check:src", "@cs-check:test"],
+        "cs-check:src": "mago --config mago.src.toml lint scripts",
+        "cs-check:test": "mago --config mago.test.toml lint test",
+        "cs-fix": "mago fmt scripts test examples",
+        "qa": ["@cs-check", "@analyse", "@test"],
+        "post-install-cmd": [
+            "[ -d vendor/tecnickcom/tc-lib-pdf-font ] && make -C vendor/tecnickcom/tc-lib-pdf-font deps fonts"
+        ],
+        "post-update-cmd": [
+            "[ -d vendor/tecnickcom/tc-lib-pdf-font ] && make -C vendor/tecnickcom/tc-lib-pdf-font deps fonts"
+        ]
+    }
 }

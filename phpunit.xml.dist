@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/13.2/phpunit.xsd"
+         bootstrap="test/bootstrap.php"
+         cacheDirectory="target/test/.phpunit.cache"
+         colors="true"
+         failOnWarning="true"
+         failOnNotice="true"
+         failOnDeprecation="true"
+         displayDetailsOnTestsThatTriggerErrors="true"
+         displayDetailsOnTestsThatTriggerWarnings="true"
+         displayDetailsOnTestsThatTriggerNotices="true"
+         displayDetailsOnTestsThatTriggerDeprecations="true">
+    <testsuites>
+        <testsuite name="tcpdf">
+            <directory>test</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <file>tcpdf.php</file>
+            <file>tcpdf_autoconfig.php</file>
+        </include>
+    </source>
+</phpunit>

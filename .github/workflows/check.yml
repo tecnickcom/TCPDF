@@ -1,0 +1,53 @@
+name: check
+
+permissions:
+  contents: read
+
+concurrency:
+  group: check-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+
+jobs:
+  test-php:
+    name: Test on php ${{ matrix.php-version }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ["8.2", "8.3", "8.4", "8.5"]
+    steps:
+      - uses: actions/checkout@v6
+      - name: Use php ${{ matrix.php-version }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          coverage: pcov
+          extensions: bcmath, curl, date, gd, hash, imagick, json, mbstring, openssl, pcre, zlib
+          ini-values: display_errors=on, error_reporting=-1, zend.assertions=1
+      - name: List php modules
+        run: php -m
+      - name: List php modules using "no php ini" mode
+        run: php -m -n
+      - name: Cache module
+        uses: actions/cache@v5
+        with:
+          path: ~/.composer/cache/
+          key: ${{ runner.os }}-php-${{ matrix.php-version }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
+      - name: Install dependencies
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: make deps
+      - name: Run all tests
+        run: make qa

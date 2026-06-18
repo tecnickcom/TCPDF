@@ -1,0 +1,70 @@
+# TCPDF Examples
+
+- [example_001.php](example_001.php) : Simple PDF with default Header and Footer
+- [example_002.php](example_002.php) : Simple PDF without Header and Footer
+- [example_003.php](example_003.php) : Custom Header and Footer
+- [example_004.php](example_004.php) : Cell stretching
+- [example_005.php](example_005.php) : Multicell
+- [example_006.php](example_006.php) : WriteHTML and RTL support
+- [example_007.php](example_007.php) : Independent columns with WriteHTMLCell
+- [example_008.php](example_008.php) : External UTF-8 text file
+- [example_009.php](example_009.php) : Image
+- [example_010.php](example_010.php) : Multiple columns
+- [example_011.php](example_011.php) : Colored Tables
+- [example_012.php](example_012.php) : Graphic Functions
+- [example_013.php](example_013.php) : Graphic Transformations
+- [example_014.php](example_014.php) : Javascript and Forms
+- [example_015.php](example_015.php) : Bookmarks (Table of Content)
+- [example_016.php](example_016.php) : Document Encryption
+- [example_017.php](example_017.php) : Independent columns with MultiCell
+- [example_018.php](example_018.php) : Persian and Arabic language on RTL document
+- [example_019.php](example_019.php) : Non unicode / Alternative config file
+- [example_020.php](example_020.php) : Multicell complex alignment
+- [example_021.php](example_021.php) : writeHTML alignment
+- [example_022.php](example_022.php) : CMYK colors
+- [example_023.php](example_023.php) : Page Groups
+- [example_024.php](example_024.php) : Object Visibility and Layers
+- [example_025.php](example_025.php) : Object Transparency
+- [example_026.php](example_026.php) : Text Rendering Modes and Text Clipping
+- [example_027.php](example_027.php) : 1D Barcodes
+- [example_028.php](example_028.php) : Multiple page formats
+- [example_029.php](example_029.php) : Set PDF viewer display preferences
+- [example_030.php](example_030.php) : Colour gradients
+- [example_031.php](example_031.php) : Pie Chart Graphic
+- ~~example_032.php : EPS/AI vectorial image~~
+- [example_033.php](example_033.php) : Mixed font types (TrueType Unicode, core, CID-0)
+- [example_034.php](example_034.php) : Clipping masks
+- [example_035.php](example_035.php) : Line styles with cells and multicells
+- [example_036.php](example_036.php) : Text Annotations
+- [example_037.php](example_037.php) : Spot Colors
+- [example_038.php](example_038.php) : NON-embedded CID-0 CJK font
+- [example_039.php](example_039.php) : HTML Justification
+- [example_040.php](example_040.php) : Booklet (double-sided pages)
+- [example_041.php](example_041.php) : File attachment
+- [example_042.php](example_042.php) : Image with Alpha Channel Transparency
+- [example_043.php](example_043.php) : Disk caching
+- [example_044.php](example_044.php) : Move, Copy and Delete page
+- [example_045.php](example_045.php) : Table Of Content with Bookmarks
+- [example_046.php](example_046.php) : Text hyphenation
+- [example_047.php](example_047.php) : Transactions and UNDO
+- [example_048.php](example_048.php) : Table header and rowspan
+- [example_049.php](example_049.php) : TCPDF methods in HTML
+- [example_050.php](example_050.php) : 2D Barcode (QR-Code, Datamatrix ECC200 and PDF417)
+- [example_051.php](example_051.php) : Full page background
+- [example_052.php](example_052.php) : Digital Signature Certification
+- [example_053.php](example_053.php) : Javascript functions
+- [example_054.php](example_054.php) : XHTML Form
+- [example_055.php](example_055.php) : Font Dump
+- [example_056.php](example_056.php) : Crop Marks and Registration Marks
+- [example_057.php](example_057.php) : Cell vertical alignments and borders
+- [example_058.php](example_058.php) : SVG Image
+- [example_059.php](example_059.php) : Table Of Content with HTML templates
+- [example_060.php](example_060.php) : Advanced page settings
+- [example_061.php](example_061.php) : XHTML + CSS
+- [example_062.php](example_062.php) : XObject Templates
+- [example_063.php](example_063.php) : Text stretching and spacing (tracking/kerning)
+- [example_064.php](example_064.php) : No-write page regions
+- [example_065.php](example_065.php) : PDF/A-3b (ISO 19005-3:2012) document
+- [example_066.php](example_066.php) : Using WriteHTMLCell
+- [example_067.php](example_067.php) : Shorthand border styles including !important
+- [example_068.php](example_068.php) : PDF/A-3b with embedded file (Factur-X 1.07 - ZUGFeRD 2.3)

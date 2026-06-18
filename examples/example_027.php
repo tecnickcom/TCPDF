@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : example_027.php
 // Begin       : 2008-03-04
@@ -27,7 +28,7 @@
  */
 
 // Include the main TCPDF library (search for installation path).
-require_once('tcpdf_include.php');
+require_once 'tcpdf_include.php';
 
 // create new PDF document
 $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -40,11 +41,11 @@ $pdf->setSubject('TCPDF Tutorial');
 $pdf->setKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 027', PDF_HEADER_STRING);
+$pdf->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE . ' 027', PDF_HEADER_STRING);
 
 // set header and footer fonts
-$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+$pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
+$pdf->setFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
 
 // set default monospaced font
 $pdf->setDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -55,15 +56,15 @@ $pdf->setHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->setFooterMargin(PDF_MARGIN_FOOTER);
 
 // set auto page breaks
-$pdf->setAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+$pdf->setAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 
 // set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // set some language-dependent strings (optional)
-if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-	require_once(dirname(__FILE__).'/lang/eng.php');
-	$pdf->setLanguageArray($l);
+if (@file_exists(dirname(__FILE__) . '/lang/eng.php')) {
+    require_once dirname(__FILE__) . '/lang/eng.php';
+    $pdf->setLanguageArray($l);
 }
 
 // ---------------------------------------------------------
@@ -87,22 +88,22 @@ $pdf->setY(30);
 $pdf->setFont('helvetica', '', 10);
 
 // define barcode style
-$style = array(
-	'position' => '',
-	'align' => 'C',
-	'stretch' => false,
-	'fitwidth' => true,
-	'cellfitalign' => '',
-	'border' => true,
-	'hpadding' => 'auto',
-	'vpadding' => 'auto',
-	'fgcolor' => array(0,0,0),
-	'bgcolor' => false, //array(255,255,255),
-	'text' => true,
-	'font' => 'helvetica',
-	'fontsize' => 8,
-	'stretchtext' => 4
-);
+$style = [
+    'position' => '',
+    'align' => 'C',
+    'stretch' => false,
+    'fitwidth' => true,
+    'cellfitalign' => '',
+    'border' => true,
+    'hpadding' => 'auto',
+    'vpadding' => 'auto',
+    'fgcolor' => [0, 0, 0],
+    'bgcolor' => false, //array(255,255,255),
+    'text' => true,
+    'font' => 'helvetica',
+    'fontsize' => 8,
+    'stretchtext' => 4,
+];
 
 // PRINT VARIOUS 1D BARCODES
 
@@ -157,7 +158,6 @@ $pdf->Ln();
 // Interleaved 2 of 5 + CHECKSUM
 $pdf->Cell(0, 0, 'Interleaved 2 of 5 + CHECKSUM', 0, 1);
 $pdf->write1DBarcode('1234567', 'I25+', '', '', '', 18, 0.4, $style, 'N');
-
 
 // add a page ----------
 $pdf->AddPage();
@@ -295,8 +295,8 @@ $pdf->write1DBarcode('SN34RDX1A', 'KIX', '', '', '', 15, 0.6, $style, 'N');
 $pdf->AddPage();
 
 // set a background color
-$style['bgcolor'] = array(255,255,240);
-$style['fgcolor'] = array(127,0,0);
+$style['bgcolor'] = [255, 255, 240];
+$style['fgcolor'] = [127, 0, 0];
 
 // Left position
 $style['position'] = 'L';
@@ -317,7 +317,7 @@ $pdf->write1DBarcode('RIGHT', 'C128A', '', '', '', 15, 0.4, $style, 'N');
 $pdf->Ln(2);
 // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
-$style['fgcolor'] = array(0,127,0);
+$style['fgcolor'] = [0, 127, 0];
 $style['position'] = '';
 $style['stretch'] = false; // disable stretch
 $style['fitwidth'] = false; // disable fitwidth
@@ -341,7 +341,7 @@ $pdf->write1DBarcode('RIGHT', 'C128A', '', '', '', 15, 0.4, $style, 'N');
 $pdf->Ln(2);
 // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
-$style['fgcolor'] = array(0,64,127);
+$style['fgcolor'] = [0, 64, 127];
 $style['position'] = '';
 $style['stretch'] = false; // disable stretch
 $style['fitwidth'] = true; // disable fitwidth
@@ -365,7 +365,7 @@ $pdf->write1DBarcode('RIGHT', 'C128A', 105, '', 90, 15, 0.4, $style, 'N');
 $pdf->Ln(2);
 // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
-$style['fgcolor'] = array(127,0,127);
+$style['fgcolor'] = [127, 0, 127];
 
 // Left alignment
 $style['position'] = 'L';
@@ -387,34 +387,30 @@ $pdf->write1DBarcode('RIGHT', 'C128A', '', '', '', 15, 0.4, $style, 'N');
 // TEST BARCODE STYLE
 
 // define barcode style
-$style = array(
-	'position' => '',
-	'align' => '',
-	'stretch' => true,
-	'fitwidth' => false,
-	'cellfitalign' => '',
-	'border' => true,
-	'hpadding' => 'auto',
-	'vpadding' => 'auto',
-	'fgcolor' => array(0,0,128),
-	'bgcolor' => array(255,255,128),
-	'text' => true,
-	'label' => 'CUSTOM LABEL',
-	'font' => 'helvetica',
-	'fontsize' => 8,
-	'stretchtext' => 4
-);
+$style = [
+    'position' => '',
+    'align' => '',
+    'stretch' => true,
+    'fitwidth' => false,
+    'cellfitalign' => '',
+    'border' => true,
+    'hpadding' => 'auto',
+    'vpadding' => 'auto',
+    'fgcolor' => [0, 0, 128],
+    'bgcolor' => [255, 255, 128],
+    'text' => true,
+    'label' => 'CUSTOM LABEL',
+    'font' => 'helvetica',
+    'fontsize' => 8,
+    'stretchtext' => 4,
+];
 
 // CODE 39 EXTENDED + CHECKSUM
 $pdf->Cell(0, 0, 'CODE 39 EXTENDED + CHECKSUM', 0, 1);
-$pdf->setLineStyle(array('width' => 1, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(255, 0, 0)));
+$pdf->setLineStyle(['width' => 1, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => [255, 0, 0]]);
 $pdf->write1DBarcode('CODE 39 E+', 'C39E+', '', '', 120, 25, 0.4, $style, 'N');
 
 // ---------------------------------------------------------
 
 //Close and output PDF document
 $pdf->Output('example_027.pdf', 'I');
-
-//============================================================+
-// END OF FILE
-//============================================================+

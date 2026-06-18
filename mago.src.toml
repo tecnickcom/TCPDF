@@ -1,0 +1,101 @@
+#:schema https://mago.carthage.software/1.26.0/schema.json
+version = "1"
+php-version = "8.2.0"
+
+[source]
+workspace = "."
+paths = ["."]
+includes = ["vendor"]
+excludes = []
+
+[source.glob]
+literal-separator = true
+
+[formatter]
+print-width = 120
+tab-width = 4
+use-tabs = false
+
+[linter]
+integrations = []
+
+[linter.rules]
+# tcpdf.php is the historical file name of the TCPDF class and is part of the
+# public contract (require_once paths in user code); it cannot be renamed.
+file-name = { enabled = false }
+# tcpdf.php must not declare strict_types: the legacy API relies on loose
+# argument coercion, and calls into typed tc-lib methods must keep coercing
+# loosely-typed user input exactly as the original implementation did.
+strict-types = { enabled = false }
+ambiguous-function-call = { enabled = false }
+literal-named-argument = { enabled = false }
+cyclomatic-complexity = { enabled = false }
+excessive-parameter-list = { enabled = false }
+halstead = { enabled = false, effort-threshold = 7000 }
+identity-comparison = { enabled = true }
+kan-defect = { enabled = false }
+no-boolean-flag-parameter = { enabled = false }
+no-else-clause = { enabled = false }
+no-empty = { enabled = true }
+excessive-nesting = { enabled = true, threshold = 10, function-like-threshold = 10 }
+too-many-methods = { enabled = false }
+no-isset = { enabled = true, allow-array-checks = true }
+# The facade owns the legacy stateful model (cursor, fonts, colors, margins,
+# header/footer, ...) as properties; the original class had 200+.
+too-many-properties = { enabled = true, threshold = 100 }
+no-insecure-comparison = { enabled = true, exclude = ["src/HTML.php", "src/JavaScript.php"] }
+no-literal-password = { enabled = true, exclude = ["src/HTML.php"] }
+
+[analyzer]
+plugins = []
+# The legacy TCPDF public API is intentionally untyped (see
+# check-missing-type-hints below): every legacy argument enters as `mixed`
+# and is coerced with PHP cast semantics exactly as the original
+# implementation did. The issue codes below flag each of those intentional
+# legacy coercion sites and are suppressed for that reason.
+ignore = [
+	"invalid-type-cast",
+	"mixed-operand",
+	"mixed-assignment",
+]
+find-unused-definitions = true
+find-unused-expressions = true
+analyze-dead-code = true
+memoize-properties = true
+check-throws = true
+# The legacy TCPDF API has no checked-exception contract: every public method
+# may abort via Error(), which throws. The tc-lib exceptions bubbling through
+# the facade are part of that same "throws on failure" contract.
+unchecked-exceptions = [
+	"Error",
+	"LogicException",
+	"ReflectionException",
+	"Exception",
+	"RuntimeException",
+	"Random\\RandomException",
+	"Com\\Tecnick\\Pdf\\Exception",
+	"Com\\Tecnick\\Pdf\\Page\\Exception",
+	"Com\\Tecnick\\Pdf\\Font\\Exception",
+	"Com\\Tecnick\\Pdf\\Image\\Exception",
+	"Com\\Tecnick\\Pdf\\Graph\\Exception",
+	"Com\\Tecnick\\Pdf\\Encrypt\\Exception",
+	"Com\\Tecnick\\Color\\Exception",
+	"Com\\Tecnick\\Unicode\\Exception",
+	"Com\\Tecnick\\File\\Exception",
+	"Com\\Tecnick\\Barcode\\Exception",
+	# The engine output and HTML methods declare "@throws \Throwable".
+	"Throwable",
+]
+unchecked-exception-classes = []
+check-missing-override = true
+find-unused-parameters = true
+strict-list-index-checks = true
+strict-array-index-existence = true
+allow-array-truthy-operand = false
+no-boolean-literal-comparison = true
+# The legacy TCPDF public API is intentionally untyped: adding native parameter or
+# return types to the 291 published method signatures would change the public
+# contract (subclass overrides, coercion behavior), which is forbidden for this
+# compatibility facade. Internal (private) code must still use native types.
+check-missing-type-hints = false
+register-super-globals = true

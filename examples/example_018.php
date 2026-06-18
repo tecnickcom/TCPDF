@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : example_018.php
 // Begin       : 2008-03-06
@@ -27,7 +28,7 @@
  */
 
 // Include the main TCPDF library (search for installation path).
-require_once('tcpdf_include.php');
+require_once 'tcpdf_include.php';
 
 // create new PDF document
 $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -40,11 +41,11 @@ $pdf->setSubject('TCPDF Tutorial');
 $pdf->setKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 018', PDF_HEADER_STRING);
+$pdf->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE . ' 018', PDF_HEADER_STRING);
 
 // set header and footer fonts
-$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+$pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
+$pdf->setFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
 
 // set default monospaced font
 $pdf->setDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -55,13 +56,13 @@ $pdf->setHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->setFooterMargin(PDF_MARGIN_FOOTER);
 
 // set auto page breaks
-$pdf->setAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+$pdf->setAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 
 // set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // set some language dependent data:
-$lg = Array();
+$lg = [];
 $lg['a_meta_charset'] = 'UTF-8';
 $lg['a_meta_dir'] = 'rtl';
 $lg['a_meta_language'] = 'fa';
@@ -98,13 +99,15 @@ $pdf->WriteHTML($htmlpersiantranslation, true, 0, true, 0);
 $pdf->setRTL(true);
 
 // set font
-$pdf->setFont('aefurat', '', 18);
+// NOTE: the legacy 'aefurat' font is not part of the tc-lib font assets;
+// FreeSerif provides the Arabic coverage needed by this example.
+$pdf->setFont('freeserif', '', 18);
 
 // print newline
 $pdf->Ln();
 
 // Arabic and English content
-$pdf->Cell(0, 12, 'بِسْمِ اللهِ الرَّحْمنِ الرَّحِيمِ',0,1,'C');
+$pdf->Cell(0, 12, 'بِسْمِ اللهِ الرَّحْمنِ الرَّحِيمِ', 0, 1, 'C');
 $htmlcontent = 'تمَّ بِحمد الله حلّ مشكلة الكتابة باللغة العربية في ملفات الـ<span color="#FF0000">PDF</span> مع دعم الكتابة <span color="#0000FF">من اليمين إلى اليسار</span> و<span color="#009900">الحركَات</span> .<br />تم الحل بواسطة <span color="#993399">صالح المطرفي و Asuni Nicola</span>  . ';
 $pdf->WriteHTML($htmlcontent, true, 0, true, 0);
 
@@ -114,7 +117,9 @@ $pdf->setRTL(false);
 // print newline
 $pdf->Ln();
 
-$pdf->setFont('aealarabiya', '', 18);
+// NOTE: the legacy 'aealarabiya' font is not part of the tc-lib font assets;
+// DejaVu Sans provides the Arabic coverage needed by this example.
+$pdf->setFont('dejavusans', '', 18);
 
 // Arabic and English content
 $htmlcontent2 = '<span color="#0000ff">This is Arabic "العربية" Example With TCPDF.</span>';
@@ -124,7 +129,3 @@ $pdf->WriteHTML($htmlcontent2, true, 0, true, 0);
 
 //Close and output PDF document
 $pdf->Output('example_018.pdf', 'I');
-
-//============================================================+
-// END OF FILE
-//============================================================+

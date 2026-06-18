@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : example_020.php
 // Begin       : 2008-03-04
@@ -18,57 +19,57 @@
 //============================================================+
 
 /**
-* Creates an example PDF TEST document using TCPDF
-* @package com.tecnick.tcpdf
-* @abstract TCPDF - Example: Two columns composed by MultiCell of different heights
-* @author Nicola Asuni
-* @since 2008-03-04
-* @group cell
-* @group column
-* @group pdf
-*/
+ * Creates an example PDF TEST document using TCPDF
+ * @package com.tecnick.tcpdf
+ * @abstract TCPDF - Example: Two columns composed by MultiCell of different heights
+ * @author Nicola Asuni
+ * @since 2008-03-04
+ * @group cell
+ * @group column
+ * @group pdf
+ */
 
 // Include the main TCPDF library (search for installation path).
-require_once('tcpdf_include.php');
+require_once 'tcpdf_include.php';
 
 // extend TCPF with custom functions
-class MYPDF extends TCPDF {
+class MYPDF extends TCPDF
+{
+    public function MultiRow($left, $right)
+    {
+        // MultiCell($w, $h, $txt, $border=0, $align='J', $fill=0, $ln=1, $x='', $y='', $reseth=true, $stretch=0)
 
-	public function MultiRow($left, $right) {
-		// MultiCell($w, $h, $txt, $border=0, $align='J', $fill=0, $ln=1, $x='', $y='', $reseth=true, $stretch=0)
+        $page_start = $this->getPage();
+        $y_start = $this->GetY();
 
-		$page_start = $this->getPage();
-		$y_start = $this->GetY();
+        // write the left cell
+        $this->MultiCell(40, 0, $left, 1, 'R', 1, 2, '', '', true, 0);
 
-		// write the left cell
-		$this->MultiCell(40, 0, $left, 1, 'R', 1, 2, '', '', true, 0);
+        $page_end_1 = $this->getPage();
+        $y_end_1 = $this->GetY();
 
-		$page_end_1 = $this->getPage();
-		$y_end_1 = $this->GetY();
+        $this->setPage($page_start);
 
-		$this->setPage($page_start);
+        // write the right cell
+        $this->MultiCell(0, 0, $right, 1, 'J', 0, 1, $this->GetX(), $y_start, true, 0);
 
-		// write the right cell
-		$this->MultiCell(0, 0, $right, 1, 'J', 0, 1, $this->GetX() ,$y_start, true, 0);
+        $page_end_2 = $this->getPage();
+        $y_end_2 = $this->GetY();
 
-		$page_end_2 = $this->getPage();
-		$y_end_2 = $this->GetY();
+        // set the new row position by case
+        if (max($page_end_1, $page_end_2) == $page_start) {
+            $ynew = max($y_end_1, $y_end_2);
+        } elseif ($page_end_1 == $page_end_2) {
+            $ynew = max($y_end_1, $y_end_2);
+        } elseif ($page_end_1 > $page_end_2) {
+            $ynew = $y_end_1;
+        } else {
+            $ynew = $y_end_2;
+        }
 
-		// set the new row position by case
-		if (max($page_end_1,$page_end_2) == $page_start) {
-			$ynew = max($y_end_1, $y_end_2);
-		} elseif ($page_end_1 == $page_end_2) {
-			$ynew = max($y_end_1, $y_end_2);
-		} elseif ($page_end_1 > $page_end_2) {
-			$ynew = $y_end_1;
-		} else {
-			$ynew = $y_end_2;
-		}
-
-		$this->setPage(max($page_end_1,$page_end_2));
-		$this->setXY($this->GetX(),$ynew);
-	}
-
+        $this->setPage(max($page_end_1, $page_end_2));
+        $this->setXY($this->GetX(), $ynew);
+    }
 }
 
 // create new PDF document
@@ -82,11 +83,11 @@ $pdf->setSubject('TCPDF Tutorial');
 $pdf->setKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 020', PDF_HEADER_STRING);
+$pdf->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE . ' 020', PDF_HEADER_STRING);
 
 // set header and footer fonts
-$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+$pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
+$pdf->setFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
 
 // set default monospaced font
 $pdf->setDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -97,15 +98,15 @@ $pdf->setHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->setFooterMargin(PDF_MARGIN_FOOTER);
 
 // set auto page breaks
-$pdf->setAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+$pdf->setAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 
 // set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // set some language-dependent strings (optional)
-if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-	require_once(dirname(__FILE__).'/lang/eng.php');
-	$pdf->setLanguageArray($l);
+if (@file_exists(dirname(__FILE__) . '/lang/eng.php')) {
+    require_once dirname(__FILE__) . '/lang/eng.php';
+    $pdf->setLanguageArray($l);
 }
 
 // ---------------------------------------------------------
@@ -133,7 +134,7 @@ Fusce et felis vitae diam lobortis sollicitudin. Aenean tincidunt accumsan nisi,
 
 // print some rows just as example
 for ($i = 0; $i < 10; ++$i) {
-	$pdf->MultiRow('Row '.($i+1), $text."\n");
+    $pdf->MultiRow('Row ' . ($i + 1), $text . "\n");
 }
 
 // reset pointer to the last page
@@ -143,7 +144,3 @@ $pdf->lastPage();
 
 //Close and output PDF document
 $pdf->Output('example_020.pdf', 'I');
-
-//============================================================+
-// END OF FILE
-//============================================================+

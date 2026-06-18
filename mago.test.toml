@@ -1,0 +1,75 @@
+#:schema https://mago.carthage.software/1.26.0/schema.json
+version = "1"
+php-version = "8.2.0"
+
+[source]
+workspace = "."
+paths = [".", "test"]
+includes = ["vendor"]
+excludes = []
+
+[source.glob]
+literal-separator = true
+
+[formatter]
+print-width = 120
+tab-width = 4
+use-tabs = false
+
+[linter]
+integrations = ["phpunit"]
+
+[linter.rules]
+ambiguous-function-call = { enabled = false }
+literal-named-argument = { enabled = false }
+assertion-style = { enabled = false }
+cyclomatic-complexity = { enabled = false }
+excessive-parameter-list = { enabled = false }
+halstead = { enabled = false, effort-threshold = 7000 }
+identity-comparison = { enabled = false }
+kan-defect = { enabled = false }
+no-boolean-flag-parameter = { enabled = false }
+no-else-clause = { enabled = false }
+no-empty = { enabled = false }
+excessive-nesting = { enabled = true, threshold = 10, function-like-threshold = 10 }
+no-empty-catch-clause = { enabled = false }
+no-isset = { enabled = false }
+no-literal-password = { enabled = true, exclude = ["test/TcpdfImporterFacadeTest.php", "test/Import/ImporterTest.php", "test/JavaScriptTest.php"] }
+readable-literal = { enabled = false }
+str-contains = { enabled = false }
+strict-assertions = { enabled = false }
+strict-behavior = { enabled = false }
+strict-types = { enabled = false }
+too-many-methods = { enabled = false }
+
+[analyzer]
+plugins = []
+# The legacy TCPDF public API is intentionally untyped: every facade call
+# returns `mixed`, which the tests immediately narrow with explicit type
+# assertions (assertIsString/assertIsArray/...). The assignment-site
+# warning is noise for that pattern.
+ignore = [
+	"mixed-assignment",
+]
+find-unused-definitions = true
+find-unused-expressions = true
+analyze-dead-code = true
+memoize-properties = true
+check-throws = true
+unchecked-exceptions = [
+	"Error",
+	"LogicException",
+	"ReflectionException",
+	"PHPUnit\\Framework\\Exception",
+	"PHPUnit\\Framework\\ExpectationFailedException",
+	"PHPUnit\\Framework\\UnknownClassOrInterfaceException",
+]
+unchecked-exception-classes = []
+check-missing-override = true
+find-unused-parameters = true
+strict-list-index-checks = true
+strict-array-index-existence = true
+allow-array-truthy-operand = false
+no-boolean-literal-comparison = true
+check-missing-type-hints = true
+register-super-globals = true
