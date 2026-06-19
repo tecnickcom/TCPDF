@@ -29,7 +29,7 @@
     "require": {
         "php": ">=8.2",
         "ext-curl": "*",
-        "tecnickcom/tc-lib-pdf": "^8.61"
+        "tecnickcom/tc-lib-pdf": "^8"
     },
     "require-dev": {
         "pdepend/pdepend": "^2.16",
