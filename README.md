@@ -1,18 +1,19 @@
 # TCPDF (DEPRECATED → use [tc-lib-pdf](https://github.com/tecnickcom/tc-lib-pdf))
 
-> Legacy PDF API for PHP, implemented as a **compatibility facade** over the modern
-> [tc-lib-pdf](https://github.com/tecnickcom/tc-lib-pdf) engine. **Deprecated** and
-> maintained for existing integrations.
+> [!WARNING]
+> **TCPDF is in maintenance-only mode.** Active development has moved to
+> **[tc-lib-pdf](https://github.com/tecnickcom/tc-lib-pdf)**, its modern, modular successor —
+> new projects should start there.
+>
+> TCPDF is still installed 100M+ times across 500+ PHP packages. If your product depends on
+> it, **[sponsor continued maintenance →](https://github.com/sponsors/tecnickcom)** to keep
+> this shared infrastructure secure and patched.
+
+[![Sponsor on GitHub](https://img.shields.io/badge/sponsor-github-EA4AAA.svg?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/tecnickcom)
 
 [![Latest Stable Version](https://poser.pugx.org/tecnickcom/tcpdf/version)](https://packagist.org/packages/tecnickcom/tcpdf)
 [![License](https://poser.pugx.org/tecnickcom/tcpdf/license)](https://packagist.org/packages/tecnickcom/tcpdf)
 [![Downloads](https://poser.pugx.org/tecnickcom/tcpdf/downloads)](https://packagist.org/packages/tecnickcom/tcpdf)
-
-[![Sponsor on GitHub](https://img.shields.io/badge/sponsor-github-EA4AAA.svg?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/tecnickcom)
-
-If TCPDF and tc-lib-pdf are valuable to your work, please consider supporting ongoing development with a sponsorship. Financial support helps fund maintenance, bug fixes, documentation, testing infrastructure, and long-term improvements.
-
-You can sponsor the project here: [https://github.com/sponsors/tecnickcom](https://github.com/sponsors/tecnickcom)
 
 ---
 

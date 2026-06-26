@@ -50,6 +50,9 @@ COMPOSER=$(PHP) -d "apc.enable_cli=0" $(shell which composer)
 TCPDF_FONT_PKGDIR=./vendor/tecnickcom/tc-lib-pdf-font
 TCPDF_FONT_SENTINEL=$(TCPDF_FONT_PKGDIR)/target/fonts/core/helvetica.json
 
+# Mago version
+MAGOVERSION=1.40.2
+
 # --- MAKE TARGETS ---
 
 # Display general help about this command
@@ -88,7 +91,7 @@ clean:
 deps: ensuretarget
 	rm -rf ./vendor/*
 	($(COMPOSER) install -vvv --no-interaction)
-	curl --proto '=https' --tlsv1.2 --silent --show-error --fail --location https://carthage.software/mago.sh | bash -s -- --install-dir=./vendor/bin
+	curl --proto '=https' --tlsv1.2 --silent --show-error --fail --location https://carthage.software/mago.sh | bash -s -- --install-dir=./vendor/bin --version=$(MAGOVERSION)
 
 ## Initialize tc-lib-pdf font assets if needed
 .PHONY: fonts

@@ -2,7 +2,7 @@
 
 //============================================================+
 // File name    : tcpdf.php
-// Version      : 7.0.1
+// Version      : 7.0.2
 // Author       : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License      : GNU-LGPL v3 (https://www.gnu.org/copyleft/lesser.html)
 // Copyright (C): 2002-2026 Nicola Asuni - Tecnick.com LTD
@@ -15,7 +15,7 @@
  * See: https://tcpdf.org
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 7.0.1
+ * @version 7.0.2
  */
 
 // TCPDF configuration
@@ -512,6 +512,9 @@ class TCPDF
 
         // Additional trusted read locations from the configuration; merged on
         // top of the built-in defaults so bundled assets keep resolving.
+        // The analyzer resolves K_ALLOWED_PATHS to its default value, so the
+        // runtime type guard looks redundant; it still protects user overrides.
+        // @mago-expect analysis:redundant-logical-operation
         if (defined('K_ALLOWED_PATHS') && is_array(K_ALLOWED_PATHS)) {
             foreach (K_ALLOWED_PATHS as $extrapath) {
                 $candidates[] = $extrapath;
@@ -565,6 +568,10 @@ class TCPDF
         // Remote URL loading is disabled by default in the upstream library:
         // an empty (or unset) host allowlist keeps it disabled. Populate
         // K_ALLOWED_HOSTS with trusted host names to opt in to remote reads.
+        // The K_* guards below are runtime-defensive: the analyzer resolves each
+        // constant to its default value, which makes the type/value checks look
+        // redundant even though they still validate user-supplied overrides.
+        // @mago-expect analysis:redundant-logical-operation
         if (defined('K_ALLOWED_HOSTS') && is_array(K_ALLOWED_HOSTS) && K_ALLOWED_HOSTS !== []) {
             $options['allowedHosts'] = array_values(array_map(
                 static fn(mixed $host): string => (string) $host,
@@ -572,10 +579,13 @@ class TCPDF
             ));
         }
 
+        // @mago-expect analysis:redundant-comparison
+        // @mago-expect analysis:redundant-logical-operation
         if (defined('K_MAX_REMOTE_SIZE') && (int) K_MAX_REMOTE_SIZE > 0) {
             $options['maxRemoteSize'] = (int) K_MAX_REMOTE_SIZE;
         }
 
+        // @mago-expect analysis:redundant-logical-operation
         if (defined('K_CURLOPTS') && is_array(K_CURLOPTS) && K_CURLOPTS !== []) {
             $options['curlopts'] = K_CURLOPTS;
         }
@@ -8442,6 +8452,10 @@ class TCPDF_ENGINE extends \Com\Tecnick\Pdf\Tcpdf
         // @mago-expect analysis:possibly-non-existent-method
         parent::setPageContext($pid);
         if ($this->pagecontexthook instanceof \Closure) {
+            // The hook is a public property: the cast defensively coerces a
+            // non-string return, which the analyzer rejects as redundant because
+            // the @var closure type already promises a string.
+            // @mago-expect analysis:redundant-cast
             $content = (string) ($this->pagecontexthook)();
             if ($content !== '') {
                 $this->page->addContent($content, $pid);
