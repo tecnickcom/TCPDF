@@ -8,7 +8,7 @@ echo '<'.'?'.'xml version="1.0" encoding="UTF-8"'.'?'.'>';
 <head>
 <title>TCPDF Examples</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<meta name="description" content="TCPDF is a PHP class for generating PDF documents on the fly" />
+<meta name="description" content="Examples for TCPDF, a deprecated PHP class for generating PDF documents on the fly" />
 <meta name="author" content="Nicola Asuni" />
 <meta name="keywords" content="Examples, TCPDF, PDF, PHP class" />
 </head>
@@ -16,6 +16,10 @@ echo '<'.'?'.'xml version="1.0" encoding="UTF-8"'.'?'.'>';
 <body>
 
 <h1>TCPDF Examples</h1>
+
+<p><strong>TCPDF is DEPRECATED</strong> and receives no updates.
+Migrate to <a href="https://github.com/tecnickcom/tc-lib-pdf">tc-lib-pdf</a>.
+These examples document the frozen code and are not a recommendation to start new work on TCPDF.</p>
 
 <h2>PDF</h2>
 

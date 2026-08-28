@@ -48,6 +48,7 @@
  * @brief PHP class for generating PDF documents without requiring external extensions.
  * @version 1.0.005
  * @author Nicola Asuni - info@tecnick.com
+ * @deprecated TCPDF is deprecated: migrate to tecnickcom/tc-lib-pdf.
  */
 class TCPDF_IMAGES {
 

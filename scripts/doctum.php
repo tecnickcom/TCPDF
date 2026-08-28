@@ -18,7 +18,7 @@ $iterator = Finder::create()
     ->in($rootDir);
 
 return new Doctum($iterator, [
-    'title'                => 'TCPDF',
+    'title'                => 'TCPDF (deprecated)',
     'build_dir'            => $rootDir . '/build',
     'cache_dir'            => $rootDir . '/cache',
     'source_dir'           => $rootDir,

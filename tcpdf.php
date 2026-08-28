@@ -1,9 +1,9 @@
 <?php
 //============================================================+
 // File name   : tcpdf.php
-// Version     : 6.11.3
+// Version     : 6.11.4
 // Begin       : 2002-08-03
-// Last Update : 2026-03-03
+// Last Update : 2026-08-28
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : GNU-LGPL v3 (https://www.gnu.org/copyleft/lesser.html)
 // -------------------------------------------------------------------
@@ -27,6 +27,10 @@
 //
 // See LICENSE.TXT file for more information.
 // -------------------------------------------------------------------
+//
+// DEPRECATED :
+//   TCPDF is deprecated: migrate to tecnickcom/tc-lib-pdf
+//   (https://github.com/tecnickcom/tc-lib-pdf).
 //
 // Description :
 //   This is a PHP class for generating PDF documents without requiring external extensions.
@@ -103,8 +107,9 @@
  * </ul>
  * Tools to encode your unicode fonts are on fonts/utils directory.</p>
  * @package com.tecnick.tcpdf
+ * @deprecated TCPDF is deprecated: migrate to tecnickcom/tc-lib-pdf.
  * @author Nicola Asuni
- * @version 6.11.3
+ * @version 6.11.4
  */
 
 // TCPDF configuration
@@ -128,7 +133,8 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
- * @version 6.11.3
+ * @deprecated TCPDF is deprecated: migrate to tecnickcom/tc-lib-pdf.
+ * @version 6.11.4
  * @author Nicola Asuni - info@tecnick.com
  * @IgnoreAnnotation("protected")
  * @IgnoreAnnotation("public")
@@ -1891,6 +1897,13 @@ class TCPDF {
 	 * @see getPageSizeFromFormat(), setPageFormat()
 	 */
 	public function __construct($orientation='P', $unit='mm', $format='A4', $unicode=true, $encoding='UTF-8', $diskcache=false, $pdfa=false) {
+		// deprecation notice, raised once per process and silenced by defining TCPDF_SILENCE_DEPRECATION;
+		// the @ prevents the default handler from printing it into the document output
+		static $deprecation_notice = true;
+		if ($deprecation_notice && !(defined('TCPDF_SILENCE_DEPRECATION') && TCPDF_SILENCE_DEPRECATION)) {
+			$deprecation_notice = false;
+			@trigger_error('TCPDF is deprecated: migrate to tecnickcom/tc-lib-pdf (https://github.com/tecnickcom/tc-lib-pdf).', E_USER_DEPRECATED);
+		}
 		// set file ID for trailer
 		$serformat = (is_array($format) ? json_encode($format) : $format);
 		$this->file_id = md5(TCPDF_STATIC::getRandomSeed('TCPDF'.$orientation.$unit.$serformat.$encoding));

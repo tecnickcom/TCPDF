@@ -261,6 +261,7 @@ if (!defined('QRCODEDEFS')) {
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
  * @version 1.0.010
+ * @deprecated TCPDF is deprecated: migrate to tecnickcom/tc-lib-pdf.
  */
 class QRcode {
 

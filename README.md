@@ -1,29 +1,39 @@
 # TCPDF
 
-> Legacy PDF engine for PHP. **Deprecated** and maintained for existing integrations.
+> Legacy PDF engine for PHP. **DEPRECATED**: migrate to [tc-lib-pdf](https://github.com/tecnickcom/tc-lib-pdf).
 
 [![Latest Stable Version](https://poser.pugx.org/tecnickcom/tcpdf/version)](https://packagist.org/packages/tecnickcom/tcpdf)
 [![License](https://poser.pugx.org/tecnickcom/tcpdf/license)](https://packagist.org/packages/tecnickcom/tcpdf)
 [![Downloads](https://poser.pugx.org/tecnickcom/tcpdf/downloads)](https://packagist.org/packages/tecnickcom/tcpdf)
-[![Donate via PayPal](https://img.shields.io/badge/donate-paypal-87ceeb.svg)](https://www.paypal.com/donate/?hosted_button_id=NZUEC5XS8MFBJ)
 
-If TCPDF helps your business, please consider supporting development via [PayPal](https://www.paypal.com/donate/?hosted_button_id=NZUEC5XS8MFBJ).
+[![Sponsor on GitHub](https://img.shields.io/badge/sponsor-github-EA4AAA.svg?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/tecnickcom)
+
+> 💖 **`tc-lib-pdf`** is the actively-developed successor to **TCPDF**, which is installed 100M+ times across 500+ PHP packages and is now maintenance-only. If your company depends on it, [become a sponsor](https://github.com/sponsors/tecnickcom) to keep this shared infrastructure secure and maintained. See [Sponsors](#sponsors) for tiers.
+
 
 ---
 
 ## Deprecation Notice
 
-TCPDF is **deprecated** and in **maintenance-only mode**.
+TCPDF is **DEPRECATED** and receives no updates of any kind: no new features, no bug fixes, and no security fixes.
 
-Active feature development has moved to [tc-lib-pdf](https://github.com/tecnickcom/tc-lib-pdf), the modern and modular successor.
+All users are invited to migrate to [tc-lib-pdf](https://github.com/tecnickcom/tc-lib-pdf), the modern and modular successor.
 
-For new projects, use `tecnickcom/tc-lib-pdf`. This repository remains available for legacy systems and critical compatibility fixes.
+Using TCPDF constitutes [CWE-1104: Use of Unmaintained Third Party Components](https://cwe.mitre.org/data/definitions/1104.html). See [SECURITY.md](SECURITY.md).
+
+Instantiating the `TCPDF` class raises an `E_USER_DEPRECATED` notice once per process. The notice is raised with `@` so that PHP never prints it into the document output: it reaches custom error handlers and deprecation collectors, not the generated PDF. Define `TCPDF_SILENCE_DEPRECATION` before loading the library to disable it entirely:
+
+```php
+define('TCPDF_SILENCE_DEPRECATION', true);
+```
+
+Silencing the notice does not remove the need to migrate.
 
 ### Migration Path
 
-- New projects: install `tecnickcom/tc-lib-pdf`.
-- Existing TCPDF users: keep TCPDF for current production workloads and migrate in phases.
-- Teams seeking modern architecture, Composer-first design, and stronger type-safety should prioritize `tc-lib-pdf`.
+- New projects: install `tecnickcom/tc-lib-pdf`. Do not start new work on TCPDF.
+- Existing projects: plan the migration now and move in phases. Every release still on TCPDF carries unpatched defects, including security ones.
+- Every migration requires regression checks to preserve rendering parity for existing documents.
 
 ### Why Migrate to tc-lib-pdf
 
@@ -33,21 +43,15 @@ For new projects, use `tecnickcom/tc-lib-pdf`. This repository remains available
 - Lower long-term risk: reduces technical debt tied to legacy APIs and supports ongoing PHP ecosystem evolution.
 - Improved delivery speed: teams can implement and ship new PDF capabilities with less friction.
 
-Migration still requires planning and regression checks to preserve rendering parity for existing documents.
-
-### Future Compatibility Possibility
-
-As a long-term possibility, TCPDF could be refactored to use `tc-lib-pdf` internally as a backend while preserving a practical level of backward compatibility for existing TCPDF integrations.
-
-This is not part of a committed roadmap and there is no guarantee it will happen. It is documented here only as a potential direction that may be evaluated in the future.
-
 ---
 
 ## Overview
 
 TCPDF is a pure-PHP library for generating PDF documents and barcodes directly in application code.
 
-It has been widely used across many PHP stacks and still provides a complete feature set for text rendering, page composition, graphics, signatures, forms, and standards-oriented output.
+It has been widely used across many PHP stacks and covers text rendering, page composition, graphics, signatures, forms, and standards-oriented output.
+
+The feature list below documents the frozen code as it stands. Nothing will be added to it, and nothing in it will be fixed. Use [tc-lib-pdf](https://github.com/tecnickcom/tc-lib-pdf) instead.
 
 | | |
 |---|---|
@@ -99,6 +103,8 @@ It has been widely used across many PHP stacks and still provides a complete fea
 
 Optional extensions for richer output in some workflows: `gd`, `zlib`, `imagick`.
 
+Compatibility with future PHP versions will not be added.
+
 ---
 
 ## Third-Party Fonts
@@ -123,9 +129,3 @@ For full details, see the bundled notices in the corresponding subdirectories un
 ## ICC Profile
 
 TCPDF includes `sRGB.icc` from the Debian [`icc-profiles-free`](https://packages.debian.org/source/stable/icc-profiles-free) package.
-
----
-
-## Contact
-
-Nicola Asuni <info@tecnick.com>

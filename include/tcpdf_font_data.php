@@ -44,6 +44,7 @@
  * @package com.tecnick.tcpdf
  * @version 1.0.001
  * @author Nicola Asuni - info@tecnick.com
+ * @deprecated TCPDF is deprecated: migrate to tecnickcom/tc-lib-pdf.
  */
 class TCPDF_FONT_DATA {
 

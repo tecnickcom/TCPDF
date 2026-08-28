@@ -1,6 +1,9 @@
 .idea
 .phpdoc
 *.bak
-/vendor/
 /composer.lock
 /composer.phar
+/vendor/
+PLAN_*
+settings.json
+target

@@ -27,6 +27,10 @@
 // See LICENSE.TXT file for more information.
 // -------------------------------------------------------------------
 //
+// DEPRECATED :
+//   TCPDF is deprecated: migrate to tecnickcom/tc-lib-pdf
+//   (https://github.com/tecnickcom/tc-lib-pdf).
+//
 // Description : PHP class to creates array representations for
 //               common 1D barcodes to be used with TCPDF.
 //
@@ -46,6 +50,7 @@
  * @package com.tecnick.tcpdf
  * @version 1.0.027
  * @author Nicola Asuni
+ * @deprecated TCPDF is deprecated: migrate to tecnickcom/tc-lib-pdf.
  */
 class TCPDFBarcode {
 

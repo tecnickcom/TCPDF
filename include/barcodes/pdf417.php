@@ -89,6 +89,7 @@ if (!defined('PDF417DEFS')) {
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
  * @version 1.0.003
+ * @deprecated TCPDF is deprecated: migrate to tecnickcom/tc-lib-pdf.
  */
 class PDF417 {
 

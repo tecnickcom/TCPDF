@@ -1,3 +1,6 @@
+6.11.4 (2026-08-28)
+	- TCPDF is deprecated: added a runtime E_USER_DEPRECATED notice and updated the documentation.
+
 6.11.3 (2026-04-21)
 	- Added deprecation notice.
 	- Improved composer.json.

@@ -1,7 +1,8 @@
 {
     "name": "tecnickcom/tcpdf",
     "type": "library",
-    "description": "Deprecated legacy PDF engine for PHP. For new projects use tecnickcom/tc-lib-pdf.",
+    "description": "Deprecated legacy PDF engine for PHP. Migrate to tecnickcom/tc-lib-pdf.",
+    "abandoned": "tecnickcom/tc-lib-pdf",
     "keywords": [
         "PDF",
         "tcpdf",
@@ -25,7 +26,7 @@
         "ext-curl": "*"
     },
     "suggest": {
-        "tecnickcom/tc-lib-pdf": "Modern replacement for TCPDF for new projects.",
+        "tecnickcom/tc-lib-pdf": "Modern replacement for TCPDF.",
         "ext-gd": "Enables additional image handling in some workflows.",
         "ext-imagick": "Enables additional image format support when available.",
         "ext-zlib": "Recommended for compressed streams and related features."
@@ -63,13 +64,12 @@
         ]
     },
     "support": {
-        "issues": "https://github.com/tecnickcom/TCPDF/issues",
         "source": "https://github.com/tecnickcom/TCPDF"
     },
     "funding": [
         {
-            "type": "paypal",
-            "url": "https://www.paypal.com/donate/?hosted_button_id=NZUEC5XS8MFBJ"
+        "type": "github",
+        "url": "https://github.com/sponsors/tecnickcom"
         }
     ]
 }
