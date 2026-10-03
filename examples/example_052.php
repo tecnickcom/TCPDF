@@ -77,7 +77,7 @@ if (@file_exists(dirname(__FILE__) . '/lang/eng.php')) {
  */
 
 // set certificate file
-$certificate = 'file://data/cert/tcpdf.crt';
+$certificate = 'file://' . dirname(__FILE__) . '/data/cert/tcpdf.crt';
 
 // set additional information
 $info = [

@@ -154,4 +154,159 @@ class TcpdfCellTest extends TcpdfTestCase
         $moved = $this->wordBox($pdf, 'bravo');
         $this->assertEqualsWithDelta($plain['xmax'], $moved['xmax'], 0.01);
     }
+
+    public function testCellWiderTextStaysOnOneLine(): void
+    {
+        $pdf = $this->newPdf();
+        $pdf->setFont('helvetica', '', 9);
+        $pdf->AddPage();
+        $text = 'The quick brown fox jumps';
+        $width = (float) $pdf->GetStringWidth($text) + 1.5;
+
+        $pdf->Cell($width, 5, $text, 0, 0, 'L');
+        $pdf->Cell(10, 5, 'X', 0, 1);
+
+        $this->assertSame(5.0, $pdf->getLastH());
+        $first = $this->wordBox($pdf, 'The');
+        $last = $this->wordBox($pdf, 'jumps');
+        $this->assertEqualsWithDelta($first['ymin'], $last['ymin'], 0.01);
+        $x = $this->wordBox($pdf, 'X');
+        $this->assertEqualsWithDelta($first['ymin'], $x['ymin'], 0.01);
+    }
+
+    public function testCellWiderTextWithBorderStaysOnOneLine(): void
+    {
+        $pdf = $this->newPdf();
+        $pdf->setFont('helvetica', '', 9);
+        $pdf->setCellPaddings(0, 0, 0, 0);
+        $pdf->setLineWidth(0.4);
+        $pdf->AddPage();
+        $text = 'The quick brown fox jumps';
+        $width = (float) $pdf->GetStringWidth($text) + 0.1;
+
+        $pdf->Cell($width, 5, $text, 1, 1, 'L');
+
+        $first = $this->wordBox($pdf, 'The');
+        $last = $this->wordBox($pdf, 'jumps');
+        $this->assertEqualsWithDelta($first['ymin'], $last['ymin'], 0.01);
+    }
+
+    /**
+     * @return array<string, array{0: string, 1: bool, 2: string}>
+     */
+    public static function overflowAlignmentProvider(): array
+    {
+        return [
+            'left' => ['L', false, 'start'],
+            'right' => ['R', false, 'end'],
+            'center' => ['C', false, 'center'],
+            'justify' => ['J', false, 'start'],
+            'rtl default' => ['', true, 'end'],
+            'rtl justify' => ['J', true, 'end'],
+            'rtl left' => ['L', true, 'start'],
+        ];
+    }
+
+    #[\PHPUnit\Framework\Attributes\DataProvider('overflowAlignmentProvider')]
+    public function testCellOverflowFollowsAlignment(string $align, bool $rtl, string $anchor): void
+    {
+        $pdf = $this->newPdf();
+        $pdf->setFont('helvetica', '', 9);
+        $pdf->setRTL($rtl);
+        $pdf->AddPage();
+        $pdf->setCellPaddings(1, 0, 2, 0);
+        // Cell box spans [100, 110] mm on both directions.
+        $pdf->setX($rtl ? $pdf->getPageWidth() - 110 : 100);
+        $pdf->Cell(10, 5, 'overflowing', 0, 0, $align);
+
+        $box = $this->wordBox($pdf, 'overflowing');
+        $k = 72 / 25.4;
+        $this->assertGreaterThan(10 * $k, $box['xmax'] - $box['xmin']);
+        match ($anchor) {
+            'start' => $this->assertEqualsWithDelta(101 * $k, $box['xmin'], 0.1),
+            'end' => $this->assertEqualsWithDelta(108 * $k, $box['xmax'], 0.1),
+            default => $this->assertEqualsWithDelta(104.5 * $k, ($box['xmin'] + $box['xmax']) / 2, 0.1),
+        };
+    }
+
+    public function testCellFittingTextKeepsAlignment(): void
+    {
+        $pdf = $this->newPdf();
+        $pdf->setFont('helvetica', '', 9);
+        $pdf->AddPage();
+        $pdf->setCellPaddings(1, 0, 2, 0);
+        $pdf->setX(100);
+        $pdf->Cell(40, 5, 'fits', 0, 1, 'R');
+
+        $k = 72 / 25.4;
+        $this->assertEqualsWithDelta(138 * $k, $this->wordBox($pdf, 'fits')['xmax'], 0.1);
+    }
+
+    public function testRtlStretchedCellTextStaysInsideTheCell(): void
+    {
+        $pdf = $this->newPdf();
+        $pdf->setFont('helvetica', '', 9);
+        $pdf->setRTL(true);
+        $pdf->AddPage();
+        // In RTL setX() is measured from the right page edge.
+        $pdf->setX(100);
+        $right = $pdf->getPageWidth() - 100;
+        $pdf->Cell(20, 5, 'stretched', 1, 0, '', false, '', 2);
+
+        $box = $this->wordBox($pdf, 'stretched');
+        $k = 72 / 25.4;
+        $this->assertGreaterThanOrEqual(($right - 20) * $k - 0.1, $box['xmin']);
+        $this->assertLessThanOrEqual($right * $k + 0.1, $box['xmax']);
+    }
+
+    public function testCellOverflowKeepsTheBorderGeometry(): void
+    {
+        $fits = $this->borderedCellContent('ab');
+        $overflows = $this->borderedCellContent('overflowing text');
+
+        $this->assertStringContainsString(' re', $fits);
+        $this->assertSame($this->boxOperators($fits), $this->boxOperators($overflows));
+        $fitsorigin = [];
+        // Same text origin: the overflowing text starts where the fitting one does.
+        $this->assertSame(1, preg_match('/([\d.]+ [\d.]+) Td \(ab\)/', $fits, $fitsorigin));
+        $this->assertStringContainsString(($fitsorigin[1] ?? '') . ' Td (overflowing text)', $overflows);
+    }
+
+    /**
+     * Decompressed page content of a document holding one filled cell with
+     * an external 1 mm border.
+     */
+    private function borderedCellContent(string $txt): string
+    {
+        $pdf = $this->newPdf();
+        $pdf->setFont('helvetica', '', 9);
+        $pdf->AddPage();
+        $pdf->setXY(50, 50);
+        $pdf->Cell(10, 5, $txt, ['LTRB' => ['width' => 1], 'mode' => 'ext'], 0, 'L', true);
+
+        $raw = (string) $pdf->getPDFData();
+        $streams = [];
+        preg_match_all('/stream\r?\n(.*?)\r?\nendstream/s', $raw, $streams);
+        $content = '';
+        foreach ($streams[1] ?? [] as $stream) {
+            if (!str_starts_with($stream, "\x78")) {
+                continue;
+            }
+
+            $data = gzuncompress($stream);
+            if (is_string($data) && str_contains($data, 'BT')) {
+                $content .= $data;
+            }
+        }
+
+        return $content;
+    }
+
+    /**
+     * Graphics state lines of a content stream, without text objects.
+     */
+    private function boxOperators(string $content): string
+    {
+        return (string) preg_replace('/^BT .*$/m', '', $content);
+    }
 }

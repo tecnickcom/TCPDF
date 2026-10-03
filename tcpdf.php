@@ -2,7 +2,7 @@
 
 //============================================================+
 // File name    : tcpdf.php
-// Version      : 7.0.12
+// Version      : 7.0.13
 // Author       : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License      : GNU-LGPL v3 (https://www.gnu.org/copyleft/lesser.html)
 // Copyright (C): 2002-2026 Nicola Asuni - Tecnick.com LTD
@@ -15,7 +15,7 @@
  * See: https://tcpdf.org
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 7.0.12
+ * @version 7.0.13
  */
 
 // TCPDF configuration
@@ -1710,6 +1710,7 @@ class TCPDF
     protected function stretchedCellText(
         int $mode,
         string $txt,
+        float $cellx,
         float $width,
         float $height,
         float $textw,
@@ -1729,33 +1730,16 @@ class TCPDF
         $rawwidth =
             $eng->font->getOrdArrDims(array_values($eng->uniconv->strToOrdArr($txt)))['totwidth'] / $this->kratio;
         $naturalbox = max($rawwidth, $textw) + $padl + $padr;
-        $boxx = $this->rtlmode ? $this->posx + $width - $naturalbox : $this->posx;
+        $boxx = $this->rtlmode ? $cellx + $width - $naturalbox : $cellx;
 
-        $text = $eng->getTextCell(
+        $text = $this->cellTextRun(
             $txt,
             $boxx,
-            $this->posy,
             $naturalbox,
             $height,
-            0,
-            0,
             $valign,
             $this->rtlmode ? 'R' : 'L',
             null,
-            ['all' => ['lineWidth' => 0.0]],
-            $this->textrendermode['stroke'],
-            0,
-            0,
-            0,
-            true,
-            $this->textrendermode['fill'],
-            $this->textrendermode['stroke'] > 0,
-            $this->fontdecor['U'],
-            $this->fontdecor['D'],
-            $this->fontdecor['O'],
-            $this->textrendermode['clip'],
-            false,
-            $this->forcedTextDir(),
             $shadow,
         );
         $eng->font->popLastFont();
@@ -1769,7 +1753,7 @@ class TCPDF
             // Glyph scaling anchored at the text start edge: the ambient
             // spacing/stretching apply inside the saved graphics state and
             // the CTM brings the rendered width up to the available width.
-            $anchor = $this->rtlmode ? $this->posx + $width - $padr : $this->posx + $padl;
+            $anchor = $this->rtlmode ? $cellx + $width - $padr : $cellx + $padl;
             return (
                 $basestate
                 . $eng->graph->getStartTransform()
@@ -1791,6 +1775,128 @@ class TCPDF
         $spacing = ((($avail * 100) / $this->fontstretching) - $rawwidth) / $chars;
         $spacingstate = sprintf('%F Tc %F Tz ', $spacing * $this->kratio, $this->fontstretching);
         return $spacingstate . $text . $reset;
+    }
+
+    /**
+     * PDF code for a cell whose text is drawn on one line regardless of the
+     * cell width.
+     *
+     * The box is drawn by the engine with the requested geometry and the
+     * border-adjusted cell definition used by getTextCell(). The text is
+     * drawn in a box wider than the text, anchored to the cell so the
+     * engine alignment places it as in the cell: left edge for L, right
+     * edge for R, center for C.
+     *
+     * @param array{margin: array{T: float, R: float, B: float, L: float}, padding: array{T: float, R: float, B: float, L: float}, borderpos: float}|null $engcell
+     * @param array<int|string, array<string, mixed>> $styles
+     */
+    protected function overflowCellOutput(
+        string $txt,
+        float $cellx,
+        float $width,
+        float $height,
+        float $txtw,
+        string $halign,
+        string $valign,
+        ?array $engcell,
+        array $styles,
+    ): string {
+        $eng = $this->engine();
+        /** @var array{margin: array{T: float, R: float, B: float, L: float}, padding: array{T: float, R: float, B: float, L: float}, borderpos: float} $cell */
+        $cell = $this->engineMethod('adjustMinCellPadding')->invoke($eng, $styles, $engcell);
+        $box = $this->engineMethod('drawCell')->invoke(
+            $eng,
+            $eng->toPoints($cellx) + $cell['margin']['L'],
+            $eng->toYPoints($this->posy) - $cell['margin']['T'],
+            $eng->toPoints($width),
+            $eng->toPoints($height),
+            $styles,
+            $cell,
+        );
+
+        if ($halign === 'J') {
+            $halign = $this->isRTLTextDir() ? 'R' : 'L';
+        }
+
+        // Twice the estimated text width leaves the engine enough room for
+        // the prepared text, whose width can differ from the estimate.
+        $boxw = $width + (2 * $txtw) + $eng->toUnit($cell['padding']['L'] + $cell['padding']['R']);
+        $boxx = match ($halign) {
+            'R' => $cellx + $width - $boxw,
+            'C' => $cellx + (($width - $boxw) / 2),
+            default => $cellx,
+        };
+
+        return (is_string($box) ? $box : '') . $this->cellTextRun($txt, $boxx, $boxw, $height, $valign, $halign, $cell, $this->engineShadow());
+    }
+
+    /**
+     * Text-only engine cell run (no box) with the current text render mode
+     * and decorations.
+     *
+     * @param array{margin: array{T: float, R: float, B: float, L: float}, padding: array{T: float, R: float, B: float, L: float}, borderpos: float}|null $cell
+     * @param array{xoffset: float, yoffset: float, opacity: float, mode: string, color: string}|null $shadow
+     */
+    protected function cellTextRun(
+        string $txt,
+        float $posx,
+        float $width,
+        float $height,
+        string $valign,
+        string $halign,
+        ?array $cell,
+        ?array $shadow,
+    ): string {
+        return $this->engine()->getTextCell(
+            $txt,
+            $posx,
+            $this->posy,
+            $width,
+            $height,
+            0,
+            0,
+            $valign,
+            $halign,
+            $cell,
+            ['all' => ['lineWidth' => 0.0]],
+            $this->textrendermode['stroke'],
+            0,
+            0,
+            0,
+            true,
+            $this->textrendermode['fill'],
+            $this->textrendermode['stroke'] > 0,
+            $this->fontdecor['U'],
+            $this->fontdecor['D'],
+            $this->fontdecor['O'],
+            $this->textrendermode['clip'],
+            false,
+            $this->forcedTextDir(),
+            $shadow,
+        );
+    }
+
+    /**
+     * Protected engine method made callable from the facade.
+     */
+    protected function engineMethod(string $name): \ReflectionMethod
+    {
+        static $methods = [];
+        if (!isset($methods[$name])) {
+            $methods[$name] = new \ReflectionMethod(\Com\Tecnick\Pdf\Tcpdf::class, $name);
+        }
+
+        return $methods[$name];
+    }
+
+    /**
+     * Text width in user units measured with the current engine font,
+     * including its spacing and stretching.
+     */
+    protected function engineTextWidth(string $txt): float
+    {
+        $eng = $this->engine();
+        return $eng->toUnit($eng->font->getOrdArrDims(array_values($eng->uniconv->strToOrdArr($txt)))['totwidth']);
     }
 
     /**
@@ -3396,13 +3502,40 @@ class TCPDF
             }
         }
 
-        if ($stretchmode > 0 && $txt !== '') {
+        // Legacy Cell never wraps. Text that may not fit the inner cell
+        // width is drawn on one line by overflowCellOutput(). The width
+        // estimate skips the engine text preparation (cleanup, Bidi,
+        // shaping, hyphenation), so near-fitting text takes the same path;
+        // its rendering is unchanged when the text fits.
+        $txtw = 0.0;
+        if ($stretchmode === 0 && $txt !== '') {
+            $txtw = $stretchtextw > 0 ? $stretchtextw : $this->engineTextWidth($txt);
+            $innerw = $width - $borderpadding['L'] - $borderpadding['R'];
+            if ($txtw <= $innerw * 0.95) {
+                $txtw = 0.0;
+            }
+        }
+
+        if ($txtw > 0) {
+            $out .= $this->overflowCellOutput(
+                $txt,
+                $cellx,
+                $width,
+                $height,
+                $txtw,
+                $this->halignToEngine($_align),
+                $this->valignToEngine($_valign === 'M' ? 'C' : $_valign),
+                $engcell,
+                $styles,
+            );
+        } elseif ($stretchmode > 0 && $txt !== '') {
             // Box and text drawn separately: the border must keep the
             // requested geometry while the text run is scaled or spaced.
             $out .= $this->cellBoxOutput($cellx, $this->posy, $width, $height, $styles, (bool) $_fill);
             $out .= $this->stretchedCellText(
                 $stretchmode,
                 $txt,
+                $cellx,
                 $width,
                 $height,
                 $stretchtextw,
