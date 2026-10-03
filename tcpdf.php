@@ -2,7 +2,7 @@
 
 //============================================================+
 // File name    : tcpdf.php
-// Version      : 7.0.14
+// Version      : 7.0.15
 // Author       : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License      : GNU-LGPL v3 (https://www.gnu.org/copyleft/lesser.html)
 // Copyright (C): 2002-2026 Nicola Asuni - Tecnick.com LTD
@@ -15,7 +15,7 @@
  * See: https://tcpdf.org
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 7.0.14
+ * @version 7.0.15
  */
 
 // TCPDF configuration
@@ -2071,6 +2071,7 @@ class TCPDF
             }
 
             $eng->setCurrentPage((int) $pid);
+            $layout = $this->setDecorationPageLayout((int) $pid);
             $this->lmargin = $this->orig_lmargin;
             $this->rmargin = $this->orig_rmargin;
             $this->setCellPadding(0);
@@ -2104,6 +2105,8 @@ class TCPDF
                 $this->Footer();
                 $this->emitToPage($eng->graph->getStopTransform());
             }
+
+            $this->setEnginePageLayout((int) $pid, $layout);
         }
 
         $this->posx = $saved['x'];
@@ -2119,6 +2122,69 @@ class TCPDF
         $this->setFont($saved['family'], $saved['style'], $saved['size']);
         $this->inheaderfooter = false;
         $this->decortotalpages = 0;
+    }
+
+    /**
+     * Give a page a single region that starts at the page origin and ends far
+     * below the page bottom, with the automatic page break disabled, so the
+     * header and footer content (e.g. writeHTML()) never flows to another
+     * column or page.
+     *
+     * @return array{region: array<int, array{RB: float, RH: float, RL: float, RR: float, RT: float, RW: float, RX: float, RY: float, x: float, y: float}>, columns: int, currentRegion: int, autobreak: bool} Original page layout.
+     */
+    protected function setDecorationPageLayout(int $pid): array
+    {
+        $page = $this->engine()->page->getPage($pid);
+        $original = [
+            'region' => $page['region'],
+            'columns' => $page['columns'],
+            'currentRegion' => $page['currentRegion'],
+            'autobreak' => $page['autobreak'],
+        ];
+
+        $width = $page['width'];
+        $height = $page['height'] * 1000;
+        $this->setEnginePageLayout($pid, [
+            'region' => [[
+                'RB' => $page['height'] - $height,
+                'RH' => $height,
+                'RL' => $width,
+                'RR' => 0.0,
+                'RT' => $height,
+                'RW' => $width,
+                'RX' => 0.0,
+                'RY' => 0.0,
+                'x' => 0.0,
+                'y' => 0.0,
+            ]],
+            'columns' => 1,
+            'currentRegion' => 0,
+            'autobreak' => false,
+        ]);
+
+        return $original;
+    }
+
+    /**
+     * Write the region and page break settings of an engine page.
+     *
+     * The engine exposes no mutator for the region list of an existing page:
+     * the data is written directly into the page store.
+     *
+     * @param array{region: array<int, array{RB: float, RH: float, RL: float, RR: float, RT: float, RW: float, RX: float, RY: float, x: float, y: float}>, columns: int, currentRegion: int, autobreak: bool} $layout
+     */
+    protected function setEnginePageLayout(int $pid, array $layout): void
+    {
+        $eng = $this->engine();
+        $prop = new \ReflectionProperty(\Com\Tecnick\Pdf\Page\Settings::class, 'page');
+        $pages = $prop->getValue($eng->page);
+        if (!is_array($pages) || !isset($pages[$pid]) || !is_array($pages[$pid])) {
+            return;
+        }
+
+        /** @var array<int, array<string, mixed>> $pages */
+        $pages[$pid] = array_merge($pages[$pid], $layout);
+        $prop->setValue($eng->page, $pages);
     }
 
     // ===================================================================

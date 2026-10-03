@@ -1,3 +1,29 @@
+7.0.15 (2026-10-03)
+	- Fixed headers and footers drawn with writeHTML() (or other flowing content) in an overridden Header() or Footer(): content placed below the automatic page break margin, such as a footer, was moved to another page. On the last page an extra page was added; on the other pages the footer was drawn at the top of the next page. The graphics state was also left unbalanced (poppler: "Restoring state when no valid states to pop").
+		- Headers and footers are now always drawn on their own page, over the full page width, also on pages with columns. Content that does not fit is clipped at the page edge, as in TCPDF 6.
+	- Fixed the automatic K_PATH_FONTS detection when `Composer\InstalledVersions` is loaded before TCPDF: the install path may contain '..' segments (e.g. 'vendor/composer/../'), which the file helper rejects. The detected font directory is now resolved with realpath().
+	- Requires `tecnickcom/tc-lib-pdf` ^8.78.
+
+*************************************************
+
+7.0.13 (2026-10-03)
+	- Fixed Cell() with text wider than the cell: the text is drawn on a single line, as in TCPDF 6, while the cell box and border keep the requested geometry. L, C and R alignment are anchored to the cell edges (left, center, right).
+	- Fixed Cell() stretched text to start at the cell position.
+	- Fixed the example 52 certificate path and regenerated the example certificate files.
+	- Requires `tecnickcom/tc-lib-pdf` ^8.77.
+
+*************************************************
+
+7.0.12 (2026-09-26)
+	- Updated the development tooling (mago 1.50.0). No library changes.
+
+*************************************************
+
+7.0.11 (2026-09-21)
+	- Requires `tecnickcom/tc-lib-pdf` ^8.76.
+
+*************************************************
+
 7.0.10 (2026-09-14)
 	- Fixed Output() with the 'F', 'FI' and 'FD' destinations, which failed for every call: the caller's file path was passed to `Output::savePDF()`, which takes a directory. The path is now split into the directory and the file name.
 		- The file name is sanitized by the engine, so the file written may differ from the name given ('my_report.final.pdf' is written as 'my_report_final.pdf'). Use `TCPDF::getPDFFilename()` for the effective name.

@@ -90,4 +90,34 @@ class TcpdfHeaderFooterTest extends TcpdfTestCase
         $this->assertStringContainsString('CUSTOM-HEADER-MARK', $text);
         $this->assertStringContainsString('CUSTOM-FOOTER-1', $text);
     }
+
+    public function testHtmlFooterBelowBottomMarginStaysOnItsPage(): void
+    {
+        $pdf = new class('P', 'mm', 'A4', true, 'UTF-8', false) extends TCPDF {
+            public function Footer()
+            {
+                $this->writeHTML('HTMLFOOTER' . $this->PageNo() . ' <em>test</em>');
+            }
+        };
+        $pdf->setPrintHeader(false);
+        $pdf->setMargins(15, 28, 15);
+        $pdf->setFooterMargin(10);
+        $pdf->setAutoPageBreak(true, 25);
+        $pdf->setFont('helvetica', '', 10);
+        for ($page = 1; $page <= 3; $page++) {
+            $pdf->AddPage();
+            $pdf->writeHTML('<p>BODY' . $page . '</p>');
+        }
+
+        $this->assertMatchesRegularExpression('/^Pages:\s+3$/m', $this->pdfInfo($pdf));
+        for ($page = 1; $page <= 3; $page++) {
+            $text = $this->popplerTool('pdftotext', $pdf, '-f ' . $page . ' -l ' . $page . ' -');
+            $this->assertStringContainsString('BODY' . $page, $text);
+            $this->assertStringContainsString('HTMLFOOTER' . $page, $text);
+        }
+
+        // A4 height (841.89 pt) minus the 10 mm footer margin (28.35 pt).
+        $box = $this->wordBox($pdf, 'HTMLFOOTER1');
+        $this->assertEqualsWithDelta(813.54, $box['ymin'], 3.0);
+    }
 }
