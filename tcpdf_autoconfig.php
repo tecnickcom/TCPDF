@@ -94,7 +94,10 @@ if (!defined('K_PATH_FONTS')) {
             continue;
         }
 
-        $tcpdf_fonts_path = $tcpdf_fonts_dir;
+        // Canonical path: the file helper rejects paths with '..' segments,
+        // which Composer\InstalledVersions::getInstallPath() may return.
+        $tcpdf_fonts_real = realpath($tcpdf_fonts_dir);
+        $tcpdf_fonts_path = $tcpdf_fonts_real !== false ? rtrim($tcpdf_fonts_real, '/\\') . '/' : $tcpdf_fonts_dir;
         break;
     }
     define('K_PATH_FONTS', $tcpdf_fonts_path);

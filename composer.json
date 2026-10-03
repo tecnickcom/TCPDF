@@ -29,7 +29,7 @@
     "require": {
         "php": ">=8.2",
         "ext-curl": "*",
-        "tecnickcom/tc-lib-pdf": "^8.77"
+        "tecnickcom/tc-lib-pdf": "^8.78"
     },
     "require-dev": {
         "carthage-software/mago": "1.51.2",

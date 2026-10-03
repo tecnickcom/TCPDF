@@ -80,4 +80,28 @@ class TcpdfFontTest extends TcpdfTestCase
         $pdf->setFontSubsetting(false);
         $this->assertFalse($pdf->getFontSubsetting());
     }
+
+    public function testFontPathWithPreloadedInstalledVersions(): void
+    {
+        $root = dirname(__DIR__);
+        $script = '<?php '
+            . 'require ' . var_export($root . '/vendor/autoload.php', true) . ';'
+            . 'Composer\InstalledVersions::isInstalled("tecnickcom/tc-lib-pdf-font");'
+            . 'require ' . var_export($root . '/tcpdf.php', true) . ';'
+            . '$pdf = new TCPDF();'
+            . '$pdf->setFont("helvetica", "", 12);'
+            . 'echo K_PATH_FONTS;';
+        $tmpfile = (string) tempnam(sys_get_temp_dir(), 'tcpdf_test_');
+        file_put_contents($tmpfile, $script);
+        try {
+            $lines = [];
+            $code = 1;
+            exec(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($tmpfile) . ' 2>&1', $lines, $code);
+            $output = implode("\n", $lines);
+            $this->assertSame(0, $code, $output);
+            $this->assertStringNotContainsString('..', $output);
+        } finally {
+            unlink($tmpfile);
+        }
+    }
 }
