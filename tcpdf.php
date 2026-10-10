@@ -2,7 +2,7 @@
 
 //============================================================+
 // File name    : tcpdf.php
-// Version      : 7.0.15
+// Version      : 7.0.16
 // Author       : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License      : GNU-LGPL v3 (https://www.gnu.org/copyleft/lesser.html)
 // Copyright (C): 2002-2026 Nicola Asuni - Tecnick.com LTD
@@ -15,7 +15,7 @@
  * See: https://tcpdf.org
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 7.0.15
+ * @version 7.0.16
  */
 
 // TCPDF configuration
@@ -7653,16 +7653,26 @@ class TCPDF
         // first line box of the table cell, which makes them overlap the
         // row borders; the vertical-align attribute is dropped inside
         // tables so the rows contain their images (legacy parity for the
-        // dominant image-only cell case).
-        $html = (string) preg_replace_callback(
-            '#<table\b.*?</table>#is',
-            static fn(array $match): string => (string) preg_replace(
-                '/(<img\b[^>]*?)\s+align="(top|middle|bottom|absmiddle|baseline)"/i',
-                '$1',
-                $match[0] ?? '',
-            ),
-            $html,
-        );
+        // dominant image-only cell case). The markup is split on table tags
+        // (odd indexes) to track the nesting depth in a single linear pass.
+        $parts = preg_split('#(</?table\b[^>]*>)#i', $html, -1, PREG_SPLIT_DELIM_CAPTURE);
+        if (is_array($parts)) {
+            $depth = 0;
+            foreach ($parts as $idx => $part) {
+                if (($idx % 2) === 1) {
+                    $depth = ($part[1] ?? '') === '/' ? max(0, $depth - 1) : $depth + 1;
+                    continue;
+                }
+
+                if ($depth > 0 && stripos($part, '<img') !== false) {
+                    $parts[$idx] =
+                        preg_replace('/(<img\b[^>]*?)\s+align="(top|middle|bottom|absmiddle|baseline)"/i', '$1', $part)
+                        ?? $part;
+                }
+            }
+
+            $html = implode('', $parts);
+        }
 
         // Legacy HTML images may carry base64 data with an '@' prefix; the
         // engine expects raw bytes after '@' but decodes data URIs.
