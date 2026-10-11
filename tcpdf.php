@@ -2,7 +2,7 @@
 
 //============================================================+
 // File name    : tcpdf.php
-// Version      : 7.0.16
+// Version      : 7.0.17
 // Author       : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License      : GNU-LGPL v3 (https://www.gnu.org/copyleft/lesser.html)
 // Copyright (C): 2002-2026 Nicola Asuni - Tecnick.com LTD
@@ -15,7 +15,7 @@
  * See: https://tcpdf.org
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 7.0.16
+ * @version 7.0.17
  */
 
 // TCPDF configuration
@@ -1827,7 +1827,10 @@ class TCPDF
             default => $cellx,
         };
 
-        return (is_string($box) ? $box : '') . $this->cellTextRun($txt, $boxx, $boxw, $height, $valign, $halign, $cell, $this->engineShadow());
+        return (
+            (is_string($box) ? $box : '')
+            . $this->cellTextRun($txt, $boxx, $boxw, $height, $valign, $halign, $cell, $this->engineShadow())
+        );
     }
 
     /**
@@ -3577,7 +3580,7 @@ class TCPDF
         if ($stretchmode === 0 && $txt !== '') {
             $txtw = $stretchtextw > 0 ? $stretchtextw : $this->engineTextWidth($txt);
             $innerw = $width - $borderpadding['L'] - $borderpadding['R'];
-            if ($txtw <= $innerw * 0.95) {
+            if ($txtw <= ($innerw * 0.95)) {
                 $txtw = 0.0;
             }
         }
@@ -8800,6 +8803,8 @@ class TCPDF
  * start of every page the engine opens.
  *
  * @package com.tecnick.tcpdf
+ *
+ * @phpstan-import-type TBBox from \Com\Tecnick\Pdf\Base
  */
 // The single-file layout (tcpdf.php as the only historical include) and the
 // legacy ALL-CAPS underscore class naming (TCPDF_STATIC, TCPDF_FONTS, ...)
@@ -8832,6 +8837,22 @@ class TCPDF_ENGINE extends \Com\Tecnick\Pdf\Tcpdf
                 $this->page->addContent($content, $pid);
             }
         }
+    }
+
+    /**
+     * Keeps every bounding box in the list: the facade reads the cell boxes
+     * added by a call (see TCPDF::cellBBoxCount() and cellBBoxBottomSince()).
+     *
+     * @param array<int, TBBox> $list Current bounding box list.
+     * @param TBBox             $box  New bounding box.
+     *
+     * @return array<int, TBBox>
+     */
+    protected function getNextBBoxList(array $list, array $box): array
+    {
+        $list[] = $box;
+
+        return $list;
     }
 
     /**

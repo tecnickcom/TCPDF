@@ -83,6 +83,37 @@ class TcpdfCellTest extends TcpdfTestCase
         $this->assertSame(10.0, $pdf->GetX(), 'default ln=1 must reset X to the left margin');
     }
 
+    public function testMultiCellFrameContinuesOnEveryPage(): void
+    {
+        $pdf = $this->newPdf();
+        $pdf->setFont('helvetica', '', 12);
+        $pdf->AddPage();
+        $pdf->MultiCell(80, 0, str_repeat('frame me over the pages please ', 150), 1, 'L');
+
+        $pages = $this->pageContents($pdf);
+        $this->assertGreaterThan(2, count($pages));
+        foreach ($pages as $idx => $content) {
+            $this->assertMatchesRegularExpression('/ l\n/', $content, 'page ' . ($idx + 1) . ' must draw the frame');
+        }
+    }
+
+    public function testWriteHTMLMovesTheCursorBelowTheText(): void
+    {
+        $pdf = $this->newPdf();
+        $pdf->setFont('helvetica', '', 12);
+        $pdf->AddPage();
+        $starty = $pdf->GetY();
+        $pdf->writeHTML('<div style="text-align:center">first line</div>', true, false, true, false, '');
+        $this->assertGreaterThan($starty, $pdf->GetY(), 'the cursor must move below the text');
+
+        $pdf->writeHTML('<p>second line</p>', true, false, true, false, '');
+        $this->assertGreaterThanOrEqual(
+            $this->wordBox($pdf, 'first')['ymax'] - 0.1,
+            $this->wordBox($pdf, 'second')['ymin'],
+            'the second block must start below the first',
+        );
+    }
+
     public function testWriteFlowsFromTheCursor(): void
     {
         $pdf = $this->newPdf();
@@ -255,8 +286,8 @@ class TcpdfCellTest extends TcpdfTestCase
 
         $box = $this->wordBox($pdf, 'stretched');
         $k = 72 / 25.4;
-        $this->assertGreaterThanOrEqual(($right - 20) * $k - 0.1, $box['xmin']);
-        $this->assertLessThanOrEqual($right * $k + 0.1, $box['xmax']);
+        $this->assertGreaterThanOrEqual((($right - 20) * $k) - 0.1, $box['xmin']);
+        $this->assertLessThanOrEqual(($right * $k) + 0.1, $box['xmax']);
     }
 
     public function testCellOverflowKeepsTheBorderGeometry(): void
@@ -300,6 +331,31 @@ class TcpdfCellTest extends TcpdfTestCase
         }
 
         return $content;
+    }
+
+    /**
+     * Decompressed content streams of the document pages that hold text.
+     *
+     * @return list<string>
+     */
+    private function pageContents(TCPDF $pdf): array
+    {
+        $raw = (string) $pdf->getPDFData();
+        $streams = [];
+        preg_match_all('/stream\r?\n(.*?)\r?\nendstream/s', $raw, $streams);
+        $pages = [];
+        foreach ($streams[1] ?? [] as $stream) {
+            if (!str_starts_with($stream, "\x78")) {
+                continue;
+            }
+
+            $data = gzuncompress($stream);
+            if (is_string($data) && str_contains($data, 'BT')) {
+                $pages[] = $data;
+            }
+        }
+
+        return $pages;
     }
 
     /**
