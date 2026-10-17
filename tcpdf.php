@@ -2,7 +2,7 @@
 
 //============================================================+
 // File name    : tcpdf.php
-// Version      : 7.0.17
+// Version      : 7.0.18
 // Author       : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License      : GNU-LGPL v3 (https://www.gnu.org/copyleft/lesser.html)
 // Copyright (C): 2002-2026 Nicola Asuni - Tecnick.com LTD
@@ -15,7 +15,7 @@
  * See: https://tcpdf.org
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 7.0.17
+ * @version 7.0.18
  */
 
 // TCPDF configuration
@@ -7642,8 +7642,11 @@ class TCPDF
      * - '@'-prefixed base64 image data is rewritten to a data URI;
      * - relative local image paths are made absolute (src attributes,
      *   CSS url() values and the legacy img| list-bullet syntax);
-     * - malformed hexadecimal color tokens, silently coerced by the
-     *   legacy parser, are repaired to valid values.
+     * - legacy page anchors (href="#N" or href="#N,y") become internal
+     *   links to page N at ordinate y;
+     * - malformed hexadecimal colors, silently coerced by the legacy
+     *   parser, are repaired in color attributes and CSS declaration values
+     *   (see repairHtmlColors()).
      */
     protected function normalizeHtmlMarkup(string $html): string
     {
@@ -7699,35 +7702,102 @@ class TCPDF
             $html,
         );
 
+        // Legacy page anchors: href="#N" or href="#N,y" link to page N at ordinate y.
+        $html = (string) preg_replace_callback(
+            '/(\bhref\s*=\s*["\'])#([0-9]+)(?:,([0-9]*\.?[0-9]*))?(["\'])/i',
+            fn(array $match): string => (
+                ($match[1] ?? '')
+                . $this->engine()->addInternalLink(max(0, (int) ($match[2] ?? '1') - 1), (float) ($match[3] ?? '0'))
+                . ($match[4] ?? '')
+            ),
+            $html,
+        );
+
+        return self::repairHtmlColors($html);
+    }
+
+    /**
+     * Repair malformed hexadecimal colors in the attributes whose name ends in
+     * "color" (color, bgcolor, bordercolor), in style attributes and in style
+     * blocks. Text content and other attributes are left unchanged.
+     */
+    protected static function repairHtmlColors(string $html): string
+    {
         $result = preg_replace_callback(
-            '/#([0-9a-zA-Z]+)\b/',
+            '/<style\b[^>]*>.*?<\/style\s*>|<[a-zA-Z][^>]*>/is',
             static function (array $match): string {
-                $token = $match[0] ?? '';
-                $hex = strtolower($match[1] ?? '');
-                $len = strlen($hex);
-                if (preg_match('/^[0-9a-f]+$/', $hex) === 1 && in_array($len, [3, 4, 6, 8], true)) {
-                    return $token;
+                $part = $match[0] ?? '';
+                if (strncasecmp($part, '<style', 6) === 0) {
+                    return self::repairCssColors($part);
                 }
 
-                // Only repair tokens that could be a mistyped hex color: every
-                // character must be a hex digit or a digit-look-alike letter
-                // (l/o/i/s/g/z). This leaves CSS id selectors (#second), link
-                // fragments (#chapter2) and placeholders (#TOC_...) untouched
-                // instead of mangling them into bogus colors.
-                if (preg_match('/^[0-9a-fgilosz]+$/', $hex) !== 1) {
-                    return $token;
-                }
+                $part = (string) preg_replace_callback(
+                    '/(\bstyle\s*=\s*)(?:"([^"]*)"|\'([^\']*)\')/i',
+                    static fn(array $style): string => isset($style[3])
+                        ? ($style[1] ?? '') . "'" . self::repairCssColors($style[3]) . "'"
+                        : ($style[1] ?? '') . '"' . self::repairCssColors($style[2] ?? '') . '"',
+                    $part,
+                );
 
-                // Map common look-alike characters, drop the rest.
-                $hex = strtr($hex, ['l' => '1', 'o' => '0', 'i' => '1', 's' => '5', 'g' => '6', 'z' => '2']);
-                $hex = (string) preg_replace('/[^0-9a-f]/', '', $hex);
-                $hex = substr(str_pad($hex, 6, '0'), 0, 6);
-                return '#' . $hex;
+                return (string) preg_replace_callback(
+                    '/(\b[a-z-]*color\s*=\s*["\']?)#([0-9a-zA-Z]+)\b/i',
+                    static fn(array $attr): string => ($attr[1] ?? '') . self::repairHexColor('#' . ($attr[2] ?? '')),
+                    $part,
+                );
             },
             $html,
         );
 
         return $result === null ? $html : $result;
+    }
+
+    /**
+     * Repair malformed hexadecimal colors in the declaration values of a CSS
+     * text. Selectors, quoted strings and numeric character references are
+     * left unchanged.
+     */
+    protected static function repairCssColors(string $css): string
+    {
+        return (string) preg_replace_callback(
+            '/:[^;{}]*+(?=[;}]|$)/',
+            static fn(array $decl): string => (string) preg_replace_callback(
+                '/"[^"]*"|\'[^\']*\'|(?<!&)#[0-9a-zA-Z]+\b/',
+                static fn(array $item): string => str_starts_with($item[0] ?? '', '#')
+                    ? self::repairHexColor($item[0] ?? '')
+                    : $item[0] ?? '',
+                $decl[0] ?? '',
+            ),
+            $css,
+        );
+    }
+
+    /**
+     * Repair a malformed hexadecimal color token ('#' followed by letters and
+     * digits). Valid 3, 4, 6 or 8 digit values and tokens that cannot be a
+     * mistyped color are returned unchanged; the others are padded or
+     * truncated to 6 digits.
+     */
+    protected static function repairHexColor(string $color): string
+    {
+        $hex = strtolower(substr($color, 1));
+        if (preg_match('/^[0-9a-f]+$/', $hex) === 1 && in_array(strlen($hex), [3, 4, 6, 8], true)) {
+            return $color;
+        }
+
+        // Only repair tokens that could be a mistyped hex color: every
+        // character must be a hex digit or a digit-look-alike letter
+        // (l/o/i/s/g/z). This leaves CSS id selectors (#second), link
+        // fragments (#chapter2) and placeholders (#TOC_...) untouched
+        // instead of mangling them into bogus colors.
+        if (preg_match('/^[0-9a-fgilosz]+$/', $hex) !== 1) {
+            return $color;
+        }
+
+        // Map common look-alike characters, drop the rest.
+        $hex = strtr($hex, ['l' => '1', 'o' => '0', 'i' => '1', 's' => '5', 'g' => '6', 'z' => '2']);
+        $hex = (string) preg_replace('/[^0-9a-f]/', '', $hex);
+
+        return '#' . substr(str_pad($hex, 6, '0'), 0, 6);
     }
 
     /**
