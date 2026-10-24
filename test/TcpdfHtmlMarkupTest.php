@@ -83,7 +83,8 @@ class TcpdfHtmlMarkupTest extends TcpdfTestCase
 
     public function testColorRepairLeavesTextAndCharacterReferencesUnchanged(): void
     {
-        $html = '<p>Order #1, issue #12, ref #12345, item #123456, long #1234567, tag #abc</p>'
+        $html =
+            '<p>Order #1, issue #12, ref #12345, item #123456, long #1234567, tag #abc</p>'
             . '<p>A&#38;B, x&#35;y, a&#39;b, &#039;q&#039;, &#8364;, &#12354;</p>'
             . '<p>if a < b then color=#12 > 0</p>';
 
@@ -134,10 +135,8 @@ class TcpdfHtmlMarkupTest extends TcpdfTestCase
 
     public function testColorRepairFixesOnlyStyleBlockDeclarationValues(): void
     {
-        $out = $this->normalize(
-            '<style>#a1 { color:#4169el; } a:hover #a1 { background:#ab } p { content:"#1" }</style>'
-            . '<p id="a1">#1</p>',
-        );
+        $out = $this->normalize('<style>#a1 { color:#4169el; } a:hover #a1 { background:#ab } p { content:"#1" }</style>'
+        . '<p id="a1">#1</p>');
 
         $this->assertSame(
             '<style>#a1 { color:#4169e1; } a:hover #a1 { background:#ab0000 } p { content:"#1" }</style>'
@@ -159,6 +158,31 @@ class TcpdfHtmlMarkupTest extends TcpdfTestCase
         $text = $this->extractText($pdf);
         $this->assertStringContainsString('Order #1, issue #12, ref #12345, item #123456, tag #abc', $text);
         $this->assertStringContainsString("A&B, x#y, a'b, 'q', \u{20AC}", $text);
+    }
+
+    public function testLegacyListImageBulletBecomesListStyleImage(): void
+    {
+        $source = (string) realpath(__DIR__ . '/../examples/images/logo_example.png');
+        $out = $this->normalize(
+            '<ul style="font-size:14pt;LIST-STYLE-TYPE : img|png|4|4|' . $source . ' ;color:red"><li>a</li></ul>',
+        );
+
+        $this->assertSame(
+            '<ul style="font-size:14pt;list-style-image:url(\'' . $source . '\');color:red"><li>a</li></ul>',
+            $out,
+        );
+    }
+
+    public function testLegacyListImageBulletIsDrawn(): void
+    {
+        $pdf = $this->newPdf();
+        $pdf->setCompression(false);
+        $pdf->SetFont('helvetica', '', 10);
+        $pdf->AddPage();
+        $source = (string) realpath(__DIR__ . '/../examples/images/logo_example.png');
+        $pdf->writeHTML('<ul style="list-style-type:img|png|4|4|' . $source . '"><li>item</li></ul>');
+
+        $this->assertStringContainsString('/Subtype /Image', (string) $pdf->getPDFData());
     }
 
     public function testLegacyPageAnchorsBecomeInternalLinks(): void

@@ -244,6 +244,9 @@ configurable via `define()` constants (read by `tcpdf_autoconfig.php`, overridab
 only ever *widens* this set — paths are resolved with `realpath()`, so non-existent or
 unresolvable entries are silently ignored and traversal/symlink tricks collapse to their
 canonical prefix. There is no way to read below the built-in roots.
+Resources referenced by HTML, CSS and SVG markup (`writeHTML()`, `writeHTMLCell()`)
+use the same list without the system temp directory; list the temp directory in
+`K_ALLOWED_PATHS` to allow markup to read from it.
 
 **Remote reads.** Remote URL loading is **off by default** — the single most important
 defense against SSRF when rendering untrusted HTML/markup. To opt in, list the exact

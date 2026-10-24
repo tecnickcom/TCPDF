@@ -226,7 +226,9 @@ define('K_TIMEZONE', 'UTC');
  *                     can be read. By default this covers the system temp
  *                     dir, K_PATH_MAIN, the bundled vendor directory, the
  *                     current working directory, K_PATH_FONTS, K_PATH_IMAGES
- *                     and the running script's directory.
+ *                     and the running script's directory. Resources referenced
+ *                     by HTML, CSS and SVG markup use the same list without
+ *                     the system temp dir.
  *
  *   2. REMOTE FILES - HTTP/HTTPS downloads are DISABLED unless you provide an
  *                     explicit allowlist of trusted host names. This is the
@@ -245,6 +247,8 @@ define('K_TIMEZONE', 'UTC');
  * Array of absolute path prefixes, merged on top of the built-in defaults
  * (the defaults are always kept; this only ever widens local access).
  * Entries that do not resolve to an existing directory are ignored.
+ * Listing the system temp dir also allows HTML, CSS and SVG markup to read
+ * from it.
  */
 //define('K_ALLOWED_PATHS', ['/var/www/shared/assets/']);
 

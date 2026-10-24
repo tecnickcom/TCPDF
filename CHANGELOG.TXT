@@ -1,3 +1,13 @@
+7.0.20 (2026-10-24)
+	- Fixed Image() with a mask handle ($imgmask) reading the image and the mask outside the local path allowlist: both files are now read through the engine file helper, as for a plain Image() call.
+	- Fixed writeHTML() copying files referenced by CSS url() values and legacy list image bullets into the system temp directory: paths with uppercase characters were copied, without an allowlist check, to a predictable file name readable through the allowlisted temp directory. The copy is removed; the engine resolves these paths directly.
+	- Resources referenced by HTML, CSS and SVG markup are no longer read from the system temp directory. List the directory in K_ALLOWED_PATHS to allow it. Image(), ImageSVG() and the other API methods keep access to it.
+	- Image() reports an unknown size for paths outside the allowlist instead of probing the file. Annotation() file attachments and setHyphenPatterns() treat such paths as missing files.
+	- Fixed writeHTML() ignoring the legacy list-style-type:img|type|width|height|path list bullets: they are converted to list-style-image:url(path). The marker size follows the font size; the width and height fields are ignored.
+	- Requires `tecnickcom/tc-lib-pdf` ^8.82.1, which applies the path allowlist to PDF import and the host allowlist to signature timestamp requests.
+
+*************************************************
+
 7.0.15 (2026-10-03)
 	- Fixed headers and footers drawn with writeHTML() (or other flowing content) in an overridden Header() or Footer(): content placed below the automatic page break margin, such as a footer, was moved to another page. On the last page an extra page was added; on the other pages the footer was drawn at the top of the next page. The graphics state was also left unbalanced (poppler: "Restoring state when no valid states to pop").
 		- Headers and footers are now always drawn on their own page, over the full page width, also on pages with columns. Content that does not fit is clipped at the page edge, as in TCPDF 6.

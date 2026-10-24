@@ -297,7 +297,8 @@ if (!defined('K_TIMEZONE')) {
 // directory, K_PATH_FONTS, K_PATH_IMAGES and the running script directory).
 // The built-in defaults are always included; this only ever widens access.
 // Must be defined before this file is loaded. Entries that do not resolve to
-// an existing directory are ignored.
+// an existing directory are ignored. Listing the system temp dir also allows
+// HTML, CSS and SVG markup to read from it.
 if (!defined('K_ALLOWED_PATHS')) {
     define('K_ALLOWED_PATHS', []);
 }

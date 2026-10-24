@@ -2,7 +2,7 @@
 
 //============================================================+
 // File name    : tcpdf.php
-// Version      : 7.0.19
+// Version      : 7.0.20
 // Author       : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License      : GNU-LGPL v3 (https://www.gnu.org/copyleft/lesser.html)
 // Copyright (C): 2002-2026 Nicola Asuni - Tecnick.com LTD
@@ -15,7 +15,7 @@
  * See: https://tcpdf.org
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 7.0.19
+ * @version 7.0.20
  */
 
 // TCPDF configuration
@@ -539,6 +539,33 @@ class TCPDF
     }
 
     /**
+     * Local paths resources referenced by HTML, CSS and SVG markup may be read
+     * from: the fileAllowedPaths() entries without the system temp directory,
+     * unless K_ALLOWED_PATHS lists that directory.
+     *
+     * @return array<int, string>
+     */
+    protected function fileMarkupAllowedPaths(): array
+    {
+        $paths = $this->fileAllowedPaths();
+        $temp = realpath(sys_get_temp_dir());
+        if ($temp === false) {
+            return $paths;
+        }
+
+        // @mago-expect analysis:redundant-logical-operation
+        if (defined('K_ALLOWED_PATHS') && is_array(K_ALLOWED_PATHS)) {
+            foreach (K_ALLOWED_PATHS as $extrapath) {
+                if (is_string($extrapath) && $extrapath !== '' && realpath($extrapath) === $temp) {
+                    return $paths;
+                }
+            }
+        }
+
+        return array_values(array_filter($paths, static fn(string $path): bool => $path !== $temp));
+    }
+
+    /**
      * Assemble the file-access options handed to the engine's shared file
      * helper (tc-lib-file). These drive the upstream security sandbox that
      * governs which local paths and remote hosts external resources (images,
@@ -546,6 +573,8 @@ class TCPDF
      *
      * The mapping is configuration-driven:
      *  - allowedPaths  <- built-in defaults + K_ALLOWED_PATHS (local reads)
+     *  - markupAllowedPaths <- allowedPaths without the system temp directory
+     *                     (local reads triggered by HTML, CSS and SVG markup)
      *  - allowedHosts  <- K_ALLOWED_HOSTS (remote HTTP/HTTPS reads; empty
      *                     disables remote loading entirely — the safe default)
      *  - maxRemoteSize <- K_MAX_REMOTE_SIZE (byte cap on remote downloads)
@@ -556,6 +585,7 @@ class TCPDF
      *
      * @return array{
      *   allowedPaths: array<int, string>,
+     *   markupAllowedPaths: array<int, string>,
      *   allowedHosts?: array<int, string>,
      *   maxRemoteSize?: int,
      *   curlopts?: array<int, bool|int|string>,
@@ -563,7 +593,10 @@ class TCPDF
      */
     protected function fileOptions(): array
     {
-        $options = ['allowedPaths' => $this->fileAllowedPaths()];
+        $options = [
+            'allowedPaths' => $this->fileAllowedPaths(),
+            'markupAllowedPaths' => $this->fileMarkupAllowedPaths(),
+        ];
 
         // Remote URL loading is disabled by default in the upstream library:
         // an empty (or unset) host allowlist keeps it disabled. Populate
@@ -1998,6 +2031,14 @@ class TCPDF
     }
 
     /**
+     * Whether a local file exists inside the engine path allowlist.
+     */
+    protected function isAllowedLocalFile(string $file): bool
+    {
+        return $file !== '' && $this->engine()->file->isAllowedFile($file) && is_file($file);
+    }
+
+    /**
      * Register an external link annotation for the given rectangle.
      */
     protected function attachLink(mixed $link, float $posx, float $posy, float $width, float $height): void
@@ -3397,7 +3438,7 @@ class TCPDF
             $key = strtolower((string) $key);
             if ($key === 'fs' && is_string($val)) {
                 $val = $this->resolveLocalFile($val);
-                if (!is_file($val)) {
+                if (!$this->isAllowedLocalFile($val)) {
                     // The legacy implementation silently skipped attachments
                     // whose source file cannot be read.
                     return;
@@ -4453,8 +4494,9 @@ class TCPDF
      * alpha channel, then return the merged PNG content. The engine's import
      * path then splits that alpha back out into a /SMask (the only soft-mask
      * mechanism tc-lib-pdf-image exposes), reproducing legacy's separate-mask
-     * Image() call. Returns null when the images cannot be read (caller falls
-     * back to the unmasked file).
+     * Image() call. Both files are read through the engine file helper, so the
+     * path allowlist applies. Returns null when the images cannot be read
+     * (caller falls back to the unmasked file).
      *
      * Mask polarity follows the PDF soft-mask convention used by legacy: a
      * white mask pixel is fully opaque, a black one fully transparent.
@@ -4465,13 +4507,15 @@ class TCPDF
             return null;
         }
 
-        if (!is_readable($basefile) || !is_readable($maskfile)) {
+        $filehelper = $this->engine()->file;
+        try {
+            $basedata = $filehelper->getLocalFileData($basefile);
+            $maskdata = $filehelper->getLocalFileData($maskfile);
+        } catch (\Throwable) {
             return null;
         }
 
-        $basedata = file_get_contents($basefile);
-        $maskdata = file_get_contents($maskfile);
-        if ($basedata === false || $maskdata === false) {
+        if (!is_string($basedata) || $basedata === '' || !is_string($maskdata) || $maskdata === '') {
             return null;
         }
 
@@ -4523,6 +4567,7 @@ class TCPDF
 
     /**
      * Return the pixel size of an image file or '@'-prefixed data stream.
+     * Files outside the path allowlist report an unknown size.
      *
      * @return array{0: int, 1: int} Width and height in pixels (0 when unknown).
      */
@@ -4531,7 +4576,7 @@ class TCPDF
         if ($file !== '' && $file[0] === '@') {
             $info = getimagesizefromstring(substr($file, 1));
         } else {
-            $info = is_file($file) ? getimagesize($file) : false;
+            $info = $this->isAllowedLocalFile($file) ? getimagesize($file) : false;
         }
 
         return is_array($info) ? [(int) $info[0], (int) $info[1]] : [0, 0];
@@ -7517,28 +7562,6 @@ class TCPDF
     }
 
     /**
-     * Return a markup resource path that survives CSS lowercasing.
-     *
-     * CSS values are lowercased by the engine parser, so paths used in CSS
-     * context are copied to a lowercase temporary file when necessary.
-     */
-    protected function cssSafeMarkupPath(string $source): string
-    {
-        $source = $this->absolutizeMarkupPath($source);
-        if ($source === strtolower($source) || !is_file($source)) {
-            return $source;
-        }
-
-        $ext = strtolower(pathinfo($source, PATHINFO_EXTENSION));
-        $copy = rtrim(sys_get_temp_dir(), '/') . '/tcpdf_css_' . md5($source) . ($ext !== '' ? '.' . $ext : '');
-        if (!is_file($copy)) {
-            copy($source, $copy);
-        }
-
-        return $copy;
-    }
-
-    /**
      * Flatten styled inline elements that contain nested inline children.
      *
      * The engine HTML renderer only paints inline backgrounds for fragments
@@ -7640,8 +7663,10 @@ class TCPDF
      * - vertical align attributes are dropped from images inside tables
      *   (the engine would overlap them with the row borders);
      * - '@'-prefixed base64 image data is rewritten to a data URI;
-     * - relative local image paths are made absolute (src attributes,
-     *   CSS url() values and the legacy img| list-bullet syntax);
+     * - relative local image paths are made absolute (src attributes and
+     *   CSS url() values);
+     * - the legacy list-style-type:img|type|width|height|path bullet syntax
+     *   becomes list-style-image:url(path);
      * - legacy page anchors (href="#N" or href="#N,y") become internal
      *   links to page N at ordinate y;
      * - malformed hexadecimal colors, silently coerced by the legacy
@@ -7692,13 +7717,16 @@ class TCPDF
         );
         $html = (string) preg_replace_callback(
             '/url\(["\']?([^"\')]+)["\']?\)/',
-            fn(array $match): string => "url('" . $this->cssSafeMarkupPath($match[1] ?? '') . "')",
+            fn(array $match): string => "url('" . $this->absolutizeMarkupPath($match[1] ?? '') . "')",
             $html,
         );
-        // Legacy custom list bullet syntax: list-style-type:img|ext|w|h|path
+        // Legacy custom list bullet syntax: list-style-type:img|ext|w|h|path.
+        // The engine sizes list-style-image markers from the font size.
         $html = (string) preg_replace_callback(
-            '/(img\|[^|;"\'<>]*\|[^|;"\'<>]*\|[^|;"\'<>]*\|)([^;"\'<>]+)/',
-            fn(array $match): string => ($match[1] ?? '') . $this->cssSafeMarkupPath($match[2] ?? ''),
+            '/list-style-type\s*:\s*img\|[^|;"\'<>]*\|[^|;"\'<>]*\|[^|;"\'<>]*\|([^;"\'<>]+)/i',
+            fn(array $match): string => (
+                "list-style-image:url('" . $this->absolutizeMarkupPath(trim($match[1] ?? '')) . "')"
+            ),
             $html,
         );
 
@@ -8519,7 +8547,7 @@ class TCPDF
             }
 
             $file = $this->resolveLocalFile($_patterns);
-            if (is_file($file)) {
+            if ($this->isAllowedLocalFile($file)) {
                 $eng->setTexHyphenPatterns($eng->loadTexHyphenPatterns($file));
             }
         } elseif (is_array($_patterns) && $_patterns !== []) {
