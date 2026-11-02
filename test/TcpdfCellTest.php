@@ -97,6 +97,56 @@ class TcpdfCellTest extends TcpdfTestCase
         }
     }
 
+    /**
+     * The engine keeps only the last cell bounding box, whatever the number of cells.
+     */
+    public function testCellBoundingBoxesAreNotAccumulated(): void
+    {
+        $pdf = $this->newPdf();
+        $pdf->setFont('helvetica', '', 10);
+        $pdf->AddPage();
+        for ($idx = 1; $idx <= 200; ++$idx) {
+            $pdf->Cell(40, 5, 'Cell ' . $idx, 0, 1);
+        }
+
+        $pdf->MultiCell(80, 0, str_repeat('flowing text over the pages ', 300), 1, 'L');
+        $pdf->writeHTMLCell(80, 0, 15, $pdf->GetY(), '<p>one</p><p>two</p>', 1, 1);
+
+        $accessor = new \ReflectionMethod($pdf, 'engine');
+        $engine = $accessor->invoke($pdf);
+        $this->assertInstanceOf(\Com\Tecnick\Pdf\Tcpdf::class, $engine);
+        $property = new \ReflectionProperty(\Com\Tecnick\Pdf\Base::class, 'cellbbox');
+        $boxes = $property->getValue($engine);
+        $this->assertIsArray($boxes);
+        $this->assertCount(1, $boxes);
+    }
+
+    /**
+     * Cells drawn by the page header while a MultiCell flows to new pages do not change
+     * the number of frame segments of the MultiCell.
+     */
+    public function testMultiCellFrameIgnoresTheHeaderCells(): void
+    {
+        $pdf = new class('P', 'mm', 'A4', true, 'UTF-8', false) extends TCPDF {
+            public function Header(): void
+            {
+                $this->SetFont('helvetica', '', 8);
+                $this->Cell(0, 5, 'header line one', 0, 1);
+                $this->Cell(0, 5, 'header line two', 0, 1);
+            }
+        };
+        $pdf->setPrintFooter(false);
+        $pdf->setFont('helvetica', '', 12);
+        $pdf->AddPage();
+        $pdf->MultiCell(80, 0, str_repeat('frame me over the pages please ', 150), 1, 'L');
+
+        $pages = $this->pageContents($pdf);
+        $this->assertGreaterThan(2, count($pages));
+        foreach ($pages as $idx => $content) {
+            $this->assertMatchesRegularExpression('/ l\n/', $content, 'page ' . ($idx + 1) . ' must draw the frame');
+        }
+    }
+
     public function testWriteHTMLMovesTheCursorBelowTheText(): void
     {
         $pdf = $this->newPdf();

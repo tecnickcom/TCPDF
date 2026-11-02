@@ -1,3 +1,10 @@
+7.0.21 (2026-11-02)
+	- Fixed the bold and italic fonts selected by writeHTML() (<b>, <i>, <th>, headings) being embedded in full while font subsetting is enabled: the engine now uses the font subsetting mode for every font it loads, and setFontSubsetting() applies to the fonts loaded afterwards, as in TCPDF 6.
+	- Fixed the time spent on each Cell(), MultiCell() and writeHTMLCell() call growing with the number of cells already drawn: the facade no longer keeps the bounding box of every cell of the document, it counts the cell boxes added by the current call.
+	- Requires `tecnickcom/tc-lib-pdf` ^8.83.
+
+*************************************************
+
 7.0.20 (2026-10-24)
 	- Fixed Image() with a mask handle ($imgmask) reading the image and the mask outside the local path allowlist: both files are now read through the engine file helper, as for a plain Image() call.
 	- Fixed writeHTML() copying files referenced by CSS url() values and legacy list image bullets into the system temp directory: paths with uppercase characters were copied, without an allowlist check, to a predictable file name readable through the allowlisted temp directory. The copy is removed; the engine resolves these paths directly.

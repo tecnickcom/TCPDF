@@ -81,6 +81,48 @@ class TcpdfFontTest extends TcpdfTestCase
         $this->assertFalse($pdf->getFontSubsetting());
     }
 
+    /**
+     * The bold and italic fonts loaded by writeHTML() follow the subsetting mode.
+     */
+    public function testFontsSelectedByHtmlAreSubset(): void
+    {
+        $pdf = $this->newPdf();
+        $pdf->AddPage();
+        $pdf->SetFont('freesans', '', 10);
+        $pdf->writeHTML('<p>A paragraph with <b>bold</b> and <i>italic</i>.</p>', true, false, true, false, '');
+        $fonts = $this->popplerTool('pdffonts', $pdf);
+
+        foreach (['FreeSans', 'FreeSansBold', 'FreeSansOblique'] as $name) {
+            $this->assertMatchesRegularExpression('/^[A-Z]{6}\+' . $name . '\s/m', $fonts, $name . ' must be subset');
+        }
+    }
+
+    /**
+     * setFontSubsetting() applies to the fonts loaded afterwards, also after the engine
+     * is rebuilt by SetProtection().
+     */
+    public function testFontSubsettingAppliesToTheFontsLoadedAfterIt(): void
+    {
+        $pdf = $this->newPdf();
+        $pdf->setFontSubsetting(false);
+        $pdf->AddPage();
+        $pdf->SetFont('freesans', '', 10);
+        $pdf->writeHTML('<p><b>bold</b></p>', true, false, true, false, '');
+        $fonts = $this->popplerTool('pdffonts', $pdf);
+        $this->assertMatchesRegularExpression('/^FreeSansBold\s/m', $fonts);
+
+        $pdf = $this->newPdf();
+        $pdf->setFontSubsetting(false);
+        $pdf->SetProtection(['print']);
+        $accessor = new \ReflectionMethod($pdf, 'engine');
+        $engine = $accessor->invoke($pdf);
+        $this->assertInstanceOf(\Com\Tecnick\Pdf\Tcpdf::class, $engine);
+        $this->assertFalse($engine->font->isSubsetMode());
+
+        $pdf->setFontSubsetting(true);
+        $this->assertTrue($engine->font->isSubsetMode());
+    }
+
     public function testFontPathWithPreloadedInstalledVersions(): void
     {
         $root = dirname(__DIR__);

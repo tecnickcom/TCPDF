@@ -2,7 +2,7 @@
 
 //============================================================+
 // File name    : tcpdf.php
-// Version      : 7.0.20
+// Version      : 7.0.21
 // Author       : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License      : GNU-LGPL v3 (https://www.gnu.org/copyleft/lesser.html)
 // Copyright (C): 2002-2026 Nicola Asuni - Tecnick.com LTD
@@ -15,7 +15,7 @@
  * See: https://tcpdf.org
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 7.0.20
+ * @version 7.0.21
  */
 
 // TCPDF configuration
@@ -461,7 +461,7 @@ class TCPDF
         $eng = new TCPDF_ENGINE(
             $this->docunit,
             $this->unicode,
-            false,
+            $this->fontsubsetting,
             true,
             $this->pdfamode,
             $encrypt,
@@ -638,6 +638,18 @@ class TCPDF
     protected function engine(): \Com\Tecnick\Pdf\Tcpdf
     {
         if (!$this->eng instanceof \Com\Tecnick\Pdf\Tcpdf) {
+            throw new \RuntimeException('TCPDF engine is not initialized');
+        }
+
+        return $this->eng;
+    }
+
+    /**
+     * Return the engine instance built by engineNew().
+     */
+    protected function facadeEngine(): TCPDF_ENGINE
+    {
+        if (!$this->eng instanceof TCPDF_ENGINE) {
             throw new \RuntimeException('TCPDF engine is not initialized');
         }
 
@@ -1583,40 +1595,6 @@ class TCPDF
         $moved = array_splice($content, $start);
         $pages[$pid]['content'] = array_merge($moved, $content);
         $prop->setValue($this->engine()->page, $pages);
-    }
-
-    /**
-     * Number of entries currently on the engine cell bounding-box stack.
-     */
-    protected function cellBBoxCount(): int
-    {
-        $prop = new \ReflectionProperty(\Com\Tecnick\Pdf\Base::class, 'cellbbox');
-        $stack = $prop->getValue($this->engine());
-        return is_array($stack) ? count($stack) : 0;
-    }
-
-    /**
-     * Lowest bottom edge (user units) among the cell bounding boxes pushed
-     * on the engine stack after the given index.
-     */
-    protected function cellBBoxBottomSince(int $start, float $fallback): float
-    {
-        $prop = new \ReflectionProperty(\Com\Tecnick\Pdf\Base::class, 'cellbbox');
-        $stack = $prop->getValue($this->engine());
-        if (!is_array($stack)) {
-            return $fallback;
-        }
-
-        $bottom = $fallback;
-        foreach (array_slice($stack, $start) as $bbox) {
-            if (!(is_array($bbox) && isset($bbox['y'], $bbox['h']))) {
-                continue;
-            }
-
-            $bottom = max($bottom, (float) $bbox['y'] + (float) $bbox['h']);
-        }
-
-        return $bottom;
     }
 
     /**
@@ -3840,7 +3818,7 @@ class TCPDF
         $pagecapacity = $this->getPageHeight() - $this->tmargin - $this->bmargin;
         $facadebox = false;
         $contentstart = 0;
-        $bboxstart = 0;
+        $bboxtally = ['count' => 0, 'bottom' => -INF];
         // With no-write page regions the text must hug the obstacle band by
         // band, which only the region-advancing flowing path does; the
         // single-placement getTextCell call below would wrap every line at the
@@ -3939,38 +3917,42 @@ class TCPDF
             // MultiCell (see drawHtmlCellSegments).
             $facadebox = true;
             $contentstart = $this->pageContentCount($startpid - 1);
-            $bboxstart = $this->cellBBoxCount();
-            $eng->addTextCellXY(
-                $txt,
-                -1,
-                $this->posx,
-                $this->posy,
-                $width,
-                0,
-                0,
-                $row['linespace'],
-                $this->valignToEngine($_valign),
-                $this->halignToEngine($_align),
-                $row['cell'],
-                $styles,
-                $this->textrendermode['stroke'],
-                0,
-                0,
-                0,
-                // Justify the last line too (legacy getCellCode behavior).
-                false,
-                $this->textrendermode['fill'],
-                $this->textrendermode['stroke'] > 0,
-                $this->fontdecor['U'],
-                $this->fontdecor['D'],
-                $this->fontdecor['O'],
-                $this->textrendermode['clip'],
-                // The facade draws the box per page (see $facadebox below).
-                false,
-                $this->forcedTextDir(),
-                $this->engineShadow(),
-                (bool) $_fitcell ? 'F' : '',
-            );
+            $bboxwindow = $this->facadeEngine()->openCellBBoxWindow();
+            try {
+                $eng->addTextCellXY(
+                    $txt,
+                    -1,
+                    $this->posx,
+                    $this->posy,
+                    $width,
+                    0,
+                    0,
+                    $row['linespace'],
+                    $this->valignToEngine($_valign),
+                    $this->halignToEngine($_align),
+                    $row['cell'],
+                    $styles,
+                    $this->textrendermode['stroke'],
+                    0,
+                    0,
+                    0,
+                    // Justify the last line too (legacy getCellCode behavior).
+                    false,
+                    $this->textrendermode['fill'],
+                    $this->textrendermode['stroke'] > 0,
+                    $this->fontdecor['U'],
+                    $this->fontdecor['D'],
+                    $this->fontdecor['O'],
+                    $this->textrendermode['clip'],
+                    // The facade draws the box per page (see $facadebox below).
+                    false,
+                    $this->forcedTextDir(),
+                    $this->engineShadow(),
+                    (bool) $_fitcell ? 'F' : '',
+                );
+            } finally {
+                $bboxtally = $this->facadeEngine()->closeCellBBoxWindow($bboxwindow);
+            }
         }
 
         $bbox = $eng->getLastCellBBox();
@@ -3983,7 +3965,7 @@ class TCPDF
             // the page pointer past a cell that ends exactly at a region
             // boundary, which would otherwise paint a phantom full-page
             // frame on a page the cell never reached.
-            $blocks = max(1, $this->cellBBoxCount() - $bboxstart);
+            $blocks = max(1, $bboxtally['count']);
             $endpage = min($startpid + $blocks - 1, $this->getPage());
             // Draw the border/fill box the engine omitted, as per-page frame
             // segments clamped to each page region (a no-op when neither
@@ -7472,10 +7454,14 @@ class TCPDF
         $this->emitToPage($eng->color->getPdfFillColor($this->textcolorspec));
         $startpid = $this->getPage();
         $starty = $posy;
-        $bboxstart = $this->cellBBoxCount();
         $contentstart = $this->pageContentCount($startpid - 1);
         $cell = $this->htmlnopadding ? \Com\Tecnick\Pdf\Tcpdf::ZEROCELL : null;
-        $eng->addHTMLCell($html, $cellx, $posy, $width, (float) $_h, $cell, $styles);
+        $bboxwindow = $this->facadeEngine()->openCellBBoxWindow();
+        try {
+            $eng->addHTMLCell($html, $cellx, $posy, $width, (float) $_h, $cell, $styles);
+        } finally {
+            $bboxtally = $this->facadeEngine()->closeCellBBoxWindow($bboxwindow);
+        }
 
         if ($this->textshadow['enabled']) {
             // First page: only the chunks appended by this call; pages
@@ -7493,7 +7479,7 @@ class TCPDF
         // because Y restarts from the top region edge on the new page.
         $bottom = $this->getPage() > $startpid
             ? $eng->getLastCellBBox()['y'] + $eng->getLastCellBBox()['h']
-            : $this->cellBBoxBottomSince($bboxstart, $posy);
+            : max($posy, $bboxtally['bottom']);
         if ($this->getPage() === $startpid) {
             // Image-only fragments (e.g. images in table cells) push no
             // cell bounding boxes: account for their placement directly.
@@ -8574,6 +8560,8 @@ class TCPDF
     public function setFontSubsetting($_enable = true)
     {
         $this->fontsubsetting = (bool) $_enable;
+        // the fonts loaded afterwards without an explicit mode (e.g. by writeHTML())
+        $this->engine()->font->setSubsetMode($this->fontsubsetting);
     }
 
     /**
@@ -8938,19 +8926,58 @@ class TCPDF_ENGINE extends \Com\Tecnick\Pdf\Tcpdf
     }
 
     /**
-     * Keeps every bounding box in the list: the facade reads the cell boxes
-     * added by a call (see TCPDF::cellBBoxCount() and cellBBoxBottomSince()).
+     * Tallies of the open cell bounding-box windows, keyed by window id: the
+     * number of cell boxes added and the largest bottom edge ordinate (user
+     * units) among them.
      *
-     * @param array<int, TBBox> $list Current bounding box list.
-     * @param TBBox             $box  New bounding box.
-     *
-     * @return array<int, TBBox>
+     * @var array<int, array{count: int, bottom: float}>
      */
-    protected function getNextBBoxList(array $list, array $box): array
-    {
-        $list[] = $box;
+    private array $cellBBoxWindows = [];
 
-        return $list;
+    /** Id of the last opened cell bounding-box window. */
+    private int $cellBBoxWindowId = 0;
+
+    /**
+     * Start counting the cell bounding boxes added by the engine.
+     *
+     * @return int Window id to pass to closeCellBBoxWindow().
+     */
+    public function openCellBBoxWindow(): int
+    {
+        $this->cellBBoxWindows[++$this->cellBBoxWindowId] = ['count' => 0, 'bottom' => -INF];
+
+        return $this->cellBBoxWindowId;
+    }
+
+    /**
+     * Stop counting and return the number of cell bounding boxes added since
+     * the window was opened, and their largest bottom edge ordinate (-INF when
+     * none was added).
+     *
+     * @return array{count: int, bottom: float}
+     */
+    public function closeCellBBoxWindow(int $window): array
+    {
+        $tally = $this->cellBBoxWindows[$window] ?? ['count' => 0, 'bottom' => -INF];
+        unset($this->cellBBoxWindows[$window]);
+
+        return $tally;
+    }
+
+    /**
+     * Adds the cell box to the tally of every open window.
+     *
+     * @param TBBox $box Cell bounding box in user units.
+     */
+    protected function pushCellBBox(array $box): void
+    {
+        parent::pushCellBBox($box);
+        foreach ($this->cellBBoxWindows as $window => $tally) {
+            $this->cellBBoxWindows[$window] = [
+                'count' => $tally['count'] + 1,
+                'bottom' => max($tally['bottom'], $box['y'] + $box['h']),
+            ];
+        }
     }
 
     /**
