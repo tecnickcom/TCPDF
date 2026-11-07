@@ -139,6 +139,31 @@ $data = $pdf->serializeTCPDFtag('write1DBarcode', [
 ]);
 $html .= '<tcpdf data="' . $data . '" />';
 
+// barcodes laid out inside table cells
+$qrcode = $pdf->serializeTCPDFtag('write2DBarcode', ['https://tcpdf.org', 'QRCODE,M', '', '', 30, 30, [], 'N']);
+$label = $pdf->serializeTCPDFtag('write1DBarcode', [
+    'TCPDF-049',
+    'C128',
+    '',
+    '',
+    60,
+    15,
+    0.4,
+    ['text' => true, 'font' => 'helvetica', 'fontsize' => 8],
+    'N',
+]);
+$html .=
+    '<h2>Barcodes in a table</h2>'
+    . '<table border="1" cellpadding="4">'
+    . '<tr><td width="60%"><b>Quotation 049</b><br />Scan the code to open the product page.</td>'
+    . '<td width="40%" align="center"><tcpdf data="'
+    . $qrcode
+    . '" /></td></tr>'
+    . '<tr><td>Sample label</td><td align="center"><tcpdf data="'
+    . $label
+    . '" /></td></tr>'
+    . '</table>';
+
 $data = $pdf->serializeTCPDFtag('AddPage');
 $html .= '<tcpdf data="' . $data . '" /><h2>Graphic Functions</h2>';
 

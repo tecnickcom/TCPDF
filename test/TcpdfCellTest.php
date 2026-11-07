@@ -236,6 +236,100 @@ class TcpdfCellTest extends TcpdfTestCase
         $this->assertEqualsWithDelta($plain['xmax'], $moved['xmax'], 0.01);
     }
 
+    public function testConsecutiveWriteRunsAreAdjacent(): void
+    {
+        $pdf = $this->newPdf();
+        $pdf->setFont('helvetica', '', 11);
+        $pdf->setMargins(20, 20, 20);
+        $pdf->setCellPaddings(1, 0, 1, 0);
+        $pdf->AddPage();
+
+        $start = $pdf->GetX();
+        $pdf->Write(5, 'plain');
+        $plain = (float) $pdf->GetStringWidth('plain');
+        $this->assertEqualsWithDelta($start + $plain, $pdf->GetX(), 0.01);
+
+        $pdf->setFont('helvetica', 'I', 11);
+        $italic = (float) $pdf->GetStringWidth('italic');
+        $pdf->Write(5, 'italic');
+        $this->assertEqualsWithDelta($start + $plain + $italic, $pdf->GetX(), 0.01);
+
+        $pdf->setFont('helvetica', 'BU', 11);
+        $bold = (float) $pdf->GetStringWidth('bold');
+        $pdf->Write(5, 'bold');
+
+        // pdftotext splits a word at a visible gap: one word spanning the
+        // three runs means they touch.
+        $topt = 72.0 / 25.4;
+        $word = $this->wordBox($pdf, 'plainitalicbold');
+        $this->assertEqualsWithDelta(($start + 1.0) * $topt, $word['xmin'], 0.01);
+        $this->assertEqualsWithDelta(($plain + $italic + $bold) * $topt, $word['xmax'] - $word['xmin'], 0.01);
+    }
+
+    public function testCellAfterWriteIsAdjacent(): void
+    {
+        $pdf = $this->newPdf();
+        $pdf->setFont('helvetica', '', 11);
+        $pdf->setCellPaddings(1, 0, 1, 0);
+        $pdf->AddPage();
+
+        $pdf->Write(5, 'write');
+        $pdf->Cell(0, 5, 'cell', 0, 1);
+        $pdf->Write(5, 'text');
+        $pdf->addHtmlLink('https://example.com', 'link');
+        $pdf->Write(5, 'tail');
+
+        $this->wordBox($pdf, 'writecell');
+        $this->wordBox($pdf, 'textlinktail');
+    }
+
+    public function testRtlWriteRunsAreAdjacent(): void
+    {
+        $pdf = $this->newPdf();
+        $pdf->setFont('helvetica', '', 11);
+        $pdf->setMargins(10, 10, 10);
+        $pdf->setCellPaddings(1, 0, 1, 0);
+        $pdf->setRTL(true);
+        $pdf->AddPage();
+
+        $top = $pdf->GetY();
+        $pdf->Write(5, 'alpha');
+        $alpha = (float) $pdf->GetStringWidth('alpha');
+        $this->assertEqualsWithDelta(10.0 + $alpha, $pdf->GetX(), 0.01);
+        $pdf->Write(5, 'bravo');
+        $this->assertEqualsWithDelta($top, $pdf->GetY(), 0.001);
+        $pdf->Cell(0, 5, 'cell', 0, 1);
+
+        $topt = 72.0 / 25.4;
+        $first = $this->wordBox($pdf, 'alpha');
+        $second = $this->wordBox($pdf, 'bravo');
+        $cell = $this->wordBox($pdf, 'cell');
+        $this->assertEqualsWithDelta(($pdf->getPageWidth() - 11.0) * $topt, $first['xmax'], 0.01);
+        $this->assertEqualsWithDelta($first['xmin'], $second['xmax'], 0.01);
+        $this->assertEqualsWithDelta($second['xmin'], $cell['xmax'], 0.01);
+        $this->assertEqualsWithDelta($first['ymin'], $second['ymin'], 0.01);
+        $this->assertEqualsWithDelta($first['ymin'], $cell['ymin'], 0.01);
+    }
+
+    public function testWriteRunsInAColumnAreAdjacent(): void
+    {
+        $pdf = $this->newPdf();
+        $pdf->setFont('helvetica', '', 11);
+        $pdf->setMargins(10, 10, 10);
+        $pdf->setCellPaddings(1, 0, 1, 0);
+        $pdf->AddPage();
+        $pdf->setEqualColumns(2, 90);
+        $pdf->selectColumn(1);
+
+        $start = $pdf->GetX();
+        $pdf->Write(5, 'left');
+        $pdf->Write(5, 'right');
+
+        $topt = 72.0 / 25.4;
+        $word = $this->wordBox($pdf, 'leftright');
+        $this->assertEqualsWithDelta(($start + 1.0) * $topt, $word['xmin'], 0.01);
+    }
+
     public function testCellWiderTextStaysOnOneLine(): void
     {
         $pdf = $this->newPdf();

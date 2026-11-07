@@ -2,7 +2,7 @@
 
 //============================================================+
 // File name    : tcpdf.php
-// Version      : 7.0.21
+// Version      : 7.0.22
 // Author       : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License      : GNU-LGPL v3 (https://www.gnu.org/copyleft/lesser.html)
 // Copyright (C): 2002-2026 Nicola Asuni - Tecnick.com LTD
@@ -15,7 +15,7 @@
  * See: https://tcpdf.org
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 7.0.21
+ * @version 7.0.22
  */
 
 // TCPDF configuration
@@ -37,6 +37,7 @@ require_once dirname(__FILE__) . '/tcpdf_autoconfig.php';
  *
  * @phpstan-import-type StyleDataOpt from \Com\Tecnick\Pdf\Graph\Style
  * @phpstan-import-type TAnnotOpts from \Com\Tecnick\Pdf\Base
+ * @phpstan-import-type THTMLTcpdfObject from \Com\Tecnick\Pdf\HTML
  */
 class TCPDF
 {
@@ -298,6 +299,18 @@ class TCPDF
     /** Height of the currently open XObject template in user units. */
     protected float $xobjheight = 0.0;
 
+    /** @var list<string> Output capture buffers of emitToPage(): the last one receives the content. */
+    protected array $emitcapture = [];
+
+    /** Width available to a barcode drawn as an HTML tag object (0 = direct drawing). */
+    protected float $barcodeobjectwidth = 0.0;
+
+    /** Height available to a barcode drawn as an HTML tag object. */
+    protected float $barcodeobjectheight = 0.0;
+
+    /** @var array{0: float, 1: float} Box width and height of the last drawn barcode. */
+    protected array $barcodeobjectbox = [0.0, 0.0];
+
     /** Page group number for the next added page (0 = default group). */
     protected int $nextpagegroup = 0;
 
@@ -467,8 +480,30 @@ class TCPDF
             $encrypt,
             $this->fileOptions(),
         );
-        $eng->pagecontexthook = $this->ambientPageContent(...);
+        $this->bindEngineHooks($eng);
         return $eng;
+    }
+
+    /**
+     * Connect the engine callbacks to this facade.
+     */
+    private function bindEngineHooks(TCPDF_ENGINE $eng): void
+    {
+        $eng->pagecontexthook = $this->ambientPageContent(...);
+        $eng->htmltagallowhook = $this->htmlTagAllowed(...);
+        $eng->htmltagobjecthook = $this->htmlTagObject(...);
+        $eng->htmltagcallhook = $this->htmlTagCall(...);
+    }
+
+    /**
+     * Disconnect the engine callbacks (closures cannot be serialized).
+     */
+    private function unbindEngineHooks(TCPDF_ENGINE $eng): void
+    {
+        $eng->pagecontexthook = null;
+        $eng->htmltagallowhook = null;
+        $eng->htmltagobjecthook = null;
+        $eng->htmltagcallhook = null;
     }
 
     /**
@@ -662,6 +697,11 @@ class TCPDF
     protected function emitToPage(string $content): void
     {
         if ($content === '' || $this->docstate < 2) {
+            return;
+        }
+
+        if ($this->emitcapture !== []) {
+            $this->emitcapture[] = array_pop($this->emitcapture) . $content;
             return;
         }
 
@@ -1271,7 +1311,13 @@ class TCPDF
      */
     protected function canBreakPage(): bool
     {
-        return $this->autopagebreak && !$this->inheaderfooter && $this->xobjtid === '' && $this->docstate === 2;
+        return (
+            $this->autopagebreak
+            && !$this->inheaderfooter
+            && $this->xobjtid === ''
+            && $this->emitcapture === []
+            && $this->docstate === 2
+        );
     }
 
     /**
@@ -4179,14 +4225,15 @@ class TCPDF
         $incolumns = $this->inColumnMode();
         $region = $eng->page->getRegion();
         $flowx = $incolumns ? $region['RX'] : $this->lmargin;
-        $width = $incolumns ? $region['RW'] : $this->getPageWidth() - $this->rmargin - $this->lmargin;
+        $floww = $incolumns ? $region['RW'] : $this->getPageWidth() - $this->rmargin - $this->lmargin;
         // Legacy wraps the lines inside the horizontal cell padding and
         // starts them at the padded edge.
         $originx = $flowx + $this->cellpadding['L'];
-        $width = max(0.0, $width - $this->cellpadding['L'] - $this->cellpadding['R']);
-        // The cursor carries the padding too, so it is measured from the
-        // unpadded flow origin.
-        $offset = max(0.0, $this->posx - $flowx);
+        $width = max(0.0, $floww - $this->cellpadding['L'] - $this->cellpadding['R']);
+        // The cursor is the unpadded edge of the next cell on the line (the
+        // right edge in RTL mode), so the first line offset is measured from
+        // the unpadded flow edge on the same side.
+        $offset = $this->rtlmode ? max(0.0, $flowx + $floww - $this->posx) : max(0.0, $this->posx - $flowx);
 
         $styles = ['all' => ['lineWidth' => 0.0]];
         if ((bool) $_fill) {
@@ -4196,69 +4243,75 @@ class TCPDF
         $row = $this->legacyRowPitch($pitch);
 
         $this->emitToPage($eng->color->getPdfFillColor($this->textcolorspec));
-        if ($this->canBreakPage()) {
-            $eng->addTextCellXY(
-                $txt,
-                -1,
-                $originx,
-                $this->posy,
-                $width,
-                0,
-                $offset,
-                $row['linespace'],
-                'T',
-                $this->halignToEngine($_align),
-                $row['cell'],
-                $styles,
-                $this->textrendermode['stroke'],
-                0,
-                0,
-                0,
-                // Justify the last line too (legacy getCellCode behavior; lines
-                // ending with an explicit line break are still excluded).
-                false,
-                $this->textrendermode['fill'],
-                $this->textrendermode['stroke'] > 0,
-                $this->fontdecor['U'],
-                $this->fontdecor['D'],
-                $this->fontdecor['O'],
-                $this->textrendermode['clip'],
-                (bool) $_fill,
-                $this->forcedTextDir(),
-                $this->engineShadow(),
-            );
-        } else {
-            // Without a page to flow into, the flowing call renders only the
-            // lines that fit in the region and drops the rest. Legacy keeps
-            // writing line by line past the bottom margin, so place the whole
-            // text at the cursor instead.
-            $this->emitToPage($eng->getTextCell(
-                $txt,
-                $originx,
-                $this->posy,
-                $width,
-                0,
-                $offset,
-                $row['linespace'],
-                'T',
-                $this->halignToEngine($_align),
-                $row['cell'],
-                $styles,
-                $this->textrendermode['stroke'],
-                0,
-                0,
-                0,
-                false,
-                $this->textrendermode['fill'],
-                $this->textrendermode['stroke'] > 0,
-                $this->fontdecor['U'],
-                $this->fontdecor['D'],
-                $this->fontdecor['O'],
-                $this->textrendermode['clip'],
-                (bool) $_fill,
-                $this->forcedTextDir(),
-                $this->engineShadow(),
-            ));
+        // An RTL cursor is measured from the right flow edge.
+        $this->facadeEngine()->setTextOffsetFromRight($this->rtlmode);
+        try {
+            if ($this->canBreakPage()) {
+                $eng->addTextCellXY(
+                    $txt,
+                    -1,
+                    $originx,
+                    $this->posy,
+                    $width,
+                    0,
+                    $offset,
+                    $row['linespace'],
+                    'T',
+                    $this->halignToEngine($_align),
+                    $row['cell'],
+                    $styles,
+                    $this->textrendermode['stroke'],
+                    0,
+                    0,
+                    0,
+                    // Justify the last line too (legacy getCellCode behavior; lines
+                    // ending with an explicit line break are still excluded).
+                    false,
+                    $this->textrendermode['fill'],
+                    $this->textrendermode['stroke'] > 0,
+                    $this->fontdecor['U'],
+                    $this->fontdecor['D'],
+                    $this->fontdecor['O'],
+                    $this->textrendermode['clip'],
+                    (bool) $_fill,
+                    $this->forcedTextDir(),
+                    $this->engineShadow(),
+                );
+            } else {
+                // Without a page to flow into, the flowing call renders only the
+                // lines that fit in the region and drops the rest. Legacy keeps
+                // writing line by line past the bottom margin, so place the whole
+                // text at the cursor instead.
+                $this->emitToPage($eng->getTextCell(
+                    $txt,
+                    $originx,
+                    $this->posy,
+                    $width,
+                    0,
+                    $offset,
+                    $row['linespace'],
+                    'T',
+                    $this->halignToEngine($_align),
+                    $row['cell'],
+                    $styles,
+                    $this->textrendermode['stroke'],
+                    0,
+                    0,
+                    0,
+                    false,
+                    $this->textrendermode['fill'],
+                    $this->textrendermode['stroke'] > 0,
+                    $this->fontdecor['U'],
+                    $this->fontdecor['D'],
+                    $this->fontdecor['O'],
+                    $this->textrendermode['clip'],
+                    (bool) $_fill,
+                    $this->forcedTextDir(),
+                    $this->engineShadow(),
+                ));
+            }
+        } finally {
+            $this->facadeEngine()->setTextOffsetFromRight(false);
         }
 
         $textbbox = $eng->getLastBBox();
@@ -4282,9 +4335,14 @@ class TCPDF
             }
         } else {
             // Cursor stays on the last written line: the top of the last
-            // row (single line: the cell top).
+            // row (single line: the cell top). It moves to the unpadded edge
+            // of the next cell, so the padding the next call adds places its
+            // text right after this one.
             $this->posy = $cellbbox['y'] + (($numlines - 1) * $pitch);
-            $this->posx = (float) ($textbbox['x'] ?? 0) + (float) ($textbbox['w'] ?? 0);
+            $textx = (float) ($textbbox['x'] ?? 0);
+            $this->posx = $this->rtlmode
+                ? min($flowx + $floww, $textx + $this->cellpadding['R'])
+                : max($flowx, $textx + (float) ($textbbox['w'] ?? 0) - $this->cellpadding['L']);
         }
 
         if (is_string($_link) && $_link !== '') {
@@ -6810,18 +6868,24 @@ class TCPDF
         $savestyle = $this->fontstyle;
         $savesize = $this->fontsizept;
         $labelfont = '';
+        // The label font is selected in the output, so the label does not
+        // depend on the font active where the barcode is drawn.
+        $restorefont = false;
         if ($hastext && isset($style['font']) && is_string($style['font']) && $style['font'] !== '') {
             $labelfont = strtolower($style['font']);
             $fontsizept = isset($style['fontsize']) && is_numeric($style['fontsize'])
                 ? (float) $style['fontsize']
                 : 0.0;
-            $this->setFont($labelfont, '', $fontsizept, '', 'default', false);
+            $this->setFont($labelfont, '', $fontsizept, '', 'default', true);
+            $restorefont = true;
         }
         $stretchtext = isset($style['stretchtext']) ? (int) $style['stretchtext'] : 4;
 
         // Box width.
         if ($givenwidth) {
             $boxw = $wparam;
+        } elseif ($this->barcodeobjectwidth > 0) {
+            $boxw = $this->barcodeobjectwidth;
         } else {
             $boxw = $this->rtlmode ? max(0.0, $posx - $this->lmargin) : $this->getPageWidth() - $this->rmargin - $posx;
         }
@@ -6903,8 +6967,9 @@ class TCPDF
                     $fontsizept,
                     '',
                     'default',
-                    false,
+                    true,
                 );
+                $restorefont = true;
                 $textheight = $this->getCellHeight($fontsizept / $this->kratio);
             }
 
@@ -6930,6 +6995,7 @@ class TCPDF
             $barx = $xposrect + (($boxw - $barw) / 2);
         }
 
+        $this->barcodeobjectbox = [$boxw, $boxh];
         $out = $this->barcodeBox($xposrect, $drawy, $boxw, $boxh, $style);
         try {
             $out .= $eng->getBarcode(
@@ -6943,7 +7009,7 @@ class TCPDF
                 ['lineColor' => $fgspec, 'fillColor' => $fgspec, 'lineWidth' => 0.0],
             );
         } catch (\Com\Tecnick\Barcode\Exception) {
-            $this->setFont($savefamily, $savestyle, $savesize, '', 'default', false);
+            $this->setFont($savefamily, $savestyle, $savesize, '', 'default', $restorefont);
             return;
         }
         $this->emitToPage($out);
@@ -6966,7 +7032,7 @@ class TCPDF
             $this->cellpadding = $savepadding;
         }
 
-        $this->setFont($savefamily, $savestyle, $savesize, '', 'default', false);
+        $this->setFont($savefamily, $savestyle, $savesize, '', 'default', $restorefont);
         $this->advanceAfterBarcode($align, $position, $posx, $drawy, $boxw, $boxh);
     }
 
@@ -7030,8 +7096,13 @@ class TCPDF
 
         $position = isset($style['position']) && is_string($style['position']) ? strtoupper($style['position']) : '';
 
-        $maxw = $this->rtlmode ? max(0.0, $posx - $this->lmargin) : $this->getPageWidth() - $this->rmargin - $posx;
-        $maxh = $this->getPageHeight() - $this->tmargin - $this->bmargin;
+        if ($this->barcodeobjectwidth > 0) {
+            $maxw = $this->barcodeobjectwidth;
+            $maxh = $this->barcodeobjectheight;
+        } else {
+            $maxw = $this->rtlmode ? max(0.0, $posx - $this->lmargin) : $this->getPageWidth() - $this->rmargin - $posx;
+            $maxh = $this->getPageHeight() - $this->tmargin - $this->bmargin;
+        }
         $ratioHW = (($rows * $mh) + $hpad) / (($cols * $mw) + $vpad);
         $ratioWH = (($cols * $mw) + $vpad) / (($rows * $mh) + $hpad);
         if (!$distort) {
@@ -7085,6 +7156,7 @@ class TCPDF
         $xstart = $xpos + ($hpadding * $cw);
         $ystart = $drawy + ($vpadding * $ch);
 
+        $this->barcodeobjectbox = [$boxw, $boxh];
         $out = $this->barcodeBox($xpos, $drawy, $boxw, $boxh, $style);
         try {
             $out .= $eng->getBarcode(
@@ -7347,11 +7419,12 @@ class TCPDF
         return (float) $this->getHTMLUnitToUnits($_val, $parent, (string) $_defaultunit, true);
     }
 
+    /**
+     * @return string Data attribute of a <tcpdf> tag, valid for this document only.
+     */
     public function serializeTCPDFtag($_method, $_params = [])
     {
-        $data = ['m' => (string) $_method, 'p' => is_array($_params) ? $_params : []];
-        $encoded = json_encode($data);
-        return 'tcpdf://' . ($encoded === false ? '' : urlencode($encoded));
+        return $this->engine()->serializeHTMLTcpdfTag((string) $_method, is_array($_params) ? $_params : []);
     }
 
     public function writeHTMLCell(
@@ -7369,27 +7442,6 @@ class TCPDF
     ) {
         if ($this->docstate !== 2) {
             $this->Error('Unable to write HTML: no page has been started');
-            return;
-        }
-
-        if (
-            defined('K_TCPDF_CALLS_IN_HTML')
-            && constant('K_TCPDF_CALLS_IN_HTML')
-            && preg_match('/<tcpdf\b/i', (string) $_html) === 1
-        ) {
-            $this->writeHtmlWithTcpdfTags(
-                (string) $_html,
-                $_w,
-                $_h,
-                $_x,
-                $_y,
-                $_border,
-                $_ln,
-                $_fill,
-                $_reseth,
-                $_align,
-                $_autopadding,
-            );
             return;
         }
 
@@ -7815,67 +7867,152 @@ class TCPDF
     }
 
     /**
-     * Render HTML containing embedded <tcpdf data="..."/> method calls
-     * (K_TCPDF_CALLS_IN_HTML feature): the markup is split at the tags,
-     * each chunk is rendered normally and each tag invokes the serialized
-     * facade method when listed in K_ALLOWED_TCPDF_TAGS.
+     * Return true when HTML <tcpdf> tags may call the facade method: tag calls
+     * are enabled (K_TCPDF_CALLS_IN_HTML) and the method is listed in
+     * K_ALLOWED_TCPDF_TAGS.
      */
-    protected function writeHtmlWithTcpdfTags(
-        string $html,
-        mixed $w,
-        mixed $h,
-        mixed $x,
-        mixed $y,
-        mixed $border,
-        mixed $_ln,
-        mixed $fill,
-        mixed $reseth,
-        mixed $align,
-        mixed $autopadding,
-    ): void {
-        $parts = preg_split('/<tcpdf\s+([^>]*?)\/?>/i', $html, -1, PREG_SPLIT_DELIM_CAPTURE);
-        if (!is_array($parts)) {
-            return;
+    protected function htmlTagAllowed(string $method): bool
+    {
+        if (!defined('K_TCPDF_CALLS_IN_HTML') || constant('K_TCPDF_CALLS_IN_HTML') !== true) {
+            return false;
         }
 
-        $allowed = defined('K_ALLOWED_TCPDF_TAGS') ? K_ALLOWED_TCPDF_TAGS : '';
-        foreach ($parts as $idx => $part) {
-            if (($idx % 2) === 0) {
-                // HTML chunk.
-                if (trim($part) !== '') {
-                    $this->writeHTMLCell($w, $h, $x, $y, $part, $border, 1, $fill, $reseth, $align, $autopadding);
-                    // Subsequent chunks continue from the cursor.
-                    $x = '';
-                    $y = '';
-                }
+        $allowed = defined('K_ALLOWED_TCPDF_TAGS') ? (string) constant('K_ALLOWED_TCPDF_TAGS') : '';
+        return $method !== '' && stripos($allowed, '|' . $method . '|') !== false && method_exists($this, $method);
+    }
 
-                continue;
-            }
-
-            // Tag attributes: extract the serialized payload.
-            $match = [];
-            if (preg_match('/data="tcpdf:\/\/([^"]*)"/i', $part, $match) !== 1) {
-                continue;
-            }
-
-            $payload = json_decode(urldecode($match[1] ?? ''), true);
-            if (!is_array($payload) || !isset($payload['m']) || !is_string($payload['m'])) {
-                continue;
-            }
-
-            $method = $payload['m'];
-            $params = isset($payload['p']) && is_array($payload['p']) ? array_values($payload['p']) : [];
-            if (stripos($allowed, '|' . $method . '|') === false || !method_exists($this, $method)) {
-                // Method not in the K_ALLOWED_TCPDF_TAGS whitelist.
-                continue;
-            }
-
-            /** @var callable $callable */
-            $callable = [$this, $method];
-            call_user_func_array($callable, $params);
-            $x = '';
-            $y = '';
+    /**
+     * Draw the barcode of an HTML <tcpdf> tag into a form XObject template
+     * laid out by the engine as an image box. Other methods return null and
+     * run as calls (htmlTagCall()).
+     *
+     * The barcode is drawn at the template origin without the page break,
+     * the page-relative position keyword and the cursor move of a direct
+     * call. The $align parameter T, M or B gives an inline box aligned to the
+     * top, middle or bottom of the line; other values give a block box. The
+     * style position L, C or R aligns a block box in its containing block.
+     *
+     * @param array<int, mixed> $params
+     *
+     * @return ?THTMLTcpdfObject
+     */
+    protected function htmlTagObject(string $method, array $params): ?array
+    {
+        $name = strtolower($method);
+        if ($name !== 'write1dbarcode' && $name !== 'write2dbarcode') {
+            return null;
         }
+
+        $styleidx = $name === 'write2dbarcode' ? 6 : 7;
+        $alignidx = $styleidx + 1;
+        $params = array_pad(array_values($params), $alignidx + 1, null);
+        $style = is_array($params[$styleidx] ?? null) ? $params[$styleidx] : [];
+        $position = isset($style['position']) && is_string($style['position']) ? strtoupper($style['position']) : '';
+        $halign = in_array($position, ['L', 'C', 'R'], true) ? $position : '';
+        if ($halign !== '') {
+            unset($style['position']);
+        }
+
+        unset($style['cellfitalign']);
+        $valign = match (strtoupper(is_string($params[$alignidx] ?? null) ? $params[$alignidx] : '')) {
+            'T' => 'top',
+            'M' => 'middle',
+            'B' => 'bottom',
+            default => '',
+        };
+        $params[2] = 0;
+        $params[3] = 0;
+        $params[$styleidx] = $style;
+        $params[$alignidx] = '';
+
+        $saved = [$this->posx, $this->posy, $this->rtlmode, $this->xobjtid, $this->xobjheight];
+        try {
+            $this->rtlmode = false;
+            $this->xobjtid = '';
+            $this->barcodeobjectwidth = $this->contentWidth();
+            $this->barcodeobjectheight = $this->getPageHeight() - $this->tmargin - $this->bmargin;
+            $this->barcodeobjectbox = [0.0, 0.0];
+            $this->emitcapture[] = '';
+            try {
+                $this->callFacadeMethod($method, $params);
+            } finally {
+                array_pop($this->emitcapture);
+            }
+
+            [$boxw, $boxh] = $this->barcodeobjectbox;
+            if ($boxw <= 0 || $boxh <= 0) {
+                return null;
+            }
+
+            $tid = (string) $this->startTemplate($boxw, $boxh);
+            try {
+                $this->callFacadeMethod($method, $params);
+            } finally {
+                $this->endTemplate();
+            }
+        } finally {
+            [$this->posx, $this->posy, $this->rtlmode, $this->xobjtid, $this->xobjheight] = $saved;
+            $this->barcodeobjectwidth = 0.0;
+        }
+
+        return [
+            'tid' => $tid,
+            'width' => $boxw,
+            'height' => $boxh,
+            'display' => $valign === '' ? 'block' : 'inline',
+            'valign' => $valign === '' ? 'bottom' : $valign,
+            'halign' => $halign,
+            'alt' => is_scalar($params[0]) ? (string) $params[0] : '',
+        ];
+    }
+
+    /**
+     * Run the facade method of an HTML <tcpdf> tag at the given position and
+     * return the PDF code it draws. The cursor is restored afterwards.
+     *
+     * @param array<int, mixed> $params
+     */
+    protected function htmlTagCall(string $method, array $params, float $posx, float $posy): string
+    {
+        $savex = $this->posx;
+        $savey = $this->posy;
+        $this->posx = $posx;
+        $this->posy = $posy;
+        $this->emitcapture[] = '';
+        $out = '';
+        try {
+            $this->callFacadeMethod($method, $params);
+        } finally {
+            $out = (string) array_pop($this->emitcapture);
+            $this->posx = $savex;
+            $this->posy = $savey;
+        }
+
+        return $out;
+    }
+
+    /**
+     * Call a facade method by name.
+     *
+     * @param array<int, mixed> $params
+     */
+    protected function callFacadeMethod(string $method, array $params): void
+    {
+        /** @var callable $callable */
+        $callable = [$this, $method];
+        call_user_func_array($callable, $params);
+    }
+
+    /**
+     * Width of the current column region, or of the page between the margins.
+     */
+    protected function contentWidth(): float
+    {
+        if ($this->inColumnMode()) {
+            return $this->engine()->page->getRegion()['RW'];
+        }
+
+        return $this->getPageWidth() - $this->lmargin - $this->rmargin;
     }
 
     public function writeHTML($_html, $_ln = true, $_fill = false, $_reseth = false, $_cell = false, $_align = '')
@@ -8171,26 +8308,24 @@ class TCPDF
     public function startTransaction()
     {
         // Deep snapshot of the facade including the engine object graph.
-        // The engine page context hook is a closure (not serializable):
-        // detach it around the snapshot and rebind it on the copy.
+        // The engine hooks are closures (not serializable): detach them
+        // around the snapshot and rebind them on the copy.
         $this->transactionsnapshot = null;
-        $hook = null;
         if ($this->eng instanceof TCPDF_ENGINE) {
-            $hook = $this->eng->pagecontexthook;
-            $this->eng->pagecontexthook = null;
+            $this->unbindEngineHooks($this->eng);
         }
 
         try {
             $snapshot = unserialize(serialize($this), ['allowed_classes' => true]);
         } finally {
             if ($this->eng instanceof TCPDF_ENGINE) {
-                $this->eng->pagecontexthook = $hook;
+                $this->bindEngineHooks($this->eng);
             }
         }
 
         if ($snapshot instanceof TCPDF) {
             if ($snapshot->eng instanceof TCPDF_ENGINE) {
-                $snapshot->eng->pagecontexthook = $snapshot->ambientPageContent(...);
+                $snapshot->bindEngineHooks($snapshot->eng);
             }
 
             $this->transactionsnapshot = $snapshot;
@@ -8220,10 +8355,10 @@ class TCPDF
                 }
             }
 
-            // The restored engine hook was bound to the snapshot facade:
-            // rebind it to this (live) instance.
+            // The restored engine hooks were bound to the snapshot facade:
+            // rebind them to this (live) instance.
             if ($this->eng instanceof TCPDF_ENGINE) {
-                $this->eng->pagecontexthook = $this->ambientPageContent(...);
+                $this->bindEngineHooks($this->eng);
             }
 
             return $this;
@@ -8891,6 +9026,7 @@ class TCPDF
  * @package com.tecnick.tcpdf
  *
  * @phpstan-import-type TBBox from \Com\Tecnick\Pdf\Base
+ * @phpstan-import-type THTMLTcpdfObject from \Com\Tecnick\Pdf\HTML
  */
 // The single-file layout (tcpdf.php as the only historical include) and the
 // legacy ALL-CAPS underscore class naming (TCPDF_STATIC, TCPDF_FONTS, ...)
@@ -8906,6 +9042,64 @@ class TCPDF_ENGINE extends \Com\Tecnick\Pdf\Tcpdf
      * @var (\Closure(): string)|null
      */
     public ?\Closure $pagecontexthook = null;
+
+    /**
+     * Facade callback returning true when an HTML <tcpdf> tag may call a method.
+     *
+     * @var (\Closure(string): bool)|null
+     */
+    public ?\Closure $htmltagallowhook = null;
+
+    /**
+     * Facade callback returning the object drawn by an HTML <tcpdf> tag, or null.
+     *
+     * @var (\Closure(string, array<int, mixed>): ?THTMLTcpdfObject)|null
+     */
+    public ?\Closure $htmltagobjecthook = null;
+
+    /**
+     * Facade callback running the method of an HTML <tcpdf> tag and returning its PDF code.
+     *
+     * @var (\Closure(string, array<int, mixed>, float, float): string)|null
+     */
+    public ?\Closure $htmltagcallhook = null;
+
+    protected function isAllowedHTMLTcpdfMethod(string $method): bool
+    {
+        return $this->htmltagallowhook instanceof \Closure && ($this->htmltagallowhook)($method);
+    }
+
+    /**
+     * @param array<int, mixed> $params
+     *
+     * @return ?THTMLTcpdfObject
+     */
+    protected function getHTMLTcpdfTagObject(string $method, array $params): ?array
+    {
+        if (!$this->htmltagobjecthook instanceof \Closure) {
+            return null;
+        }
+
+        // The facade opens and closes its own template: keep the open one.
+        $tid = $this->xobjtid;
+        try {
+            return ($this->htmltagobjecthook)($method, $params);
+        } finally {
+            $this->xobjtid = $tid;
+        }
+    }
+
+    /**
+     * @param array<int, mixed> $params
+     */
+    protected function runHTMLTcpdfTagCall(string $method, array $params, float $posx, float $posy): string
+    {
+        if (!$this->htmltagcallhook instanceof \Closure) {
+            return '';
+        }
+
+        return ($this->htmltagcallhook)($method, $params, $posx, $posy);
+    }
 
     public function setPageContext(int $pid = -1): void
     {
@@ -8936,6 +9130,15 @@ class TCPDF_ENGINE extends \Com\Tecnick\Pdf\Tcpdf
 
     /** Id of the last opened cell bounding-box window. */
     private int $cellBBoxWindowId = 0;
+
+    /**
+     * Make the first line offset of the next text cells trim the right side
+     * of the line for any base direction (right-to-left cursor positions).
+     */
+    public function setTextOffsetFromRight(bool $enabled): void
+    {
+        $this->textOffsetFromRight = $enabled;
+    }
 
     /**
      * Start counting the cell bounding boxes added by the engine.

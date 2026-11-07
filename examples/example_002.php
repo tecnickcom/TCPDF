@@ -100,5 +100,23 @@ $pdf->Write(0, 'right aligned from setX(80)', '', 0, 'R', true);
 
 // ---------------------------------------------------------
 
+// Consecutive Write() calls continue the line where the previous text ends:
+// each call can switch the style or add a link without leaving a gap.
+$pdf->setFont('times', '', 12);
+$pdf->Ln(10);
+$pdf->Write(0, 'A sentence with ');
+$pdf->setFont('times', 'I', 12);
+$pdf->Write(0, 'italic');
+$pdf->setFont('times', '', 12);
+$pdf->Write(0, ', ');
+$pdf->setFont('times', 'U', 12);
+$pdf->Write(0, 'underlined');
+$pdf->setFont('times', '', 12);
+$pdf->Write(0, ' and ');
+$pdf->Write(0, 'linked', 'https://tcpdf.org');
+$pdf->Write(0, ' words.', '', 0, 'L', true);
+
+// ---------------------------------------------------------
+
 //Close and output PDF document
 $pdf->Output('example_002.pdf', 'I');

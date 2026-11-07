@@ -1,3 +1,15 @@
+7.0.22 (2026-11-07)
+	- Fixed consecutive Write() calls on the same line leaving a gap of one left cell padding between the text runs, and Cell() after Write() doing the same (#887): after a Write() that stays on the line, the cursor is the end of the text minus the left cell padding, as in TCPDF 6. setX() followed by Write() still starts the text one left padding to the right of the cursor.
+	- Fixed Write() in RTL mode starting one line too low and wrapping the next run onto a new line: the first line offset is measured from the right margin.
+	- Fixed <tcpdf> tags inside a table cell, list item or other element breaking the surrounding markup (#888): the tags are no longer split out of the HTML; the engine runs them in the HTML layout.
+		- write1DBarcode() and write2DBarcode() tags are drawn as boxes of the barcode size, so table rows, columns and lines grow around them. The $align parameter T, M or B gives an inline box aligned to the top, middle or bottom of the line; other values give a block box. The style position L, C or R aligns the box in its containing block.
+		- Other allowed methods run at the tag position and their output keeps the document order.
+		- A serializeTCPDFtag() payload is signed with a key of the document, as in TCPDF 6: tags created by another document or edited by hand are ignored. No tag runs unless K_TCPDF_CALLS_IN_HTML is true, including AddPage.
+	- Fixed the human-readable label of write1DBarcode() being drawn with the active font instead of the font and size in the style.
+	- Requires `tecnickcom/tc-lib-pdf` ^8.84.
+
+*************************************************
+
 7.0.21 (2026-11-02)
 	- Fixed the bold and italic fonts selected by writeHTML() (<b>, <i>, <th>, headings) being embedded in full while font subsetting is enabled: the engine now uses the font subsetting mode for every font it loads, and setFontSubsetting() applies to the fonts loaded afterwards, as in TCPDF 6.
 	- Fixed the time spent on each Cell(), MultiCell() and writeHTMLCell() call growing with the number of cells already drawn: the facade no longer keeps the bounding box of every cell of the document, it counts the cell boxes added by the current call.

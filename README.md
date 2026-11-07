@@ -219,6 +219,14 @@ following areas. Each is a deliberate, documented contract change:
    allowlist of trusted directories and remote (HTTP/HTTPS) reads are disabled by default.
    The legacy `setAllowLocalFiles()` toggle no longer widens access; the policy is driven
    by configuration constants instead (see [Resource Loading Security](#resource-loading-security)).
+6. **`<tcpdf>` barcode tags are laid out as HTML boxes.** With `K_TCPDF_CALLS_IN_HTML`
+   enabled, `write1DBarcode()` and `write2DBarcode()` tags are drawn as boxes in the HTML
+   flow, so they can be placed in table cells, lists and inline text. The `$align`
+   parameter `T`, `M` or `B` gives an inline box aligned to the top, middle or bottom of
+   the line; other values give a block box. The style `position` `L`, `C` or `R` aligns
+   the box in its containing block instead of the page. Other allowed methods run at the
+   tag position. A `serializeTCPDFtag()` payload is valid only for the document that
+   created it.
 
 Smaller deliberate no-ops (disk caching, `setDocInfoUnicode()`, header XObject template
 caching, vector-image rasterization toggles, ...) are listed with their reasons in

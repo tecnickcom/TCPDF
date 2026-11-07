@@ -358,7 +358,7 @@ const TCPDF_METHOD_MAP = [
         'html',
         'HTML::addHTMLCell',
         'adapter',
-        'ln=0 returns to the starting page (legacy column flows); tcpdf-in-HTML tags executed when K_TCPDF_CALLS_IN_HTML is set',
+        'ln=0 returns to the starting page (legacy column flows); `<tcpdf>` tags run by the engine when K_TCPDF_CALLS_IN_HTML is set: barcodes laid out as boxes, other methods run at the tag position',
     ],
     'fixHTMLCode' => ['html', 'HTML::tidyHTML', 'delegated', ''],
     'addHtmlLink' => ['html', '-', 'shim', 'rendered via Write() with link color/style state'],
@@ -368,7 +368,12 @@ const TCPDF_METHOD_MAP = [
     'getCSSBorderMargin' => ['html', 'CSS helpers', 'shim', 'CSS shorthand parser'],
     'getHTMLFontUnits' => ['html', 'CSS helpers', 'shim', ''],
     'getHTMLUnitToUnits' => ['html', 'CSS helpers', 'shim', ''],
-    'serializeTCPDFtag' => ['html', '-', 'shim', 'payload format consumed by the writeHTML tcpdf-tag executor'],
+    'serializeTCPDFtag' => [
+        'html',
+        'HTML::serializeHTMLTcpdfTag',
+        'delegated',
+        'payload signed with a per-document HMAC key',
+    ],
     'setLIsymbol' => ['html', 'HTML::setULLIDot', 'delegated', ''],
     'setHtmlVSpace' => ['html', 'HTML::setHtmlVSpace', 'adapter', ''],
     'setListIndentWidth' => [

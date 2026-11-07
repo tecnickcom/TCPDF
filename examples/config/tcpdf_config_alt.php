@@ -188,7 +188,7 @@ define('K_TCPDF_CALLS_IN_HTML', true);
  * The constant K_TCPDF_CALLS_IN_HTML must be set to true.
  * IMPORTANT: For security reason, disable this feature if you are allowing user HTML content.
  */
-define('K_ALLOWED_TCPDF_TAGS', '|AddPage|Rect|SetDrawColor|write1DBarcode|');
+define('K_ALLOWED_TCPDF_TAGS', '|AddPage|Rect|SetDrawColor|write1DBarcode|write2DBarcode|');
 
 /**
  * If true and PHP version is greater than 5, then the Error() method throw new exception instead of terminating the execution.

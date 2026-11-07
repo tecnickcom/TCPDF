@@ -14,13 +14,13 @@ Statuses: `stub` (not implemented), `delegated`, `adapter`, `shim`,
 | Document/Page state | 60 | 0 | 20 | 40 | 0 | 0 | 0 |
 | Header/Footer | 19 | 0 | 0 | 17 | 2 | 0 | 0 |
 | Text/Font/metrics | 45 | 5 | 21 | 19 | 0 | 0 | 0 |
-| HTML/CSS | 18 | 2 | 3 | 10 | 3 | 0 | 0 |
+| HTML/CSS | 18 | 3 | 3 | 9 | 3 | 0 | 0 |
 | Graphics/Transforms/Images | 71 | 4 | 58 | 7 | 1 | 1 | 0 |
 | Forms/Annotations/Links/JS | 20 | 3 | 15 | 2 | 0 | 0 | 0 |
 | Signatures/Security | 6 | 0 | 6 | 0 | 0 | 0 | 0 |
 | Barcodes | 4 | 0 | 2 | 2 | 0 | 0 | 0 |
 | Columns/TOC/Templates/Regions | 17 | 0 | 9 | 6 | 0 | 2 | 0 |
-| **Total** | **294** | **25** | **142** | **115** | **9** | **3** | **0** |
+| **Total** | **294** | **26** | **142** | **114** | **9** | **3** | **0** |
 
 ## Bootstrap/Lifecycle/Output
 
@@ -205,7 +205,7 @@ Statuses: `stub` (not implemented), `delegated`, `adapter`, `shim`,
 | TCPDF method | tc-lib target | Status | Notes |
 |---|---|---|---|
 | writeHTML | `HTML::addHTMLCell` | adapter | markup pre-processing: malformed hex colors repaired, relative resource paths resolved, styled inline parents with nested children flattened (engine paints inline backgrounds only at depth 1) |
-| writeHTMLCell | `HTML::addHTMLCell` | adapter | ln=0 returns to the starting page (legacy column flows); tcpdf-in-HTML tags executed when K_TCPDF_CALLS_IN_HTML is set |
+| writeHTMLCell | `HTML::addHTMLCell` | adapter | ln=0 returns to the starting page (legacy column flows); `<tcpdf>` tags run by the engine when K_TCPDF_CALLS_IN_HTML is set: barcodes laid out as boxes, other methods run at the tag position |
 | fixHTMLCode | `HTML::tidyHTML` | delegated |  |
 | addHtmlLink | `-` | shim | rendered via Write() with link color/style state |
 | unhtmlentities | `-` | shim | html_entity_decode |
@@ -214,7 +214,7 @@ Statuses: `stub` (not implemented), `delegated`, `adapter`, `shim`,
 | getCSSBorderMargin | `CSS helpers` | shim | CSS shorthand parser |
 | getHTMLFontUnits | `CSS helpers` | shim |  |
 | getHTMLUnitToUnits | `CSS helpers` | shim |  |
-| serializeTCPDFtag | `-` | shim | payload format consumed by the writeHTML tcpdf-tag executor |
+| serializeTCPDFtag | `HTML::serializeHTMLTcpdfTag` | delegated | payload signed with a per-document HMAC key |
 | setLIsymbol | `HTML::setULLIDot` | delegated |  |
 | setHtmlVSpace | `HTML::setHtmlVSpace` | adapter |  |
 | setListIndentWidth | `-` | intentional-noop | list indentation is computed by the engine HTML renderer |
