@@ -55,15 +55,16 @@ TCPDF_FONT_SENTINEL=$(TCPDF_FONT_PKGDIR)/target/fonts/core/helvetica.json
 # Display general help about this command
 .PHONY: help
 help:
-	@echo ""
-	@echo "$(PROJECT) Makefile."
-	@echo "The following commands are available:"
-	@echo ""
-	@awk '/^## /{desc=substr($$0,4)} /^\.PHONY:/{if(NF>1) {target=$$2; if(desc) printf "  make %-15s: %s\n",target,desc; desc=""}}' Makefile
-	@echo ""
-	@echo "To test and build everything from scratch, use the shortcut:"
-	@echo "    make x"
-	@echo ""
+	@if [ -t 1 ] && [ -z "$${NO_COLOR:-}" ]; then \
+		B=$$(printf '\033[1m'); C=$$(printf '\033[36m'); Y=$$(printf '\033[33m'); D=$$(printf '\033[2m'); R=$$(printf '\033[0m'); \
+	else \
+		B=''; C=''; Y=''; D=''; R=''; \
+	fi; \
+	printf "\n%s%s%s %s(v%s)%s\n" "$$B" "$(PROJECT)" "$$R" "$$D" "$(VERSION)" "$$R"; \
+	printf "\n%sUsage:%s make %s<target>%s\n\n" "$$Y" "$$R" "$$C" "$$R"; \
+	printf "%sTargets:%s\n" "$$Y" "$$R"; \
+	awk -v c="$$C" -v r="$$R" '/^## /{desc=substr($$0,4)} /^\.PHONY:/{if(NF>1){if(desc){n++; t[n]=$$2; d[n]=desc; if(length($$2)>w) w=length($$2)} desc=""}} END{fmt="  %s%-" w "s%s  %s\n"; for(i=1;i<=n;i++) printf fmt,c,t[i],r,d[i]}' Makefile; \
+	printf "\n%sTo test and build everything from scratch:%s make %sx%s\n\n" "$$D" "$$R" "$$C" "$$R"
 
 # Alias for help target
 .PHONY: all

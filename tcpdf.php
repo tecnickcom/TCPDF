@@ -2,7 +2,7 @@
 
 //============================================================+
 // File name    : tcpdf.php
-// Version      : 7.0.23
+// Version      : 7.0.24
 // Author       : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License      : GNU-LGPL v3 (https://www.gnu.org/copyleft/lesser.html)
 // Copyright (C): 2002-2026 Nicola Asuni - Tecnick.com LTD
@@ -15,7 +15,7 @@
  * See: https://tcpdf.org
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 7.0.23
+ * @version 7.0.24
  */
 
 // TCPDF configuration
@@ -2246,12 +2246,16 @@ class TCPDF
         $eng = $this->engine();
         $prop = new \ReflectionProperty(\Com\Tecnick\Pdf\Page\Settings::class, 'page');
         $pages = $prop->getValue($eng->page);
-        if (!is_array($pages) || !isset($pages[$pid]) || !is_array($pages[$pid])) {
+        if (!is_array($pages)) {
             return;
         }
 
-        /** @var array<int, array<string, mixed>> $pages */
-        $pages[$pid] = array_merge($pages[$pid], $layout);
+        $page = $pages[$pid] ?? null;
+        if (!is_array($page)) {
+            return;
+        }
+
+        $pages[$pid] = array_merge($page, $layout);
         $prop->setValue($eng->page, $pages);
     }
 
