@@ -1,3 +1,11 @@
+7.0.23 (2026-11-15)
+	- Fixed PDF/A documents and setSRGBmode(true) failing with "Unable to read sRGB.icc.z file" when TCPDF is installed as a Composer dependency and neither the working directory nor the script directory contains vendor/ (#889): the engine reads its bundled sRGB profile through a file helper limited to that file, so the local file allowlist does not need to cover it.
+	- Fixed a custom K_PATH_FONTS hiding the tc-lib font assets: fonts missing from K_PATH_FONTS are loaded from the tc-lib-pdf-font package directories, read through a file helper limited to those directories. A font in K_PATH_FONTS takes precedence.
+	- Removed the vendor/tecnickcom/ entry of the local file allowlist: it does not exist in Composer installs and is covered by K_PATH_MAIN in a standalone checkout. No entry is added to the allowlist.
+	- Requires `tecnickcom/tc-lib-pdf` ^8.84.1.
+
+*************************************************
+
 7.0.22 (2026-11-07)
 	- Fixed consecutive Write() calls on the same line leaving a gap of one left cell padding between the text runs, and Cell() after Write() doing the same (#887): after a Write() that stays on the line, the cursor is the end of the text minus the left cell padding, as in TCPDF 6. setX() followed by Write() still starts the text one left padding to the right of the cursor.
 	- Fixed Write() in RTL mode starting one line too low and wrapping the next run onto a new line: the first line offset is measured from the right margin.

@@ -145,7 +145,7 @@ A missing asset directory is reported as `unable to read file: helvetica.json` o
 
 Compatibility notes:
 
-- TCPDF checks configured font paths and tc-lib font assets.
+- TCPDF searches `K_PATH_FONTS` first, then the tc-lib font assets; a font in `K_PATH_FONTS` takes precedence over a tc-lib font with the same name.
 - JSON font descriptors from tc-lib are accepted by the TCPDF `AddFont()` path.
 - Legacy PHP font descriptors (`fontname.php` + `fontname.z`) are **no longer supported**
   (see "Breaking Changes" below); convert the original TTF/OTF with the
@@ -247,14 +247,18 @@ configurable via `define()` constants (read by `tcpdf_autoconfig.php`, overridab
 | `K_CURLOPTS` | `array` | `[]` | Extra `CURLOPT_* => value` pairs merged over the cURL defaults. |
 
 **Local reads.** The built-in allowlist always covers the system temp directory,
-`K_PATH_MAIN`, the bundled `vendor/tecnickcom/` directory, the current working directory,
-`K_PATH_FONTS`, `K_PATH_IMAGES` and the running script's directory. `K_ALLOWED_PATHS`
+`K_PATH_MAIN`, the current working directory, `K_PATH_FONTS`, `K_PATH_IMAGES` and the
+running script's directory. `K_ALLOWED_PATHS`
 only ever *widens* this set — paths are resolved with `realpath()`, so non-existent or
 unresolvable entries are silently ignored and traversal/symlink tricks collapse to their
 canonical prefix. There is no way to read below the built-in roots.
 Resources referenced by HTML, CSS and SVG markup (`writeHTML()`, `writeHTMLCell()`)
 use the same list without the system temp directory; list the temp directory in
 `K_ALLOWED_PATHS` to allow markup to read from it.
+The engine reads the files it ships with on its own: the sRGB ICC profile used for PDF/A
+and `setSRGBmode(true)`, and the fonts in the tc-lib-pdf-font package directories. Each
+is read through a file helper limited to those files, so `K_ALLOWED_PATHS` never needs to
+list `vendor/`, and the allowlist above is not widened.
 
 **Remote reads.** Remote URL loading is **off by default** — the single most important
 defense against SSRF when rendering untrusted HTML/markup. To opt in, list the exact

@@ -2,7 +2,7 @@
 
 //============================================================+
 // File name    : tcpdf.php
-// Version      : 7.0.22
+// Version      : 7.0.23
 // Author       : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License      : GNU-LGPL v3 (https://www.gnu.org/copyleft/lesser.html)
 // Copyright (C): 2002-2026 Nicola Asuni - Tecnick.com LTD
@@ -15,7 +15,7 @@
  * See: https://tcpdf.org
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
- * @version 7.0.22
+ * @version 7.0.23
  */
 
 // TCPDF configuration
@@ -518,10 +518,11 @@ class TCPDF
     }
 
     /**
-     * Local paths the engine may read files from. The legacy API loaded
-     * images and fonts from application-relative locations, so in addition
-     * to the engine defaults this allows the configured TCPDF paths, the
-     * current working directory and the running script directory.
+     * Local paths the engine may read files from and write output files to:
+     * the system temp directory, K_PATH_MAIN, the current working directory,
+     * K_PATH_FONTS, K_PATH_IMAGES and the running script directory. The list
+     * replaces the engine defaults. The engine reads its bundled sRGB profile
+     * and the tc-lib-pdf-font package fonts without this list.
      *
      * Applications may extend this allowlist with the K_ALLOWED_PATHS
      * configuration constant (array of path prefixes): its entries are
@@ -534,7 +535,6 @@ class TCPDF
         $candidates = [
             sys_get_temp_dir(),
             K_PATH_MAIN,
-            dirname(__FILE__) . '/vendor/tecnickcom/',
             getcwd(),
         ];
         if (defined('K_PATH_FONTS')) {

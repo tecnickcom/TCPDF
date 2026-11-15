@@ -97,6 +97,45 @@ class TcpdfFileSandboxTest extends TcpdfTestCase
         $this->assertNotContains($temp, $markup);
     }
 
+    /**
+     * The allowlists hold only the configured roots, so neither the vendor
+     * directory nor the engine package is listed.
+     */
+    public function testAllowlistsHoldOnlyTheConfiguredRoots(): void
+    {
+        $candidates = [sys_get_temp_dir(), K_PATH_MAIN, getcwd(), K_PATH_FONTS];
+        if (defined('K_PATH_IMAGES')) {
+            $candidates[] = K_PATH_IMAGES;
+        }
+
+        // @mago-expect analysis:redundant-logical-operation
+        if (defined('K_ALLOWED_PATHS') && is_array(K_ALLOWED_PATHS)) {
+            foreach (K_ALLOWED_PATHS as $extra) {
+                $candidates[] = $extra;
+            }
+        }
+
+        $candidates[] = dirname($_SERVER['SCRIPT_FILENAME']);
+        $expected = [];
+        foreach ($candidates as $candidate) {
+            $real = is_string($candidate) && $candidate !== '' ? realpath($candidate) : false;
+            if ($real !== false) {
+                $expected[] = $real;
+            }
+        }
+
+        $expected = array_values(array_unique($expected));
+        $temp = realpath(sys_get_temp_dir());
+        $expectedMarkup = array_values(array_filter($expected, static fn(string $path): bool => $path !== $temp));
+
+        $method = new \ReflectionMethod(TCPDF::class, 'fileOptions');
+        $options = $method->invoke($this->newPdf());
+        $this->assertIsArray($options);
+        $this->assertSame($expected, $options['allowedPaths'] ?? null);
+        $this->assertSame($expectedMarkup, $options['markupAllowedPaths'] ?? null);
+        $this->assertNotContains(realpath(dirname(__DIR__) . '/vendor/tecnickcom'), $expected);
+    }
+
     public function testCssUrlOutsideAllowlistIsNotCopied(): void
     {
         $before = $this->cssCopies();
